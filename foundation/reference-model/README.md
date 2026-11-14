@@ -9,7 +9,7 @@ This directory contains a dependency-free Python reference implementation used t
 From this directory:
 
 ```bash
-python -m unittest -v
+python -m unittest -v  # 10 tests, including shared golden vectors
 ```
 
 ## Scope
@@ -18,6 +18,7 @@ python -m unittest -v
 - canonical decimal formatting;
 - exact comparison, addition, subtraction and multiplication;
 - exact quantization only when no non-zero digits are discarded;
+- language-neutral golden vectors in `golden-vectors-v1.json` (version 1.0.0).
 - positive-step divisibility for tick/lot checks.
 
 The model uses arbitrary-precision integer coefficients. This is intentionally different from a bounded production representation so it can act as an independent mathematical oracle.
