@@ -480,3 +480,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Branch HEAD `88fcb30068507d85fb35802ca5d2195fd528c000` passed [workflow #43616054657](https://github.com/PandaGarry/NEXUS/actions/runs/43616054657).
 - Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no test failures or Node.js 20 / `punycode` warnings.
 - This verifies only Python reference models, not COSE signing/verification, Rust, key registry, persistence, egress or live behavior.
+
+### Exact COSE profile and stacked-PR audit — 2026-11-14
+
+- Verified PR #16 exact-head workflow [#43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308): 13 Python reference suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 successful executions); all job logs free of failures and Node.js 20 / `punycode` warnings.
+- Re-verified direct PR ancestry #1→#2→#3→#4→#5→#6→#7→#9→#10→#11→#12→#13→#14→#16 by exact SHA equality; #8 is parallel. Direct-chain PRs remain open/Draft/unmerged.
+- PR #16 snapshot at verification: 33 changed files, 4,937 additions, 72 deletions and 322 commits including stacked history.
+- Synchronized exact COSE_Sign1 wire profile and key-resolution trust requirements across ADR, research, owner decisions, status, roadmap and checklist.
+- CI proves Python reference-model regression only; no Rust, CBOR/COSE runtime, PostgreSQL, Trusted Egress, venue or live behavior.
