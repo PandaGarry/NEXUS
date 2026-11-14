@@ -224,3 +224,7 @@ First-venue selection remains BLOCKED; no live trading is authorized.
 - [ ] Implement Rust adapter/differential runner only after G0D/G1 and toolchain/workspace approval.
 
 **Current blocker:** repository tree contains no Cargo manifest, Rust toolchain pin, Rust source or Rust runner. No implementation readiness is inferred.
+
+## Conformance contract review refinement — 2026-11-14
+
+Before implementing a machine-readable fixture schema or runner, close the NX-ARCH-005 owner-review gate with an operation-by-operation executable-surface map. Decimal/rational and numeric-wire mappings are grounded in current reference APIs; financial fixture operations without callable oracles and instrument-spec validation remain deferred. Review stable rejection mappings for bounded numeric and dimensional-domain exceptions explicitly. The example envelope is now strict-JSON valid. Schema/runner and Rust work remain gated; no production readiness is implied.
