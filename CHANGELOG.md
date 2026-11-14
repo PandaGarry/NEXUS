@@ -4,6 +4,13 @@
 
 ## Unreleased
 
+### Hardened — PostgreSQL 18.7 CI image digest pin (2026-11-14)
+
+- Replaced the mutable `postgres:18.7` service tag with Docker Official Image multi-platform index digest `sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b`; recorded linux/amd64 child manifest `sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452`.
+- Pinned workflow commit `1844a9964fee667b7d29299a5b75f0f07df5076d` passed PostgreSQL [#43630438579](https://github.com/PandaGarry/NEXUS/actions/runs/43630438579) (11/11) and Python [#43630438570](https://github.com/PandaGarry/NEXUS/actions/runs/43630438570) (264 tests/runtime).
+- Signed publisher provenance, SBOM/vulnerability disposition and independent image review remain open; digest pinning is not represented as provenance.
+
+
 ### Added — HEGC runtime privilege and restrictive RLS qualification (2026-11-14)
 
 - Expanded the disposable PostgreSQL 18.7 fixture to 11 tests with runtime-role privilege-escalation denials and restrictive RLS policy composition.
