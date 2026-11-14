@@ -1538,3 +1538,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep production signed/approved manifest lifecycle, full catalog coverage, immutable audit custody and fail-closed deployment enforcement OPEN.
 
 **Disposition:** SHA-256 is used only as a test fingerprint over a bounded fixture snapshot. It is not a production attestation, signed manifest or operational drift gate.
+
+
+## 18.92 Production authorization-catalog manifest lifecycle — 2026-11-14
+- [x] Define a bounded candidate manifest lifecycle: exact environment/database/migration binding, semantic object identities, explicit expected-absence rules and independent approval/signing/audit roles.
+- [x] Specify fail-closed signature/context/freshness validation, consistent catalog observation, exact comparison and external evidence custody.
+- [x] Define post-startup drift response, DBA/superuser emergency reconciliation and the separate active-session/process/network fencing requirement.
+- [x] Enumerate catalog coverage gaps beyond the disposable fixture, including extensions/languages, event triggers, cluster settings and external control-plane identity.
+- [ ] Approve the wire schema, deterministic-CBOR profile, trust roots, signer/key custody, approval threshold and immutable audit provider.
+- [ ] Implement and cross-language qualify the manifest generator/verifier and complete catalog coverage for the supported PostgreSQL version.
+- [ ] Prove concurrent-DDL snapshot consistency, deployment TOCTOU closure, post-startup drift detection, DBA control-plane governance and restore/PITR anti-rollback.
+- [ ] Complete independent security review and owner acceptance before any production gate is considered.
+
+**Disposition:** NX-ARCH-REVIEW-009 is design-only. The SHA-256 fixture fingerprint is not a signed production attestation or deployment control. G0D/G1 remain open; live trading remains NOT AUTHORIZED.
