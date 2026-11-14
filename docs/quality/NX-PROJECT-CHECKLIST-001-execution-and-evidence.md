@@ -824,3 +824,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep the current CI result scoped to Python reference models; it does not validate the COSE profile implementation or key registry.
 
 **Disposition:** exact-head Python reference regression passed. COSE signing/verifying and G0D/G1 security evidence remain unimplemented.
+
+## 18.38 Exact-head CI after COSE_Sign1 wire-profile specification — 2026-11-14
+
+- [x] Verify branch HEAD `8d2c2f404782b718f1a3a422bb0ce918bb6b922d` with [workflow #43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308).
+- [x] Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests; 717 successful executions.
+- [x] Inspect all three job logs; no test failures or Node.js 20 / `punycode` warnings.
+- [x] Confirm the exact COSE_Sign1 wire profile is design-only and cross-language byte/signature vectors remain open.
+- [ ] Do not infer that this Python-only run validates the COSE parser, signer, verifier or key registry.
+
+**Disposition:** exact-head reference-model regression passed; cryptographic implementation and G0D/OD-08 evidence remain open.
