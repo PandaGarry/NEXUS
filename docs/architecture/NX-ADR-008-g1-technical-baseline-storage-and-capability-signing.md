@@ -39,10 +39,11 @@ This ADR selects bounded G1 evaluation defaults. It does not select a cloud, dat
 Use **RFC 8949 core deterministic CBOR** for the bytes hashed and referenced by RiskApprovalCapability.
 
 NEXUS's restricted command profile MUST:
-- use preferred shortest-form CBOR serialization;
-- use definite-length strings, arrays and maps only;
-- sort map keys by the bytewise lexicographic order of their deterministic encodings;
-- reject duplicate map keys before constructing an application map;
+- use RFC 8949 core deterministic encoding, including preferred shortest-form arguments and lengths;
+- use definite-length strings, arrays and maps only; reject indefinite-length items;
+- restrict command-map keys to schema-defined text field names; reject unknown keys and duplicate key values before constructing an application map;
+- sort map keys by the bytewise lexicographic order of their deterministic encodings (RFC 8949 §4.2.1; do not use the legacy length-first ordering);
+- on ingress, verify the received byte stream itself satisfies the deterministic profile before materializing application objects; reject non-preferred integer/length encodings, unsorted maps, duplicate keys and trailing bytes rather than silently decode-and-reencode them;
 - reject invalid UTF-8, unknown tags, indefinite-length items and all floating-point values;
 - use only signed 64-bit CBOR integers for explicitly declared control metadata;
 - encode financial quantities, prices, coefficients, numerators, denominators and other exact values as canonical decimal/integer strings or schema-defined typed objects, never binary floats;
@@ -50,7 +51,7 @@ NEXUS's restricted command profile MUST:
 - preserve Unicode strings byte-for-byte after strict UTF-8 decoding; do not silently normalize or alias identifiers;
 - apply explicit maximum input bytes, nesting depth, collection length, string length and numeric digit/scale budgets before expensive processing.
 
-The encoder and decoder must independently validate the profile. A generic CBOR decoder that silently collapses duplicate keys is not sufficient.
+The encoder and decoder must independently validate the profile. A generic CBOR decoder that silently collapses duplicate keys, tolerates non-deterministic encodings or discards trailing bytes is not sufficient. Command map keys are fixed schema field names; free-form identifiers belong in values, not keys.
 
 The JSON fixture format in NX-ARCH-005 remains the human-reviewable, strict test-vector envelope. It is not the command's canonical byte encoding. Golden vectors must bind the typed command input to exact CBOR bytes and the resulting digest.
 
