@@ -1484,9 +1484,11 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Add negative tests from HEGC, writer and membership-admin runtime logins for role creation/escalation, definer-role membership grants, PUBLIC EXECUTE, definer-function security-mode changes, default-privilege mutation against the definer owner and trusted-schema function creation.
 - [x] Assert runtime role attributes, privileged-role membership and trusted-schema CREATE privilege from PostgreSQL catalogs.
 - [x] Add a restrictive HEGC SELECT policy and verify that a negative source row is excluded from the SECURITY DEFINER gate snapshot despite the existing permissive policy.
-- [ ] Pass PostgreSQL 18.7 workflow on exact test commit and inspect all job logs.
-- [ ] Update exact run evidence and re-run/synchronize documentation on the tested branch head.
+- [x] Pass 11 PostgreSQL 18.7 tests on exact code/test SHA `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf`, [workflow #43629845855](https://github.com/PandaGarry/NEXUS/actions/runs/43629845855).
+- [x] Pass Python reference-model workflow [#43629845861](https://github.com/PandaGarry/NEXUS/actions/runs/43629845861): 13 suites / 264 tests on Python 3.11, 3.12 and 3.13 (792 executions).
+- [x] Inspect all four job logs; no test failures, ResourceWarnings or deprecation warnings.
+- [ ] Synchronize docs/PR body to the exact verified code/test head and re-run both workflows on the resulting documentation head.
 - [ ] Add production DBA/migration catalog-manifest drift detection and emergency role-change reconciliation; runtime-negative tests do not prove these controls.
 
-**Disposition:** additional test cases are authored; CI result pending. The tests cover only the disposable fixture and do not prove DBA/cluster-level role-change safety, production RLS correctness or production readiness.
+**Disposition:** 11/11 PostgreSQL fixture tests and 264 Python tests per runtime passed on exact code/test SHA `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf`. The tests cover only the disposable fixture and do not prove DBA/cluster-level role-change safety, production RLS correctness or production readiness.
 
