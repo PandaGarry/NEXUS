@@ -105,6 +105,9 @@ The table deliberately leaves numeric thresholds blank. A source owner must prov
 
 NX-IF-005 requires every dispatcher to acknowledge the current monotonic halt epoch or be isolated before the system reports HALTED as fully enforced. This review does not assign a numeric halt deadline because it depends on the selected runtime, process topology, network fence and OD-12 emergency governance.
 
+The acknowledgement boundary must also account for attempts whose final Trusted Egress authorization committed immediately before the halt epoch. Halt and final egress authorization must serialize against the same authoritative halt-state generation. A halt commit that wins first denies the final gate. A final-gate commit that wins first creates an in-flight attempt that cannot be retroactively revoked; Egress must track it until socket initiation is observed or its sender is positively fenced. The Egress boundary cannot acknowledge the newer halt epoch while a paused pre-halt authorized attempt could still resume and initiate a socket write. Such an attempt remains potentially sent and must be reconciled. Therefore, HALTED means no stale/queued attempt can newly initiate a send after boundary acknowledgement, not that the venue cannot process requests already initiated before acknowledgement.
+
+
 Before G1, measure and record separately:
 
 - time from durable halt epoch commit to each enforcement boundary receiving it;
