@@ -38,6 +38,10 @@ def summarize(path: str | Path) -> dict:
     non_json_frames = 0
     other_json_frames = 0
     non_ws_records = 0
+    snapshot_responses = 0
+    snapshot_errors = 0
+    book_states: Counter[str] = Counter()
+    valid_book_events = 0
     frames = 0
     for record in iter_verified_frames(path):
         frames += 1
@@ -46,6 +50,21 @@ def summarize(path: str | Path) -> dict:
         record_types[record_type] += 1
         if record_type != "raw_ws_frame":
             non_ws_records += 1
+            if record_type == "raw_rest_snapshot":
+                snapshot_responses += 1
+            if record_type.endswith("_error"):
+                snapshot_errors += 1
+            if record_type == "derived_book_state":
+                try:
+                    state_payload = json.loads(record["raw_frame"])
+                except json.JSONDecodeError:
+                    other_json_frames += 1
+                else:
+                    state = state_payload.get("state")
+                    if isinstance(state, str):
+                        book_states[state] += 1
+                    if state_payload.get("valid") is True:
+                        valid_book_events += 1
             continue
         try:
             payload = json.loads(record["raw_frame"])
@@ -79,6 +98,10 @@ def summarize(path: str | Path) -> dict:
         "non_json_frames": non_json_frames,
         "other_json_frames": other_json_frames,
         "non_ws_records": non_ws_records,
+        "snapshot_responses": snapshot_responses,
+        "snapshot_errors": snapshot_errors,
+        "book_states": dict(sorted(book_states.items())),
+        "valid_book_events": valid_book_events,
         "classification_total": classified,
         "classification_reconciles": classified == frames,
     }
