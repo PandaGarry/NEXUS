@@ -58,9 +58,6 @@ class CanonicalCommand:
         _validate_decimal(self.quantity, positive=True)
         if self.price is not None:
             _validate_decimal(self.price, positive=True)
-        # This first executable slice intentionally supports CREATE only.
-        # Other command classes have distinct semantics and must not inherit
-        # CREATE validation by accident.
         if self.command_type != "CREATE":
             raise Denied("SCHEMA_UNSUPPORTED_IN_REFERENCE_SLICE")
         if self.environment not in {"PAPER", "SANDBOX", "LIVE"}:
@@ -75,13 +72,11 @@ class CanonicalCommand:
 
     @property
     def digest(self) -> str:
-        return hashlib.sha256(b"NEXUS-CANONICAL-TRADE-COMMAND-V1\\0" + self.canonical_bytes()).hexdigest()
+        return hashlib.sha256(b"NEXUS-CANONICAL-TRADE-COMMAND-V1\0" + self.canonical_bytes()).hexdigest()
 
 
 def _validate_decimal(value: str, positive: bool) -> None:
-    # Strict canonical decimal syntax: no exponent, plus sign, leading zeros,
-    # trailing fractional zeros, negative zero, whitespace or binary floats.
-    if not isinstance(value, str) or not re.fullmatch(r"(?:0|[1-9][0-9]*)(?:\\.[0-9]*[1-9])?", value):
+    if not isinstance(value, str) or not re.fullmatch(r"(?:0|[1-9][0-9]*)(?:\.[0-9]*[1-9])?", value):
         raise Denied("CANONICALIZATION_INVALID_DECIMAL")
     if positive and value == "0":
         raise Denied("CANONICALIZATION_NON_POSITIVE_DECIMAL")
@@ -113,7 +108,7 @@ class Approval:
 
 def _mac(claims: dict, key: bytes) -> str:
     raw = json.dumps(claims, sort_keys=True, separators=(",", ":")).encode()
-    return hmac.new(key, b"NEXUS-TEST-APPROVAL-V1\\0" + raw, hashlib.sha256).hexdigest()
+    return hmac.new(key, b"NEXUS-TEST-APPROVAL-V1\0" + raw, hashlib.sha256).hexdigest()
 
 
 def issue_test_approval(command: CanonicalCommand, *, key: bytes, now: int,
@@ -236,11 +231,9 @@ class CommandGateway:
             if db.in_transaction:
                 db.execute("ROLLBACK")
             raise
-        # A crash from here onward is ambiguous. Recovery MUST NOT blindly resend.
         if crash_after_dispatch_marker:
             raise InjectedCrash("crash after durable DISPATCHING marker")
-        # Second check at the adapter boundary narrows the halt/expiry race.
-        # A real deployment still needs a fenced gateway and atomic epoch authority.
+        # This second check narrows, but cannot eliminate, the external-send race.
         if self._clock() >= approval_expires_at or self._halt_epoch_for_command(command_id) != halt_epoch:
             db.execute("UPDATE commands SET state=?,outcome=? WHERE command_id=?",
                        (CommandState.REJECTED.value, "APPROVAL_EXPIRED_OR_HALT_EPOCH_CHANGED", command_id))
@@ -256,7 +249,6 @@ class CommandGateway:
         return CommandState.ACKNOWLEDGED.value
 
     def recover_after_restart(self) -> list[str]:
-        """Conservatively quarantine any command that crossed the dispatch marker."""
         db = self.store.db
         rows = db.execute("SELECT command_id FROM commands WHERE state=?",
                           (CommandState.DISPATCHING.value,)).fetchall()
