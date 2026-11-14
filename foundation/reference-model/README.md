@@ -23,11 +23,16 @@ python -m unittest -v  # 10 tests, including shared golden vectors
 
 The model uses arbitrary-precision integer coefficients. This is intentionally different from a bounded production representation so it can act as an independent mathematical oracle.
 
+- exact rational division with reduced numerator/denominator;
+- exact finite-decimal conversion only for terminating base-10 expansions;
+- explicit quantization requiring a named rounding mode (UNNECESSARY, DOWN, UP, FLOOR, CEILING, HALF_UP, HALF_EVEN);
+- language-neutral division vectors in `division-golden-vectors-v1.json`.
+
 ## Explicit limitations
 
 - no exchange connectivity, credentials, orders or persistence;
 - no production performance or memory claims;
-- no division, rounding, square roots or transcendental operations;
+- no production rounding policy for exchange normalization, fees, funding, margin, P&L or accounting; no square roots or transcendental operations;
 - no financial units/currencies/contracts yet;
 - no bounded-overflow simulation;
 - no claim of production, Rust/WASM or backend conformance.
