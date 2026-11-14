@@ -1,5 +1,6 @@
 import os
 import tempfile
+import threading
 import unittest
 
 from gateway import (Approval, CanonicalCommand, CommandGateway, Denied,
@@ -158,6 +159,84 @@ class GatewayTests(unittest.TestCase):
         with self.assertRaises(Denied):
             self.gateway.dispatch("cmd-001")
         self.assertEqual(len(self.adapter.calls), 1)
+
+    def test_two_gateway_instances_race_for_same_approval_only_one_commits(self):
+        store2 = SQLiteOutbox(self.path)
+        gateway2 = CommandGateway(store2, FakeVenueAdapter(), verification_key=KEY,
+                                  clock=lambda: self.now,
+                                  current_halt_epoch=lambda _account: self.epoch)
+        barrier = threading.Barrier(3)
+        outcomes = []
+        lock = threading.Lock()
+
+        def submit(gateway):
+            barrier.wait()
+            try:
+                gateway.persist_approved(self.cmd, self.approval)
+                result = "COMMITTED"
+            except Denied:
+                result = "DENIED"
+            with lock:
+                outcomes.append(result)
+
+        threads = [threading.Thread(target=submit, args=(g,))
+                   for g in (self.gateway, gateway2)]
+        for thread in threads:
+            thread.start()
+        barrier.wait()
+        for thread in threads:
+            thread.join(timeout=5)
+        try:
+            self.assertTrue(all(not thread.is_alive() for thread in threads))
+            self.assertCountEqual(outcomes, ["COMMITTED", "DENIED"])
+            self.assertEqual(self.store.db.execute(
+                "SELECT COUNT(*) FROM commands WHERE command_id='cmd-001'").fetchone()[0], 1)
+            self.assertEqual(self.store.db.execute(
+                "SELECT state FROM reservations WHERE reservation_id='res-1'").fetchone()[0], "CONSUMED")
+        finally:
+            store2.close()
+
+    def test_two_dispatcher_instances_cannot_claim_same_command(self):
+        entered = threading.Event()
+        release = threading.Event()
+
+        class BlockingAdapter(FakeVenueAdapter):
+            def send(inner_self, payload):
+                inner_self.calls.append(payload)
+                entered.set()
+                if not release.wait(timeout=5):
+                    raise TimeoutError("test release timed out")
+                return "venue-order-1"
+
+        blocking = BlockingAdapter()
+        self.gateway = CommandGateway(self.store, blocking, verification_key=KEY,
+                                       clock=lambda: self.now,
+                                       current_halt_epoch=lambda _account: self.epoch)
+        store2 = SQLiteOutbox(self.path)
+        adapter2 = FakeVenueAdapter()
+        gateway2 = CommandGateway(store2, adapter2, verification_key=KEY,
+                                  clock=lambda: self.now,
+                                  current_halt_epoch=lambda _account: self.epoch)
+        self.gateway.persist_approved(self.cmd, self.approval)
+        outcomes = []
+
+        def first_dispatch():
+            outcomes.append(self.gateway.dispatch("cmd-001"))
+
+        thread = threading.Thread(target=first_dispatch)
+        thread.start()
+        try:
+            self.assertTrue(entered.wait(timeout=3), "first dispatcher never reached adapter")
+            with self.assertRaises(Denied):
+                gateway2.dispatch("cmd-001")
+            self.assertEqual(adapter2.calls, [])
+        finally:
+            release.set()
+            thread.join(timeout=5)
+            store2.close()
+        self.assertFalse(thread.is_alive())
+        self.assertEqual(outcomes, ["ACKNOWLEDGED"])
+        self.assertEqual(len(blocking.calls), 1)
 
     def test_duplicate_approval_and_command_replay_rejected(self):
         self.gateway.persist_approved(self.cmd, self.approval)
