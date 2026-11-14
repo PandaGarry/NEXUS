@@ -14,6 +14,15 @@ It checks that:
 - unknown fencing outcomes fail closed;
 - stale identities/epochs cannot regain dispatch eligibility through the model.
 
+A separate `HaltEgressGate` oracle models the final EgressBoundaryAuthorization / halt-epoch race:
+
+- halt epoch commits first: the new final gate is denied;
+- final gate commits first: the attempt is in-flight and blocks halt acknowledgement until socket initiation is observed or the sender is positively fenced;
+- socket-initiated attempts remain reconciliation obligations after HALTED acknowledgement;
+- authoritative halt-store outage blocks new final gates and leaves a request pending rather than claiming HALTED.
+
+The model uses sequential method calls to represent the two commit orders. It does not prove database lock semantics or real concurrent linearizability.
+
 Run:
 
 ```bash
