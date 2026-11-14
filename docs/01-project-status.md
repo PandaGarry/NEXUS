@@ -706,3 +706,7 @@ NX-RESEARCH-012 and NX-SEC-001 now explicitly note that a standalone SECURITY DE
 - [ ] Prove the HEGC entrypoint, internal guard helper, authenticated service identity, complete scope-set derivation, all source-writer procedures and database privilege closure in a PostgreSQL 18.7 multi-connection harness.
 
 **Disposition:** exact Python reference CI passed. HEGC, database procedures, guard table/function, PostgreSQL integration harness and production socket/process fencing remain unimplemented.
+
+## Exact current branch-head CI — 2026-11-14
+
+Documentation-synchronized PR #16 HEAD `3d5181f1dc01441ebcd89145be2c0456608f501f` passed [workflow #43619941084](https://github.com/PandaGarry/NEXUS/actions/runs/43619941084): Python 3.11/3.12/3.13, 13 isolated suites / 263 tests per runtime, 789 successful executions total. Egress-fencing passed 37 tests, including 24 HaltEgressGate cases. All job logs were inspected; no failures or Node.js 20 / `punycode` deprecation warnings. The code/test source HEAD remains `c2350f7`; later changes are documentation/research synchronization only. This is not Rust, PostgreSQL concurrency, HEGC runtime, socket or network-fence evidence.
