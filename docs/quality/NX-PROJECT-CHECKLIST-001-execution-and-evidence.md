@@ -652,7 +652,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 
 
 
-## 18.22 Delegated G1 technical baseline selection — 2026-11-14
+## 18.23 Delegated G1 technical baseline selection — 2026-11-14
 
 - [x] Publish NX-ADR-008 selecting the G1 design baseline for canonical command encoding, capability signing, persistence, transaction ownership, freshness/recovery and emergency operations.
 - [x] Select RFC 8949 restricted deterministic CBOR, SHA-256 domain-separated command digest and COSE_Sign1 fully specified COSE Ed25519 algorithm (-19, RFC 9864) for G1 qualification; keep exact libraries and non-exportable key custody provider gated.
@@ -668,7 +668,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 
 **Disposition:** technical direction selected for G1 evaluation under delegated authority. No database, key, secret manager, cloud, venue, credentials, production deployment or live capability is installed/selected/authorized. Owner-only risk, accounting, venue, legal and production decisions remain open.
 
-## 18.23 COSE algorithm identifier standards correction — 2026-11-14
+## 18.24 COSE algorithm identifier standards correction — 2026-11-14
 
 - [x] Cross-check the signing profile against RFC 9864, published October 2025.
 - [x] Replace polymorphic COSE EdDSA (-8) with fully specified COSE Ed25519 (-19).
@@ -676,7 +676,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [x] Treat protected kid as a lookup hint only; issuer/algorithm/purpose/validity/revocation/generation-bound lookup must yield exactly one eligible key.
 - [ ] Qualify exact COSE libraries and provider interoperability; add rejection vectors before implementation.
 
-## 18.24 Canonical CBOR decoder acceptance boundary — 2026-11-14
+## 18.25 Canonical CBOR decoder acceptance boundary — 2026-11-14
 
 - [x] Verify RFC 8949 §4.2.1 core deterministic map ordering is bytewise lexicographic over deterministic key encodings (not legacy length-first ordering).
 - [x] Clarify that canonicality is an ingress requirement, not merely an encoder preference.
@@ -700,3 +700,14 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Consider splitting independent architecture packages from PR #16 only if the file/commit dependency audit proves the split is safe and reduces reviewer burden.
 
 **Disposition:** PR #16 is correctly stacked but is not independently mergeable. The blocking condition is its open Draft ancestry, not a wrong base branch. Exact-head CI verifies Python reference models only; no Rust, PostgreSQL, COSE implementation, Trusted Egress, venue adapter or live-trading behavior is tested.
+
+## 18.26 Final synchronized G1 baseline / standards-correction exact-head CI — 2026-11-14
+
+- [x] Verify final branch HEAD `7914772358d2ee49c87374373bad5c589d0a2905` with GitHub Actions [#43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349).
+- [x] Confirm Python 3.11, 3.12 and 3.13 jobs all succeeded.
+- [x] Confirm 13 isolated suites per runtime with counts 11, 24, 13, 17, 12, 16, 18, 18, 32, 14, 15, 28 and 21 = 239 tests per runtime; 717 successful test executions total.
+- [x] Inspect all three job logs: no test failures, Node.js 20 deprecation warnings or `punycode` deprecation warnings.
+- [x] Record exact-head evidence in status, roadmap, changelog and PR #16 body.
+- [ ] Do not interpret this reference-model CI as validation of Rust, CBOR/COSE implementation, PostgreSQL transactions, process/host/network fencing, Trusted Egress, venue adapters or live-trading safety.
+
+**Disposition:** exact synchronized branch-head Python reference regression passed. G0D/G1 implementation/evidence gates remain open; PR #16 remains Draft; live trading NOT AUTHORIZED.
