@@ -346,3 +346,11 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 ### NX-ARCH-REVIEW-004 exact-head regression evidence — 2026-11-14
 
 Exact branch HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed GitHub Actions [#43613212116](https://github.com/PandaGarry/NEXUS/actions/runs/43613212116). Python 3.11, 3.12 and 3.13 all succeeded: 13 isolated reference-model suites / 237 tests per runtime, 711 successful executions total. This is regression evidence for the existing Python reference models only; it does not execute the capability traceability review, product-domain APIs, authorization grants, module isolation, field-level data controls, Rust or venue integration. NX-ARCH-REVIEW-004 remains design-only; G0D/G1 and owner/security acceptance remain open.
+
+
+## Revocation, freshness and outage objectives — 2026-11-14
+
+- Published [NX-ARCH-REVIEW-005](architecture/NX-ARCH-REVIEW-005-revocation-freshness-outage-objectives.md) to turn NX-ARCH-008/009, NX-IF-004/005 and NX-SEC-001 requirements into measurable candidate profiles and an outage matrix.
+- Kept authorization freshness, source-data freshness, halt/control propagation and RecoveryBarrier readiness as distinct concepts.
+- Proposed conservative non-production authorization-cache/revocation/cancellation targets for discussion only; explicitly did not select global market/account/Ledger freshness thresholds or a halt deadline.
+- OD-10 and OD-12 remain OPEN; all numeric objectives require owner/security/domain-owner approval and boundary-observed measurement. No policy engine, cache, revocation service, runtime or network fence was implemented.
