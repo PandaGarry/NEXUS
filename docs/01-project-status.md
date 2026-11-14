@@ -625,16 +625,22 @@ The test-only Python state-machine oracle now covers both commit orders, pause-a
 
 - [x] Verify PR #16 code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` on [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545).
 - [x] Pass all 13 isolated reference-model suites on Python 3.11, 3.12 and 3.13: 255 tests per runtime, 765 successful executions total.
-- [x] Verify the egress-fencing suite's 24 tests, including all 16 HaltEgressGate cases; inspect all three job logs.
+- [x] Verify the egress-fencing suite's 29 tests (13 authority-handover + 16 HaltEgressGate cases); inspect all three job logs.
 - [x] Confirm no failures or deprecation warnings in the three completed jobs.
 - [ ] Keep real PostgreSQL serialization, HEGC service/roles, trusted socket-initiation observation, process/host/network fencing and venue reconciliation as independent G1 evidence gates.
 
 **Disposition:** exact code/test HEAD passed Python reference CI. This is not production concurrency, socket, network-fencing or live-trading evidence.
 
-The current test-only halt/Egress oracle has 18 state-machine tests, including pending-halt/store-recovery races, duplicate halt requests during outage and after HALTED, sender fencing, repeated halt idempotency and signed-64-bit epoch exhaustion. Exact code HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` passed workflow [#43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 suites / 255 tests per Python 3.11/3.12/3.13 runtime (765 successful executions). The tests are sequential reference-model checks, not proof of concurrent PostgreSQL linearizability, HEGC implementation, socket behavior or external fencing.
+At code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b`, HaltEgressGate had 16 tests and the egress-fencing package had 29 tests; that earlier run passed 255 tests/runtime. Two additional duplicate-halt/store-outage regressions and reservation-retention assertions were added afterward.
 
 ## Exact-head CI — 18-case halt-gate oracle and HEGC review — 2026-11-14
 
 PR #16 HEAD `9b88eabb80e44510e29013fe02315c354c4b488b` passed [workflow #43618875958](https://github.com/PandaGarry/NEXUS/actions/runs/43618875958): Python 3.11/3.12/3.13 each passed 13 isolated suites / 257 tests (771 successful executions total). The egress-fencing package ran 31 tests, including 18 HaltEgressGate cases. All logs were inspected; no failures or Node.js 20 / `punycode` warnings.
 
 After this tested SHA, the model was hardened to deny grants when the signed-64-bit halt epoch is already exhausted, before a halt request arrives. The current branch-head rerun is pending. This remains sequential reference-model evidence only; no PostgreSQL HEGC runtime, concurrent transaction, actual socket or external fence was tested.
+
+## Exact code/test CI after HaltEgressGate 18-case hardening — 2026-11-14
+
+Code/test HEAD `2e94edd73f8933f0d510eed940452316ec5b8832` passed [workflow #43618796109](https://github.com/PandaGarry/NEXUS/actions/runs/43618796109). Python 3.11, 3.12 and 3.13 each passed 13 isolated suites / **257 tests** (771 successful executions total). The egress-fencing suite ran 31 tests: 13 authority-handover tests plus 18 HaltEgressGate tests. All logs were inspected; no failures or deprecation warnings.
+
+The code/test commit includes the fix preventing duplicate halt requests during store outage from downgrading an already committed HALTING/HALTED epoch, and explicit reservation-retention assertions after sender fencing. PR #16 HEAD `09775625327c74cc31f27f18b0280e89bee4878d` contains documentation-only commits after this tested code/test SHA. The oracle remains sequential; it does not prove PostgreSQL concurrency, HEGC runtime, real socket initiation, process/host/network fencing or venue reconciliation.
