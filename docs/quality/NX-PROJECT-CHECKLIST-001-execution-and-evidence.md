@@ -251,3 +251,9 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [ ] Add cross-language implementation only after a production-language contract and resource profile are approved.
 
 **Disposition:** TEST-ONLY MATHEMATICAL FIXTURES; no venue/account semantics or production financial policies are qualified. Fees, funding, P&L, margin, liquidation, FX and accounting remain BLOCKED/OWNER-DECISION as defined by NX-REF-DOMAIN-009. G0/G1 unchanged.
+
+### 15.1 Initial CI evidence
+
+- Push run [#43596630780](https://github.com/PandaGarry/NEXUS/actions/runs/43596630780) passed exact commit `af7949f183389c25fa6ce5c4ac3648c1dd4ae851` on Python 3.11/3.12/3.13.
+- Each runtime: 179 tests across 11 isolated suites, including 7 new financial math fixture tests.
+- All three jobs completed successfully. This is test-only Python reference evidence; a fresh run on the final PR head is required after documentation close-out.
