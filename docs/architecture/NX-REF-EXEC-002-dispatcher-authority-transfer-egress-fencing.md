@@ -172,7 +172,7 @@ This contract is not implementation-ready until:
 No live credential, order, risk-limit change, production deployment, or live-trading permission is granted by this document.
 
 
-### 4.5 Persistence and trusted-egress option analysis (PROPOSED; OD-08/09/10 remain open)
+### 4.5 Persistence and trusted-egress option analysis (PROPOSED; G1 baselines selected in NX-ADR-008; production qualification open)
 
 This section narrows the implementation choices without selecting a provider, database product, cryptographic scheme or deployment topology. The recommendation is a candidate baseline for G1 design review, not an accepted owner decision.
 
