@@ -1365,3 +1365,29 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove database-enforced first-statement guard entrypoint, per-scope commit order, no DML bypass and real socket/process fencing.
 
 **Disposition:** idempotent grant issuance and changed-binding rejection pass in the sequential reference model. Production canonicalization, database idempotency, HEGC and external fencing remain open.
+
+
+## 18.79 HEGC idempotent grant issuance and exact code/test-head CI — 2026-11-14
+
+- [x] Bind each attempt ID to an immutable authorization digest in the HaltEgressGate reference oracle.
+- [x] Verify exact retry returns the original attempt record, including after halt epoch advances; no second grant is created.
+- [x] Verify changed digest or epoch under the same attempt ID returns a conflict and preserves the original record.
+- [x] Verify exact code/test HEAD `c2350f7807587e0428b760890f6fdba09ba60f60` on [workflow #43619636403](https://github.com/PandaGarry/NEXUS/actions/runs/43619636403).
+- [x] Pass 13 isolated suites / 263 tests on Python 3.11, 3.12 and 3.13 (789 successful executions total).
+- [x] Confirm egress-fencing passes 37 tests, including 24 HaltEgressGate cases; inspect all three job logs.
+- [ ] Implement and prove durable HEGC attempt identity, grant binding digest, duplicate-request response and changed-binding conflict against PostgreSQL.
+- [ ] Prove consume ambiguity/restart recovery, workload incarnation identity and no-replacement-send behavior at the real service boundary.
+
+**Disposition:** exact Python reference CI passed. This does not prove durable grant idempotency or production HEGC behavior.
+
+## 18.80 HEGC guard entrypoint, caller identity and scope-completeness qualification — 2026-11-14
+
+- [x] Distinguish internal guard helper from the public-to-service HEGC transaction entrypoint; helper alone cannot enforce first-operation acquisition.
+- [x] Require HEGC EXECUTE-only entrypoint to acquire the common guard first, perform all protected reads and persist the grant in one outer transaction.
+- [x] Require source domains to expose guarded write procedures and revoke direct DML bypass.
+- [x] Record SECURITY DEFINER identity semantics: current_user becomes definer owner; session_user is usable only with dedicated per-workload authenticated logins and no shared login/SET ROLE impersonation.
+- [x] Require explicit authorization metadata and complete affected-scope derivation under root/account guard; caller-supplied lists alone are insufficient.
+- [ ] Prove role inheritance/ACL closure, entrypoint ownership, guard-helper access, session identity preservation, scope completeness, first-statement acquisition, stale-snapshot retry and both commit orders in PostgreSQL 18.7.
+- [ ] Verify fixed search_path, pg_temp last, schema-qualified names, no dynamic SQL, PUBLIC EXECUTE revocation, overload/temp-object spoofing and guard-table isolation.
+
+**Disposition:** security design candidate only; no SQL function, procedure, role, schema or integration harness exists.
