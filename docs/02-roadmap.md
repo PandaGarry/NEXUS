@@ -284,3 +284,12 @@ This refinement is proposed design only. It does not close G0/G1, select a techn
 ### Persistence and egress topology decision analysis — 2026-11-14
 
 The active architecture track now compares database transaction models and Trusted Egress deployment choices in NX-REF-EXEC-002 §4.5. The candidate baseline separates Risk's atomic all-scope reservation commit from Command's atomic single-use capability-consume + command/outbox commit; no distributed ACID transaction is assumed. Egress must own the actual venue socket and credentials, while workers have no direct venue route. Takeover requires positive external fencing of the old process/host/network identity; DB lease expiry is not proof. OD-08/09/10/12 remain open. This is design-only and does not select a provider or authorize implementation/live operation.
+
+
+
+### Exact-head CI verification after persistence/egress analysis — 2026-11-14
+
+- Documentation analysis head verified: `3187a69e443157ac3e66b874b4dcbb29588ddc70`.
+- GitHub Actions run [#43606550889](https://github.com/PandaGarry/NEXUS/actions/runs/43606550889) completed successfully on that exact head.
+- Three jobs passed: Python 3.11, 3.12 and 3.13. Each executed 13 isolated reference-model suites with counts 11, 24, 13, 17, 12, 16, 18, 18, 32, 12, 15, 28 and 21 = 237 tests per runtime; 711 successful test executions total.
+- This CI run verifies the existing Python reference-model suites at the exact documentation-analysis head. It does not test the newly documented transaction alternatives, database isolation, production egress topology, external host/network fencing, Rust, venue behavior or live safety.
