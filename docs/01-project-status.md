@@ -14,9 +14,12 @@
 | Runtime verification | Not performed | CI/runtime тесты не считать пройденными |
 | Security threat model | Drafted / Proposed | NX-SEC-001 сохранён; owner review, deployment-specific analysis и security verification не выполнены |
 | Exact arithmetic / instrument specs | ADR proposed / implementation not started | NX-ADR-005 drafted; требует owner review и последующих golden tests. Блокер реализации сохраняется |
-| Target architecture | PROPOSED | NX-ARCH-001 опубликован; owner review и согласование TBD deployment decisions требуются |\n| Prototype readiness | BLOCKED | Не начинать прототипирование |
+| Target architecture | PROPOSED | NX-ARCH-001 опубликован; owner review и согласование TBD deployment decisions требуются |
+| Prototype readiness | BLOCKED | Не начинать прототипирование |
 
-## Новые архитектурные артефакты (PROPOSED)\n\n- [NX-ARCH-001 — Target Architecture & Deployment Topology](architecture/NX-ARCH-001-target-architecture.md) — logical boundaries, trust model, command/data flows, deployment baseline and owner decisions. Design only; no implementation or runtime verification.
+## Новые архитектурные артефакты (PROPOSED)
+
+- [NX-ARCH-001 — Target Architecture & Deployment Topology](architecture/NX-ARCH-001-target-architecture.md) — logical boundaries, trust model, command/data flows, deployment baseline and owner decisions. Design only; no implementation or runtime verification.
 
 - [NX-ADR-002 — Execution Integrity & Reconciliation](architecture/NX-ADR-002-execution-integrity-reconciliation.md)
 - [NX-ADR-003 — Simulation Fidelity & Strategy Validation](architecture/NX-ADR-003-simulation-fidelity-strategy-validation.md)
