@@ -74,7 +74,7 @@ A durable `HaltState` contains:
 - list of invalidated approvals/queued commands and affected recovery cases;
 - linked incident, EmergencyActionPlan and audit event IDs.
 
-A halt epoch MUST increase monotonically for the authoritative scope. Epoch reuse or rollback is forbidden. The authoritative epoch must be durably stored and checked at the final dispatch boundary. A service that cannot establish the current epoch MUST fail closed for risk-increasing dispatch.
+A halt epoch MUST be a positive signed 64-bit integer and increase monotonically for the authoritative scope. Epoch reuse, wraparound or rollback is forbidden. If the maximum value is reached, new final Egress grants MUST fail closed; the scope remains blocked/pending until an explicitly reviewed epoch-migration procedure is performed. The authoritative epoch must be durably stored and checked at the final dispatch boundary. A service that cannot establish the current epoch MUST fail closed for risk-increasing dispatch.
 
 ### 3.3 Halt state machine
 
@@ -455,13 +455,13 @@ At minimum, test:
 25. Emergency rate-limit prioritization never violates venue limits or suppresses reconciliation evidence.
 26. Audit reconstructs every halt, command, target selection, approval, dispatch, fill, reconciliation and resume decision.
 27. Positive sender fencing without trusted proof of no prior socket side effect MUST preserve OUTCOME_UNKNOWN and reservation until reconciliation; fencing is not DEFINITELY_NOT_SENT evidence.
-27. Failure scenarios cover race, partition, stale epoch, partial cancel, ambiguous result, position-mode mismatch and Risk outage.
-28. No implementation, CI, adapter certification, runtime or production-readiness pass is claimed without evidence.
-29. Halt epoch and final EgressBoundaryAuthorization serialize against the same authoritative halt-state record/generation; both lock-order outcomes are tested.
-30. A gate-committed attempt paused before socket write prevents halt acknowledgement until the write is observed or the old sender is positively fenced.
-31. A missing/uncertain halt store or unproven external fence denies new sends and prevents a false HALTED acknowledgement.
-32. An already initiated socket write may be accepted by the venue after halt acknowledgement; it remains potentially live, reserved and subject to reconciliation.
-33. Tests observe the actual socket/network boundary, not only a database flag or mock adapter call.
+28. Failure scenarios cover race, partition, stale epoch, partial cancel, ambiguous result, position-mode mismatch and Risk outage.
+29. No implementation, CI, adapter certification, runtime or production-readiness pass is claimed without evidence.
+30. Halt epoch and final EgressBoundaryAuthorization serialize against the same authoritative halt-state record/generation; both lock-order outcomes are tested.
+31. A gate-committed attempt paused before socket write prevents halt acknowledgement until the write is observed or the old sender is positively fenced.
+32. A missing/uncertain halt store or unproven external fence denies new sends and prevents a false HALTED acknowledgement.
+33. An already initiated socket write may be accepted by the venue after halt acknowledgement; it remains potentially live, reserved and subject to reconciliation.
+34. Tests observe the actual socket/network boundary, not only a database flag or mock adapter call.
 
 ## 13. Open owner decisions
 
