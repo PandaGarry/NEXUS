@@ -611,3 +611,8 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 executions total).
 - Job logs contain no failures or Node.js 20 / `punycode` deprecation warnings.
 - This verifies Python reference models only; no Rust, CBOR/COSE, PostgreSQL 18.7, Trusted Egress, venue or live path was exercised.
+
+### CI evidence reference corrected — 2026-11-14
+
+- Corrected the exact-head workflow reference for SHA `7fb396df5f3e700adf0ad151c446e38930fdadb0` to [#43617626344](https://github.com/PandaGarry/NEXUS/actions/runs/43617626344).
+- Verified Python 3.11/3.12/3.13: 13 suites / 239 tests each (717 successful executions), no failures or Node.js 20 / `punycode` warnings.
