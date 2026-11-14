@@ -177,3 +177,5 @@
 - Existing v1 fixture files and current Python unittest workflows remain unchanged. No schema validator, runner or cross-language conformance is claimed.
 
 - Added a per-family legacy fixture migration assessment to NX-ARCH-005, distinguishing structural conversion from rejection-class annotation and newly derived instrument-spec expectations; all existing v1 files remain untouched.
+
+- Expanded NX-ARCH-005 with an initial operation-ID/input/result registry, stable error mapping and a documented limitation in the current numeric-wire parser (catch-all `NumericWireError`). No runtime/parser changes or fixture migrations were made.
