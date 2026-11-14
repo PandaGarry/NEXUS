@@ -379,3 +379,16 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Keep G0D/G1 blocked until their specific exit criteria are satisfied.
 
 Cross-review completion is not architecture acceptance or security verification.
+
+
+## Capability catalog and authorization contracts
+
+- [x] Publish NX-ARCH-009 with capability record requirements, stable identifiers/versioning and single owner/enforcement authority.
+- [x] Define scope grammar, data classification, candidate catalog and permission-to-owner/negative-test mapping.
+- [x] Separate workload grants, commercial entitlements, user authorization and owning-service request decisions.
+- [x] Define revocation, audit, privacy and CAP-01..18 adversarial qualification requirements.
+- [ ] Complete cross-review against architecture, security and interface contracts.
+- [ ] Obtain domain-owner/security acceptance and resolve field-level classification/retention and revocation objectives.
+- [ ] Implement a strict validator and policy enforcement only after G0D acceptance; prove boundaries in G1.
+
+No active grants or runtime authorization policy are created by the design artifact.
