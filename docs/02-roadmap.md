@@ -666,3 +666,4 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Execute on exact PostgreSQL 18 patch with service-role separation, fault injection and observed lock/retry behavior.
 - [ ] Prove backup/restore/PITR, old-primary fencing and recovery before any failover selection.
 - [ ] Keep PostgreSQL as G1 evaluation target only until proof and security/operational review complete.
+- [ ] Prove a lost response while the original transaction remains in flight cannot create a second reservation; same-identity/digest retry is arbitrated by the unique constraint, and unresolved outcome keeps the scope HALTED.
