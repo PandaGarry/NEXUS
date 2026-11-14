@@ -42,9 +42,12 @@ The first conformance slice covers:
 3. exact addition and subtraction;
 4. exact multiplication;
 5. exact rescaling/quantization only when no information is discarded;
-6. positive-step divisibility for tick/lot validation.
+6. positive-step divisibility for tick/lot validation;
+7. exact rational division with reduced numerator/denominator;
+8. exact finite-decimal conversion where the reduced denominator contains only factors 2 and 5;
+9. explicit-scale quantization only when a caller supplies a named rounding mode.
 
-Division, rounding, square roots, transcendental functions, arbitrary precision bounds, maximum scale, overflow strategy and cross-language serialization are deliberately excluded until separately specified. No implicit rounding is permitted.
+General decimal division and rounding were excluded from the initial scalar slice. NX-REF-DOMAIN-005 now adds an isolated test-only exact-rational division oracle and explicit quantization modes. This does not approve a rounding mode for any financial operation. Square roots, transcendental functions, bounded production precision, maximum scale, overflow strategy and cross-language serialization remain open. No implicit rounding is permitted.
 
 ## 4. Units and dimensional safety
 
