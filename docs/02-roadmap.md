@@ -584,3 +584,18 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Require RFC 9052 §9 deterministic Sig_structure and fixed external AAD.
 - [ ] Add byte-exact cross-language signing/verifying vectors and negative profile tests.
 - [ ] Prove parser behavior for duplicate labels, protected/unprotected collisions, detached payload, tags and extra parameters.
+
+## COSE pre-verification key-resolution gate
+
+- [x] Treat protected kid/alg and token issuer/audience as untrusted until verification succeeds.
+- [x] Prohibit token-directed remote key retrieval; use a bounded local versioned registry.
+- [x] Bind candidate lookup to locally expected issuer/audience/algorithm/purpose and check signed claims against that context after verification.
+- [x] Require public OKP/Ed25519 key material only at Execution; keep private d material inside Risk; require 32-byte public key and 64-byte signature.
+- [ ] Add cross-language vectors for wrong issuer/audience, key URL injection, ambiguous kid, stale/revoked key, malformed key/signature and private key exposure.
+- [ ] Implement only after OD-08 security review and G0D/G1 dependency qualification.
+
+## Exact-head CI after COSE key-resolution hardening
+
+- [x] Verify `6fefd9a44ff2f272b6516265d10f41c46a13cf7a` on [workflow #43615911362](https://github.com/PandaGarry/NEXUS/actions/runs/43615911362).
+- [x] Pass 13 suites / 239 tests on Python 3.11, 3.12 and 3.13 (717 executions).
+- [ ] Keep this Python-only evidence separate from COSE/Rust/persistence/egress/venue qualification.
