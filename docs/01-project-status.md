@@ -613,3 +613,9 @@ Grant issuance is idempotent by stable attempt ID: exact retries return the same
 ## HEGC / Risk approval independent verification boundary — 2026-11-14
 
 NX-SEC-001 now treats HEGC as a critical control-plane trust domain: it can issue the final halt/egress gate grant but has no venue credentials/socket or Risk signing key and cannot create/modify RiskApprovalCapability. Trusted Egress must independently verify the Risk signature, exact command digest, active reservation, evidence bindings, audience, expiry and single-use consumption in addition to the HEGC grant. This limits the grant to halt/eligibility/fence serialization rather than making it a replacement Risk approval. HEGC remains a high-trust component requiring independent security review, least privilege, audit and failure testing; no runtime exists.
+
+## HEGC ownership and halt-gate model hardening — 2026-11-14
+
+The Halt/Egress Gate Coordinator (HEGC) is now the selected logical owner and sole writer of HaltState and EgressBoundaryAuthorization. It is separate from Risk and the credential-owning Egress process, has no venue credentials/socket or Risk signing key, and exposes a one-use attempt grant. Egress cannot write control records directly. G1 uses one active HEGC instance with PostgreSQL 18.7 control-owned schema/role; outage denies new final gates and cannot be reported as fully enforced HALTED.
+
+The test-only Python state-machine oracle now covers both commit orders, pause-after-gate, sender fencing, store outage/recovery with pre-existing in-flight attempts, repeated halt idempotency and signed-64-bit epoch exhaustion. It remains a sequential reference model: no real DB serialization, concurrent process, socket or network fencing has been implemented or proven.
