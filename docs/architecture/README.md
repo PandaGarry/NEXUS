@@ -63,3 +63,8 @@ ADR, подготовленные в обсуждении, не считаютс
 
 
 **2026-11-14 review note:** NX-ARCH-REVIEW-001 records the clarification that the IF-002 durable pre-egress attempt marker precedes any network side effect and is not evidence of transmission. See the review note and current IF-002 lifecycle table for the aligned wording.
+
+
+### Persistence and egress decision analysis (2026-11-14)
+
+See [NX-REF-EXEC-002 §4.5](NX-REF-EXEC-002-dispatcher-authority-transfer-egress-fencing.md) for the proposed option matrix. Current candidate: Risk reservation and Command acceptance use separate service-owned local ACID transactions; no distributed transaction is assumed. A single account-scoped Egress Authority owns credentials and the actual venue socket; workers have no direct venue route. Authority takeover requires positive external fencing of the previous workload/host, not lease expiry. OD-08/09/10/12 remain open; no provider or concrete mechanism has been selected.
