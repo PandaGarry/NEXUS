@@ -404,3 +404,15 @@ No active grants or runtime authorization policy are created by the design artif
 - [ ] Preserve no-billing-dependency invariant on Risk/command/dispatch/Trusted Egress.
 
 Review completion is not implementation acceptance.
+
+
+## Capability-to-interface contract traceability
+
+- [x] Complete NX-ARCH-REVIEW-004 mapping all candidate capabilities against NX-IF-001..005 and NX-SEC-001.
+- [x] Identify missing contracts for Market Data, Identity, Demo, Strategy, Analytics/Portfolio, Learning, Notifications and Billing rather than inventing endpoints.
+- [x] Preserve protected domain ownership and v1 single-account scope.
+- [ ] Obtain domain-owner/security acceptance and author missing product-domain contracts before schema/API/grant implementation.
+- [ ] Complete field-level data classification, lineage, minimization and retention decisions.
+- [ ] Define measurable revocation/cache/outage objectives and collect boundary-observed isolation evidence before G1.
+
+Traceability completion is not capability approval or implementation readiness.
