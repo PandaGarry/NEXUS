@@ -409,3 +409,7 @@ NX-ADR-008 now explicitly requires strict deterministic-profile validation on re
 ## Final synchronized G1 baseline / standards exact-head verification — 2026-11-14
 
 Final branch HEAD `7914772358d2ee49c87374373bad5c589d0a2905` passed GitHub Actions [#43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349). Python 3.11, 3.12 and 3.13 all succeeded; each executed 13 isolated reference-model suites / 239 tests (717 successful executions total). All three job logs are free of test failures and the previous Node.js 20 / `punycode` deprecation warnings. This verifies only the existing Python reference-model regression workflow. It does not validate the proposed CBOR/COSE protocol implementation, PostgreSQL transactions, Rust, actual process/host/network fencing, Trusted Egress, venue adapters or live trading. PR #16 remains Draft/open/unmerged; G0D/G1 implementation and boundary evidence remain open; live trading NOT AUTHORIZED.
+
+## Post-synchronization exact-head regression — 2026-11-14
+
+Branch HEAD `928d5fd261553676c3fad6a8e88b984a862af338` passed [GitHub Actions #43615282210](https://github.com/PandaGarry/NEXUS/actions/runs/43615282210): Python 3.11, 3.12 and 3.13 each passed 13 isolated suites / 239 tests (717 successful executions total). All three logs contain no failures or Node.js 20 / `punycode` deprecation warnings. This is Python reference-model regression only; no Rust, CBOR/COSE, PostgreSQL, actual egress fence, venue or live-safety implementation was exercised.
