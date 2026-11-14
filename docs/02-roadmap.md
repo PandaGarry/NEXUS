@@ -232,3 +232,12 @@ Before implementing a machine-readable fixture schema or runner, close the NX-AR
 ## Reference operation coverage correction — 2026-11-14
 
 The financial operation audit has been corrected: spot, linear and inverse paths have executable reference coverage; inverse exposure remains rational. Extract the currently inline partial-fill weighted-average algorithm into a named pure reference operation before registering it as a reusable normalized operation. Separately map the arbitrary-precision oracle and explicit bounded numeric wrapper; do not treat synthetic `NumericLimits` as a production profile. Invalid operation parameters must not be misclassified as mathematical rejection outcomes.
+
+
+## Financial reference operation extraction — 2026-11-14
+
+- [x] Extract partial-fill weighted-average arithmetic into a named pure reference callable with typed quantity/notional outputs and exact rational average.
+- [x] Move golden-vector and seeded permutation/partition tests to the extracted callable; add empty-input, dimension-mismatch and repeating-rational cases.
+- [ ] Register the operation in normalized fixture suites only after owner review of NX-ARCH-005 and approval of schema/runner implementation.
+
+No venue fill policy, fees, funding, P&L, accounting or rounding semantics are introduced. Reference-only; production readiness unchanged.
