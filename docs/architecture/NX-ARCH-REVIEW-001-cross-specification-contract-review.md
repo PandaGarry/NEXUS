@@ -105,7 +105,7 @@ Each specification defines local recovery, but not the system-wide recovery barr
 
 ## 4. Proposed normative interface set
 
-The following contracts are required before implementation. WP-A..WP-D now have proposed design artifacts; WP-E remains to be designed:
+The following contracts are required before implementation. WP-A..WP-E now have proposed design artifacts:
 
 1. **CanonicalTradeCommand v1** — proposed in [NX-IF-001](NX-IF-001-canonical-trade-command-risk-approval-contract.md); not accepted, implemented or conformance-tested.
 2. **StateEvidenceVector v1 / RecoveryBarrier v1** — proposed in [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md); per-source provenance, freshness, quality, watermarks, quarantine and dependency-aware recovery gates. Not accepted, implemented or conformance-tested.
@@ -115,7 +115,7 @@ The following contracts are required before implementation. WP-A..WP-D now have 
 6. **ExecutionOutcomeEvent v1** — durable command/order/fill/cancel/reject/unknown transitions with native evidence and deduplication scope.
 7. **ExecutionEvent / LedgerPosting v1** — proposed in [NX-IF-003](NX-IF-003-execution-event-ledger-posting-contract.md); canonical fill identity, durable outbox/inbox, atomic journal posting, corrections and projection watermark handoff. Not accepted, implemented or conformance-tested.
 8. **ReconciliationStatus v1** — per-scope watermarks, discrepancies, quarantine and explicit release evidence.
-9. **HaltState v1** — monotonic scoped halt generation and controlled resume protocol.
+9. **HaltState v1 / EmergencyActionPlan v1** — proposed in [NX-IF-005](NX-IF-005-emergency-operations-halt-risk-reduction-contract.md); scoped monotonic halt epochs, operation-class authorization, bounded emergency plans, protective-order handling and controlled resume. Not accepted, implemented or conformance-tested.
 
 These are proposed design artifacts, not existing implemented schemas.
 
@@ -140,7 +140,7 @@ These are proposed design artifacts, not existing implemented schemas.
 | WP-B Exposure & reservation | NX-IF-002 design draft published | Owner decisions, persistence/transaction design, schema conformance and concurrency/fault evidence remain open |
 | WP-C Execution ↔ Ledger | [NX-IF-003](NX-IF-003-execution-event-ledger-posting-contract.md) design draft exists | Owner accounting decisions, schema/transaction selection, golden accounting fixtures, inbox/outbox conformance, replay and fault evidence remain open |
 | WP-D Freshness & recovery | [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md): StateEvidenceVector, FreshnessPolicy, RecoveryCase and RecoveryBarrier | Owner thresholds/venue scope, policy and persistence decisions, schema conformance, restart/replay/reconciliation fault evidence |
-| WP-E Emergency operations | Halt/cancel/amend/reduce/close semantics | Venue capability matrix, operator authorization, race and failure tests |
+| WP-E Emergency operations | [NX-IF-005](NX-IF-005-emergency-operations-halt-risk-reduction-contract.md): HaltState, command classification, EmergencyActionPlan, operator authorization and resume | Owner roles/thresholds, venue/account-mode capability certification, persistence/control-plane decisions, race/fault and adapter conformance evidence |
 
 No additional broad research is required to close these design gaps; targeted official venue documentation is needed only for the initially selected venue/account-mode capabilities.
 
@@ -157,11 +157,12 @@ No numeric risk limits are invented. UNCONFIGURED remains a hard block for live 
 
 ## 8. Review disposition and verification limits
 
-**Disposition: BLOCKED. WP-A (NX-IF-001), WP-B (NX-IF-002), WP-C (NX-IF-003) and WP-D (NX-IF-004) design drafts published; all require owner/security/accounting/operations review, owner decisions and conformance evidence. WP-E design closure remains outstanding.**
+**Disposition: BLOCKED. WP-A (NX-IF-001), WP-B (NX-IF-002), WP-C (NX-IF-003), WP-D (NX-IF-004) and WP-E (NX-IF-005) design drafts published; all require owner/security/accounting/operations review, owner decisions and conformance evidence. Interface readiness remains BLOCKED until the required owner decisions and conformance evidence are complete.**
 
 Verified in this review:
 - all reviewed source documents were fetched from the named branch;
-- the six specifications, five ADRs and proposed NX-IF-001..004 contracts exist in the branch;
+- the six specifications, five ADRs and proposed NX-IF-001..005 contracts exist in the branch;
+- NX-IF-005 defines scoped halt epochs, command-class authorization, protective-order handling, bounded emergency plans and privileged resume; it remains a proposed contract with no implementation or venue certification;
 - NX-IF-004 defines a composable evidence vector and scoped recovery barrier; it consumes NX-ADR-004 public market-data state and NX-ADR-002 / ТЗ-NX-004/006 private execution and reconciliation evidence without replacing their protocol rules;
 - Draft PR #3 was created and its response confirmed `open`, `draft=true`, `merged=false`, with base `docs/wp-b-exposure-reservations` and head `docs/wp-c-execution-ledger-handoff`;
 - WP-C branch was compared against `docs/wp-b-exposure-reservations`: base `7a44dccf33222f1487832bb6fee0b8b7cd492ce5`, head `8acabe263b110cbcdc431a458c2be80fa048bf1b` at the time of comparison, 10 commits ahead and 0 behind; the file-level diff contained the NX-IF-003 contract and its integration updates.
