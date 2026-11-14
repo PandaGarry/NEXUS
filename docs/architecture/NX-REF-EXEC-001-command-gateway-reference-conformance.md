@@ -53,7 +53,7 @@ The test suite currently covers 21 deterministic cases:
 - duplicate approval/command replay;
 - two gateway instances concurrently racing to consume the same approval/reservation;
 - two dispatcher instances racing to claim one persisted command while the winning adapter call is held open;
-- non-canonical decimal rejection.
+- non-canonical decimal rejection;\n- stale worker resumes after recovery: venue send still occurs without an egress fence, while a conditional state transition rejects the late ACK and records it as a stale observation.
 
 ## 5. Verification record
 
@@ -64,7 +64,7 @@ cd foundation/reference-model/execution-gateway
 python -m unittest -v
 ```
 
-GitHub Actions run [#43588971888](https://github.com/PandaGarry/NEXUS/actions/runs/43588971888) completed with **success** on exact HEAD `d22d417da0d11dab5b9bb79298edd379eab46867`. Both suites passed on Python 3.11, 3.12 and 3.13: 10 exact-decimal tests and 20 gateway tests in each runtime (historical run before the split-brain counterexample was added).
+GitHub Actions run [#43589661092](https://github.com/PandaGarry/NEXUS/actions/runs/43589661092) completed with **success** on exact PR HEAD `e24b2ce62ad9f1c89930e99527b6eef34dcffd87`. Both suites passed on Python 3.11, 3.12 and 3.13: 10 exact-decimal tests and 21 gateway tests in each runtime. The gateway suite includes the stale-worker egress counterexample and the late-ACK state-CAS guard.
 
 This is CI verification of the checked-in reference model only. It is not production, multi-process, database durability, security or exchange-adapter verification.
 
