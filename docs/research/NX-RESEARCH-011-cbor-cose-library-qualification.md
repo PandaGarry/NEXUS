@@ -67,7 +67,7 @@ The selected profile is RFC 9052 COSE_Sign1 with RFC 9864 fully specified COSE E
 - External AAD is a fixed, versioned NEXUS domain separator; no caller-controlled or empty-context fallback.
 - The application profile uses exactly the untagged, embedded-payload COSE_Sign1 four-element array; reject tag 18, detached/null payloads, wrong array length and alternative COSE message types.
 - The payload bstr contains exactly one NEXUS restricted deterministic-CBOR capability map. Validate the original payload bytes before typed claim use; do not normalize by decode/re-encode.
-- The protected-header bstr contains exactly deterministic CBOR map labels 1 (alg=-19) and 4 (non-empty bounded byte-string kid); the unprotected map is empty. Reject extra headers, duplicate labels and protected/unprotected collisions.
+- The protected-header bstr contains exactly deterministic CBOR map labels 1 (alg=-19) and 4 (kid as a byte string of 1–64 bytes); the unprotected map is empty. Reject extra headers, duplicate labels and protected/unprotected collisions.
 - Preserve the exact received protected-header bstr. Construct Sig_structure using RFC 9052 §9 core deterministic encoding; the fixed external AAD is exact bytes and is never caller-controlled.
 - Verify the signature over the received protected-header bstr as received. Never reconstruct different protected-header bytes before signature verification.
 - No unprotected header parameters are permitted in the initial NEXUS profile; reject protected/unprotected collisions and unknown critical parameters.
