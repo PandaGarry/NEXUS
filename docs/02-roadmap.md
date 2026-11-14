@@ -897,3 +897,5 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Pass exact code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` on workflow #43618694545: 13 suites / 255 tests on each of Python 3.11, 3.12 and 3.13.
 - [ ] Prove the same properties with real PostgreSQL concurrency, independent process/host/network fencing and instrumented socket initiation.
 
+- [x] Verify halt/Egress gate reference-model code SHA `f1c0bd0576bd42058ca2482706533248bcf6069b` on workflow [#43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 255 tests on each of Python 3.11/3.12/3.13 (765 executions).
+- [ ] Replace sequential oracle assumptions with actual concurrent PostgreSQL/HEGC tests and instrumented socket/network boundary evidence.
