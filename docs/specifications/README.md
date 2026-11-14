@@ -12,7 +12,7 @@
 
 ## Registry
 - [ТЗ-NX-001 — Market Data Infrastructure](TZ-NX-001-market-data-infrastructure.md) — Proposed
-- ТЗ-NX-002 — Professional Order Flow
+- [ТЗ-NX-002 — Professional Order Flow](TZ-NX-002-professional-order-flow.md) — Proposed
 - ТЗ-NX-003 — Quant & Strategy Engine
 - ТЗ-NX-004 — Autonomous Execution Engine
 - ТЗ-NX-005 — Independent Risk Engine
