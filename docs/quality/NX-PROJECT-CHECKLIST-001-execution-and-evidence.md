@@ -655,7 +655,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 ## 18.23 Delegated G1 technical baseline selection — 2026-11-14
 
 - [x] Publish NX-ADR-008 selecting the G1 design baseline for canonical command encoding, capability signing, persistence, transaction ownership, freshness/recovery and emergency operations.
-- [x] Select RFC 8949 restricted deterministic CBOR, SHA-256 domain-separated command digest and COSE_Sign1 EdDSA/Ed25519 for G1 qualification; keep exact libraries and non-exportable key custody provider gated.
+- [x] Select RFC 8949 restricted deterministic CBOR, SHA-256 domain-separated command digest and COSE_Sign1 fully specified COSE Ed25519 algorithm (-19, RFC 9864) for G1 qualification; keep exact libraries and non-exportable key custody provider gated.
 - [x] Select PostgreSQL 18 as the G1 persistence evaluation target; one primary, service-owned schemas/roles, separate Risk/Command/Ledger local ACID transactions, no distributed ACID or automatic failover.
 - [x] Select source-specific EvidenceRequirementSet/FreshnessPolicy with explicit watermarks/completeness and fail-closed UNKNOWN; no global TTL.
 - [x] Select single-owner emergency defaults: Owner-only step-up resume after RecoveryBarrier, no automatic cancel-all/flatten, no offline emergency order plan, break-glass containment only.
@@ -679,3 +679,12 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Qualify exact COSE implementations and verify RFC 9864 interoperability before any signer/verifier implementation or key custody decision.
 
 **Disposition:** standards correction applied to the G1 design baseline. No COSE library, key, signer, verifier or runtime has been added. Key custody and production signing remain gated.
+
+
+## 18.24 COSE algorithm identifier standards correction — 2026-11-14
+
+- [x] Cross-check the signing profile against RFC 9864, published October 2025.
+- [x] Replace polymorphic COSE EdDSA (-8) with fully specified COSE Ed25519 (-19).
+- [x] Constrain COSE key to OKP / Ed25519; reject Ed448, -8, algorithm/key mismatch and substitution.
+- [x] Treat protected kid as a lookup hint only; issuer/algorithm/purpose/validity/revocation/generation-bound lookup must yield exactly one eligible key.
+- [ ] Qualify exact COSE libraries and provider interoperability; add rejection vectors before implementation.
