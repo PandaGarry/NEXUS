@@ -921,6 +921,8 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Require projection updates to lock/update every affected parent/account and child scope row atomically.
 - [x] Require privileged scope-hierarchy changes to serialize with reservations/projections and advance scope_config_version.
 - [x] Define minimum logical scope-state version metadata without selecting a physical SQL schema.
+- [x] Require the account/root scope-state row in every v1 reservation/projection transaction and recheck root scope_config_version after locking the full set.
+- [x] Keep market/index/FX/fee/collateral inputs as immutable versioned valuation snapshots bound to reservation/capability; do not rewrite scope-state on every market-data tick.
 - [x] Clarify SQLSTATE 23505 idempotency collision resolution; prohibit generic unique/exclusion retry.
 - [x] Define whole-transaction retry for 40001/40P01, ambiguous commit handling and primary authority requirements.
 - [x] Add concurrency/fault matrix for capacity races, projection fan-out, scope changes, duplicate/reordered events, idempotency collisions, stale writers, direct Ledger writes and failover.
@@ -939,7 +941,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** exact-head Python reference regression passed. PostgreSQL concurrency design is refined but not implemented or proven.
 
-## 18.25 Numeric-wire integer conversion determinism — 2026-11-14
+## 18.47 Numeric-wire integer conversion determinism — 2026-11-14
 
 - [x] Remove dependence on Python's interpreter-configurable integer-string conversion threshold for ordinary wire acceptance.
 - [x] Add a fixed 512-decimal-digit budget for coefficient, scale, numerator and denominator fields, independent of max_chars.
