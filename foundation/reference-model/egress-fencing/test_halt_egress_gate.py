@@ -20,6 +20,7 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.request_halt(reason="operator halt"), 8)
         with self.assertRaises(GateDenied):
             self.gate.acknowledge_halt()
+        self.gate.consume_grant(attempt_id="attempt-1")
         self.gate.initiate_socket_write(attempt_id="attempt-1")
         self.gate.acknowledge_halt()
         self.assertEqual(self.gate.phase, HaltPhase.HALTED)
@@ -39,7 +40,8 @@ class HaltEgressGateTests(unittest.TestCase):
         self.gate.acknowledge_halt()
         self.assertEqual(self.gate.phase, HaltPhase.HALTED)
         with self.assertRaises(GateDenied):
-            self.gate.initiate_socket_write(attempt_id="paused")
+            self.gate.consume_grant(attempt_id="paused")
+        self.gate.initiate_socket_write(attempt_id="paused")
         self.assertEqual(self.gate.attempts["paused"].phase, AttemptPhase.SENDER_FENCED_UNKNOWN)
         self.assertTrue(self.gate.attempts["paused"].reservation_held)
         self.assertEqual(self.gate.reconciliation_required(), ("paused",))
@@ -59,6 +61,7 @@ class HaltEgressGateTests(unittest.TestCase):
         self.gate.request_halt(reason="operator halt")
         with self.assertRaises(GateDenied):
             self.gate.authorize_attempt(attempt_id="new", observed_epoch=8)
+        self.gate.consume_grant(attempt_id="old")
         self.gate.initiate_socket_write(attempt_id="old")
         self.gate.acknowledge_halt()
         self.assertEqual(set(self.gate.attempts), {"old"})
@@ -91,6 +94,7 @@ class HaltEgressGateTests(unittest.TestCase):
     def test_gate_committed_attempt_is_still_reconciled_after_halt_ack(self):
         self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7)
         self.gate.request_halt(reason="operator halt")
+        self.gate.consume_grant(attempt_id="attempt-1")
         self.gate.initiate_socket_write(attempt_id="attempt-1")
         self.gate.acknowledge_halt()
         self.assertEqual(self.gate.reconciliation_required(), ("attempt-1",))
@@ -106,6 +110,41 @@ class HaltEgressGateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.gate.request_halt(reason=" ")
 
+    def test_grant_consumption_is_single_use_and_precedes_socket_write(self):
+        self.gate.authorize_attempt(attempt_id="one-use", observed_epoch=7)
+        self.gate.consume_grant(attempt_id="one-use")
+        with self.assertRaisesRegex(GateDenied, "single-use"):
+            self.gate.consume_grant(attempt_id="one-use")
+        self.gate.request_halt(reason="operator halt")
+        with self.assertRaises(GateDenied):
+            self.gate.acknowledge_halt()
+        self.gate.initiate_socket_write(attempt_id="one-use")
+        self.gate.acknowledge_halt()
+        self.assertEqual(self.gate.reconciliation_required(), ("one-use",))
+
+    def test_lost_grant_consumption_response_never_allows_second_send(self):
+        self.gate.authorize_attempt(attempt_id="lost-consume", observed_epoch=7)
+        self.gate.consume_grant(attempt_id="lost-consume")
+        # Simulate a lost response: the durable grant is consumed, so retry cannot mint a new send.
+        with self.assertRaisesRegex(GateDenied, "single-use"):
+            self.gate.consume_grant(attempt_id="lost-consume")
+        self.gate.request_halt(reason="operator halt")
+        with self.assertRaises(GateDenied):
+            self.gate.acknowledge_halt()
+        self.gate.fence_sender(attempt_id="lost-consume", receipt="independent-fence")
+        self.gate.acknowledge_halt()
+        self.assertEqual(self.gate.reconciliation_required(), ("lost-consume",))
+
+    def test_store_outage_prevents_grant_consumption(self):
+        self.gate.authorize_attempt(attempt_id="store-outage", observed_epoch=7)
+        self.gate.store_available = False
+        with self.assertRaisesRegex(GateDenied, "store is unavailable"):
+            self.gate.consume_grant(attempt_id="store-outage")
+        self.assertEqual(self.gate.attempts["store-outage"].phase, AttemptPhase.GATE_COMMITTED)
+        self.assertIsNone(self.gate.request_halt(reason="store outage"))
+        with self.assertRaises(GateDenied):
+            self.gate.initiate_socket_write(attempt_id="store-outage")
+
     def test_gate_committed_attempt_survives_pending_halt_store_outage(self):
         self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7)
         self.gate.store_available = False
@@ -114,6 +153,7 @@ class HaltEgressGateTests(unittest.TestCase):
         with self.assertRaises(GateDenied):
             self.gate.acknowledge_halt()
         # The already gate-committed sender may still initiate while halt is pending.
+        self.gate.consume_grant(attempt_id="paused")
         self.gate.initiate_socket_write(attempt_id="paused")
         self.gate.store_available = True
         self.assertEqual(self.gate.commit_pending_halt(), 8)
