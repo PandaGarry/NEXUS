@@ -740,3 +740,5 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Exact code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` passed [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 suites / 255 tests on each of Python 3.11, 3.12 and 3.13 (765 successful executions).
 - All three job logs were inspected; no test failures or deprecation warnings were found.
 - This remains sequential Python reference evidence only; no production HEGC, PostgreSQL linearizability, socket observer, process/host/network fence or venue reconciliation runtime was exercised.
+
+- Exact code HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` passed [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 suites / 255 tests per Python 3.11/3.12/3.13 runtime (765 executions). Halt/Egress state-machine oracle now has 18 tests; this remains sequential model evidence only.
