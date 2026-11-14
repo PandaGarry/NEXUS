@@ -23,12 +23,12 @@
 |---|---|
 | Server topology and module registration | [bins/server/src/main.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/bins/server/src/main.rs) |
 | Public venue crate registry | [crates/venues/src/lib.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/lib.rs) |
-| Server trade stream and parser | [bins/server/src/trades.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/bins/server/src/trades.rs) |
-| Browser stream contracts and protocol | [web/src/engine/streams.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/streams.ts) |
-| Browser venue-specific Order Flow protocols | [web/src/engine/orderflow-streams.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/orderflow-streams.ts) and [web/src/engine/orderflow-venues.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/orderflow-venues.ts) |
-| Browser book synchronization and DOM state | [web/src/lib/orderflow.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/lib/orderflow.ts) |
-| Open Interest recorder | [bins/server/src/open_interest.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/bins/server/src/open_interest.rs) |
-| Server liquidation collector | [bins/server/src/liquidations.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/bins/server/src/liquidations.rs) |
+| Server trade stream and parser | [bins/server/src/trades.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/bins/server/src/trades.rs#L192-L304) |
+| Browser stream contracts and protocol | [web/src/engine/streams.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/streams.ts#L1-L115) |
+| Browser venue-specific Order Flow protocols | [orderflow-streams.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/orderflow-streams.ts#L1-L230) and [orderflow-venues.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/orderflow-venues.ts#L1-L270) |
+| Browser book synchronization and DOM state | [web/src/lib/orderflow.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/lib/orderflow.ts#L306-L362) and [Flow caller/recovery](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/lib/orderflow.ts#L480-L565) |
+| Open Interest recorder | [bins/server/src/open_interest.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/bins/server/src/open_interest.rs#L1-L100) and [venue parsing/normalization](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/bins/server/src/open_interest.rs#L130-L230) |
+| Server liquidation collector | [bins/server/src/liquidations.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/bins/server/src/liquidations.rs#L1-L150) |
 
 The latest Tradoor commit at the time of this pass was `39a1826`, a Frost Script crate/path rename. Its inspected diff did not alter the market-data files above. The audit is pinned to that latest observed revision, not to a moving branch name.
 
@@ -93,6 +93,8 @@ The browser `BookMsg` contract has optional `first`, `last`, and `prev` sequence
 | Coinbase | Level2 batch snapshot + updates | No sequence forwarded | Gap detection not established |
 | Bitstamp | Whole order-book messages | No sequence forwarded | Full-book replacement path; freshness/order still needs validation |
 | Aster | Binance-compatible snapshot/delta path | Binance-style sequence fields | Sequence bridge check implemented in shared path |
+
+**Recovery behavior observed in the caller:** Binance/Aster (the REST-snapshot group) hold stream changes, fetch a REST depth snapshot, bridge by update IDs, and retry the snapshot after a detected gap or fetch failure. For other venues, a detected `gap` causes the page to unsubscribe and resubscribe after 300 ms, expecting a fresh whole-book response. Socket state leaving `live` marks the book unsynchronized; REST-snapshot venues fetch again when the socket returns. However, where the adapter supplies no sequence fields, an omitted delta cannot produce a `gap` signal. The resubscribe path therefore does not prove continuity for sequence-less incremental feeds.
 
 **Important distinction:** a parser accepting a book frame is not proof of a continuously synchronized book. For venues without forwarded sequence identifiers, the current code cannot prove delta continuity using the shared `BookSync` sequence checks. Full-book feeds reduce this particular dependency but still require monotonicity/freshness checks and robust reconnect handling.
 
