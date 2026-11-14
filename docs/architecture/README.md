@@ -22,7 +22,7 @@
 ## Reference platform research
 - [NX-RESEARCH-006 — Reference Platform Fit Assessment](../research/NX-RESEARCH-006-reference-platform-fit-assessment.md) — In progress; NautilusTrader is a leading candidate, not selected; NEXUS risk, durable outbox, ledger and recovery boundaries remain independently owned.
 
-## Interface contracts
+## Executable reference slices\n- [NX-REF-DOMAIN-001 — Instrument Specification Reference Model](NX-REF-DOMAIN-001-instrument-specification-reference-model.md) — Test-only immutable metadata snapshot and exact tick/lot/minimum-rule validator; not a production registry or order authority.\n\n## Interface contracts
 - [NX-IF-001 — Canonical Trade Command & Risk Approval Contract](NX-IF-001-canonical-trade-command-risk-approval-contract.md) — Proposed; WP-A design artifact, not accepted or implemented.
 - [NX-IF-002 — Exposure Snapshot & Risk Reservation Contract](NX-IF-002-exposure-snapshot-risk-reservation-contract.md) — Proposed; WP-B design artifact, not accepted or implemented.
 - [NX-IF-003 — Execution Event & Ledger Posting Contract](NX-IF-003-execution-event-ledger-posting-contract.md) — Proposed; WP-C design artifact for canonical fills, durable inbox/outbox, atomic journal posting, corrections and projection watermark handoff; not accepted or implemented.
