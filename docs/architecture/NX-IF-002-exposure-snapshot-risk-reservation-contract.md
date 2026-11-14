@@ -328,6 +328,7 @@ An approval/reservation binds to immutable versions of:
 - instrument specification;
 - risk policy and scope configuration;
 - exposure snapshot and reservation state;
+- exact immutable valuation_input_vector_id/version for mark/index/FX/fee/collateral inputs;
 - account/position mode;
 - halt epoch;
 - source freshness/reconciliation watermarks required by policy.
