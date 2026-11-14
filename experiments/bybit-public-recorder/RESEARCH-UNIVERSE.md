@@ -2,7 +2,7 @@
 
 **Created:** 2026-11-15  
 **Status:** candidate universe registered; only one confirmatory configuration is active.  
-**Primary specification:** see [NX-EXP-001](NX-EXP-001-alpha-trade-flow-imbalance.md). Do not modify its primary parameters after inspecting out-of-sample data.
+**Primary specification:** see [NX-EXP-001](NX-EXP-001-alpha-trade-flow-imbalance.md). Its parameters were frozen in the single reviewable commit [9895842](https://github.com/PandaGarry/NEXUS/commit/9895842a7c892260ffa03a175bb3bc39bc6f5146) on 2026-11-14. The venue/instrument candidate universe was registered on 2026-11-15 before any HYP-001 out-of-sample result. Do not modify the primary parameters after inspecting out-of-sample data.
 
 ## 1. Confirmatory test — frozen
 
