@@ -611,3 +611,11 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Measure and fault-inject stale-worker, process-pause, partition, secret-revocation and external-egress fencing before G1/G3.
 
 **Disposition:** proposed engineering baseline only. Numeric values in NX-ARCH-REVIEW-005 are not accepted SLOs or production guarantees. No runtime control was implemented.
+
+
+## 18.20 NX-ARCH-REVIEW-005 exact-head regression evidence
+
+- Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actions [#43613493976](https://github.com/PandaGarry/NEXUS/actions/runs/43613493976).
+- Python 3.11, 3.12 and 3.13 jobs all completed successfully. Each runtime executed 13 isolated reference-model suites and 237 tests; 711 successful test executions total.
+- This verifies the existing Python reference-model regression workflow only. It does not execute NX-ARCH-REVIEW-005's proposed cache/revocation targets, outage matrix, source freshness policy, halt propagation, cancellation, process/DB/secret/network fencing, Rust or venue integration.
+- NX-ARCH-REVIEW-005 remains a proposal; all numeric objectives are unaccepted candidates. OD-10/12, domain-owner/security approval and G1/G3 boundary evidence remain open.
