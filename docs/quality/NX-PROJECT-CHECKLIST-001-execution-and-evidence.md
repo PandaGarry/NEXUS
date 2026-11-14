@@ -1015,3 +1015,17 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Execute cross-language COSE vectors and Egress manifest race/fault tests after G0D/G1 readiness; no signer, verifier or egress runtime is implemented.
 
 **Disposition:** NX-IF-001/002, NX-ADR-008, NX-ARCH-REVIEW-007 and NX-REF-EXEC-002 now share the same proposed contract. Runtime and security evidence remain open.
+
+## 18.50 PostgreSQL 18.7 security and migration qualification — 2026-11-14
+
+- [x] Verify official PostgreSQL 18.7 release date (2026-11-12) and current supported-minor status.
+- [x] Record 52 security fixes and 140+ bug fixes in the official release.
+- [x] Identify ON CONFLICT/updatable-view and RLS visibility fixes; prohibit using either as the sole isolation boundary.
+- [x] Identify dblink/replication-subscription arbitrary-file-write risk; exclude both from initial G1.
+- [x] Identify C-extension rebuild and extension-script risks; exclude extensions from initial G1.
+- [x] Record index corruption / REINDEX caveats and pre-update incremental-backup invalidity.
+- [ ] Review all release-note REINDEX entries against the actual G1 schema and selected indexes.
+- [ ] Prove fresh full backup, restore, WAL continuity and PITR on the exact 18.7 package.
+- [ ] Pin vendor package/image digest, provenance, host platform and configuration before harness execution.
+
+**Disposition:** PostgreSQL 18.7 remains a G1 evaluation target only. No database instance, extension, schema or production topology was installed or approved.
