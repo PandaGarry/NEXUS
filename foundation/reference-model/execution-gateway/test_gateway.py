@@ -300,6 +300,49 @@ class GatewayTests(unittest.TestCase):
             "FROM venue_observations WHERE command_id='cmd-001'").fetchone(),
             ("LATE_ACK_STALE_STATE", "venue-order-stale-worker", 4))
 
+    def test_stale_pre_send_guard_cannot_overwrite_recovered_unknown_state(self):
+        self.gateway.persist_approved(self.cmd, self.approval)
+        calls = 0
+
+        def halt_epoch_with_recovery(_account):
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                self.gateway.recover_after_restart()
+                self.epoch = 5
+            return self.epoch
+
+        self.gateway._halt_epoch = halt_epoch_with_recovery
+        result = self.gateway.dispatch("cmd-001")
+
+        self.assertEqual(result, "STALE_STATE_PRESERVED")
+        self.assertEqual(self.gateway.state("cmd-001"), "OUTCOME_UNKNOWN")
+        self.assertEqual(self.adapter.calls, [])
+        self.assertEqual(self.store.db.execute(
+            "SELECT observation_type,authority_epoch FROM dispatch_observations "
+            "WHERE command_id='cmd-001'").fetchone(),
+            ("STALE_PRE_SEND_GUARD", 4))
+
+    def test_stale_send_error_cannot_overwrite_recovered_unknown_state(self):
+        self.gateway.persist_approved(self.cmd, self.approval)
+
+        class RecoverThenTimeout(FakeVenueAdapter):
+            def send(inner_self, payload):
+                inner_self.calls.append(payload)
+                self.gateway.recover_after_restart()
+                raise TimeoutError("ambiguous send outcome")
+
+        self.gateway._adapter = RecoverThenTimeout()
+        result = self.gateway.dispatch("cmd-001")
+
+        self.assertEqual(result, "STALE_RESPONSE_RECORDED")
+        self.assertEqual(self.gateway.state("cmd-001"), "OUTCOME_UNKNOWN")
+        self.assertEqual(len(self.gateway._adapter.calls), 1)
+        self.assertEqual(self.store.db.execute(
+            "SELECT observation_type,detail,authority_epoch FROM dispatch_observations "
+            "WHERE command_id='cmd-001'").fetchone(),
+            ("STALE_SEND_ERROR", "TimeoutError", 4))
+
     def test_duplicate_approval_and_command_replay_rejected(self):
         self.gateway.persist_approved(self.cmd, self.approval)
         with self.assertRaises(Denied):
