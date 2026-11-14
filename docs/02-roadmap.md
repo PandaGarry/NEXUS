@@ -135,3 +135,5 @@ Phase 0 не означает исследовать все существующ
 - финальный readiness report с PASS/BLOCKED и ссылками на evidence.
 
 Только после owner review и прохождения всех критических gates разрешается начать безопасный read-only/paper prototype. Live trading требует отдельного допуска.
+
+- Domain kernel: explicit, version-pinned instrument quantity-unit semantics (NX-REF-DOMAIN-004) added as test-only reference; venue mappings and derivative risk/P&L formulas remain future qualification work.
