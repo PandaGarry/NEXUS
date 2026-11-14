@@ -1,20 +1,21 @@
 # NEXUS product-first milestones — public market-data prototype
 
-**Plan date:** 2026-11-14  
+**Plan date:** 2026-11-15  
 **Scope owner:** NEXUS engineering / research workstream  
-**Status:** first real-feed gate passed; M1/M2/M3 remain open
+**Status:** interim live-feed gate passed; M1/M2/M3 remain open. M2 acceptance checklist: [M2-ACCEPTANCE.md](M2-ACCEPTANCE.md).
 
 ## Interim gate — first real bytes
 
-**PASS — 2026-11-14**
+**PASS — 2026-11-14; accounting follow-up OPEN**
 
 - Hosted GitHub Actions run #10 connected to the public Bybit linear WebSocket and captured approximately 10 minutes.
-- 11,177 raw journal records: 8,149 publicTrade.BTCUSDT messages and 2,998 orderbook.full.BTCUSDT messages, plus protocol/control frames.
+- 11,177 raw journal records total. The published topic counts are 8,149 `publicTrade.BTCUSDT` + 2,998 `orderbook.full.BTCUSDT` = 11,147. **30 records remain unclassified in the published breakdown.** Do not assume these are pong or subscription frames; classify them from the raw artifact and reconcile all mutually exclusive categories to 11,177.
 - One connection generation; both expected topics present; replay and the workflow acceptance check passed.
-- The downloaded artifact was independently inspected: 11,177 valid JSONL lines, no malformed records, no missing SHA-256 fields and no digest mismatches.
-- Raw artifact (retention until 2026-11-28): https://github.com/PandaGarry/NEXUS/actions/runs/43637091666/artifacts/14131465205
+- The previously downloaded artifact inspection reported 11,177 valid JSONL lines, no malformed records, no missing SHA-256 values and no digest mismatches. The classification discrepancy is separate from this integrity check.
+- [Raw artifact](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666/artifacts/14131465205), expires 2026-11-28. Preserve a private local copy before expiry. Do not publish raw exchange frames in the repository until data terms and redistribution rights have been reviewed.
 - The first order-book messages were deltas. This is expected for the full-depth stream contract and reinforces that REST snapshot + buffered delta bridge is required before a book can be considered synchronized.
 - This gate proves public-feed reachability and raw capture/replay plumbing only. It does not prove snapshot synchronization, reconnect recovery, feed completeness, long-run reliability or trading eligibility.
+- Hosted runner region is not a latency benchmark; do not derive production latency claims from this capture.
 
 ## M1 — working raw recorder and replay (target 2026-11-21)
 
@@ -26,15 +27,15 @@
 - Acceptance: at least a 60-minute live smoke session, one observed reconnect or controlled disconnect/reconnect, zero corrupt journal lines, all deterministic tests green, and the 10-minute real-data interim gate already passed.
 - This gate proves capture plumbing only; it does not prove book correctness or feed completeness.
 
-## M2 — live book reconstruction and first alpha report (target 2026-11-28)
+## M2 — live book reconstruction (target 2026-11-28)
 
-- Fetch REST full-depth snapshot and bridge buffered WebSocket deltas per Bybit's current u / seq procedure.
-- Invalidate on update-ID gap, u=1, stale connection, malformed event or bounded-buffer overflow.
-- Expose a book as valid only after snapshot bridge; preserve RPI exclusion metadata.
-- Compare replayed book to a fixture/fresh snapshot at the same u and seq.
+- Follow the detailed [M2 acceptance checklist](M2-ACCEPTANCE.md); do not mark M2 accepted by passing only pure state-machine fixtures.
+- Fetch documented REST full-depth snapshot from `/v5/market/full_orderbook`, journal exact response before parsing, buffer WS deltas, and bridge only at exact matching `seq` + `u`.
+- Invalidate and resynchronize on update-ID gap, `u=1`, stale connection, malformed event, wrong symbol, crossed book or bounded-buffer overflow.
+- Expose a book as valid only after snapshot bridge; preserve RPI exclusion metadata; never let consumers read invalid/synchronizing state.
+- Demonstrate replay equivalence, a real synchronized session, disconnect/reconnect, and injected `u=1` and gap recovery.
 - Verify official archive inventory: trade-level vs candle-only, categories, symbols, date range, timestamps, IDs, and whether any L2 history is actually present.
 - Publish HYP-001 result or an explicit archive/data-coverage blocker. Primary config is fixed; secondary grid is exploratory with Holm–Bonferroni correction.
-- No strategy is allowed to consume a book outside the valid state.
 
 ## M3 — seven-day endurance (target start 2026-11-28; report target 2026-12-05)
 
@@ -42,10 +43,18 @@
 - Pair endurance with fault injection; seven days alone is not a reliability proof.
 - Report reconnects, sequence gaps, resets, resync duration, raw archive integrity, duplicate trades, write latency, disk growth and replay divergence.
 - Any silent drop, checksum failure or unbounded queue invalidates the run.
-- Venue/account/jurisdiction eligibility must be verified against the user's actual circumstances and current official terms before any venue selection or account-connected work. Public-data capture does not imply trading eligibility.
+- Venue/account/jurisdiction eligibility must be verified against actual owner circumstances and current official terms before any venue selection or account-connected work. Public-data capture does not imply trading eligibility.
 
 ## Scope controls
 
 - Python is a disposable evidence-gathering spike. No Rust port until measured throughput, correctness and maintenance requirements justify it.
 - No UI, AI orchestration, multi-venue layer, database server, ClickHouse, private API, order entry or live trading.
+- Kraken Spot protocol research may continue, but no second recorder implementation until Bybit M2 is accepted.
 - Dates are reviewed explicitly if an external blocker occurs; they are not silently moved.
+
+## Evidence references checked 2026-11-15
+
+- Bybit WS synchronization contract: https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob
+- Bybit REST full-depth snapshot: https://bybit-exchange.github.io/docs/v5/market/full-ob
+- Successful live capture run #10: https://github.com/PandaGarry/NEXUS/actions/runs/43637091666
+- Current recorder PR: https://github.com/PandaGarry/NEXUS/pull/19
