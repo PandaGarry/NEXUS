@@ -161,7 +161,7 @@ No real key, order, transfer, deposit or withdrawal is needed for this qualifica
 
 ## 6. Architecture follow-up
 
-The next architecture decision is **NX-ADR-007 — Venue Eligibility & Jurisdictional Activation Gate**. NX-ADR-006 remains reserved for the previously deferred strategy-validation/research-governance topic. ADR-007 must be drafted only after the legal/product evidence and owner review.
+**NX-ADR-007 — Venue Eligibility & Jurisdictional Activation Gate** has now been drafted as a PROPOSED architecture decision in this research branch. It defines an immutable evidence record, fail-closed adapter states, legal/account/product activation requirements and egress-bound eligibility fencing. NX-ADR-006 remains reserved for the previously deferred strategy-validation/research-governance topic. Owner/legal acceptance and conformance evidence remain open.
 
 ## 7. Disposition
 
