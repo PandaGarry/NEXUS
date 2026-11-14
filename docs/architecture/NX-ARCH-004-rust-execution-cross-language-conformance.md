@@ -6,7 +6,7 @@
 **Work item:** GitHub Issue #15  
 **Branch:** `engineering/rust-execution-domain-conformance-v0`  
 **Base:** `ab6976933cb4de9b5320b73531034d02edc53907`  
-**Related:** NX-ARCH-001/003, NX-ADR-002/005/007, NX-IF-001..005, NX-SEC-001, NX-REF-EXEC-001/002, NX-REF-VENUE-001/002, NX-REF-DOMAIN-001..010, NX-RESEARCH-006..009, ТЗ-NX-004..006.
+**Related:** NX-ARCH-001/003/005, NX-ADR-002/005/007, NX-IF-001..005, NX-SEC-001, NX-REF-EXEC-001/002, NX-REF-VENUE-001/002, NX-REF-DOMAIN-001..010, NX-RESEARCH-006..009, ТЗ-NX-004..006.
 
 ## 1. Purpose and decision boundary
 
@@ -130,7 +130,7 @@ Production numeric limits, maximum input sizes, maximum coefficient/scale, ratio
 
 ## 6. Cross-language conformance contract
 
-Golden fixtures are language-neutral inputs and expected outcomes. Rust and Python must agree on:
+Golden fixtures are language-neutral inputs and expected outcomes. New shared suites SHOULD follow [NX-ARCH-005 — Language-Neutral Conformance Fixture & Runner Contract](NX-ARCH-005-language-neutral-conformance-fixture-and-runner.md); existing v1 fixtures remain frozen until an explicit migration. Rust and Python must agree on:
 
 - canonical accepted representation;
 - exact result values and units;
@@ -142,7 +142,7 @@ Golden fixtures are language-neutral inputs and expected outcomes. Rust and Pyth
 
 The harness must not compare incidental error strings, debug formatting, hash-map iteration order or implementation-specific exception types.
 
-Each fixture has a stable ID, schema version, operation, input, expected result or rejection class, and provenance. Fixture changes require versioning and review. Existing vectors are synthetic mathematics, not venue qualification.
+Each fixture has a stable ID, schema version, operation, input, expected result or rejection class, and provenance. Fixture changes require versioning and review. Existing vectors are synthetic mathematics, not venue qualification. The current repository has several legacy envelope shapes; a common normalized schema and runner are separately proposed in NX-ARCH-005 and are not yet implemented.
 
 ## 7. Failure-injection and adversarial matrix
 
