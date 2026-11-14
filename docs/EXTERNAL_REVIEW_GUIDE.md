@@ -7,14 +7,17 @@
 
 Start with these in order:
 
-1. [Project overview](PROJECT_OVERVIEW.md) — product direction, boundaries and workstreams.
-2. [Project status and evidence register](PROJECT_STATUS.md) — what is implemented, tested, live-tested, proposed or unknown.
-3. [Venue qualification matrix](VENUE_QUALIFICATION_MATRIX.md) — candidate venues and explicit UNKNOWN values.
-4. [Product evolution](PRODUCT_EVOLUTION.md) — personal-first stages and triggers for commercial/multi-user review.
-5. [PR #20 — public review hub](https://github.com/PandaGarry/NEXUS/pull/20) — proposed default-branch documentation landing page.
-6. [PR #19 — public recorder implementation](https://github.com/PandaGarry/NEXUS/pull/19) — concrete Python Bybit public-data prototype, code and tests.
-7. [Live-feed smoke run #10](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666) — actual public-feed capture and replay evidence.
-8. [Issue #18 — recorder milestones](https://github.com/PandaGarry/NEXUS/issues/18) and [Issue #21 — second adapter qualification](https://github.com/PandaGarry/NEXUS/issues/21).
+1. [AI agent operating rules](../AGENTS.md) — permissions, task workflow, testing and documentation requirements.
+2. [Security baseline](../SECURITY.md) — security controls and threat scenarios.
+3. [Architecture decision index](ADR_INDEX.md) and [risk register](RISK_REGISTER.md) — decisions and active risks.
+4. [Project overview](PROJECT_OVERVIEW.md) — product direction, boundaries and workstreams.
+5. [Project status and evidence register](PROJECT_STATUS.md) — what is implemented, tested, live-tested, proposed or unknown.
+6. [Venue qualification matrix](VENUE_QUALIFICATION_MATRIX.md) — candidate venues and explicit UNKNOWN values.
+7. [Product evolution](PRODUCT_EVOLUTION.md) — personal-first stages and triggers for commercial/multi-user review.
+8. [PR #20 — public review hub](https://github.com/PandaGarry/NEXUS/pull/20) — proposed default-branch documentation landing page.
+9. [PR #19 — public recorder implementation](https://github.com/PandaGarry/NEXUS/pull/19) — concrete Python Bybit public-data prototype, code and tests.
+10. [Live-feed smoke run #10](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666) — actual public-feed capture and replay evidence.
+11. [Issue #18 — recorder milestones](https://github.com/PandaGarry/NEXUS/issues/18) and [Issue #21 — second adapter qualification](https://github.com/PandaGarry/NEXUS/issues/21).
 
 The repository is public. Reviewers can inspect the default branch, open PR diffs, source branches and GitHub Actions logs/artifacts without needing private project access.
 
