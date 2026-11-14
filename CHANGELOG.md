@@ -652,3 +652,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 
 - Added NX-IF-005 cases 36–42 for both linearization orders, paused Egress, missing external fence, halt-store outage, late venue acceptance and actual socket-boundary proof.
 - No runtime tests or external fencing proof are claimed; these remain G1 implementation gates.
+
+### Halt / final Egress gate linearization specified — 2026-11-14
+
+- Serialized the halt-epoch transition and final EgressBoundaryAuthorization against the same authoritative halt-state generation.
+- Defined gate-first attempts as in-flight and non-revocable; Egress must drain or positively fence them before acknowledging the new halt epoch.
+- Clarified that HALTED acknowledgement prevents new stale/queued socket-write initiation after acknowledgement, not venue processing of bytes already sent.
+- Added halt race crash points and IF-005 conformance cases. Actual network/process fencing remains unimplemented and unproven.
