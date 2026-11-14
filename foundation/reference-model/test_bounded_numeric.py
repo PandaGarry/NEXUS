@@ -2,7 +2,7 @@ import unittest
 
 from nexus_decimal import DivisionByZero, ExactDecimal, ExactRational, RoundingMode
 from numeric_wire import serialize_decimal, serialize_rational
-from bounded_numeric import BoundedNumericContext, NumericLimitExceeded, NumericLimits
+from bounded_numeric import BoundedNumericContext, NumericLimitExceeded, NumericLimits, _decimal_digit_count
 
 
 def context(**overrides):
@@ -64,6 +64,15 @@ class BoundedNumericTests(unittest.TestCase):
         self.assertEqual(ctx.parse_decimal("999"), d("999"))
         with self.assertRaises(NumericLimitExceeded):
             ctx.parse_decimal("1000")
+
+    def test_integer_digit_counter_matches_decimal_representation(self):
+        import random
+        rng = random.Random(20261114)
+        values = [0, 1, 9, 10, 99, 100, 10**100 - 1, 10**100, 10**100 + 1]
+        values.extend(rng.getrandbits(rng.randint(1, 2048)) for _ in range(500))
+        for value in values:
+            with self.subTest(value_bits=value.bit_length()):
+                self.assertEqual(_decimal_digit_count(value), len(str(abs(value))))
 
     def test_bounded_wire_parse_enforces_character_and_numeric_limits(self):
         ctx = context(max_input_chars=32, max_coefficient_digits=3)
