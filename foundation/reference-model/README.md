@@ -81,3 +81,5 @@ The financial math fixture suite also runs 650 deterministic seeded property cas
 
 
 The financial fixture suite now delegates weighted-average arithmetic to `financial_aggregation.aggregate_partial_fills`. The test-only function accepts typed `(AssetAmount, Price)` pairs and returns total quantity, quote notional and an exact rational average. It rejects an empty fill set and relies on domain types to reject incompatible base/quote dimensions. It does not validate venue fill admissibility or calculate fees, funding, P&L, accounting or rounding. Non-terminating averages remain rational; no implicit decimal conversion is performed.
+
+A non-empty signed fill set whose aggregate quantity is zero raises the typed `DivisionByZero`; this is separate from empty input (`ValueError`) and malformed argument types (`TypeError`). Signed quantities remain accepted by the arithmetic helper and do not imply that signed venue fills are admissible.
