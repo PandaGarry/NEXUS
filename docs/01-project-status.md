@@ -396,3 +396,12 @@ A standards cross-check of NX-ADR-008 found that RFC 9053's polymorphic COSE EdD
 ## Canonical CBOR ingress hardening requirement — 2026-11-14
 
 NX-ADR-008 now explicitly requires strict deterministic-profile validation on received command bytes before object materialization: shortest-form arguments/lengths, definite lengths, RFC 8949 core bytewise-lexicographic map ordering, schema-defined text keys, duplicate/unknown-key rejection and no trailing bytes. This closes a protocol-specification ambiguity; it does not mean a parser exists. Library suitability must be demonstrated against raw-byte adversarial vectors before dependency selection.
+
+
+## PR ancestry and current verification — 2026-11-14
+
+- PR #16 is intentionally stacked on PR #14. Full direct ancestry verified by matching child base SHA to parent head SHA: #1 -> #2 -> #3 -> #4 -> #5 -> #6 -> #7 -> #9 -> #10 -> #11 -> #12 -> #13 -> #14 -> #16. PR #8 is a parallel branch, not an ancestor.
+- Every PR in this direct ancestry is currently open, Draft and unmerged. PR #16 is therefore not independently mergeable; its base is correct and must not be retargeted to main. Parent-first integration is required; no merge or branch rewrite was performed.
+- Current PR #16 diff: 248 commits beyond its immediate base, 32 files, 4,399 additions and 72 deletions. Scope/reviewability needs a deliberate disposition.
+- Current exact branch HEAD `7914772358d2ee49c87374373bad5c589d0a2905` passed [workflow #43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349): 13 isolated Python reference suites, 239 tests each on 3.11/3.12/3.13 (717 executions). Node.js 20 and punycode deprecation warnings are absent.
+- This CI is Python reference-model evidence only. Rust, PostgreSQL transactions, COSE signing, Trusted Egress fencing, venue adapters and live execution remain unimplemented/unverified. PR #16 remains Draft/open/unmerged.
