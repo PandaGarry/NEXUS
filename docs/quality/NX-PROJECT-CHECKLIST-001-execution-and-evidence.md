@@ -338,4 +338,6 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [ ] Implement a Python-only normalized runner; keep current direct unit tests intact.
 - [ ] Implement Rust runner and differential CI only after G0D/G1 approval.
 
-**Disposition:** design only. Existing fixture files and current Python workflows remain unchanged. No cross-language conformance is claimed.
+**Reference-model evidence:** workflow [#43602394909](https://github.com/PandaGarry/NEXUS/actions/runs/43602394909) passed exact HEAD `e126f67b5779969ad3cffb67cfbb505760668518`: 13 isolated suites / 232 tests on each of Python 3.11, 3.12 and 3.13 (696 successful executions). The numeric-wire suite now has 12 tests, including stable error-class mapping.
+
+**Disposition:** design only. Existing fixture files and current Python workflows remain unchanged. No normalized schema, validator, Python runner or cross-language conformance is claimed.
