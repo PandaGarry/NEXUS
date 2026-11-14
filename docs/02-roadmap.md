@@ -19,7 +19,7 @@
 - [ ] Утвердить NX-ADR-003 Simulation Fidelity & Strategy Validation. (ADR drafted; owner review required.)
 - [ ] Утвердить NX-ADR-004 Market Data Recovery State Machine.
 - [ ] Утвердить NX-ADR-005 Instrument Specification & Exact Arithmetic.
-- [ ] Утвердить NX-ARCH-001 целевую архитектуру и deployment topology.
+- [ ] Утвердить NX-ARCH-001 целевую архитектуру и deployment topology. (Draft published; owner review required.)
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
 
 ## Phase 2 — Professional Analytics (Blocked)
