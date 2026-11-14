@@ -23,6 +23,7 @@
 - В browser BookSync sequence continuity реально проверяется для Binance, OKX и Deribit; у ряда остальных incremental adapters sequence не передаётся в общий контракт.
 - Server trade parser имеет отдельные event-time/coverage расхождения для Kraken Spot, Coinbase Spot и Lighter; browser parser в этих местах отличается. Детали и пути — в NX-RESEARCH-002.
 - Open Interest recorder существует для восьми venue/market families, polling 15s, minute storage; arithmetic использует f64.
+- Общая Tradoor Product-модель не содержит authoritative lot step/minQty/minNotional/contract multiplier/settlement/margin rules; Binance parser извлекает tick decimals, но не переносит LOT_SIZE в общий каталог. Contract-size conversion в Order Flow выборочная и имеет fallback 1.0. Не использовать для live order validation.
 - Server liquidation collector охватывает 11 perpetual venues, с 24h retention.
 - Funding-rate collection и private authenticated order execution остаются UNKNOWN в рамках текущего аудита.
 
