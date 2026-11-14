@@ -145,7 +145,7 @@ If the source event arrives before the destination projection is ready, the item
 | Event / condition | From | To | Release / transfer rule |
 |---|---|---|---|
 | Risk request accepted and capacity reserved | none | PRE_DISPATCH_RESERVATION | Reserve worst-case bounded exposure before approval |
-| Dispatcher durably marks command as dispatching / sends it | PRE_DISPATCH_RESERVATION | DISPATCH_OUTCOME_UNKNOWN | Keep full conservative reservation until venue outcome is known |
+| Dispatcher commits the durable pre-egress attempt marker before any network side effect | PRE_DISPATCH_RESERVATION | DISPATCH_OUTCOME_UNKNOWN | Move the full conservative reservation before the send boundary; the marker is not proof that bytes were sent, and exposure remains held until authoritative venue outcome/reconciliation |
 | Venue confirms order is working | DISPATCH_OUTCOME_UNKNOWN | WORKING_ORDER_REMAINDER | Transfer to remaining open-order exposure; do not count both |
 | Venue definitively rejects before any fill | reservation / unknown | released | Release only with authoritative rejection and no-fill evidence |
 | Fill confirmed, Ledger not yet posted | working order / unknown | FILL_PENDING_LEDGER for filled portion; remainder stays WORKING_ORDER_REMAINDER | Atomically split filled and remaining quantities |
