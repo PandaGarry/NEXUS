@@ -1391,3 +1391,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Verify fixed search_path, pg_temp last, schema-qualified names, no dynamic SQL, PUBLIC EXECUTE revocation, overload/temp-object spoofing and guard-table isolation.
 
 **Disposition:** security design candidate only; no SQL function, procedure, role, schema or integration harness exists.
+
+## 18.83 Exact branch-head CI after HEGC entrypoint and guard documentation — 2026-11-14
+
+- [x] Verify documentation-synchronized PR #16 HEAD `3d5181f1dc01441ebcd89145be2c0456608f501f` on [workflow #43619941084](https://github.com/PandaGarry/NEXUS/actions/runs/43619941084).
+- [x] Python 3.11, 3.12 and 3.13 each passed all 13 isolated suites / 263 tests; 789 successful executions total.
+- [x] Egress-fencing passed 37 tests, including 24 HaltEgressGate cases.
+- [x] Inspect all three logs: no failures, Node.js 20 deprecation or `punycode` warnings.
+- [x] Confirm all changes after code/test SHA `c2350f7` are documentation/research synchronization; no Python/Rust source changed after the verified code/test head.
+- [ ] Implement and test the HEGC SECURITY DEFINER entrypoints, shared guard function, role grants and true multi-connection commit-order races only after G1 readiness.
+
+**Disposition:** exact current PR branch HEAD passed the existing Python reference-model CI. No Rust, database schema, HEGC runtime, socket instrumentation or network fencing is implemented.
