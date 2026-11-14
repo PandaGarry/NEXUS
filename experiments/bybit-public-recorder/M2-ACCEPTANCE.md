@@ -1,11 +1,24 @@
 # Bybit M2 acceptance checklist — live REST snapshot + delta synchronization
 
-**Status:** NOT STARTED / NOT ACCEPTED  
+**Status:** IMPLEMENTATION IN PROGRESS — NOT ACCEPTED  
 **Plan date:** 2026-11-15  
 **Target:** 2026-11-28  
 **Scope:** public market data only; Bybit V5 linear BTCUSDT; no credentials, private endpoints, account access or orders.
 
 This checklist is a release gate, not a claim that M2 is implemented. Every checked item must link to a commit, CI run, fixture, raw journal or reproducible report.
+
+## Implementation progress (2026-11-15)
+
+- [x] Added a public REST full-depth snapshot client and response validator in `src/nexus_bybit_recorder/snapshot.py`.
+- [x] Extended the journal to store timestamped REST response bodies and metadata before parsing.
+- [x] Added `BookSynchronizer` with bounded buffering, exact watermark bridge, `u=1` reset handling, gap invalidation and disconnect invalidation.
+- [x] Integrated REST snapshot acquisition and live synchronization into the public recorder CLI; the live CLI journals book-state transitions.
+- [x] Added unit tests for REST response validation, synchronization, reset/gap behavior and exhaustive record classification.
+- [ ] Latest CI on the complete implementation must pass on Python 3.11/3.12/3.13.
+- [ ] A new live run must prove that the public endpoint returns a REST snapshot and the CLI reaches `LIVE_VALID`; hosted-runner latency remains out of scope.
+- [ ] Replay must reconstruct the same book state from the raw REST/WS journal, not merely summarize recorded state markers.
+- [ ] Fault-injection and reconnect evidence remain outstanding; M2 is not accepted.
+
 
 ## 0. Evidence and accounting
 
