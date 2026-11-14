@@ -461,6 +461,6 @@ Until these are approved and encoded, unsupported or ambiguous emergency operati
 
 ## 14. Verification status
 
-This document is a proposed design contract only. No HaltState store, epoch propagation, kill-switch controller, operator RBAC/MFA workflow, emergency plan executor, venue capability certification, cancel/reduce/close adapter, fault-injection suite or runtime behavior has been implemented or verified. No venue account, live credential or order was used. No risk limit or live-trading control was changed.
+This document is a proposed design contract only. A test-only Python oracle at `foundation/reference-model/egress-fencing/halt_egress_gate.py` models the two logical commit orders and fail-closed acknowledgement rules; its unit tests are reference-model checks only, not fault injection against a database, process, socket or network. No HaltState store, durable epoch propagation, kill-switch controller, operator RBAC/MFA workflow, emergency plan executor, venue capability certification, cancel/reduce/close adapter, production fault-injection suite or runtime behavior has been implemented or verified. No venue account, live credential or order was used. No risk limit or live-trading control was changed.
 
 **Prototype Readiness remains BLOCKED.**
