@@ -593,3 +593,7 @@ NX-SEC-001 now explicitly separates the private key that signs RiskApprovalCapab
 PR #16 HEAD `dbfba513b86a79b8b6574a80c1beb136b28836c7` passed [workflow #43618114058](https://github.com/PandaGarry/NEXUS/actions/runs/43618114058). Python 3.11, 3.12 and 3.13 each passed all 13 isolated reference suites / 239 tests (**717 successful executions total**). All job logs were inspected; no failures, Node.js 20 deprecation or `punycode` warnings. The tested branch includes the Risk/venue signing authority split and the clarified halt-request versus fully-enforced HALTED semantics.
 
 This is Python reference-model CI only. It does not implement or verify signing keys, KMS/HSM, halt storage, EgressBoundaryAuthorization, PostgreSQL, Rust, network fencing, venue behavior or live trading.
+
+## Test-only halt / final Egress gate reference model
+
+Added `foundation/reference-model/egress-fencing/halt_egress_gate.py` with 11 tests. It models halt-first denial, gate-first in-flight attempts, pause-after-gate acknowledgement blocking, positive sender-fence handling, single-use attempt IDs, halt-store outage and reconciliation obligations after socket initiation. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing. The expanded suite's exact-head CI is pending.
