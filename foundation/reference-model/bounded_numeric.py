@@ -44,10 +44,12 @@ class NumericLimits:
     max_rational_denominator_digits: int
     max_intermediate_digits: int
     max_power10_exponent: int
+    max_wire_chars: int
 
     def __post_init__(self) -> None:
         positive_limits = (
             ("max_input_chars", self.max_input_chars),
+            ("max_wire_chars", self.max_wire_chars),
             ("max_coefficient_digits", self.max_coefficient_digits),
             ("max_rational_numerator_digits", self.max_rational_numerator_digits),
             ("max_rational_denominator_digits", self.max_rational_denominator_digits),
@@ -132,24 +134,24 @@ class BoundedNumericContext:
         return self._check_decimal(value)
 
     def parse_decimal_wire(self, encoded: str) -> ExactDecimal:
-        value = parse_decimal_wire(encoded, max_chars=self.limits.max_input_chars)
+        value = parse_decimal_wire(encoded, max_chars=self.limits.max_wire_chars)
         return self._check_decimal(value, "wire decimal")
 
     def parse_rational_wire(self, encoded: str) -> ExactRational:
-        value = parse_rational_wire(encoded, max_chars=self.limits.max_input_chars)
+        value = parse_rational_wire(encoded, max_chars=self.limits.max_wire_chars)
         return self._check_rational(value)
 
     def serialize_decimal_wire(self, value: ExactDecimal) -> str:
         self._check_decimal(value, "wire decimal")
         encoded = serialize_decimal_wire(value)
-        if len(encoded) > self.limits.max_input_chars:
+        if len(encoded) > self.limits.max_wire_chars:
             raise NumericLimitExceeded("decimal wire output exceeds configured character budget")
         return encoded
 
     def serialize_rational_wire(self, value: ExactRational) -> str:
         self._check_rational(value)
         encoded = serialize_rational_wire(value)
-        if len(encoded) > self.limits.max_input_chars:
+        if len(encoded) > self.limits.max_wire_chars:
             raise NumericLimitExceeded("rational wire output exceeds configured character budget")
         return encoded
 
