@@ -21,6 +21,7 @@ No option currently passes every legal, account, product, API, market-data and e
 
 Primary sources:
 - [Official publication of Federal Law No. 282-FZ, 2026-08-04](https://publication.pravo.gov.ru/document/0001202608040007)
+- [Bank of Russia Directive No. 7441-U, official PDF](https://www.cbr.ru/Queries/UniDbQuery/File/90134/8618)
 - [Bank of Russia cryptocurrency regulation FAQ](https://www.cbr.ru/explan/cryptocurrency/)
 - [Bank of Russia crypto-market launch and participant registers](https://www.cbr.ru/develop/cryptocurrency/)
 
@@ -36,7 +37,10 @@ Article 31 establishes conditions for residents acquiring digital currency throu
 - non-qualified residents: positive test, risk warning, annual limit and eligible instruments admitted to public organized trading;
 - qualified residents: the applicable test and risk warning still apply;
 - the corresponding rules also apply to crypto-exchange organizations in the cases specified by the law.
-The Bank of Russia's Directive No. 7441-U was registered 2026-10-30 and published 2026-11-06; the exact operative values and effective date must be checked before implementation. This report does not hard-code a retail limit.
+The Bank of Russia's Directive No. 7441-U (2026-09-11) was registered on 2026-10-30 and officially published on 2026-11-06. Clause 9 makes it effective 10 days after publication, i.e. **2026-11-17** (subject to no amendment or later official clarification).
+- Clause 2 sets the annual acquisition-value limit for a non-qualified resident buying digital currencies through a broker at **RUB 300,000 per calendar year**. Clause 1 defines the total as the ruble sum of acquisition values through that broker during the calendar year, not merely the current open-position value. Repeated buy/re-entry activity can therefore consume the limit even when earlier positions have been sold.
+- Clauses 3 and 8 include BTC, ETH and USDT (USDT as a foreign digital instrument) in the list that an organizer of trading may admit to public organized trading, subject to the stated criteria. This is permission to admit eligible assets, not proof that a particular exchange has already launched an instrument or API.
+- Article 31(3) applies corresponding conditions to crypto-exchange organizations in specified cases. Do not assume without legal review that the broker-specific RUB 300,000 calculation applies identically to every principal-dealing crypto-exchange model.
 
 Bank of Russia FAQ answer 14 (updated 2026-10-26) describes when a pre-existing qualified-investor recognition carries over to digital-currency transactions. The owner's status must be confirmed by the actual broker; it must not be inferred from account balances or this report.
 
@@ -146,7 +150,7 @@ Suggested adapter states: `RESEARCH_ONLY`, `DATA_ONLY`, `PAPER_ONLY`, `LIVE_ELIG
 
 ## 5. Required evidence and next work package
 
-1. Confirm the owner's qualified-investor status directly with the actual broker. T-Invest `GetInfo` can expose it; no access token is to be sent in chat or committed to Git.
+1. Confirm the owner's qualified-investor status directly with the actual broker. T-Invest `GetInfo` can expose it; no access token is to be sent in chat or committed to Git. If non-qualified, evaluate the RUB 300,000 annual cumulative acquisition cap from 2026-11-17 and whether it makes the intended autonomous turnover viable.
 2. In the owner's authenticated T-Invest account, inspect `GetFutures` / `FindInstrument` for exact crypto-index/neoasset identifiers and record `api_trade_available_flag`, `for_qual_investor_flag`, `real_exchange`, tick, multiplier, settlement and margin fields. No order submission.
 3. Obtain written T-Invest confirmation of API order, cancel/replace, order book, trades, depth, history and private fill/account-event support for these exact instruments.
 4. Obtain written T-Invest Lab confirmation whether its spot service is live, supported assets/account types, public API availability and quote-based versus order-book execution.
