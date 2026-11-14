@@ -452,3 +452,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Signed issuer/audience must match locally expected context after verification; ambiguity, stale generation and revocation fail closed.
 - Verification material is public OKP/Ed25519 only (32-byte public key, no private d outside Risk); signatures must be 64 bytes.
 - No signer/verifier or key provider was implemented or selected.
+
+### COSE_Sign1 wire representation made unambiguous — 2026-11-14
+
+- Pinned the envelope to untagged, embedded-payload COSE_Sign1 with exactly four array elements.
+- Protected header is restricted to alg=-19 and bounded byte-string kid; unprotected map is empty.
+- Capability payload is a single NEXUS deterministic-CBOR map; exact protected and payload bytes are preserved.
+- Sig_structure uses RFC 9052 §9 deterministic encoding and fixed non-caller-controlled external AAD.
+- No implementation or dependency approved; byte-exact vectors remain required.
