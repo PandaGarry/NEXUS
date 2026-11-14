@@ -53,7 +53,17 @@ The 'test_venue_egress_fencing.py' suite contains 19 deterministic tests:
 - monotonic epoch and immutable scope;
 - invalid clock, type confusion and invalid adapter inputs.
 
-CI runs this suite on Python 3.11, 3.12 and 3.13. Exact-head run evidence is recorded after the current branch head completes.
+## Exact-head CI evidence
+
+- PR #14 head at verification: `ccbf9e86b86a366fb99c55f5d23deccd5755e5f9`.
+- GitHub Actions run: [43598800464](https://github.com/PandaGarry/NEXUS/actions/runs/43598800464).
+- Python 3.11: 229 tests, SUCCESS.
+- Python 3.12: 229 tests, SUCCESS.
+- Python 3.13: 229 tests, SUCCESS.
+- Total: 687 test executions across the three-runtime matrix.
+- Egress fencing suite: 19 tests per runtime (57 executions).
+
+This run used the single, non-duplicated egress-fencing CI step. Evidence applies to the exact SHA above; later source/workflow changes require a new run.
 
 ## Critical limitations
 
