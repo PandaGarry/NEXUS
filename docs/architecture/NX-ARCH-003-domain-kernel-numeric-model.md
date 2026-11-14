@@ -75,7 +75,7 @@ Rounding to a venue step is a separate policy decision. A helper that silently r
 
 ## 6. Reference-oracle boundary
 
-The Python implementation is deliberately dependency-free and uses arbitrary-precision integer coefficients. Its role is to produce an independent expected result for future production-language implementations.
+The Python implementation is deliberately dependency-free and uses arbitrary-precision integer coefficients. Its role is to produce an independent expected result for future production-language implementations. The suite also includes 1,000 deterministic seeded property cases cross-checked against Python's independent rational `fractions.Fraction` representation; this strengthens the mathematical oracle but is not fuzzing or production-runtime evidence.
 
 It is not:
 - an exchange adapter;
@@ -96,7 +96,7 @@ Production implementation must match the golden vectors and add bounded-overflow
 - [ ] Tick/lot divisibility rejects non-positive steps.
 - [ ] Negative, zero, large magnitude and high-scale values have test coverage.
 - [ ] Division/rounding are not exposed as accidental defaults.
-- [ ] Golden vectors are language-neutral and reusable by production implementations.
+- [x] Golden vectors are language-neutral and reusable by production implementations (v1.0.0, 15 cases).\n- [x] Deterministic property checks compare 1,000 generated cases against an independent rational representation.\n- [ ] Fuzz/property coverage with broader input generation and cross-language conformance.
 - [ ] Production numeric bounds and overflow behavior are decided before live financial calculations.
 - [ ] Unit-bearing Price/Quantity/Money types are separately specified before order/risk/ledger integration.
 
