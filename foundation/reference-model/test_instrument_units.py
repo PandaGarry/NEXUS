@@ -46,19 +46,20 @@ def make_spec(**overrides):
 
 
 def linear_spec(**overrides):
-    return make_spec(
+    values = dict(
         instrument_id="nexus:demo:BTC-USDT-LINEAR",
         native_instrument_id="BTC-USDT-PERP",
         market_type=MarketType.PERPETUAL,
         contract_type=ContractType.LINEAR,
         quantity_unit="contracts",
         contract_multiplier=d("0.001"),
-        **overrides,
     )
+    values.update(overrides)
+    return make_spec(**values)
 
 
 def inverse_spec(**overrides):
-    return make_spec(
+    values = dict(
         instrument_id="nexus:demo:BTC-USD-INVERSE",
         native_instrument_id="BTC-USD-PERP",
         market_type=MarketType.PERPETUAL,
@@ -68,8 +69,9 @@ def inverse_spec(**overrides):
         settlement_asset="BTC",
         quantity_unit="contracts",
         contract_multiplier=d("100"),
-        **overrides,
     )
+    values.update(overrides)
+    return make_spec(**values)
 
 
 class InstrumentUnitsTests(unittest.TestCase):
