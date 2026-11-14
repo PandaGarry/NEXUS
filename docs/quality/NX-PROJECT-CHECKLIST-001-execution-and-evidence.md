@@ -194,5 +194,5 @@ This checklist does not authorize:
 - Exact conversion to finite decimal succeeds only for denominators containing factors 2 and/or 5.
 - Quantization requires an explicit `RoundingMode`; seven modes are covered for positive and negative inputs.
 - Added 1,000 deterministic rational quantization property cases and language-neutral division golden vectors.
-- Dedicated CI suite added; exact-head CI evidence pending.
+- Dedicated 18-test suite added. GitHub Actions run [#43594118145](https://github.com/PandaGarry/NEXUS/actions/runs/43594118145) passed exact PR HEAD `a46b49a2cbb7a5960ce483f93a736a3fbc945554` on Python 3.11–3.13: 127 tests per runtime / 381 matrix executions across eight isolated suites.
 - No operation-specific trading/accounting rounding policy is approved.
