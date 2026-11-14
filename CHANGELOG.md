@@ -604,3 +604,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Recorded the official release's 52 security fixes, 140+ bug fixes, index/REINDEX caveats and warning not to trust pre-update incremental backup chains.
 - Added G1 controls for fresh full backup/PITR, extension/C-extension exclusion, dblink/subscription exclusion, base-table privileges, no runtime DDL and RLS/view defense-in-depth.
 - Updated the reference-model README's verified Python matrix to 13 suites / 239 tests per runtime (717 executions) at exact tested SHA c191cde.
+
+### Exact PR #16 head reference CI passed — 2026-11-14
+
+- Branch HEAD `7fb396df5f3e700adf0ad151c446e38930fdadb0` passed [workflow #43617605777](https://github.com/PandaGarry/NEXUS/actions/runs/43617605777).
+- Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 executions total).
+- Job logs contain no failures or Node.js 20 / `punycode` deprecation warnings.
+- This verifies Python reference models only; no Rust, CBOR/COSE, PostgreSQL 18.7, Trusted Egress, venue or live path was exercised.
