@@ -377,3 +377,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Constrained the COSE key to OKP / Ed25519 and required rejection of -8, Ed448, key/algorithm mismatch and substitution.
 - Protected kid is treated only as a lookup hint; key resolution is issuer/algorithm/purpose/status/generation-bound and fails closed on ambiguity.
 - Exact library/provider support and cross-language COSE_Sign1 vectors remain open; no signer/key was implemented.
+
+### Strict deterministic CBOR ingress profile clarified — 2026-11-14
+
+- Tightened NX-ADR-008 so deterministic CBOR is validated on ingress before object materialization, not merely emitted by the encoder.
+- Require preferred shortest forms, definite lengths, RFC 8949 core bytewise-lexicographic map ordering, schema-defined text keys, duplicate/unknown-key rejection and rejection of trailing bytes.
+- Explicitly reject legacy length-first ordering and parser behavior that silently normalizes malformed input.
+- No CBOR library or runtime dependency selected; cross-language adversarial byte vectors and decoder qualification remain open.
