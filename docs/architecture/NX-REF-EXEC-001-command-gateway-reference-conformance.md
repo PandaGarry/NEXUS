@@ -65,7 +65,7 @@ cd foundation/reference-model/execution-gateway
 python -m unittest -v
 ```
 
-GitHub Actions run [#43590253167](https://github.com/PandaGarry/NEXUS/actions/runs/43590253167) completed with **success** on exact PR HEAD `9529d0fe424e73c5f303bb9780ffe194911f30c6`. Both suites passed on Python 3.11, 3.12 and 3.13: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases) and 21 gateway tests in each runtime. The gateway suite includes the stale-worker egress counterexample and the late-ACK state-CAS guard.
+GitHub Actions run [#43590395882](https://github.com/PandaGarry/NEXUS/actions/runs/43590395882) completed with **success** on exact PR HEAD `3fb21aa53c9d6c72afcf6761493388f417fcb56b`. Both suites passed on Python 3.11, 3.12 and 3.13: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases) and 21 gateway tests in each runtime. The gateway suite includes the stale-worker egress counterexample and the late-ACK state-CAS guard.
 
 This is CI verification of the checked-in reference model only. It is not production, multi-process, database durability, security or exchange-adapter verification.
 
