@@ -212,7 +212,7 @@ This is a bounded consistency pass over the relevant authority, command, state, 
 - [ ] Owner review and acceptance.
 - [ ] Qualified legal review of applicable laws and product classification.
 - [x] Cross-review against NX-IF-001..005, NX-SEC-001 and NX-ADR-002 (bounded documentation review; no blocking contradiction found).
-- [ ] Conformance scenarios and tests for missing, stale, expired, mismatched, suspended and revoked records (reference suite added; exact-head CI evidence pending).
+- [x] Test-only conformance scenarios for missing, stale, expired, mismatched, suspended and revoked records; 28 tests passed on Python 3.11/3.12/3.13 at exact PR head `acfa421d79b3e7c71d2a5f49d8a622b8e98b0879` (run 43598284579).
 - [ ] Production identity/evidence storage, signing, authorization and operator role design.
 
 **Disposition:** PROPOSED. Cross-document consistency review completed with no blocking contradiction; owner/legal review and conformance evidence remain open. No implementation, API key, order or live capability is authorized. G0/G1 remain blocked.
