@@ -1,0 +1,108 @@
+{
+  "version": "1.0.0",
+  "representation": "coefficient * 10^(-scale), canonical trailing-zero normalization",
+  "cases": [
+    {
+      "id": "parse-001",
+      "op": "parse",
+      "input": "0012.3400",
+      "expected": "12.34"
+    },
+    {
+      "id": "parse-002",
+      "op": "parse",
+      "input": "-.125",
+      "expected": "-0.125"
+    },
+    {
+      "id": "parse-003",
+      "op": "parse",
+      "input": "+0.000",
+      "expected": "0"
+    },
+    {
+      "id": "add-001",
+      "op": "add",
+      "a": "0.1",
+      "b": "0.02",
+      "expected": "0.12"
+    },
+    {
+      "id": "add-002",
+      "op": "add",
+      "a": "-2.5",
+      "b": "1.25",
+      "expected": "-1.25"
+    },
+    {
+      "id": "sub-001",
+      "op": "subtract",
+      "a": "100",
+      "b": "0.0001",
+      "expected": "99.9999"
+    },
+    {
+      "id": "mul-001",
+      "op": "multiply",
+      "a": "12.5",
+      "b": "0.08",
+      "expected": "1"
+    },
+    {
+      "id": "mul-002",
+      "op": "multiply",
+      "a": "-0.2",
+      "b": "3",
+      "expected": "-0.6"
+    },
+    {
+      "id": "compare-001",
+      "op": "compare",
+      "a": "1.000000000000000001",
+      "b": "1",
+      "expected": 1
+    },
+    {
+      "id": "compare-002",
+      "op": "compare",
+      "a": "-2",
+      "b": "-1.99",
+      "expected": -1
+    },
+    {
+      "id": "compare-003",
+      "op": "compare",
+      "a": "3.00",
+      "b": "3",
+      "expected": 0
+    },
+    {
+      "id": "quantize-001",
+      "op": "quantize_exact",
+      "a": "1.2500",
+      "scale": 2,
+      "expected": "1.25"
+    },
+    {
+      "id": "step-001",
+      "op": "multiple_of",
+      "a": "1.25",
+      "step": "0.05",
+      "expected": true
+    },
+    {
+      "id": "step-002",
+      "op": "multiple_of",
+      "a": "1.23",
+      "step": "0.05",
+      "expected": false
+    },
+    {
+      "id": "large-001",
+      "op": "add",
+      "a": "999999999999999999999999999999.99999999",
+      "b": "0.00000001",
+      "expected": "1000000000000000000000000000000"
+    }
+  ]
+}
