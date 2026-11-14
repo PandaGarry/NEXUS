@@ -835,7 +835,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** exact-head reference-model regression passed; cryptographic implementation and G0D/OD-08 evidence remain open.
 
-## 18.38 Current exact-head regression and full PR-chain verification — 2026-11-14
+## 18.39 Current exact-head regression and full PR-chain verification — 2026-11-14
 
 - [x] Verify PR #16 branch HEAD `8d2c2f404782b718f1a3a422bb0ce918bb6b922d` with GitHub Actions [#43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308).
 - [x] Python 3.11, 3.12 and 3.13 all passed 13 isolated suites / 239 tests per runtime; 717 successful executions total.
