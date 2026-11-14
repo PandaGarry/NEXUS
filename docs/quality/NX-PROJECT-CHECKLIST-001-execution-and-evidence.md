@@ -572,3 +572,19 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - Python 3.11, 3.12 and 3.13 jobs all succeeded. Each runtime executed 13 isolated reference-model suites and 237 tests; total 711 successful test executions.
 - This verifies the existing Python reference-model regression workflow only. It does not execute NX-ARCH-009's proposed capability catalog, schema, grants, authorization service, module runtime, isolation, data-classification controls, billing provider flow, Rust or venue integration.
 - NX-ARCH-009 and NX-ARCH-REVIEW-003 remain PROPOSED / DESIGN ONLY; no capability is approved or active. CAP-R-02..09 remain open. G0D/G1 remain open.
+
+
+## 18.17 Capability-to-interface contract traceability
+
+- [x] Locate and inspect canonical NX-IF-001..005, NX-SEC-001 and NX-OWNER-DECISIONS-001 on the active engineering branch.
+- [x] Publish NX-ARCH-REVIEW-004 mapping all 12 NX-ARCH-009 candidate capabilities to existing contract evidence or an explicit missing-contract gap.
+- [x] Identify protected Risk/reservation, command/egress, Ledger, recovery/halt and credential boundaries that optional modules cannot receive.
+- [x] Record owner-approved v1 account-scope constraints and distinguish them from still-open OD decisions.
+- [x] Create a grounded source-data inventory by contract while explicitly marking field-level classification, lineage and retention as unresolved.
+- [x] Define cross-cutting requirements for identity/resource binding, transaction/idempotency, timeout/retry, audit, negative tests and boundary-observed evidence.
+- [ ] Obtain domain-owner/security approval for each candidate capability and any new product-domain contract before implementation.
+- [ ] Approve field-level classification, projection lineage, minimization, retention/legal basis and export policy.
+- [ ] Set measurable revocation/cache/outage objectives and prove stale-workload/process/DB/secret/network behavior before G1.
+- [ ] Keep all capabilities proposal-only; no executable schema, grant, policy engine, module runtime or dependency until G0D acceptance and relevant OD decisions.
+
+**Disposition:** design traceability complete; acceptance not granted. See [NX-ARCH-REVIEW-004](../architecture/NX-ARCH-REVIEW-004-capability-to-interface-contract-traceability.md).
