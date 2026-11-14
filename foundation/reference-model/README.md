@@ -119,3 +119,8 @@ python -m unittest -v
 The suite rejects schema drift, wildcard or duplicate scope, unknown object classes, duplicate semantic identities/rules, invalid digests and validity intervals, deployment-context mismatch, sequence/predecessor gaps, stale/not-yet-valid manifests, unverified signature/approval results and unavailable revocation state.
 
 This is not deterministic-CBOR ingress validation, COSE/Ed25519 verification, trust-root/key custody, a monotonic external ledger, PostgreSQL catalog extraction or production authorization. Signature/approval/revocation booleans are explicit test seams only. The selected wire profile and cryptographic implementation remain subject to NX-ADR-008/NX-RESEARCH-011 and independent conformance review.
+
+
+## Authorization-catalog manifest admission reference — CI evidence
+
+The isolated auth-catalog suite passed 23 tests on each Python runtime in workflow [#43633125568](https://github.com/PandaGarry/NEXUS/actions/runs/43633125568), exact code/test HEAD `c80d781ce7c9f2b4a015fa79f8e2c403709439d7`. The full reference matrix passed 287 tests per runtime (861 executions). PostgreSQL HEGC workflow [#43633125536](https://github.com/PandaGarry/NEXUS/actions/runs/43633125536) passed 12/12. This does not qualify production serialization, cryptography, database deployment or live execution.
