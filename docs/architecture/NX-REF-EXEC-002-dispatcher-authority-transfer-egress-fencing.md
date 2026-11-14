@@ -2,7 +2,7 @@
 
 **Status:** PROPOSED DESIGN / REFERENCE CONFORMANCE PLAN — NOT IMPLEMENTED  
 **Date:** 2026-11-14  
-**Related contracts:** NX-IF-001, NX-IF-002, NX-IF-004, NX-IF-005, NX-ADR-002, NX-SEC-001  
+**Related contracts:** NX-IF-001, NX-IF-002, NX-IF-004, NX-IF-005, NX-ADR-002, NX-ADR-008, NX-SEC-001  
 **Scope:** Account-scoped CREATE dispatch authority transfer and stale-worker containment. No venue adapter or production deployment.
 
 ## 1. Problem statement
@@ -174,26 +174,26 @@ No live credential, order, risk-limit change, production deployment, or live-tra
 
 ### 4.5 Persistence and trusted-egress option analysis (PROPOSED; G1 baselines selected in NX-ADR-008; production qualification open)
 
-This section narrows the implementation choices without selecting a provider, database product, cryptographic scheme or deployment topology. The recommendation is a candidate baseline for G1 design review, not an accepted owner decision.
+This section reconciles the execution/egress design with the G1 technical baseline selected in NX-ADR-008. PostgreSQL 18 is selected as the G1 persistence evaluation target, not as a production database/deployment selection. No hosting provider, database topology, key-custody provider or egress deployment product is selected.
 
 #### A. Risk reservation and Command acceptance persistence
 
 | Option | Strengths | Failure/correctness concerns | Disposition |
 |---|---|---|---|
 | One relational database, one shared transaction across Risk and Command | Superficially simple atomicity | Couples service authority; risks collapsing reservation and command ownership; does not solve venue-side ambiguity; broad transaction can become a distributed service boundary in disguise | Do not make this the conceptual contract |
-| One relational database cluster, service-owned schemas/tables and separate local transactions | Mature ACID primitives; one operational database failure domain; clear table ownership; no distributed transaction required for capability hand-off | Shared cluster is still a common availability/administration blast radius; strict ownership and database roles are mandatory; local transactions do not make Risk+Command atomic | Preferred candidate for a first controlled prototype, subject to OD-09 and threat review |
+| PostgreSQL 18 evaluation cluster, service-owned schemas/tables and separate local transactions | Mature ACID primitives; one operational database failure domain; clear table ownership; no distributed transaction required for capability hand-off | Shared cluster is still a common availability/administration blast radius; strict ownership and database roles are mandatory; local transactions do not make Risk+Command atomic | G1 evaluation target selected by NX-ADR-008; production topology and threat review remain open |
 | Separate authoritative databases per service | Stronger fault/ownership isolation; independent scaling and operational lifecycle | Capability hand-off becomes cross-database messaging; more recovery, backup, observability and idempotency complexity; no atomic commit across stores | Valid later option; likely premature before workload and RPO/RTO evidence |
 | Event store/consensus coordination service as primary authority | Can provide ordered durable log and fencing primitives | Operational complexity; semantics vary; still needs transaction boundaries, projections and proof of multi-scope atomicity | Defer until a measured requirement justifies it |
 
 **Candidate transaction model:**
 
-1. Risk owns reservation records and account-scope capacity versions. A single local transaction validates the current version/fencing token, exposure snapshot, policy/spec versions and idempotency key; locks or conditionally updates every required scope; writes every reservation and the durable request/result record; then commits. No capability is returned before commit.
+1. Risk owns reservation records, its derived exposure projection, source watermarks and account/child scope-state records. Ledger remains the journal authority and MUST NOT write Risk-owned state directly. Risk consumes Ledger/venue/external exposure events through an idempotent inbox. Reservation commits and projection updates both update the same Risk-owned scope-state record in local Risk transactions. A reservation transaction processes all required pre-provisioned scope rows in deterministic canonical scope-ID order, evaluates the current complete projection and active reservations, writes every reservation and the durable request/result record, updates scope totals, and commits atomically. No capability is returned before commit.
 2. Command Coordinator owns command, capability-consumption and outbox records. A separate local transaction validates the capability claims and atomically consumes its unique nonce while inserting the immutable canonical command, reservation reference and outbox row. A unique constraint on the capability/nonce and stable command/request identity is required.
 3. The two commits are deliberately ordered, not presented as one distributed ACID transaction. A crash between them leaves a durable reservation that can be recovered or safely expire only after proving dispatch impossible. A lost commit response is resolved by reading the stable request/command identity; never repeat a non-idempotent operation merely because the caller did not receive the response.
 4. Multi-scope reservation must be all-or-nothing inside Risk's authoritative transaction. A saga or sequential partial reservation must never produce an approval while any required scope is missing.
 5. Ledger journal posting remains its own local atomic transaction with idempotent inbox/event identity; Execution-to-Ledger delivery is durable and replayable, not a cross-service transaction.
 
-**Relational implementation requirements to carry into a later ADR:** explicit isolation level and retry policy; lock ordering for account/scope rows; unique constraints for request, capability nonce, command and outbox identities; conditional updates on monotonic versions; bounded deadlock/serialization retries; transaction timeout and cancellation semantics; durable commit acknowledgement; backup/restore and point-in-time recovery; migration compatibility; and fault tests for lost commit responses. Serializable isolation is a candidate, not a blanket guarantee: a correctly designed row-lock/CAS protocol may be preferable if its invariants are proven under the selected database and isolation level. No correctness claim may rely solely on an application mutex, cache lock or lease.
+**G1 transaction baseline:** PostgreSQL 18 SERIALIZABLE is the default evaluation level for Risk reservations/projection updates, combined with a Risk-owned scope-state serialization point, deterministic scope-ID lock/update order, state-version/CAS guards and unique idempotency constraints. SQLSTATE 40001/40P01 requires bounded whole-transaction retry from a fresh snapshot. Same request identity + same digest returns the original result; a different digest conflicts. An unknown commit is resolved by the same durable identity on the authoritative primary; unresolved primary/commit authority keeps the scope HALTED. Exact queries, patch version, role grants, timeouts, backup/restore/PITR, migration compatibility and concurrency/fault evidence remain open. No correctness claim may rely solely on an application mutex, cache lock or lease.
 
 #### B. Trusted Egress topology
 
@@ -221,4 +221,4 @@ The control plane may request takeover, but it cannot grant the successor author
 
 #### D. Decision boundary
 
-The delegated G1 technical baselines for OD-08/09/10/12 are recorded in [NX-ADR-008](NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md): deterministic CBOR/SHA-256/COSE Ed25519; PostgreSQL 18 as the persistence evaluation target with separate local transactions; source-specific freshness; and single-owner, fail-closed emergency defaults. This does **not** select a hosting provider, vault, proxy product, key custody provider, database deployment topology or production availability objective. The single credential/socket-owning Egress workload and independent external fencing remain mandatory design properties. No implementation or live authority is implied.
+The delegated G1 technical baselines for OD-08/09/10/12 are recorded in [NX-ADR-008](NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md): deterministic CBOR/SHA-256/COSE Ed25519; PostgreSQL 18 as the persistence evaluation target with Risk-owned scope-state serialization and separate local transactions; source-specific freshness; and single-owner, fail-closed emergency defaults. This does **not** select a hosting provider, vault, proxy product, key custody provider, database deployment topology or production availability objective. The single credential/socket-owning Egress workload and independent external fencing remain mandatory design properties. No implementation or live authority is implied.
