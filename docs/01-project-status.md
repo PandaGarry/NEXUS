@@ -207,3 +207,8 @@ A focused contract-to-code audit corrected the strict-JSON example in NX-ARCH-00
 ## Financial/numeric audit correction — 2026-11-14
 
 Correction to the preceding NX-ARCH-005 cross-review: linear and inverse financial reference paths are present and tested in `instrument_units.py` / `test_financial_math_fixtures.py`; only reusable partial-fill aggregation remains an extraction follow-up because its current implementation is inline in the test. The exact decimal oracle is arbitrary precision, while `BoundedNumericContext` applies mandatory explicit synthetic limits. API misuse is distinct from mathematical inexactness. NX-ARCH-005 now records the corrected mapping and remains PROPOSED.
+
+
+## Partial-fill aggregation reference extraction — 2026-11-14
+
+Extracted the previously inline weighted-average calculation into `foundation/reference-model/financial_aggregation.py` as `aggregate_partial_fills`. The callable returns typed base quantity and quote notional plus an exact rational average; it rejects empty input and relies on domain wrappers for base/quote dimension safety. Golden-vector and seeded permutation/partition tests now exercise the named callable, with additional empty/mismatch/non-terminating cases. This remains a test-only arithmetic oracle: no venue fill admissibility, fees, funding, P&L, accounting, rounding, production runtime or normalized fixture runner is implied. NX-ARCH-005 owner approval remains required before normalized schema/runner work.
