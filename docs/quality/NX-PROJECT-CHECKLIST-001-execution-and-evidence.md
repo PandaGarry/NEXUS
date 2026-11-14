@@ -381,3 +381,14 @@ The exact decimal oracle is arbitrary precision; `BoundedNumericContext` wraps i
 **Disposition:** audit only; proposed mappings are not accepted wire behavior. No schema, validator, runner or production adapter is authorized.
 
 - [x] Harden `ExactDecimal.is_multiple_of` to reject non-`ExactDecimal` step arguments with explicit `TypeError`, not incidental attribute access failure; add regression coverage.
+
+
+### 18.3 Cross-contract pre-egress ordering clarification — 2026-11-14
+
+- [x] Clarify IF-002 so the durable pre-egress attempt marker is committed before any external network side effect.
+- [x] Explicitly state that the marker moves exposure to `DISPATCH_OUTCOME_UNKNOWN` but is not proof that bytes were sent.
+- [x] Preserve the full conservative reservation until authoritative outcome/reconciliation; align review note with ADR-002, IF-001, IF-003, IF-004 and IF-005.
+- [ ] Select and prove the production transactional store, dispatcher fencing and trusted-egress enforcement model.
+- [ ] Implement crash/partition/stale-worker fault injection after owner/security review.
+
+**Disposition:** documentation ambiguity resolved; runtime and distributed-safety proof remain NOT IMPLEMENTED / NOT VERIFIED.
