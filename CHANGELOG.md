@@ -567,3 +567,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Trusted Egress must revalidate the bound vector against source-specific freshness and configured drift/admissibility policy before send. Newer source values do not silently mutate an issued approval.
 - Inadmissible or unconfigured inputs fail closed and require a new Risk evaluation/reservation.
 - Interface schema, race tests and numeric thresholds remain open; no runtime was added.
+
+### PostgreSQL 18.7 G1 evaluation patch selected — 2026-11-14
+
+- Selected PostgreSQL 18.7 as the exact G1 evaluation target after reviewing the November 12, 2026 official release and supported-version status.
+- Recorded release caveats for index integrity/REINDEX, incremental backup chains, C-extension rebuilds, extension scripts and privilege-sensitive SQL paths.
+- Added G1 constraints: fresh full backup for PITR qualification, no unreviewed extensions/C extensions, no dblink or untrusted replication subscriptions, and base-table-only authoritative writes.
+- No PostgreSQL instance, schema, extension or production deployment was created or approved. Requalify the latest supported 18.x patch before any future deployment.
