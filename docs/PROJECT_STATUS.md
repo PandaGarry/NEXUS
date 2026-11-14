@@ -10,12 +10,12 @@ This file is an evidence snapshot, not a claim that every linked proposal has be
 | Item | Status | Evidence / limitation |
 |---|---|---|
 | Public repository and review access | Verified | Repository is public; default branch is `main` |
-| Main branch project overview | In Progress | This review-hub PR proposes the public entry point; it is not on main until merged |
+| Main branch project overview | In Progress | PR #20 proposes the public entry point; it is not on main until reviewed and merged |
 | Legacy architecture/documentation chain | In Progress | PRs #1–#17 remain Draft/open as of this review; inspect each PR's current base/head before relying on it |
 | Independent recorder spike | In Progress | PR #19, based directly on main; Draft/open |
-| Recorder unit CI | Verified | Run #9 passed Python 3.11/3.12/3.13; a later run also reports 17 tests passing in its unit-test jobs |
-| Live public exchange capture | Unknown / pending evidence | Hosted-runner smoke job was started; do not mark complete without final successful run, both expected topics and uploaded replay-verified artifact |
-| Live order-book reconstruction | Deferred / not implemented in live CLI | Snapshot/delta bridge exists as a tested pure state-machine prototype; live REST + WS integration remains future work |
+| Recorder unit CI | Verified | Run #9 passed Python 3.11/3.12/3.13; current run #10 also passed 17 unit tests on all three versions |
+| Live public exchange capture | **Verified — first 10-minute smoke only** | Hosted runner captured both required topics, replayed 11,177 frames and uploaded the raw journal artifact; this is not M1 or production certification |
+| Live order-book reconstruction | Deferred / not implemented in live CLI | Captured full-depth WS messages are deltas; a REST snapshot bridge is still required before a valid synchronized book can be exposed |
 | Historical L2 coverage | Unknown | No historical L2 archive has been verified |
 | Alpha profitability | Unknown / not claimed | HYP-001 is a preregistered falsification experiment, not evidence of alpha |
 | Production exchange selection | Blocked | No exact owner/account/product eligibility decision and no venue selection |
@@ -31,7 +31,10 @@ This file is an evidence snapshot, not a claim that every linked proposal has be
 - Public trade parsing uses exact decimal values and trade ID deduplication.
 - A pure snapshot/delta bridge state machine has deterministic tests; it is not yet integrated into the live capture CLI.
 - Local test suite previously reported 14 passing tests. CI subsequently reported 17 tests passing on Python 3.11/3.12/3.13.
-- A hosted live-feed smoke workflow was added. Its final outcome must be checked at [GitHub Actions](https://github.com/PandaGarry/NEXUS/actions) before claiming real-feed evidence.
+- **Live smoke run #10 succeeded:** 11,177 raw records over approximately 10 minutes; 8,149 `publicTrade.BTCUSDT` messages and 2,998 `orderbook.full.BTCUSDT` messages; one connection generation; both topics passed the workflow's acceptance check.
+- The downloaded artifact was independently inspected: 11,177 valid JSONL records, 0 malformed lines, 0 missing per-frame SHA-256 values, 0 digest mismatches. The raw archive contains the original exchange messages and journal metadata.
+- The first observed full-depth order-book messages are `type=delta`; this confirms why a REST snapshot and buffered-delta bridge are required. The capture alone does not establish a synchronized book.
+- [Successful live capture run and artifact](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666). Artifact retention expires 2026-11-28; preserve it before expiry if it is needed as long-term evidence.
 
 ### Research
 
@@ -41,13 +44,12 @@ This file is an evidence snapshot, not a claim that every linked proposal has be
 
 ## Immediate priorities
 
-1. Close the hosted real-feed smoke evidence gate or record its exact blocker.
-2. Make the public project overview and current status visible on `main) through a reviewed documentation PR.
-3. Build a venue qualification matrix with explicit UNKNOWN values and dated official sources.
-4. Implement and measure a second materially different public-data adapter before defining a generic adapter interface.
-5. Only after comparing two adapters, define the minimal shared market-data contracts and conformance fixtures.
-6. Keep live venue/account selection blocked until exact product and eligibility are verified.
-7. Preserve the personal-first boundary and document commercial activation triggers.
+1. Preserve and document the first real-feed artifact; add a small sanitized representative fixture only after reviewing terms, size and data policy.
+2. Complete live REST snapshot + buffered-delta integration and fail-closed resynchronization.
+3. Build a second materially different public-data adapter (Coinbase Advanced Trade or Kraken Spot are current candidates) before defining a generic adapter interface.
+4. Only after comparing two adapters, define the minimal shared market-data contracts and conformance fixtures.
+5. Keep live venue/account selection blocked until exact product and eligibility are verified.
+6. Preserve the personal-first boundary and document commercial activation triggers.
 
 ## Evidence discipline
 
