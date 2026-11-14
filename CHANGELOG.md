@@ -343,3 +343,12 @@ Exact branch HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed GitHub Actio
 ### Exact-head regression evidence for NX-ARCH-REVIEW-005 — 2026-11-14
 
 Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actions [#43613493976](https://github.com/PandaGarry/NEXUS/actions/runs/43613493976): Python 3.11/3.12/3.13, 13 reference-model suites / 237 tests per runtime, 711 successful executions. This does not validate the proposed authorization cache/revocation targets, outage matrix, source freshness, halt propagation, cancellation or runtime isolation. No numeric objective was accepted and no runtime control was implemented.
+
+### CI action supply-chain hardening and exact-head verification — 2026-11-14
+
+- Updated `.github/workflows/reference-model.yml` from Node 20-era action releases to `actions/checkout` v7.0.1 and `actions/setup-python` v7.1.0.
+- Pinned the actions to verified upstream full commit SHAs: `3d3c42e5aac5ba805825da76410c181273ba90b1` and `6d4fd22b20465ccc0f7354476588e8df7c9ca0e0`.
+- Exact action-upgrade HEAD `e35d81cb34aeae1c13e25def0320e8a4a4b649bb` passed [workflow #43614458632](https://github.com/PandaGarry/NEXUS/actions/runs/43614458632): 13 isolated suites / 237 tests on each of Python 3.11, 3.12 and 3.13; 711 successful executions.
+- Verified the previous Node.js 20 and `punycode` deprecation warnings are absent from all three job logs.
+- Audited the stacked PR ancestry: #13 -> #14 -> #16; each child base SHA equals the parent head SHA. No base retarget, merge or stack rewrite performed.
+- This verifies existing Python reference models and CI action execution only. It does not establish Rust conformance, transitive dependency integrity, production persistence/egress safety, venue behavior or live readiness.
