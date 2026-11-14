@@ -393,6 +393,12 @@ The design is ready for implementation only when the following are testable agai
 20. Snapshot versions are monotonic and stale writers are fenced across process/replica boundaries.
 21. Audit data can reconstruct each exposure item from originating command/order/fill/ledger/external evidence.
 22. Risk Engine outage or loss of reservation authority prevents new risk-increasing approval.
+23. A Risk exposure-projection update racing a reservation serializes through the same Risk-owned scope-state record; neither can commit against a stale competing view.
+24. Duplicate, delayed or reordered Ledger/venue projection events are idempotent; source watermarks advance monotonically and an event cannot apply exposure twice.
+25. SQLSTATE 40001 / 40P01 causes a bounded whole-transaction retry from a fresh snapshot; no calculation from an aborted transaction is reused.
+26. A lost commit response is resolved using the same durable request identity and digest; unresolved primary/commit authority keeps the scope HALTED.
+27. Missing/ambiguous pre-provisioned scope-state rows or stale/incomplete mandatory source watermarks fail closed and cannot be interpreted as zero exposure.
+28. Multi-scope rows are processed in deterministic canonical scope-ID order; every required account/child reservation commits atomically or none does.
 
 These are acceptance requirements, not tests already executed.
 
