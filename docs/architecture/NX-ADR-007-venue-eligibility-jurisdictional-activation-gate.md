@@ -199,7 +199,7 @@ Reviewed exact branch versions:
 - NX-SEC-001 requires the eligibility evidence vault and reviewer/operator access controls to protect identity and legal records.
 - NX-ADR-002 / fenced egress must verify the current eligibility revision/epoch at the final side-effect boundary and prevent stale dispatchers from bypassing suspension.
 
-This review is an architecture consistency pass, not owner acceptance, legal opinion, conformance evidence or implementation verification.
+This is a bounded consistency pass over the relevant authority, command, state, security and egress integration boundaries; it is not a full line-by-line conformance review, owner acceptance, legal opinion, conformance evidence or implementation verification.
 
 ## 12. Acceptance criteria for this ADR
 
