@@ -413,7 +413,7 @@ At minimum, test:
 3. The final EgressBoundaryAuthorization and halt-epoch transition serialize on the same authoritative generation: halt-first denies socket initiation; gate-first is an in-flight attempt that remains reserved/reconciliation-gated, and Egress cannot acknowledge the newer halt epoch until the attempt is drained to observed socket initiation or its sender is positively fenced.
 4. A non-acknowledging dispatcher is isolated or remains a blocking failure; HALTED is not falsely reported as fully enforced.
 5. Already-dispatched orders remain exposed until authoritative venue evidence resolves them.
-6. Halt activation is possible while Risk Engine is unavailable through an authenticated independent path.
+6. Halt request/activation is possible while Risk Engine is unavailable through the independently authorized Control Plane, provided the authoritative halt-state store is available; if that store is unavailable/uncertain, Egress denies final authorization and the system cannot claim fully-enforced HALTED.
 7. No automatic cancel-all or flatten is triggered by halt unless an active approved plan explicitly requires it.
 8. Command classes have versioned classification and authorization policy; UNKNOWN is not risk-reducing.
 9. AMEND is a new complete immutable command and invalidates prior approval.
