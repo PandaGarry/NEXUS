@@ -279,3 +279,8 @@ Documentation ambiguity closed; implementation proof remains a separate gate.
 - [ ] Implement and fault-inject the selected actual egress fence; prove old path cannot send after takeover under partition/restart.
 
 This refinement is proposed design only. It does not close G0/G1, select a technology provider or authorize production execution. The design intentionally avoids a distributed transaction between Risk and Command; each boundary owns its local durable commit and recovery protocol.
+
+
+### Persistence and egress topology decision analysis — 2026-11-14
+
+The active architecture track now compares database transaction models and Trusted Egress deployment choices in NX-REF-EXEC-002 §4.5. The candidate baseline separates Risk's atomic all-scope reservation commit from Command's atomic single-use capability-consume + command/outbox commit; no distributed ACID transaction is assumed. Egress must own the actual venue socket and credentials, while workers have no direct venue route. Takeover requires positive external fencing of the old process/host/network identity; DB lease expiry is not proof. OD-08/09/10/12 remain open. This is design-only and does not select a provider or authorize implementation/live operation.
