@@ -198,9 +198,13 @@ First-venue selection remains BLOCKED; no live trading is authorized.
 - [x] Publish NX-ARCH-004 as a proposed design for Rust domain/execution boundaries and cross-language conformance.
 - [x] Create dedicated engineering branch `engineering/rust-execution-domain-conformance-v0` from the reviewed PR #14 head `ab6976933cb4de9b5320b73531034d02edc53907`.
 - [x] Define adapter trust boundaries, NEXUS-owned authorization/egress, OUTCOME_UNKNOWN handling and the Rust/Python golden-fixture contract.
-- [ ] Owner/architecture review of RUST-01..06 and cross-review against NX-IF-001..005 / NX-SEC-001.
+- [ ] Owner/architecture review of RUST-01..06.
+- [x] Cross-review NX-ARCH-004 against NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SEC-001; harmonize ADR-002 reservation/approval/dispatch ordering.
 - [ ] Approve toolchain and implementation workspace under G0D/G1 before production-language implementation.
 - [ ] Implement Rust domain slice and differential conformance harness.
 - [ ] Prove distributed/host-level egress fencing; single-process reference tests are insufficient.
 
 **Current status:** design draft only. No Rust runtime or production implementation has been added. Prototype readiness remains BLOCKED and live trading remains NOT AUTHORIZED.
+
+- [x] Harmonize NX-ADR-002 with NX-IF-001/002: durable reservation precedes capability issuance; single-use capability consumption is atomic with command/outbox commit; pre-egress attempt marker preserves conservative `DISPATCH_OUTCOME_UNKNOWN` exposure.
+- [ ] Owner/architecture/security acceptance of the harmonized design; implementation gates remain unchanged.
