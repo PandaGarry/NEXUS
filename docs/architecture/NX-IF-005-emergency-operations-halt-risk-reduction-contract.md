@@ -252,6 +252,22 @@ The halt transition is owned by the independently authorized emergency Control P
 
 This defines the linearization order, not an exactly-once network guarantee. If a future operational requirement demands that no socket-write initiation occur after the halt transaction commits even for an earlier gate-committed attempt, the transport/egress architecture must provide a stronger independently fenced cancellation/serialization mechanism and prove it under process pause, host partition and crash tests; PostgreSQL transaction ordering alone cannot make that claim.
 
+#### 5.2.2 Halt/Egress Gate Coordinator ownership
+
+The logical serialization authority is the **Halt/Egress Gate Coordinator (HEGC)**, part of the independently authenticated Control Plane and separate from Risk, Command Coordinator and the credential-owning Egress process.
+
+- HEGC is the sole writer of the authoritative `HaltState` and `EgressBoundaryAuthorization` records. It processes `CommitHaltEpoch` and `AuthorizeEgressAttempt` through one versioned transaction protocol against the same authoritative halt-state generation. No other service may write either record directly.
+- The operator/control API and Egress final-gate API terminate at HEGC. Risk may submit a policy-triggered halt request through an authenticated scoped interface, but cannot mutate halt state or mint Egress authorization.
+- HEGC has no venue credentials, no venue socket and no Risk signing key. It cannot transmit an order. The Egress process remains the sole owner of venue credentials/socket and may initiate one socket write only against a valid one-use EgressBoundaryAuthorization.
+- Egress MUST NOT have direct write access to the halt-state or EgressBoundaryAuthorization tables. It requests a grant from HEGC and receives only an opaque, persisted, attempt-scoped authorization reference. The grant binds command digest, reservation identity/version, attempt ID, halt epoch, eligibility revision, StateEvidenceVector and ValuationInputVector IDs/versions, dispatcher generation, Egress workload identity and expiry. It is not a RiskApprovalCapability and cannot replace one.
+- HEGC reads the required Risk/Command/eligibility/evidence/dispatcher state using narrowly scoped read-only access or versioned authoritative references; it writes only its control-owned schema. It MUST NOT mutate Risk reservations, Command/outbox state, Ledger or venue state.
+- Egress consumes the grant once, initiates exactly one socket-write attempt and reports the observed initiation to HEGC. A local flag written before the socket call is not proof of initiation. If the process pauses/crashes before the report, HEGC keeps the attempt in-flight until it is positively fenced or the boundary can prove the socket call occurred. A missing report never releases the reservation or permits blind resend.
+- HEGC acknowledges the new halt epoch only after every gate-committed grant is resolved to observed socket initiation (then treated as an external in-flight effect) or the sender is positively fenced as not able to initiate. It cannot infer resolution from lease expiry, process heartbeat timeout or database ownership alone.
+- G1 evaluation uses one active HEGC instance and the PostgreSQL 18.7 control-owned schema/role; no active-active HEGC or automatic failover is permitted. HEGC outage denies all new final gates; a halt request may remain pending and MUST NOT be reported fully enforced until durable epoch commit and boundary acknowledgement/isolation.
+- Database schema/functions, API authentication, role grants, opaque-grant format, workload identity, report authenticity and external fencing mechanism remain G1 proof obligations. The logical ownership decision does not claim these controls are implemented.
+
+
+
 
 ### 5.3 In-flight and protective orders
 
