@@ -14,10 +14,13 @@
 | Runtime verification | Not performed | CI/runtime тесты не считать пройденными |
 | Security threat model | Drafted / Proposed | NX-SEC-001 сохранён; owner review, deployment-specific analysis и security verification не выполнены |
 | Exact arithmetic / instrument specs | ADR proposed / implementation not started | NX-ADR-005 drafted; требует owner review и последующих golden tests. Блокер реализации сохраняется |
+| Unified market event contract | PROPOSED | NX-ADR-001 опубликован; owner review и conformance design review требуются |
 | Target architecture | PROPOSED | NX-ARCH-001 опубликован; owner review и согласование TBD deployment decisions требуются |
 | Prototype readiness | BLOCKED | Не начинать прототипирование |
 
 ## Новые архитектурные артефакты (PROPOSED)
+
+- [NX-ADR-001 — Unified Market Event Contract](architecture/NX-ADR-001-unified-market-event-contract.md) — canonical event envelope, typed payload semantics, exact units, timestamps, provenance, ordering and schema evolution. Design only; no implementation or conformance tests.
 
 - [NX-ARCH-001 — Target Architecture & Deployment Topology](architecture/NX-ARCH-001-target-architecture.md) — logical boundaries, trust model, command/data flows, deployment baseline and owner decisions. Design only; no implementation or runtime verification.
 
@@ -39,7 +42,7 @@
 - Open Interest recorder существует для восьми venue/market families, polling 15s, minute storage; arithmetic использует f64.
 - Общая Tradoor Product-модель не содержит authoritative lot step/minQty/minNotional/contract multiplier/settlement/margin rules; Binance parser извлекает tick decimals, но не переносит LOT_SIZE в общий каталог. Contract-size conversion в Order Flow выборочная и имеет fallback 1.0. Не использовать для live order validation.
 - Поправка по Hyperliquid: `6 - szDecimals` корректно отражает один из лимитов максимальных десятичных знаков цены perpetual по официальной документации; это не подтверждённый дефект. Но `Product.price_decimals` не описывает также ограничение в 5 значащих цифр и независимый size step. См. NX-RESEARCH-002.
-- Подготовлены NX-ADR-002, NX-ADR-003, NX-ADR-004, NX-ADR-005 и NX-SEC-001 со статусом PROPOSED; все требуют owner review и не являются принятыми решениями.
+- Подготовлены NX-ADR-001, NX-ADR-002, NX-ADR-003, NX-ADR-004, NX-ADR-005 и NX-SEC-001 со статусом PROPOSED; все требуют owner review и не являются принятыми решениями.
 - Server liquidation collector охватывает 11 perpetual venues, с 24h retention.
 - По четырём приоритетным venue APIs подтверждены публичные funding capabilities; исторические/interval semantics для OKX и Hyperliquid остаются частично UNKNOWN. В Tradoor funding collector и private authenticated execution в проверенных путях NOT OBSERVED; это не доказывает отсутствие кода во всех ветках.
 
