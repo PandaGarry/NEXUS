@@ -425,3 +425,9 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Identified `coset` 0.4.2 as the leading test-only COSE structure candidate for RFC 9864 alg=-19, with original protected-header preservation and custom crypto closures.
 - Recorded that `cose2`'s bundled Ed25519 provider uses deprecated alg=-8; no signer, verifier or dependency was adopted.
 - No Cargo workspace, package, key, parser or runtime was introduced. G0D/G1 qualification remains open.
+
+### CBOR command-key profile refined — 2026-11-14
+
+- Restricted command map keys to schema-defined ASCII text field names; non-ASCII, unknown and duplicate keys are rejected.
+- Kept Unicode user text in values with strict UTF-8 handling and no implicit normalization.
+- Updated NX-ADR-008, OD-08 and the living checklist. No parser or dependency was implemented.
