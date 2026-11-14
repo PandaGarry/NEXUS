@@ -16,5 +16,4 @@
 - [ТЗ-NX-003 — Quant & Strategy Engine](TZ-NX-003-quant-strategy-engine.md) — Proposed
 - [ТЗ-NX-004 — Autonomous Execution Engine](TZ-NX-004-autonomous-execution-engine.md) — Proposed
 - ТЗ-NX-005 — Independent Risk Engine
-- ТЗ-NX-005 — Independent Risk Engine
 - ТЗ-NX-006 — Portfolio & Financial Ledger
