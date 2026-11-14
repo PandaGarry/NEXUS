@@ -47,3 +47,38 @@
 - [ ] Подготовить production observability, backups и deployment runbooks.
 
 Live trading требует отдельного формального допуска, ограниченного rollout и подтверждённой эксплуатационной готовности.
+
+
+## Правило завершения Foundation Audit (anti-infinite-audit)
+
+Phase 0 не означает исследовать все существующие проекты и все возможные функции. Аудит закрывается по фиксированным work packages, когда для каждого критического контура:
+- известны применимые требования NEXUS;
+- проверены выбранные исходники/документы/тесты по заранее определённому scope;
+- зафиксированы capabilities и UNKNOWN;
+- оценены критические риски и mitigation;
+- принято решение: reuse / adapt / replace / build / defer;
+- созданы ADR/spec и acceptance criteria;
+- отсутствуют открытые вопросы, способные изменить фундаментальную архитектуру, либо они явно вынесены в owner decision.
+
+### Очерёдность закрытия Phase 0
+1. **Market data & exchange adapters:** capabilities matrix по приоритетным биржам и критическим потокам; отдельный список неподдержанных/неподтверждённых возможностей.
+2. **Execution & recovery:** lifecycle, idempotency, unknown outcome, reconciliation, restart recovery и failure modes.
+3. **Financial correctness:** instrument specs, exact arithmetic, fees, funding, margin и ledger invariants.
+4. **Simulation & research:** сопоставление HFTBacktest/LEAN/ABIDES; выбрать минимально достаточную модель симуляции и зафиксировать limitations.
+5. **Security & supply chain:** threat model, credentials, auth, dependencies, licenses, CI and backup/recovery.
+6. **Analytics correctness:** формулы, aggregation semantics, golden datasets и independent checks для ключевых Order Flow функций.
+7. **Architecture synthesis:** NX-ARCH-001, service boundaries, deployment, persistence, observability и final readiness review.
+
+Каждый work package имеет ограниченный scope и exit criteria. Новые интересные направления помещаются в backlog, но не блокируют текущий этап, если не затрагивают безопасность, финансовую корректность или выбранную архитектуру.
+
+### Обязательный выход Phase 0
+- утверждаемые NX-ADR-001..006 и NX-SEC-001;
+- NX-ARCH-001;
+- шесть ТЗ с контрактами и acceptance criteria;
+- exchange capabilities matrix;
+- risk register и dependency/license inventory;
+- test/evidence matrix;
+- implementation sequence и estimate ranges;
+- финальный readiness report с PASS/BLOCKED и ссылками на evidence.
+
+Только после owner review и прохождения всех критических gates разрешается начать безопасный read-only/paper prototype. Live trading требует отдельного допуска.
