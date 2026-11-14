@@ -203,3 +203,7 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 ## NX-ARCH-005 cross-review update — 2026-11-14
 
 A focused contract-to-code audit corrected the strict-JSON example in NX-ARCH-005 and narrowed claims around operation coverage. Decimal/rational and numeric-wire operation mappings are tied to the actual reference-model APIs; financial-math labels without callable reference implementations and the instrument-spec snapshot remain deferred migration targets. Non-numeric rejection mappings remain review-gated and must not be inferred from exception messages. No executable schema/runner or Rust implementation exists; owner review and G0D/G1 gates remain in force.
+
+## Financial/numeric audit correction — 2026-11-14
+
+Correction to the preceding NX-ARCH-005 cross-review: linear and inverse financial reference paths are present and tested in `instrument_units.py` / `test_financial_math_fixtures.py`; only reusable partial-fill aggregation remains an extraction follow-up because its current implementation is inline in the test. The exact decimal oracle is arbitrary precision, while `BoundedNumericContext` applies mandatory explicit synthetic limits. API misuse is distinct from mathematical inexactness. NX-ARCH-005 now records the corrected mapping and remains PROPOSED.
