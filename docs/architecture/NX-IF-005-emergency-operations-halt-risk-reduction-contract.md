@@ -89,7 +89,7 @@ States:
 - `RESUMING` — new epoch and policy are propagating; dispatch remains blocked until all gates pass.
 - `ACTIVE` — normal operation resumes only after explicit final authorization and successful enforcement acknowledgement.
 
-A request does not equal successful propagation. If a dispatch boundary does not acknowledge the new epoch within the configured policy deadline, the scope remains HALTED and that boundary must be isolated, disabled or treated as unavailable. The system MUST NOT report HALTED as fully enforced while an unisolated dispatcher can still send orders.
+A request does not equal successful propagation. After the epoch is durably committed, the scope remains HALT_PROPAGATING until every required boundary acknowledges the new generation or is positively isolated. If a boundary misses the configured policy deadline, the system MUST keep enforcement pending, isolate/disable that boundary or treat it as unavailable, and MUST NOT transition to HALTED or report HALTED as fully enforced while an unisolated dispatcher can still send orders.
 
 Transitions are append-only. A repeated halt request is idempotent with respect to the same incident/scope but MUST NOT decrease or reuse the epoch. A wider halt increments the affected parent epoch and invalidates descendant approvals. A narrower halt cannot clear an ancestor halt.
 
