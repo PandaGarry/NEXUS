@@ -240,8 +240,6 @@ class PostgreSQLGuardHarness(unittest.TestCase):
                 "CREATE ROLE nexus_runtime_escalation;",
                 f"ALTER ROLE {principal} CREATEROLE;",
                 f"GRANT nexus_hegc_owner TO {principal};",
-                "GRANT EXECUTE ON FUNCTION "
-                "nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text) TO PUBLIC;",
                 "ALTER FUNCTION "
                 "nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text) SECURITY INVOKER;",
                 "ALTER DEFAULT PRIVILEGES FOR ROLE nexus_hegc_owner "
@@ -255,6 +253,24 @@ class PostgreSQLGuardHarness(unittest.TestCase):
                     denied.returncode, 0,
                     f"{principal} unexpectedly executed: {statement}",
                 )
+
+            # PostgreSQL may report a warning/no-op (exit status 0) when a
+            # non-owner attempts GRANT. Assert effective ACL state, not CLI status.
+            public_grant = run_sql(
+                "GRANT EXECUTE ON FUNCTION "
+                "nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text) TO PUBLIC;",
+                user=principal, password=password,
+            )
+            self.assertEqual(public_grant.returncode, 0, public_grant.stderr)
+            effective_acl = run_sql(
+                "SELECT has_function_privilege('nexus_hegc',"
+                "'nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text)','EXECUTE'),"
+                "has_function_privilege('nexus_writer',"
+                "'nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text)','EXECUTE'),"
+                "has_function_privilege('nexus_membership_admin',"
+                "'nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text)','EXECUTE');"
+            )
+            self.assertEqual(effective_acl.stdout.strip(), "t|f|f")
 
     def test_restrictive_rls_policy_composes_with_permissive_policy(self) -> None:
         account, scopes = self.seed()
