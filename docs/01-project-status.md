@@ -8,12 +8,12 @@
 |---|---|---|
 | Цель и продуктовые границы | Accepted | Зафиксированы в Project Charter |
 | Архитектурные принципы | Proposed / Partially accepted | Требуются финальные ADR |
-| Tradoor audit | In Progress | Выполнен первый bounded source pass на SHA 39a1826; остаются instrument metadata, recovery, funding и private API |
+| Tradoor audit | In Progress | Source pass обновлён до HEAD 6ab3877; funding/private execution capability audit добавлен в NX-RESEARCH-002. Полная per-venue сертификация, instrument metadata и runtime verification остаются открыты |
 | Exchange capabilities matrix | Incomplete | Trade/book/OI/liquidation первично просмотрены; per-channel matrix и UNKNOWN поля ещё не закрыты |
 | Simulation fidelity | In Progress | Tradoor paper-модель недостаточна для реалистичного исполнения |
 | Runtime verification | Not performed | CI/runtime тесты не считать пройденными |
 | Security threat model | Not started | Блокер |
-| Exact arithmetic / instrument specs | Not started | Блокер |
+| Exact arithmetic / instrument specs | ADR proposed / implementation not started | NX-ADR-005 drafted; требует owner review и последующих golden tests. Блокер реализации сохраняется |
 | Prototype readiness | BLOCKED | Не начинать прототипирование |
 
 ## Новые архитектурные артефакты (PROPOSED)
