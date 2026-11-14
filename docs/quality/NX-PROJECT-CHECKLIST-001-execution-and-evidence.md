@@ -265,3 +265,17 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [x] Add 200 seeded inverse exposure identity cases.
 - [x] GitHub Actions run [#43596851904](https://github.com/PandaGarry/NEXUS/actions/runs/43596851904) passed exact code/test commit `0f0b44e927aacf67d6f7a5678b160b3e3c6088e0`: 182 tests per runtime on Python 3.11/3.12/3.13; all three jobs successful.
 - [ ] Cross-language conformance remains deferred until production language/runtime and resource limits are approved.
+
+## 16. Russia jurisdiction and first-venue eligibility gate
+
+- [x] Publish NX-RESEARCH-009 with Federal Law No. 282-FZ, CBR guidance, Directive 7441-U, domestic operator/derivative candidates and foreign venue screening.
+- [x] Record Directive 7441-U effective date (2026-11-17), RUB 300,000 annual cumulative broker-acquisition cap for non-qualified residents, and BTC/ETH/USDT eligible-admission list; crypto-exchange organization applicability remains a legal question.
+- [x] Mark NX-RESEARCH-003/004 historical and superseded for current live-venue selection.
+- [x] Draft NX-ADR-007 with immutable VenueEligibilityRecord, fail-closed activation states, independent Risk authorization and egress-bound eligibility epoch fencing.
+- [x] Perform bounded consistency review against NX-IF-001..005, NX-SEC-001 and NX-ADR-002; no blocking authority-boundary contradiction found.
+- [ ] Owner/legal acceptance of ADR-007 and qualified legal opinion on Articles 30–32 / Article 30(2).
+- [ ] Confirm qualified-investor status and T-Invest product/API eligibility using authenticated account evidence; no orders.
+- [ ] Confirm T-Invest Lab crypto service and API availability in writing.
+- [ ] Add ADR-007 conformance tests and production evidence/signing design before implementation.
+
+**Disposition:** FIRST VENUE BLOCKED. No venue selected, no account/API credentials connected, no orders/transfers/deposits/withdrawals, and no live trading authorized. All foreign venues remain RESEARCH_ONLY.
