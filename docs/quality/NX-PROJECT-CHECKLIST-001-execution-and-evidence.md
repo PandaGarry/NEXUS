@@ -1195,6 +1195,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Require HEGC to hold no venue credentials/socket and no Risk approval signing key; Egress holds no direct write permission to HEGC control records.
 - [x] Require narrow read-only access to Risk/Command/eligibility/evidence/dispatcher records and write access only to the control-owned schema.
 - [x] Make grant issuance idempotent on stable attempt ID: exact retry returns the same persisted grant; any changed binding conflicts.
+- [x] Require Trusted Egress to independently verify the RiskApprovalCapability signature, exact command digest, active reservation, evidence bindings, audience, expiry and single-use consumption; HEGC grant cannot replace Risk approval.
 - [x] Define ambiguous HEGC response recovery by reading the same attempt ID; no replacement attempt or second grant while the first may still send.
 - [ ] Implement and test HEGC transaction semantics, durable uniqueness constraints, Egress grant verification/consumption and restart recovery.
 - [ ] Test response loss after grant commit, duplicate request, changed digest, changed evidence generation, Egress pause, HEGC restart and positive sender fencing.
