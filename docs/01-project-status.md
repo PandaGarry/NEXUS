@@ -549,3 +549,7 @@ This remains Python reference-model CI only. It does not execute the strict CBOR
 ## PostgreSQL 18.7 / valuation-vector reference CI evidence correction — 2026-11-14
 
 The exact tested SHA `7fb396df5f3e700adf0ad151c446e38930fdadb0` passed [workflow #43617626344](https://github.com/PandaGarry/NEXUS/actions/runs/43617626344), not the earlier workflow reference previously written in the checklist. Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); logs show no failures or Node.js 20 / `punycode` warnings. This run is Python reference-only and does not validate PostgreSQL 18.7, valuation evidence manifests, CBOR/COSE, Rust or Trusted Egress.
+
+## NX-IF-004 cross-contract consistency correction — 2026-11-14
+
+NX-IF-004 now binds RiskApprovalCapability to both StateEvidenceVector and the exact ValuationInputVector ID/version, assigns final compatibility checking to Trusted Egress (not generic Execution), and references the selected G1 profile in NX-ADR-008 / NX-IF-001: restricted deterministic CBOR, domain-separated SHA-256 and COSE Ed25519 alg=-19. Exact libraries, key custody, ceremony/rotation, security and jurisdictional acceptance remain open. This was a contract/documentation correction; no signing or dispatch implementation exists.
