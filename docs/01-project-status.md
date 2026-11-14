@@ -502,3 +502,7 @@ Unknown Risk reservation commit handling now explicitly distinguishes a missing 
 ## Risk scope serialization and PostgreSQL concurrency — NX-ARCH-REVIEW-007
 
 Published [NX-ARCH-REVIEW-007](architecture/NX-ARCH-REVIEW-007-risk-scope-serialization-and-postgresql-concurrency.md) and synchronized its findings into NX-ADR-008 §5.3, NX-IF-002 §6.4 and OD-09. The G1 design now requires every projection event to update all affected parent/account and child scope-state rows atomically; scope hierarchy changes serialize and advance scope_config_version; the logical state row carries monotonic projection/reservation/source versions; and SQLSTATE 23505 is resolved only as a known idempotency collision, never blindly retried. PostgreSQL 18 SERIALIZABLE remains an evaluation baseline only. Concurrency, role separation, throughput, failover and old-primary fencing remain unproven; no database/schema/runtime was implemented.
+
+## Exact-head CI after NX-ARCH-REVIEW-007 — 2026-11-14
+
+Branch HEAD `e7c5461ae7ccea4f29fc77461db91d44566aba36` passed [workflow #43616908979](https://github.com/PandaGarry/NEXUS/actions/runs/43616908979): Python 3.11/3.12/3.13 each passed 13 isolated reference suites / 239 tests (717 successful executions). All three logs show no failures or Node.js 20 / `punycode` deprecation warnings. This is Python reference-model regression only; no PostgreSQL concurrency harness, database, Rust, CBOR/COSE, Trusted Egress, venue or live path was exercised.
