@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+### Added — Exact rational division and explicit quantization (test-only; CI pending)
+- `ExactDecimal.divide_exact` returns a reduced `ExactRational`; division by zero fails closed and no rounding is implicit.
+- Added exact terminating-decimal conversion and explicit quantization modes: UNNECESSARY, DOWN, UP, FLOOR, CEILING, HALF_UP and HALF_EVEN.
+- Added 1,000 deterministic rational property cases, language-neutral division vectors and a dedicated Python 3.11–3.13 CI step. Operation-specific financial rounding policies remain unapproved.
+
+
 ### Added — Instrument quantity-unit semantics reference (test-only; CI verified)
 - Added `InstrumentUnitModel`, explicitly bound to an immutable `InstrumentSpec` version, for spot base-asset quantities, linear contract counts and inverse contract counts.
 - Linear multiplier is typed as base-asset units per contract; inverse multiplier is typed as quote-asset units per contract. Inverse base exposure and QUANTO remain explicitly blocked.
