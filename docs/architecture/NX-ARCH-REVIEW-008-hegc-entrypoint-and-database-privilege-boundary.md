@@ -36,7 +36,7 @@ The G1 API surface should remain small and typed:
 1. **AuthorizeEgressAttempt** — one outer transaction: acquire the common guard first; validate the caller; read the complete authoritative Risk/Command/eligibility/evidence/dispatcher validation set; validate exact command/reservation/evidence/epoch/eligibility/fence bindings; persist one grant; return only an opaque grant/attempt reference.
 2. **CommitHaltEpoch** — acquire the same common guard and commit a monotonic halt epoch. A halt-first ordering denies a later grant; a grant-first ordering leaves the attempt in-flight.
 3. **ConsumeEgressGrant** — Egress-specific one-use transition from GATE_COMMITTED to GRANT_CONSUMED. Only a positive consume result permits one socket-write attempt.
-4. **ReportSocketInitiated** — Egress-specific, attempt-bound report after the socket-write syscall has actually been invoked/returned. A pre-send local flag is not proof.
+4. **ReportSocketInitiated** — Egress-specific, attempt-bound report after the first transport write for the logical venue request has begun. A logical request may span multiple OS/TLS writes; this is not proof of full delivery or venue acceptance. A pre-send local flag is not proof.
 5. **GetAttemptStatus** — bounded status lookup by the same stable attempt ID; returns only the minimum metadata required to resolve an ambiguous response, not financial source records.
 
 The common guard helper is internal to the reviewed database entrypoints and guarded domain-write procedures. General application roles do not receive direct EXECUTE on the helper.
@@ -61,6 +61,7 @@ Official PostgreSQL 18 guidance:
 - Role attributes including NOLOGIN, NOINHERIT and BYPASSRLS: https://www.postgresql.org/docs/18/role-attributes.html
 - Role membership and SET ROLE behavior: https://www.postgresql.org/docs/18/role-membership.html
 - Function security and untrusted languages: https://www.postgresql.org/docs/18/perm-functions.html
+- RFC 9110 §9.2.2 — idempotent methods and automatic retry constraints: https://www.rfc-editor.org/rfc/rfc9110.html
 
 ## 5. Transaction and commit-order contract
 
@@ -74,6 +75,10 @@ Official PostgreSQL 18 guidance:
 - Direct DML and advisory-lock-only bypasses are prohibited. The database must enforce that all relevant writers use guarded procedures.
 
 The nexus_control.acquire_scope_guards(scope_ids uuid[]) SECURITY DEFINER helper is a candidate only. Its owner has guard-table write permission and, if needed, SELECT-only access to a minimal scope-membership/config-version projection. The exact helper, ownership, privileges, isolation and post-wait snapshot behavior remain unselected until PostgreSQL 18.7 multi-connection tests pass.
+
+## 5.1 Logical send boundary and transport retry policy
+
+The GRANT_CONSUMED database transition is necessary but not sufficient to prove one external request. Trusted Egress must enforce one logical venue-request transmission attempt per grant, own the only venue credential/socket route and emit SOCKET_INITIATED from the instrumented transport boundary. A logical request may span multiple OS/TLS writes; the event marks the first transport write, not delivery or venue acceptance. Automatic HTTP/SDK/proxy/service-mesh retries, redirects, pipelining of order mutations and WebSocket reconnect replay are disabled by default. HTTP method idempotency does not by itself prove venue endpoint semantics. RFC 9110 §9.2.2 says clients should not automatically retry non-idempotent requests without proof that the operation is idempotent or that the original was never applied. Partial write, timeout, reset or lost response after possible bytes remains OUTCOME_UNKNOWN and requires reconciliation.
 
 ## 6. Attempt and halt semantics
 
@@ -120,6 +125,9 @@ The following tests are required before implementation acceptance:
 23. HEGC outage, store outage, serialization retry exhaustion and ambiguous commit all fail closed.
 24. Migration/rollback/restore preserves function ownership, ACLs, role memberships, guard rows and grant/halt state.
 25. Lock contention, guard fan-out and p95/p99 latency are measured without weakening atomicity or guard ordering.
+26. HTTP/SDK/proxy/service-mesh retries, redirects, pipelining and WebSocket reconnect replay cannot duplicate an order mutation.
+27. Partial transport write, TCP reset, timeout and response loss after possible bytes remain OUTCOME_UNKNOWN with no automatic retry.
+28. The Egress boundary records the first transport write for the logical request; application pre-send flags and mock adapter calls are insufficient.
 
 ## 8. Open gates and disposition
 
