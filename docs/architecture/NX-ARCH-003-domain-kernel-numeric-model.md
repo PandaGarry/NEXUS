@@ -131,3 +131,6 @@ GitHub Actions run [#43590395882](https://github.com/PandaGarry/NEXUS/actions/ru
 NX-REF-DOMAIN-007 provides an explicit BoundedNumericContext. All NumericLimits are mandatory; there is no global default. It preflights input length, scale alignment, multiplication growth, division expansion, rational bounds and quantization growth. Division uses conservative pre-reduction checks and may reject some reducible quotients. These are reference semantics only; production limits remain unselected.
 
 NX-REF-DOMAIN-008 defines nxd1 decimal and nxr1 rational scalar encodings. Parsers require max_chars and reject non-canonical or unreduced values. These encodings carry no currency, instrument, provenance, timestamp, command identity or signature semantics.
+
+
+Latest bounded numeric/wire evidence: PR run [#43595199511](https://github.com/PandaGarry/NEXUS/actions/runs/43595199511) passed exact PR HEAD `fddd03f59baa159d8ed345691221c2446b0f60e3` on Python 3.11–3.13; ten isolated suites, 172 tests per runtime / 516 matrix executions. This remains reference-only and does not select production limits.
