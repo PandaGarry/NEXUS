@@ -499,3 +499,14 @@ Disposition: research-only. No package, service, broker, database, vault or depl
 - [ ] Keep public plugin registration, third-party executable code, paid subscriptions, multi-tenancy and live authority separately gated.
 
 **Disposition:** design only. No registry, manifest validator, signing service, grant issuer, sandbox, module runtime, deployment technology or external dependency was added. NX-ARCH-008 publication passes no readiness or implementation gate.
+
+
+## 18.11 Exact-head CI evidence for NX-ARCH-008
+
+
+### NX-ARCH-008 exact-head regression verification — 2026-11-14
+
+- Exact branch HEAD `b1d3201a1fe1706909218943f5464eba43ea1041` passed GitHub Actions [#43611030968](https://github.com/PandaGarry/NEXUS/actions/runs/43611030968).
+- All three jobs completed successfully: Python 3.11, 3.12 and 3.13; 13 isolated reference-model suites / 237 tests per runtime; 711 successful test executions total.
+- This verifies the existing Python reference-model regression workflow at that exact documentation head. It does **not** test NX-ARCH-008's proposed registry, schema, identity, grant issuance, module isolation, secret handling, database permissions, network/egress enforcement, Rust, venue behavior or live-trading safety.
+- The exact-head CI result is regression evidence only; NX-ARCH-008 remains PROPOSED / DESIGN ONLY and G0D/G1 remain open.
