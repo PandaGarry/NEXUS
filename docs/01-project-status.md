@@ -553,3 +553,9 @@ The exact tested SHA `7fb396df5f3e700adf0ad151c446e38930fdadb0` passed [workflow
 ## NX-IF-004 cross-contract consistency correction — 2026-11-14
 
 NX-IF-004 now binds RiskApprovalCapability to both StateEvidenceVector and the exact ValuationInputVector ID/version, assigns final compatibility checking to Trusted Egress (not generic Execution), and references the selected G1 profile in NX-ADR-008 / NX-IF-001: restricted deterministic CBOR, domain-separated SHA-256 and COSE Ed25519 alg=-19. Exact libraries, key custody, ceremony/rotation, security and jurisdictional acceptance remain open. This was a contract/documentation correction; no signing or dispatch implementation exists.
+
+## WP-D evidence / valuation vector alignment — 2026-11-14
+
+NX-IF-004 now explicitly distinguishes the broad StateEvidenceVector from NX-IF-002's immutable ValuationInputVector. RiskApprovalCapability binds both. Trusted Egress validates the exact signed valuation_input_vector_id/version against the authoritative persisted Risk evidence manifest and latest consumed source-watermark/correction status; it makes no remote market/FX/fee/collateral calls and cannot substitute a newer vector on the dispatch path. Missing, stale, incomplete or unverifiable evidence denies send. A newer monotonic tick alone does not invalidate a vector still admissible under its versioned policy. RecoveryBarrier readiness does not itself authorize a command.
+
+This is a proposed contract only. Source vector coherence, immutable snapshot storage, manifest freshness and instrumented no-fetch behavior remain unimplemented and unverified.
