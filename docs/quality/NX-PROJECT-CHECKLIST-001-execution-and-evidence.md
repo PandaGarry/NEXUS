@@ -24,9 +24,9 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 | Product scope | DONE for bounded v1 scope | OD-01 and OD-04 accepted; OD-15 partially accepted. See NX-OWNER-DECISIONS-001 |
 | PR #10 | OPEN / Draft / unmerged | Current branch contains reference models and docs; not a production implementation |
 | Exact-decimal oracle | DONE as reference slice only | 11 tests, 15 golden vectors and 1,000 deterministic rational-oracle property cases; exact PR-head CI passed on Python 3.11–3.13; no bounded production numeric type, dimensional wrappers, division or rounding |
-| Command-gateway oracle | DONE as test-only slice only | 21 tests; fake adapter; local SQLite concurrency only |
+| Command-gateway oracle | DONE as test-only slice only | 23 tests; fake adapter; local SQLite concurrency only; conditional state guards cover late ACK, pre-send rejection and adapter-error races |
 | Stale dispatcher fencing | BLOCKED | NX-REF-EXEC-001 counterexample proves stale worker can still reach adapter after recovery |
-| Late ACK state overwrite | DONE in reference model | Conditional state transition rejects stale ACK and records observation; does not stop external send |
+| Stale dispatcher state overwrite | DONE in reference model only | Conditional transitions reject stale ACK, pre-send rejection and adapter-error writes after recovery; observations retained; does not stop external send |
 | Egress fencing design | IN PROGRESS / PROPOSED | NX-REF-EXEC-002; no concrete provider, host fence, proxy or credentials boundary implemented |
 | Prototype readiness | BLOCKED | G0D and G1–G9 remain blocked as applicable |
 | Live trading | NOT AUTHORIZED | No credentials, orders, risk-limit values, deployment or live execution |
