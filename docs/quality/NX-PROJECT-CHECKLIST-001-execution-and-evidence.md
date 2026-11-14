@@ -429,3 +429,12 @@ The exact decimal oracle is arbitrary precision; `BoundedNumericContext` wraps i
 - [ ] Real egress-boundary fault injection, network bypass testing and host/workload fencing evidence.
 
 Disposition: PROPOSED design analysis only. No database/provider/crypto/network technology selected or implemented; no new runtime or venue capability. See NX-REF-EXEC-002 §4.5.
+
+
+
+### Exact-head CI verification after persistence/egress analysis — 2026-11-14
+
+- Documentation analysis head verified: `3187a69e443157ac3e66b874b4dcbb29588ddc70`.
+- GitHub Actions run [#43606550889](https://github.com/PandaGarry/NEXUS/actions/runs/43606550889) completed successfully on that exact head.
+- Three jobs passed: Python 3.11, 3.12 and 3.13. Each executed 13 isolated reference-model suites with counts 11, 24, 13, 17, 12, 16, 18, 18, 32, 12, 15, 28 and 21 = 237 tests per runtime; 711 successful test executions total.
+- This CI run verifies the existing Python reference-model suites at the exact documentation-analysis head. It does not test the newly documented transaction alternatives, database isolation, production egress topology, external host/network fencing, Rust, venue behavior or live safety.
