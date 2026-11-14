@@ -211,8 +211,8 @@ This is a bounded consistency pass over the relevant authority, command, state, 
 - [x] Define suspension behavior without assuming cancel/close/flatten is automatically permitted.
 - [ ] Owner review and acceptance.
 - [ ] Qualified legal review of applicable laws and product classification.
-- [ ] Cross-review against NX-IF-001..005, NX-SEC-001 and NX-ADR-002.
-- [ ] Conformance scenarios and tests for missing, stale, expired, mismatched, suspended and revoked records.
+- [x] Cross-review against NX-IF-001..005, NX-SEC-001 and NX-ADR-002 (bounded documentation review; no blocking contradiction found).
+- [ ] Conformance scenarios and tests for missing, stale, expired, mismatched, suspended and revoked records (reference suite added; exact-head CI evidence pending).
 - [ ] Production identity/evidence storage, signing, authorization and operator role design.
 
 **Disposition:** PROPOSED. Cross-document consistency review completed with no blocking contradiction; owner/legal review and conformance evidence remain open. No implementation, API key, order or live capability is authorized. G0/G1 remain blocked.
