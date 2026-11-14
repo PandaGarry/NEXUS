@@ -287,3 +287,14 @@ NX-RESEARCH-010 published a candidate shortlist. PostgreSQL is the leading persi
 - Added a proposed data-access matrix for product domains, explicit exclusions for optional-module access to Risk/reservations/Ledger/direct venue egress, and requirements for contract compatibility, dependency governance, revocation, rollback and runtime isolation.
 - Added 20 adversarial qualification scenarios with a requirement to inspect authoritative state and actual enforcement boundaries, not only mocked policy outcomes.
 - No registry runtime, schema validator, signing/grant service, sandbox, module, dependency or deployment technology was implemented or selected. G0D/G1 and owner/security review remain BLOCKED/OPEN as applicable.
+
+
+## Exact-head verification — NX-ARCH-008
+
+
+### NX-ARCH-008 exact-head regression verification — 2026-11-14
+
+- Exact branch HEAD `b1d3201a1fe1706909218943f5464eba43ea1041` passed GitHub Actions [#43611030968](https://github.com/PandaGarry/NEXUS/actions/runs/43611030968).
+- All three jobs completed successfully: Python 3.11, 3.12 and 3.13; 13 isolated reference-model suites / 237 tests per runtime; 711 successful test executions total.
+- This verifies the existing Python reference-model regression workflow at that exact documentation head. It does **not** test NX-ARCH-008's proposed registry, schema, identity, grant issuance, module isolation, secret handling, database permissions, network/egress enforcement, Rust, venue behavior or live-trading safety.
+- The exact-head CI result is regression evidence only; NX-ARCH-008 remains PROPOSED / DESIGN ONLY and G0D/G1 remain open.
