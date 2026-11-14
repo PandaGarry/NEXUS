@@ -628,3 +628,10 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Pass 13 isolated suites / 239 tests on Python 3.11, 3.12 and 3.13 (717 executions).
 - [x] Confirm no test failures or Node.js 20 / `punycode` warnings.
 - [ ] Keep CBOR/COSE, Rust, persistence, egress and venue verification as independent implementation gates.
+
+## Final synchronized PR #16 exact-head regression
+
+- [x] Verify `3af0453897545b77fee358b9902a6301f662232e` on [workflow #43616348161](https://github.com/PandaGarry/NEXUS/actions/runs/43616348161).
+- [x] Pass 13 suites / 239 tests on Python 3.11, 3.12 and 3.13 (717 executions).
+- [x] Confirm no test failures or Node.js 20 / `punycode` deprecation warnings.
+- [ ] Continue Rust, CBOR/COSE, persistence, egress and venue conformance as independent gates.
