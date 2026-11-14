@@ -18,7 +18,7 @@
 
 ## Новые архитектурные артефакты (PROPOSED)
 
-- [NX-ADR-004 — Market Data Recovery State Machine](architecture/NX-ADR-004-market-data-recovery-state-machine.md)
+- [NX-ADR-002 — Execution Integrity & Reconciliation](architecture/NX-ADR-002-execution-integrity-reconciliation.md)\n- [NX-ADR-003 — Simulation Fidelity & Strategy Validation](architecture/NX-ADR-003-simulation-fidelity-strategy-validation.md)\n- [NX-ADR-004 — Market Data Recovery State Machine](architecture/NX-ADR-004-market-data-recovery-state-machine.md)
 - [NX-ADR-005 — Instrument Specification & Exact Arithmetic](architecture/NX-ADR-005-instrument-specification-exact-arithmetic.md)
 - [ТЗ-NX-001 — Market Data Infrastructure](specifications/TZ-NX-001-market-data-infrastructure.md)
 
@@ -35,7 +35,7 @@
 - Поправка по Hyperliquid: `6 - szDecimals` корректно отражает один из лимитов максимальных десятичных знаков цены perpetual по официальной документации; это не подтверждённый дефект. Но `Product.price_decimals` не описывает также ограничение в 5 значащих цифр и независимый size step. См. NX-RESEARCH-002.
 - Подготовлены NX-ADR-004 и NX-ADR-005 со статусом PROPOSED; они требуют owner review и не являются принятыми решениями.
 - Server liquidation collector охватывает 11 perpetual venues, с 24h retention.
-- Funding-rate collection и private authenticated order execution остаются UNKNOWN в рамках текущего аудита.
+- По четырём приоритетным venue APIs подтверждены публичные funding capabilities; исторические/interval semantics для OKX и Hyperliquid остаются частично UNKNOWN. В Tradoor funding collector и private authenticated execution в проверенных путях NOT OBSERVED; это не доказывает отсутствие кода во всех ветках.
 
 ## Ранее установленные наблюдения
 
