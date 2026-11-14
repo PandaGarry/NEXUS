@@ -17,6 +17,7 @@
 
 - [NX-RESEARCH-001 — Simulation systems landscape](NX-RESEARCH-001-simulation-landscape.md)
 - [NX-RESEARCH-002 — Tradoor market-data adapter audit](NX-RESEARCH-002-market-data-adapter-audit.md)
+  - Confirmed Hyperliquid adapter mismatch: `szDecimals` is assigned to `price_decimals`; per-venue metadata coverage summary added.
 
 ## Evidence labels
 - CONFIRMED — непосредственно подтверждено исходником или тестом.
