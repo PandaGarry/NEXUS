@@ -1,4 +1,6 @@
 import unittest
+import json
+from pathlib import Path
 
 from nexus_decimal import (
     ExactDecimal,
@@ -65,6 +67,32 @@ class ExactDecimalTests(unittest.TestCase):
 
     def test_zero_normalizes(self):
         self.assertEqual(str(self.d("-0.000000")), "0")
+
+
+    def test_language_neutral_golden_vectors(self):
+        vector_path = Path(__file__).with_name("golden-vectors-v1.json")
+        vectors = json.loads(vector_path.read_text(encoding="utf-8"))
+        self.assertEqual(vectors["version"], "1.0.0")
+        for case in vectors["cases"]:
+            with self.subTest(vector=case["id"]):
+                op = case["op"]
+                if op == "parse":
+                    actual = str(self.d(case["input"]))
+                elif op == "add":
+                    actual = str(self.d(case["a"]) + self.d(case["b"]))
+                elif op == "subtract":
+                    actual = str(self.d(case["a"]) - self.d(case["b"]))
+                elif op == "multiply":
+                    actual = str(self.d(case["a"]) * self.d(case["b"]))
+                elif op == "compare":
+                    actual = self.d(case["a"]).compare(self.d(case["b"]))
+                elif op == "quantize_exact":
+                    actual = str(self.d(case["a"]).quantize_exact(case["scale"]))
+                elif op == "multiple_of":
+                    actual = self.d(case["a"]).is_multiple_of(self.d(case["step"]))
+                else:
+                    self.fail(f"unsupported golden vector operation: {op}")
+                self.assertEqual(actual, case["expected"])
 
 
 if __name__ == "__main__":
