@@ -10,7 +10,7 @@ This is a dated evidence snapshot. Every status is scoped to the cited commit, C
 | Item | Status | Evidence / limitation (checked 2026-11-15) |
 |---|---|---|
 | Public repository and review access | Verified | [Repository](https://github.com/PandaGarry/NEXUS); default branch `main` |
-| Main branch project overview | In Progress | [PR #20](https://github.com/PandaGarry/NEXUS/pull/20), head `8e0b5391c1340bdc49492fd651e8e005d3aa8e54`; documentation proposal is not on `main` |
+| Main branch project overview | In Progress | [PR #20](https://github.com/PandaGarry/NEXUS/pull/20), head `226de9531813095043e63df2174b78ee10cd7b2f`; documentation proposal is not on `main` |
 | Legacy architecture/documentation chain | In Progress | [Open PR list](https://github.com/PandaGarry/NEXUS/pulls); each PR must be checked for current base/head before relying on it |
 | Independent recorder spike | In Progress | [PR #19](https://github.com/PandaGarry/NEXUS/pull/19), head `0f2de4fa8a57b3296d3701e3a0f0ff2d7a79d66b`, based directly on `main`, Draft/open |
 | Recorder unit CI | Verified | [Run 43643265811](https://github.com/PandaGarry/NEXUS/actions/runs/43643265811) passed Python 3.11/3.12/3.13 on code revision `12ef58ad7c4b50210d9fa0e9f310628a61068504`; later PR #19 commits in this review changed documentation only |
@@ -27,8 +27,8 @@ This is a dated evidence snapshot. Every status is scoped to the cited commit, C
 
 ### PR #19 — public-data recorder spike
 
-- Code and tests are in [PR #19](https://github.com/PandaGarry/NEXUS/pull/19), current head `be7f9487d203d73eeef18cf2f1d6263ed7f4b2a9`.
-- [Unit CI run 43642980172](https://github.com/PandaGarry/NEXUS/actions/runs/43642980172) passed Python 3.11, 3.12 and 3.13 on code revision `d6141a482ae0ff20b421a0d488ef606813685876`; the subsequent PR #19 commits in the current head changed documentation only.
+- Code and tests are in [PR #19](https://github.com/PandaGarry/NEXUS/pull/19), current head `0f2de4fa8a57b3296d3701e3a0f0ff2d7a79d66b`.
+- [Unit CI run 43643265811](https://github.com/PandaGarry/NEXUS/actions/runs/43643265811) passed Python 3.11, 3.12 and 3.13 on code revision `12ef58ad7c4b50210d9fa0e9f310628a61068504`; the subsequent PR #19 commits in the current head changed documentation only.
 - [Live smoke run 43637091666](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666) captured 11,177 journal records over approximately 10 minutes. Exact classification: 8,149 trade-topic + 2,998 orderbook-topic + 29 pong replies (`op=ping`, `ret_msg=pong`) + 1 subscription acknowledgement = 11,177. The count discrepancy is closed.
 - The prior artifact inspection reported 11,177 valid JSONL lines, no malformed lines, no missing SHA-256 values and no digest mismatches. Integrity and frame classification are separate checks.
 - Artifact [14131465205](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666/artifacts/14131465205) expires 2026-11-28. The ZIP was downloaded into the current working session for inspection, but a user-controlled durable private copy is still required. Do not publish raw exchange frames until terms and redistribution rights are reviewed.
@@ -42,6 +42,7 @@ This is a dated evidence snapshot. Every status is scoped to the cited commit, C
 - Official Bybit contract: [full-depth WebSocket](https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob) is delta-only and requires [full-depth REST snapshot](https://bybit-exchange.github.io/docs/v5/market/full-ob); the bridge must align exact `seq` and `u`.
 - Required fail-closed cases include update-ID gap, `u=1`, disconnect/reconnect, malformed event, wrong symbol, crossed book and buffer overflow.
 - No downstream consumer may see a valid book until the REST snapshot and buffered deltas are synchronized.
+- Bybit API Terms (updated 2026-10-20) restrict benchmarking, repackaging/resale and commercial exploitation; Section 2.3 API-key applicability to unauthenticated public endpoints needs clarification. Raw data remain private and future live smoke is gated by `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true`.
 
 ### Research
 
