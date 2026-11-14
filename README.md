@@ -1,2 +1,37 @@
-# NEXUS
-Nexus treading 
+# NEXUS Bybit public-data recorder spike (Python)
+
+**Status:** experimental public-data prototype; not production and not venue approval.
+
+This short-lived implementation branch starts directly from `main`, independent of the stacked architecture PR chain. It has no credentials, private endpoints, account access, order entry, or trading functionality.
+
+## Included
+
+- Raw WebSocket frame journal: stores exact frames before parsing, with connection generation, UTC wall clock, monotonic receive clock, and SHA-256.
+- Optional live public recorder for `publicTrade.{symbol}` and `orderbook.full.{symbol}`, with a 20-second application heartbeat and bounded reconnect backoff.
+- Exact-decimal trade parser and deduplication by trade ID `i`; repeated `seq` values remain valid.
+- Full-depth snapshot/delta bridge and `u` continuity/reset guard.
+- Deterministic fixtures for snapshot alignment, stale/duplicate deltas, sequence gaps, `u=1`, deletion, replay equivalence and RPI metadata preservation.
+
+## Run
+
+```bash
+python -m pip install -e ".[live]"
+python -m unittest discover -s tests -v
+nexus-bybit-record --symbol BTCUSDT --output data/bybit-public-raw.jsonl
+```
+
+## Evidence boundary
+
+- The live command records raw public WebSocket frames only. It does not yet call REST snapshots or expose a reconstructed live book as valid.
+- The snapshot/delta state machine is unit-tested separately. A replay equality assertion is valid only when the expected snapshot and replayed book share the same `u` and `seq`; a moving live book cannot be compared byte-for-byte with a later REST snapshot.
+- `received_monotonic_ns` is only comparable within one host boot. NTP/chrony synchronization is an operational prerequisite for wall-clock correlation; elapsed latency must use monotonic clocks.
+- Every frame is tagged with a connection generation. Raw frames are journaled before any JSON parsing.
+- RPI orders are absent from the full-depth orderbook; downstream analytics must retain this limitation.
+- Live transport dependency is pinned to `websockets==17.4` (BSD-3-Clause, Python >=3.11), isolated in the optional extra. No pybit SDK or private/account client is included.
+
+## Official contracts (checked 2026-11-14)
+
+- Full-depth WebSocket: https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob
+- Full-depth REST snapshot: https://bybit-exchange.github.io/docs/v5/market/full-ob
+- Public trades: https://bybit-exchange.github.io/docs/v5/websocket/public/trade
+- Restricted jurisdictions: https://www.bybit.com/en/help-center/article/Service-Restricted-Countries/trade/spot
