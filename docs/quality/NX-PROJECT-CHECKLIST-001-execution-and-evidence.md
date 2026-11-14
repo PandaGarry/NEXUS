@@ -1551,3 +1551,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Complete independent security review and owner acceptance before any production gate is considered.
 
 **Disposition:** NX-ARCH-REVIEW-009 is design-only. The SHA-256 fixture fingerprint is not a signed production attestation or deployment control. G0D/G1 remain open; live trading remains NOT AUTHORIZED.
+
+
+## 18.93 Authorization-catalog manifest admission reference — 2026-11-14
+- [x] Add test-only logical v1 manifest schema validation with exact field-set enforcement.
+- [x] Reject wildcard scope, duplicate scope entries, unknown object kinds, duplicate semantic identities and duplicate deny-rule IDs.
+- [x] Enforce digest shape, UTC validity interval, exact deployment/database/migration context and sequence/predecessor continuity.
+- [x] Fail closed when signature/approval verification is false or revocation state is unavailable.
+- [x] Add adversarial tests and include the suite in Python 3.11–3.13 CI.
+- [ ] Add strict deterministic-CBOR raw-byte validation, cross-language vectors and independent cryptographic verification.
+- [ ] Add trust-root/key lifecycle, immutable approval/audit custody and external anti-rollback state.
+- [ ] Add complete PostgreSQL catalog observer, deployment gate and post-startup drift enforcement.
+
+**Limit:** logical-object reference model only; no CBOR/COSE implementation or production authorization.
