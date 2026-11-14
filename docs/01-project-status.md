@@ -278,3 +278,12 @@ NX-RESEARCH-010 published a candidate shortlist. PostgreSQL is the leading persi
 - Defined stable feature identifiers, auditable entitlement grants, explicit subscription lifecycle, replay-safe billing webhook handling, quotas distinct from Risk limits, downgrade/data-retention principles and compatibility requirements.
 - Public SaaS, multi-tenancy, teams, payment provider, plans/prices, public registration and commercial launch remain separate gated decisions. No payment integration, entitlement service, tenant runtime, module or product feature was implemented.
 - NX-ARCH-007 is a design artifact only; cross-review, G0D/G1, owner/legal/security approvals remain OPEN.
+
+
+## Module registry and admission governance — 2026-11-14
+
+- Published [NX-ARCH-008](architecture/NX-ARCH-008-module-registry-admission-capability-governance.md) as PROPOSED / DESIGN ONLY.
+- Defined immutable module and artifact identity, registry-controlled lifecycle states, module classes and trust tiers, plus the distinction between manifest declarations, capability definitions, workload grants and request-time authorization.
+- Added a proposed data-access matrix for product domains, explicit exclusions for optional-module access to Risk/reservations/Ledger/direct venue egress, and requirements for contract compatibility, dependency governance, revocation, rollback and runtime isolation.
+- Added 20 adversarial qualification scenarios with a requirement to inspect authoritative state and actual enforcement boundaries, not only mocked policy outcomes.
+- No registry runtime, schema validator, signing/grant service, sandbox, module, dependency or deployment technology was implemented or selected. G0D/G1 and owner/security review remain BLOCKED/OPEN as applicable.
