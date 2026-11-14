@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from nexus_decimal import ExactDecimal
-from domain_types import AssetAmount, ContractCount, DimensionMismatch, Notional, Price
+from domain_types import AssetAmount, ContractCount, DimensionMismatch, Notional, Price, RationalAssetAmount
 from instrument_spec import ContractType, InstrumentSpec, MarketType
 
 
@@ -112,6 +112,8 @@ class InstrumentUnitModel:
                 raise UnitModelMismatch("INVERSE multiplier must be quote-asset units per contract")
             if self.contract_multiplier is None:
                 raise UnitModelMismatch("INVERSE contract multiplier is required")
+            if self.settlement_asset != self.base_asset:
+                raise UnitModelMismatch("this inverse model requires settlement in the base asset")
 
     @classmethod
     def from_explicit_mapping(
@@ -192,14 +194,17 @@ class InstrumentUnitModel:
         multiplier = self._require_multiplier()
         return Notional(self.quote_asset, contracts.count * multiplier)
 
-    def inverse_base_exposure(self, contracts: ContractCount, price: Price) -> AssetAmount:
+    def inverse_base_exposure(self, contracts: ContractCount, price: Price) -> RationalAssetAmount:
+        """Return exact base exposure without imposing a decimal rounding policy."""
         self._require_contracts(contracts)
         if self.contract_type is not ContractType.INVERSE:
             raise UnsupportedUnitModel("inverse base exposure is unavailable for this contract type")
         if (price.base_asset, price.quote_asset) != (self.base_asset, self.quote_asset):
             raise DimensionMismatch("price assets do not match the instrument unit model")
-        raise UnsupportedUnitModel(
-            "inverse base exposure requires exact division and an explicit rounding/precision policy"
+        quote_notional = self.inverse_quote_notional(contracts)
+        return RationalAssetAmount(
+            self.base_asset,
+            quote_notional.amount.divide_exact(price.quote_per_base),
         )
 
     def _require_multiplier(self) -> ExactDecimal:
