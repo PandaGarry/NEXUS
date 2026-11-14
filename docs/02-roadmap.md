@@ -621,3 +621,10 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Add byte-exact cross-language COSE vectors and strict profile rejection tests.
 - [ ] Qualify exact crate versions, licenses, provenance, SBOM, advisories, fuzz behavior and key custody.
 - [ ] Do not interpret Python reference CI as Rust, CBOR/COSE, PostgreSQL, Trusted Egress or live-safety evidence.
+
+## Final exact-head regression after COSE wire-profile synchronization
+
+- [x] Verify `71afa64c00affed017c1f072600f4f0e4aaeccc6` on [workflow #43616247630](https://github.com/PandaGarry/NEXUS/actions/runs/43616247630).
+- [x] Pass 13 isolated suites / 239 tests on Python 3.11, 3.12 and 3.13 (717 executions).
+- [x] Confirm no test failures or Node.js 20 / `punycode` warnings.
+- [ ] Keep CBOR/COSE, Rust, persistence, egress and venue verification as independent implementation gates.
