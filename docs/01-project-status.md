@@ -754,3 +754,8 @@ The latest branch delta after the pinned-image code/test commit is documentation
 ## PostgreSQL catalog-drift regression — 2026-11-14
 
 Added a disposable-fixture catalog fingerprint regression covering role attributes/memberships, schema/relation owners and ACLs, RLS flags/policies, function owner/SECURITY mode/configuration/ACLs and default privileges. Four deliberate mutation/restore cases now prove fingerprint sensitivity to CREATEROLE escalation, PUBLIC EXECUTE, SECURITY INVOKER alteration and unexpected trusted-schema function inventory. Exact code/test HEAD `f815c351a709ff169996e3f0e451da73651a142c`: PostgreSQL 18.7 workflow [#43631662692](https://github.com/PandaGarry/NEXUS/actions/runs/43631662692) passed 12/12; Python workflow [#43631662864](https://github.com/PandaGarry/NEXUS/actions/runs/43631662864) passed 264 tests/runtime on 3.11/3.12/3.13 (792 executions). This is a test-only regression oracle, not production drift enforcement. Signed/approved production manifest, deployment fail-closed comparison, DBA/migration governance, emergency reconciliation, independent audit custody and existing-session/process/network fencing remain OPEN.
+
+
+## SHA-256 catalog fingerprint verification — 2026-11-14
+
+Replaced the fixture fingerprint's MD5 with Python `hashlib.sha256` over deterministic JSONB catalog snapshot text. Exact code/test HEAD `d9c7bf5fddf68792ed565fecbcef83b73dab11a7`: PostgreSQL workflow [#43631854964](https://github.com/PandaGarry/NEXUS) passed 12/12; Python workflow [#43631854995](https://github.com/PandaGarry/NEXUS) passed 264 tests/runtime on Python 3.11/3.12/3.13 (792 executions). Production manifest signing/approval and fail-closed enforcement remain OPEN.
