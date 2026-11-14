@@ -14,6 +14,12 @@
 - [ ] Зафиксировать дефекты, неизвестные свойства и ограничения.
 
 ## Phase 1 — Core Architecture (Blocked)
+
+- [x] Publish bounded WP-A..WP-E interface design drafts (NX-IF-001..005).
+- [x] Consolidate critical owner decisions and readiness dependencies in NX-OWNER-DECISIONS-001.
+- [ ] Obtain explicit owner decisions for G0 architecture scope before freezing the architecture baseline.
+- [ ] Obtain G1/G2 decisions and conformance evidence before read-only/paper and sandbox/shadow gates respectively.
+- [ ] Obtain all G3 risk/security/emergency approvals before any limited-live consideration.
 - [ ] Утвердить NX-ADR-001 Unified Market Event Contract. (Draft published; owner review and schema conformance design review required.)
 - [ ] Утвердить NX-ADR-002 Execution Integrity & Reconciliation. (ADR drafted; owner review required.)
 - [ ] Утвердить NX-ADR-003 Simulation Fidelity & Strategy Validation. (ADR drafted; owner review required.)
@@ -33,7 +39,7 @@
   - [ ] WP-E acceptance: owner role/dual-control/emergency-policy decisions, venue/account-mode capability certification, halt propagation, race, fault-injection and adapter conformance evidence.
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
 - [ ] Согласовать EvidenceRequirementSet/FreshnessPolicy thresholds и recovery objectives с владельцем до любой реализации.
-- [ ] Выполнить end-to-end contract review и зафиксировать owner decisions до выбора реализации.
+- [ ] Выполнить end-to-end contract review и зафиксировать owner decisions до выбора реализации. Consolidated register: NX-OWNER-DECISIONS-001 (OD-01..OD-15).
 
 ## Phase 2 — Professional Analytics (Blocked)
 - [ ] Утвердить ТЗ-NX-002 Professional Order Flow. (Draft published; formula decisions and owner review required.)
