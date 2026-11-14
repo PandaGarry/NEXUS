@@ -14,6 +14,7 @@ live = ["websockets==17.4"]
 
 [project.scripts]
 nexus-bybit-record = "nexus_bybit_recorder.live:main"
+nexus-bybit-replay = "nexus_bybit_recorder.replay:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
