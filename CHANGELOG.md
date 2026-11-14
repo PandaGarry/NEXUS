@@ -4,6 +4,13 @@
 
 ## Unreleased
 
+### Added — Capability authorization cross-review (2026-11-14)
+
+- Added NX-ARCH-REVIEW-003 reviewing the capability catalog, scope/data-classification model, entitlement separation and request-time authorization.
+- Constrained billing subscription management to intent submission; Billing alone validates provider state and writes entitlement lifecycle.
+- Added CAP-R-02..09 findings and CAP-19..26 adversarial scenarios covering canonicalization, projection leakage, forged payment claims, webhook replay, audit custody and outage independence.
+- Synchronized architecture index, checklist, status and roadmap. Design review only; no candidate capability or grant was approved or activated.
+
 ### Added — Capability catalog and authorization contract model (2026-11-14)
 
 - Added NX-ARCH-009 defining platform-owned capability identities/versions, ownership and enforcement authority, typed scopes, data classifications and request-time decision semantics.
