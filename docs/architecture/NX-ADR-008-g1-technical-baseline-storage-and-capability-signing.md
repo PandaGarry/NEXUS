@@ -133,17 +133,24 @@ A single PostgreSQL cluster with separated schemas/roles is preferred over multi
 
 These are ordered local ACID transactions, not one cross-service transaction. The design retains ambiguity and reconciliation across the gaps.
 
-### 5.3 Isolation and retry rules
+### 5.3 Risk reservation serialization point, isolation and retry rules
 
-- Risk's all-scope capacity reservation is the highest-contention invariant. Evaluate PostgreSQL SERIALIZABLE isolation with explicit scope-row locking in deterministic scope-ID order, unique constraints and state-version checks.
-- A serialization failure requires aborting and retrying the **entire transaction** from a fresh snapshot under a finite retry budget. Never retry only the failed statement or reuse values computed from the old snapshot.
-- Command approval consumption and outbox insertion use one transaction with a conditional single-use state transition and unique constraints. The exact isolation level is selected by concurrency tests, not by a blanket assumption.
-- Ledger inbox deduplication, journal posting and local projection update must commit atomically. Its exact isolation/locking strategy is likewise evidence-driven.
-- An unknown commit result is reconciled by reading the idempotency/transaction identity from the authoritative store. It is never treated as a definite rollback and never blindly re-executed.
-- Deadlocks and serialization failures are bounded, observable and retried only when the complete transaction is safe to restart.
+The G1 design uses a **Risk-owned scope-state record as the common serialization point** for both capacity reservations and changes to Risk's derived exposure projection. This is a design contract, not a selected SQL schema.
 
-Advisory locks alone are not correctness controls because PostgreSQL does not enforce that every writer participates. A database lease or fencing token does not fence an external socket.
+- Ledger remains the owner of journal posting and its durable event/inbox identity. It MUST NOT write Risk-owned state directly. Risk consumes Ledger/venue/external-activity facts through an idempotent inbox and updates its own exposure projection, source watermarks and scope-state version in a Risk-owned local transaction.
+- Every reservation and every Risk projection update affecting the same account/child scope MUST update the same Risk-owned scope-state record. This prevents a reservation check from racing a concurrent projection update that would otherwise change the exposure being checked. If the projection consumer is delayed, incomplete or contradictory, the relevant source watermark/freshness gate fails and risk-increasing approval is denied.
+- For a command spanning the account scope and one or more child constraints, the Risk transaction MUST resolve the complete required scope set, lock/update all corresponding pre-provisioned scope-state records in one local transaction, and process them in a single deterministic order by canonical scope-ID bytes. Missing, disabled or ambiguous scope-state records fail closed; the hot reservation path MUST NOT create missing scope rows opportunistically.
+- Within that transaction, Risk reads the versioned exposure projection and active reservation totals, evaluates every applicable limit, and—only if all scopes pass—persists the request identity/result, all reservation rows and all updated reserved-capacity totals atomically. A partial reservation across scopes is forbidden.
+- The common scope-state update is the serialization point; a version/CAS guard and database constraints remain mandatory. PostgreSQL SERIALIZABLE is the G1 default evaluation level as a second line of defense against predicate/write-skew anomalies. The exact query plan, lock strategy and whether every table needs SERIALIZABLE remain subject to measured concurrency/fault tests.
+- Projection-event application is idempotent: persist the inbox/event identity, apply the projection delta, advance the corresponding source watermark and update scope state in one Risk-owned transaction. Redelivery cannot apply the same exposure delta twice. The projection must retain lineage to its source event/snapshot and policy version.
+- The Risk idempotency identity is stable across retries and bound to the canonical command/request digest. A repeated identity with the same digest returns the original durable result; the same identity with a different digest is an explicit conflict. A database uniqueness constraint is the final duplicate guard, not an application-only pre-check.
+- Issue RiskApprovalCapability only after the Risk reservation transaction's commit is positively confirmed. A lost response or unknown commit result is resolved by querying the same idempotency identity and digest on the authoritative primary; never mint a second reservation under a new request identity to "recover" a timeout.
+- A serialization failure (`40001`) or deadlock (`40P01`) aborts the complete transaction. Retry the **whole transaction** from a fresh snapshot under a finite retry budget and bounded backoff; recompute every exposure/limit decision. Never retry only the failed statement or reuse data from the aborted snapshot. Other constraint/business failures are not generic retry signals.
+- If the commit outcome cannot be resolved from the authoritative store, or primary authority is uncertain, keep the affected scope HALTED for risk-increasing operations. Do not infer rollback from a lost connection.
 
+Command approval consumption and outbox insertion use one separate Command-owned transaction with a conditional single-use state transition and unique constraints. Ledger inbox deduplication, journal posting and its local projection update likewise commit atomically. Neither transaction is folded into the Risk reservation transaction or a distributed commit.
+
+Advisory locks alone are not correctness controls because PostgreSQL does not enforce that every writer participates. A database lease or fencing token does not fence an external socket. Explicit row locks are not a substitute for updating the common Risk-owned state record: every writer that changes the Risk projection/reservation invariant must participate in the same transaction protocol.
 ### 5.4 Durability, backup and failover
 
 For the first G1 prototype, use one primary and prove backup, restore and point-in-time recovery. Do not enable automatic failover or active-active writers.
