@@ -4,6 +4,7 @@ These fixtures prove only exact dimensional arithmetic. They do not define
 venue semantics, fee/funding treatment, P&L, margin, accounting or authorization.
 """
 import json
+import random
 import unittest
 from fractions import Fraction
 from pathlib import Path
@@ -82,7 +83,7 @@ def linear_model():
     )
 
 
-def inverse_model():
+def inverse_model(multiplier="100"):
     spec = make_spec(
         instrument_id="nexus:demo:BTC-USD-INVERSE",
         native_id="BTC-USD-PERP",
@@ -92,7 +93,7 @@ def inverse_model():
         quote_asset="USD",
         settlement_asset="BTC",
         quantity_unit="contracts",
-        multiplier="100",
+        multiplier=multiplier,
     )
     return InstrumentUnitModel.from_explicit_mapping(
         spec, quantity_kind=QuantityKind.CONTRACT_COUNT,
@@ -172,6 +173,79 @@ class FinancialMathFixtureTests(unittest.TestCase):
                          Fraction(8125085, 1000))
         self.assertEqual(Fraction(weighted_average.coefficient, 10 ** weighted_average.scale),
                          Fraction(1625017, 25))
+
+
+    def test_spot_notional_matches_fraction_oracle_for_seeded_cases(self):
+        rng = random.Random(2026111401)
+        for index in range(250):
+            quantity = D(rng.randint(1, 10**9), rng.randint(0, 8))
+            price_value = D(rng.randint(1, 10**9), rng.randint(0, 8))
+            result = Price("BTC", "USDT", price_value).notional_for(
+                AssetAmount("BTC", quantity)
+            )
+            actual = Fraction(result.amount.coefficient, 10 ** result.amount.scale)
+            expected = (
+                Fraction(quantity.coefficient, 10 ** quantity.scale)
+                * Fraction(price_value.coefficient, 10 ** price_value.scale)
+            )
+            with self.subTest(case=index):
+                self.assertEqual(actual, expected)
+
+    def test_partial_fill_aggregation_is_permutation_and_partition_invariant(self):
+        rng = random.Random(2026111402)
+        for index in range(200):
+            fills = []
+            for _ in range(rng.randint(2, 7)):
+                quantity = D(rng.randint(1, 10**7) * 2, rng.randint(0, 6))
+                price_value = D(rng.randint(1, 10**8), rng.randint(0, 6))
+                fills.append((quantity, price_value))
+
+            def aggregate(items):
+                quantity_sum = D.parse("0")
+                quote_sum = D.parse("0")
+                for qty, px in items:
+                    quantity_sum = quantity_sum + qty
+                    quote_sum = quote_sum + qty * px
+                return quantity_sum, quote_sum, quote_sum.divide_exact(quantity_sum)
+
+            baseline = aggregate(fills)
+            shuffled = list(fills)
+            rng.shuffle(shuffled)
+            reordered = aggregate(shuffled)
+
+            first_qty, first_price = fills[0]
+            half_qty = D(first_qty.coefficient // 2, first_qty.scale)
+            partitioned = [(half_qty, first_price), (half_qty, first_price)] + fills[1:]
+            split_result = aggregate(partitioned)
+
+            expected_quote = Fraction(baseline[1].coefficient, 10 ** baseline[1].scale)
+            expected_quantity = Fraction(baseline[0].coefficient, 10 ** baseline[0].scale)
+            expected_average = expected_quote / expected_quantity
+            with self.subTest(case=index):
+                self.assertEqual(reordered, baseline)
+                self.assertEqual(split_result, baseline)
+                self.assertEqual(
+                    Fraction(baseline[2].numerator, baseline[2].denominator),
+                    expected_average,
+                )
+
+    def test_inverse_exposure_contract_value_identity_for_seeded_cases(self):
+        rng = random.Random(2026111403)
+        for index in range(200):
+            multiplier = D(rng.randint(1, 10**5), rng.randint(0, 4))
+            contracts_value = D(rng.randint(1, 10**6), rng.randint(0, 3))
+            price_value = D(rng.randint(1, 10**8), rng.randint(0, 5))
+            model = inverse_model(str(multiplier))
+            contracts = model.contract_count(contracts_value)
+            quote = model.inverse_quote_notional(contracts)
+            exposure = model.inverse_base_exposure(
+                contracts, Price("BTC", "USD", price_value)
+            )
+            base_fraction = Fraction(exposure.amount.numerator, exposure.amount.denominator)
+            quote_fraction = Fraction(quote.amount.coefficient, 10 ** quote.amount.scale)
+            price_fraction = Fraction(price_value.coefficient, 10 ** price_value.scale)
+            with self.subTest(case=index):
+                self.assertEqual(base_fraction * price_fraction, quote_fraction)
 
     def test_price_quantity_dimension_mismatch_fails_closed(self):
         with self.assertRaises(DimensionMismatch):
