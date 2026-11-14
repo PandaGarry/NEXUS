@@ -191,3 +191,5 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 - Published NX-ARCH-005 as PROPOSED, defining a common fixture envelope, VALUE/REJECT outcome union, stable rejection-class families, strict type/unit comparison, versioning, migration and evidence requirements.
 - Verified the complete tracked branch tree contains no Cargo manifest/lockfile, Rust toolchain pin, Rust source tree or Rust runner. Rust implementation remains blocked pending G0D/G1 and owner-approved toolchain/dependency policy.
 - Existing v1 fixtures were not changed; no normalized schema, validator, Python runner, Rust runner or cross-language conformance was implemented.
+
+- Added a per-file migration assessment to NX-ARCH-005: decimal/rational suites are mostly structural; numeric-wire invalid cases require reference-derived stable rejection classes; financial-math values require strict unit preservation; instrument-spec fixture needs a separately specified validation operation and expected outcome. No legacy file was modified.
