@@ -459,6 +459,7 @@ Disposition: research-only. No package, service, broker, database, vault or depl
 - [x] Publish NX-ARCH-006 as a design proposal: bounded contexts, protected core, versioned contracts, module manifest/admission, workload identity, capability allowlists, independent data ownership, failure containment, and lifecycle controls.
 - [x] Specify hard Demo/live separation: distinct account namespace and ledger, simulator-only execution, no production credentials or live-egress route, server-enforced type checks, and adversarial cross-domain tests.
 - [x] Specify Learning/Wiki as a low-privilege domain with sanitized content and no trading/secret write access.
+- [x] Exact branch-head reference workflow #43608583358 passed on the then-current head e15e47f9512bc07a1f6534a4f41b0d27d7d42578: Python 3.11/3.12/3.13 each passed 13 isolated suites / 237 tests (711 executions total). This is Python reference regression only; no module runtime, identity, isolation, DB, secrets or egress behavior is tested.
 - [ ] Cross-review NX-ARCH-006 against NX-ARCH-001..005, NX-SEC-001, NX-IF-001..005 and NX-OWNER-DECISIONS-001; resolve contradictions and owner/security review findings.
 - [ ] Draft module inventory, data classification, service ownership and capability matrix for the bounded v1 product scope.
 - [ ] Add contract compatibility, forged-identity/IDOR, module-compromise, demo-to-live, secret-isolation, network-egress and rollback adversarial test plans to the D4/D6 evidence matrix.
