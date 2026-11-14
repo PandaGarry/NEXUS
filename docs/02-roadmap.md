@@ -870,3 +870,13 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Test compromised HEGC cannot mint Risk approvals, bypass missing/invalid Risk signature, access venue credentials or open a venue socket.
 - [ ] Test compromised Egress cannot write HaltState or mint grants; test no other workload can write HEGC control schema.
 - [ ] Complete independent security review of HEGC identity, service role, audit, recovery and software supply chain.
+
+## HEGC control authority and halt-gate conformance
+
+- [x] Define HEGC as sole writer of HaltState/EgressBoundaryAuthorization; no venue credentials, socket or Risk signing key.
+- [x] Restrict Egress to one-use HEGC grants; no direct control-state writes.
+- [x] Specify one-active-instance PostgreSQL 18.7 evaluation topology and fail-closed outage.
+- [x] Add reference-model tests for pending halt, in-flight grant, store recovery, sender fence, repeated request and epoch exhaustion.
+- [ ] Implement disposable HEGC/DB test harness only after G0D/OD-12 acceptance.
+- [ ] Prove actual socket boundary reporting, role separation, grant replay prevention and positive process/host/network fencing.
+- [ ] Prove halt acknowledgement cannot precede resolution/isolation of every gate-committed attempt.
