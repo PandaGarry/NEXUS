@@ -1178,21 +1178,9 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** reference model and unit tests added; runtime, durable halt store, transport and external fence remain unimplemented.
 
-## 18.67 Halt / final Egress oracle exact-code CI — 2026-11-14
+## 18.67 Exact-head CI with HaltEgressGate reference tests — 2026-11-14
 
-- [x] Verify code/test SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1` with [workflow #43618215618](https://github.com/PandaGarry/NEXUS/actions/runs/43618215618).
-- [x] Python 3.11, 3.12 and 3.13 each passed all 13 suites; the egress-fencing package ran 24 tests/runtime (13 handover + 11 halt/gate oracle).
-- [x] Total matrix execution: 250 tests/runtime, 750 successful executions.
-- [x] Inspect all three logs: no test failures, Node.js 20 deprecation or `punycode` deprecation warnings.
-- [x] Confirm the new oracle is test-only and sequential; no DB, socket, process scheduler or network-fence behavior is claimed.
-- [ ] Re-run exact-head CI after the final documentation synchronization commits.
-- [ ] Replace sequential model assumptions with actual database/transport race proof at G1.
-
-**Disposition:** 11 new halt/gate reference tests pass across all three Python versions. Production halt/Egress implementation remains absent.
-
-## 18.36 Exact-head CI with HaltEgressGate reference tests — 2026-11-14
-
-- [x] Verify PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` on [workflow #43618215618](https://github.com/PandaGarry/NEXUS/actions/runs/43618215618).
+- [x] Verify code/test SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1` on [workflow #43618215618](https://github.com/PandaGarry/NEXUS/actions/runs/43618215618).
 - [x] Pass 13 isolated suites / 250 tests on Python 3.11, 3.12 and 3.13 (750 successful executions).
 - [x] Confirm egress-fencing suite contains 24 tests, including 11 HaltEgressGate cases for halt/gate ordering, paused senders, fencing and store outage.
 - [x] Inspect all logs: no test failures or deprecated Node.js runtime warnings.
