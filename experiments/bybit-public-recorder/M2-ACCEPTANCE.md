@@ -23,9 +23,9 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 - [x] Extended the journal to store timestamped REST response bodies and metadata before parsing.
 - [x] Added `BookSynchronizer` with bounded buffering, exact watermark bridge, `u=1` reset handling, gap invalidation and disconnect invalidation.
 - [x] Integrated REST snapshot acquisition and live synchronization into the public recorder CLI; the live CLI journals book-state transitions.
-- [x] Added unit tests for REST response validation, synchronization, reset/gap behavior and exhaustive record classification.
-- [x] Unit CI passed on Python 3.11/3.12/3.13 for the latest code: [run 43643870486](https://github.com/PandaGarry/NEXUS/actions/runs/43643870486), branch head `7aab3efa17286f205ee3087a656d9b9028661115`.
-- [ ] Integrated 10-minute live run [43642980172](https://github.com/PandaGarry/NEXUS/actions/runs/43642980172) was cancelled by subsequent code updates before the capture step completed. Future automated live smoke is skipped unless `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true` is set after the terms gate is cleared. Hosted-runner latency remains out of scope.
+- [x] Added unit tests for REST response validation, synchronization, reset/gap behavior, exhaustive record classification and a mocked end-to-end live loop (WS frames → REST snapshot → `LIVE_VALID` → replay).
+- [x] Unit CI passed on Python 3.11/3.12/3.13 for the latest code: [run 43644001404](https://github.com/PandaGarry/NEXUS/actions/runs/43644001404), branch head `1afaa21953aa369d634dd2c224f2495709bbdfd6`.
+- [ ] Integrated 10-minute live run [43642980172](https://github.com/PandaGarry/NEXUS/actions/runs/43642980172) was cancelled by subsequent code updates before the capture step completed. Future automated live smoke is skipped unless `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true` is set after the terms gate is cleared. A deterministic mocked live-loop integration test now passes, but it is not exchange-live evidence. Hosted-runner latency remains out of scope.
 - [x] Added `replay_book()` and a deterministic fixture that reconstructs the same watermark from raw REST/WS journal events and compares it with a recorded `LIVE_VALID` marker.
 - [ ] Replay evidence from the integrated live archive must pass the workflow gate; the unit fixture alone is insufficient.
 - [ ] Fault-injection and reconnect evidence remain outstanding; M2 is not accepted.
