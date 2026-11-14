@@ -254,3 +254,8 @@ NX-REF-EXEC-002 §4.5 now compares persistence and egress topologies. Candidate 
 - GitHub Actions run [#43606550889](https://github.com/PandaGarry/NEXUS/actions/runs/43606550889) completed successfully on that exact head.
 - Three jobs passed: Python 3.11, 3.12 and 3.13. Each executed 13 isolated reference-model suites with counts 11, 24, 13, 17, 12, 16, 18, 18, 32, 12, 15, 28 and 21 = 237 tests per runtime; 711 successful test executions total.
 - This CI run verifies the existing Python reference-model suites at the exact documentation-analysis head. It does not test the newly documented transaction alternatives, database isolation, production egress topology, external host/network fencing, Rust, venue behavior or live safety.
+
+
+## Open-source component qualification — 2026-11-14
+
+NX-RESEARCH-010 published a candidate shortlist. PostgreSQL is the leading persistence candidate for G1 evaluation only; OpenTelemetry Collector is the preferred observability candidate; OpenBao is a secrets-management candidate pending deployment/security/license review; NATS JetStream is deferred unless measured asynchronous fan-out/replay needs justify it; Cilium is conditional on a Kubernetes decision; Temporal is deferred; NautilusTrader remains test-only and is not trusted execution authority. No external dependency or runtime module was added. G0D dependency governance and OD-09 persistence selection remain open.
