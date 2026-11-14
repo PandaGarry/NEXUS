@@ -1174,7 +1174,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Ensure a gate-committed attempt remains eligible to initiate while halt is propagating, but prevents HALTED acknowledgement until socket initiation is observed or sender is positively fenced.
 - [x] Ensure both socket-initiated attempts and fenced attempts without a trusted initiation report remain reconciliation obligations after HALTED acknowledgement.
 - [x] Document that sequential oracle tests do not prove real database linearizability, process/host/network fencing or socket behavior.
-- [x] Initial 11-test revision passed on code SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1` (250 tests/runtime, 750 total) on workflow #43618215618; the later 12-test revision is tracked in 18.69.
+- [x] Initial 11-test revision passed on code SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1` (250 tests/runtime, 750 total) on workflow #43618215618; later sender-fence hardening and expanded edge coverage are recorded in 18.69–18.71.
 - [ ] Implement actual shared-row/conditional-update ordering and fault-inject both commit orders, process pause, store outage and positive fence at the real Egress boundary.
 
 **Disposition:** reference model and unit tests added; runtime, durable halt store, transport and external fence remain unimplemented.
@@ -1209,7 +1209,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Replace the model's `FENCED_NOT_SENT` state with `SENDER_FENCED_UNKNOWN`.
 - [x] Keep fenced-without-initiation-report attempts in the reconciliation-required set.
 - [x] Add a regression test proving sender fencing cannot erase an unknown prior socket side effect.
-- [ ] Verify the revised model suite on Python 3.11/3.12/3.13 at exact HEAD.
+- [x] Verify the expanded 16-case HaltEgressGate suite on Python 3.11/3.12/3.13 at exact code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` (workflow #43618694545).
 - [ ] Prove trusted socket-initiation evidence, fence attestation and reconciliation at the actual Egress boundary; never release reservation from fence receipt alone.
 
 **Disposition:** reference model now distinguishes "cannot send again" from "definitely did not send". Production evidence remains open.
@@ -1228,3 +1228,17 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove actual socket-initiation reporting and independent process/host/network fencing; the Python oracle is sequential and not a production concurrency proof.
 
 **Disposition:** logical ownership and test-only state-machine semantics are specified. HEGC, database schema, API, grants, network fence and production Egress remain NOT IMPLEMENTED.
+
+
+## 18.71 Expanded HEGC halt-gate oracle and exact-head CI — 2026-11-14
+
+- [x] Verify exact code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` on [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545).
+- [x] Pass 13 isolated suites / 255 tests on each of Python 3.11, 3.12 and 3.13 (765 successful executions total).
+- [x] Confirm the egress-fencing package passes 24 tests, including all 16 HaltEgressGate tests.
+- [x] Inspect all three job logs; no test failures or deprecation warnings.
+- [x] Preserve OUTCOME_UNKNOWN and reservation retention when a positive sender fence exists without trusted socket-initiation evidence.
+- [ ] Implement and prove HEGC idempotent grant persistence, changed-binding conflicts, restart recovery and least-privilege role enforcement.
+- [ ] Prove halt/gate serialization with real PostgreSQL concurrent transactions and fault injection.
+- [ ] Prove trusted socket-initiation observation and independent process/host/network fencing; reconcile ambiguous venue outcomes without blind resend.
+
+**Disposition:** exact code/test HEAD passed Python reference CI. Sequential tests do not prove production concurrency, durable control state, actual socket behavior, external fencing or live-trading safety.
