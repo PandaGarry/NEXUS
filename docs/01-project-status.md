@@ -596,7 +596,7 @@ This is Python reference-model CI only. It does not implement or verify signing 
 
 ## Test-only halt / final Egress gate reference model
 
-Added `foundation/reference-model/egress-fencing/halt_egress_gate.py`; the current model has 21 dedicated HaltEgressGate tests within a 34-test egress-fencing suite. It now covers one-use HEGC grant consumption, lost consume response, store outage, both halt/gate commit orders, pause-after-gate acknowledgement blocking, positive sender fencing, retained OUTCOME_UNKNOWN/reservation, duplicate halt requests and signed-64-bit epoch exhaustion. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing.
+Added `foundation/reference-model/egress-fencing/halt_egress_gate.py`; the current model has 23 dedicated HaltEgressGate tests within a 36-test egress-fencing suite. It now covers one-use HEGC grant consumption, lost consume response, store outage, both halt/gate commit orders, pause-after-gate acknowledgement blocking, positive sender fencing, retained OUTCOME_UNKNOWN/reservation, duplicate halt requests and signed-64-bit epoch exhaustion. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing.
 
 ## Exact-head CI including HaltEgressGate reference model — 2026-11-14
 
@@ -645,16 +645,28 @@ Code/test HEAD `2e94edd73f8933f0d510eed940452316ec5b8832` passed [workflow #4361
 
 The code/test commit includes the fix preventing duplicate halt requests during store outage from downgrading an already committed HALTING/HALTED epoch, and explicit reservation-retention assertions after sender fencing. PR #16 HEAD `09775625327c74cc31f27f18b0280e89bee4878d` contains documentation-only commits after this tested code/test SHA. The oracle remains sequential; it does not prove PostgreSQL concurrency, HEGC runtime, real socket initiation, process/host/network fencing or venue reconciliation.
 
-HEGC now has an explicit durable one-use grant-consumption transition: `GATE_COMMITTED → GRANT_CONSUMED`. Egress may initiate one socket-write attempt only after a positive `ConsumeEgressGrant` response. A repeated consume never issues a second permit; an indeterminate response cannot authorize a send or replacement attempt. A consumed grant with no observed socket initiation remains in-flight until positive sender fencing or boundary proof and must be reconciled. The test-only state machine now contains 21 tests, including lost-consume-response and store-outage cases. Production HEGC/API and socket instrumentation remain unimplemented.
+HEGC now has an explicit durable one-use grant-consumption transition: `GATE_COMMITTED → GRANT_CONSUMED`. Egress may initiate one socket-write attempt only after a positive `ConsumeEgressGrant` response. A repeated consume never issues a second permit; an indeterminate response cannot authorize a send or replacement attempt. A consumed grant with no observed socket initiation remains in-flight until positive sender fencing or boundary proof and must be reconciled. The test-only state machine now contains 23 HaltEgressGate tests, including lost-consume-response, store-outage and duplicate-halt-cause preservation cases. Production HEGC/API and socket instrumentation remain unimplemented.
 
 
-## Exact code/test-head CI — HEGC one-use grant consumption and halt recovery — 2026-11-14
+## Exact code/test-head CI — HEGC one-use grant consumption, halt recovery and cause preservation — 2026-11-14
 
-- [x] Verify code/test HEAD `9d618131ac9951e23c589491b2fb1039f6dc1d86` on [workflow #43619080626](https://github.com/PandaGarry/NEXUS/actions/runs/43619080626).
-- [x] Pass 13 isolated suites / **260 tests** on Python 3.11, 3.12 and 3.13 (780 successful executions total).
-- [x] Confirm egress-fencing passes 34 tests, including 21 HaltEgressGate cases for grant consumption, lost consume response, store outage, halt recovery and unknown-outcome retention.
+- [x] Verify code/test HEAD `fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8` on [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619080626).
+- [x] Pass 13 isolated suites / **262 tests** on Python 3.11, 3.12 and 3.13 (786 successful executions total).
+- [x] Confirm egress-fencing passes 36 tests, including 23 HaltEgressGate cases for grant consumption, lost consume response, store outage, halt recovery and unknown-outcome retention and duplicate-halt cause preservation.
 - [x] Inspect all three logs; no failures or deprecation warnings.
 - [ ] Prove the common HEGC/source-writer commit-order guard; SERIALIZABLE participation alone is not treated as strict real-time ordering.
 - [ ] Prove durable HEGC grants, one-use consumption, PostgreSQL multi-connection behavior and actual socket/process/network fencing.
 
 **Disposition:** exact code/test HEAD passed Python reference CI. No production HEGC, database guard, egress runtime, socket observer or external fence exists.
+
+
+## Exact code/test-head CI — duplicate-halt cause preservation — 2026-11-14
+
+- [x] Preserve the original halt reason throughout one active halt episode; repeated requests do not overwrite the initiating cause.
+- [x] Add regressions for duplicate requests while HALTING and while HALT_PENDING.
+- [x] Verify code/test HEAD fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8 on [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619194630).
+- [x] Pass 13 isolated suites / 262 tests on Python 3.11, 3.12 and 3.13 (786 successful executions total).
+- [x] Confirm egress-fencing passes 36 tests, including 23 HaltEgressGate cases; inspect all three job logs.
+- [ ] Prove the commit-order guard and grant-consumption recovery against real PostgreSQL 18.7, HEGC and Egress processes.
+
+**Disposition:** exact code/test HEAD passed reference CI. No production HEGC, durable gate store, strict commit-order guard or socket/network fencing is implemented.
