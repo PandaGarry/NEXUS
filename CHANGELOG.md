@@ -659,3 +659,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Defined gate-first attempts as in-flight and non-revocable; Egress must drain or positively fence them before acknowledging the new halt epoch.
 - Clarified that HALTED acknowledgement prevents new stale/queued socket-write initiation after acknowledgement, not venue processing of bytes already sent.
 - Added halt race crash points and IF-005 conformance cases. Actual network/process fencing remains unimplemented and unproven.
+
+### Halt / Egress race acceptance matrix and CI evidence — 2026-11-14
+
+- Expanded NX-IF-005 with race cases 36–42: halt-before-gate, gate-before-halt, paused Egress, unavailable control store, failed sender fence, delayed venue acceptance and instrumented socket-boundary proof.
+- Aligned halt acceptance criteria with the final EgressBoundaryAuthorization linearization point.
+- Distinguished Risk application outage (independent Control Plane can still commit halt) from authoritative halt-store outage (Egress denies final gate; no fully-enforced HALTED claim).
+- Verified Python reference suites at SHA `73841573e4e02b34a0c0363bbbe21155828d0c08`, [workflow #43617906166](https://github.com/PandaGarry/NEXUS/actions/runs/43617906166): 13 suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 executions).
+- This is documentation and reference-model CI only; no halt store, Egress runtime, socket instrumentation or external fence was implemented.
