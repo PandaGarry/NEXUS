@@ -792,7 +792,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** protocol trust boundary tightened in NX-ADR-008 and NX-RESEARCH-011. No COSE implementation, key or runtime added; G0D/OD-08 remain open.
 
-## 18.34 COSE_Sign1 exact wire profile — 2026-11-14
+## 18.35 COSE_Sign1 exact wire profile — 2026-11-14
 
 - [x] Pin the NEXUS COSE object to an untagged, embedded-payload, four-element COSE_Sign1 array.
 - [x] Require exactly two protected-header labels: alg (1) = -19 and 1–64-byte kid (4); unprotected map is empty.
@@ -804,7 +804,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** exact wire profile is now specified in NX-ADR-008 / NX-RESEARCH-011. No library or cryptographic runtime approved; G0D/OD-08 remain open.
 
-## 18.35 Exact-head regression after COSE key-resolution hardening — 2026-11-14
+## 18.36 Exact-head regression after COSE key-resolution hardening — 2026-11-14
 
 - [x] Verify branch HEAD `6fefd9a44ff2f272b6516265d10f41c46a13cf7a` with [workflow #43615911362](https://github.com/PandaGarry/NEXUS/actions/runs/43615911362).
 - [x] Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
@@ -814,7 +814,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** exact-head Python reference regression passed; it does not exercise the proposed COSE verifier or key registry. OD-08/G0D/G1 remain open for implementation and security review.
 
-## 18.36 Exact-head CI after COSE key-resolution and protected-header profile refinement — 2026-11-14
+## 18.37 Exact-head CI after COSE key-resolution and protected-header profile refinement — 2026-11-14
 
 - [x] Verify branch HEAD `88fcb30068507d85fb35802ca5d2195fd528c000` with [workflow #43616054657](https://github.com/PandaGarry/NEXUS/actions/runs/43616054657).
 - [x] Python 3.11, 3.12 and 3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
