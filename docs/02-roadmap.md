@@ -762,3 +762,9 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Pass 13 suites / 239 tests on Python 3.11–3.13 (717 successful executions).
 - [x] Inspect logs for failures and deprecated Node.js runtime warnings; none found.
 - [ ] Maintain separate proof gates for Rust, CBOR/COSE, PostgreSQL 18.7, Trusted Egress, fencing and venue behavior.
+
+## PostgreSQL 18.7 / valuation-vector exact-head CI reference
+
+- [x] Correctly record tested SHA `7fb396df5f3e700adf0ad151c446e38930fdadb0` and workflow [#43617626344](https://github.com/PandaGarry/NEXUS/actions/runs/43617626344).
+- [x] Confirm 13 suites / 239 tests per Python runtime (717 executions).
+- [ ] Keep database, valuation-manifest and egress tests separate from Python reference regression.
