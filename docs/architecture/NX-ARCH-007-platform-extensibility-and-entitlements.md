@@ -2,7 +2,7 @@
 
 **Status:** PROPOSED — strategic architecture foundation; not an accepted commercial or implementation baseline  
 **Date:** 2026-11-14  
-**Related:** NX-ARCH-001..006, NX-SEC-001, NX-IF-001..005, NX-RESEARCH-010, NX-OWNER-DECISIONS-001  
+**Related:** NX-ARCH-001..008, NX-SEC-001, NX-IF-001..005, NX-RESEARCH-010, NX-OWNER-DECISIONS-001  
 **Purpose:** Make future product expansion, paid tiers, professional capabilities and optional modules possible without coupling commercial packaging to security authority or destabilizing the protected core.
 
 ## 1. Strategic principle
@@ -139,7 +139,7 @@ Every module publishes a versioned contract and capability descriptor. Platform 
 - No module may dynamically install another module, change its own grants or bypass the reviewed registry.
 - Do not create a public plugin marketplace or third-party executable extension system without a separate high-risk architecture and threat review.
 
-## 8. Multi-tenancy and organization readiness without premature implementation
+## 7.1 Module registry and admission governance\n\nThe detailed registry, immutable release identity, module lifecycle, trust tiers, manifest-versus-grant separation, proposed permission matrix, revocation and adversarial qualification requirements are specified in [NX-ARCH-008](NX-ARCH-008-module-registry-admission-capability-governance.md). NX-ARCH-008 is a companion design proposal; it does not convert NX-ARCH-007 into an accepted implementation or commercial baseline.\n\n## 8. Multi-tenancy and organization readiness without premature implementation
 
 The architecture should avoid hard-coding a single global user namespace into every future contract, but NEXUS v1 remains bounded to its currently approved scope. Do not introduce tenant isolation complexity or public multi-user registration merely to appear future-proof.
 
