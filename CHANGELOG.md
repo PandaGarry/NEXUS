@@ -500,3 +500,9 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Branch HEAD `71afa64c00affed017c1f072600f4f0e4aaeccc6` passed [workflow #43616247630](https://github.com/PandaGarry/NEXUS/actions/runs/43616247630).
 - Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no failures or Node.js 20 / `punycode` warnings.
 - Verification remains Python reference-model only; no COSE, Rust, PostgreSQL, Trusted Egress, venue or live path was exercised.
+
+### Final synchronized PR #16 exact-head CI — 2026-11-14
+
+- Exact branch HEAD `3af0453897545b77fee358b9902a6301f662232e` passed [workflow #43616348161](https://github.com/PandaGarry/NEXUS/actions/runs/43616348161).
+- Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions); no test failures or Node.js 20 / `punycode` warnings.
+- Evidence is limited to Python reference models. Rust, CBOR/COSE, PostgreSQL, Trusted Egress, venues and live execution remain untested.
