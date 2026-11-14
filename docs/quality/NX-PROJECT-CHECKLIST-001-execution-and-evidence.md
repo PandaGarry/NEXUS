@@ -215,5 +215,5 @@ This checklist does not authorize:
 - Added bounded compare, step divisibility, exact terminating conversion and canonical wire parsing.
 - Added nxd1 decimal and nxr1 rational encodings with strict canonical grammar, normalized/reduced forms, version tags and mandatory max_chars parsing.
 - Conservative division preflight may reject a quotient whose unreduced values exceed budget even if GCD reduction would fit; this behavior is documented.
-- Dedicated bounded numeric (28 tests) and numeric wire (11 tests, including shared language-neutral vectors) suites passed PR run [#43594861745](https://github.com/PandaGarry/NEXUS/actions/runs/43594861745) on exact PR HEAD `2c0135f1205a27f070b0b6a835aa3c19e904e540`, Python 3.11–3.13; full matrix 166 tests per runtime / 498 executions.
+- Dedicated bounded numeric (32 tests) and numeric wire (11 tests, including shared language-neutral vectors) suites passed PR run [#43595199511](https://github.com/PandaGarry/NEXUS/actions/runs/43595199511) on exact PR HEAD `fddd03f59baa159d8ed345691221c2446b0f60e3`, Python 3.11–3.13; full matrix 172 tests per runtime / 516 executions.
 - No production limits, fixed-width integer choice, resource-safety proof, Rust implementation or cross-language conformance is approved.
