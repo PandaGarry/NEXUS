@@ -23,6 +23,8 @@
 |---|---|
 | Server topology and module registration | [bins/server/src/main.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/bins/server/src/main.rs) |
 | Public venue crate registry | [crates/venues/src/lib.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/lib.rs) |
+| Instrument catalogue model | [crates/venues/src/catalog.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/catalog.rs#L7-L75) |
+| Binance product metadata parser | [crates/venues/src/binance.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/binance.rs#L160-L195) |
 | Server trade stream and parser | [bins/server/src/trades.rs](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/bins/server/src/trades.rs#L192-L304) |
 | Browser stream contracts and protocol | [web/src/engine/streams.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/streams.ts#L1-L115) |
 | Browser venue-specific Order Flow protocols | [orderflow-streams.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/orderflow-streams.ts#L1-L230) and [orderflow-venues.ts](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/orderflow-venues.ts#L1-L270) |
@@ -119,11 +121,30 @@ The server collector has 11 perpetual venues: Binance, Bybit, OKX, Bitget, Gate,
 
 The inspected server module registry has `open_interest` and `liquidations` but no funding module. The training simulator's funding settlement does not establish live funding-rate collection. Funding-rate channels, historical funding, next funding time, rate units and instrument-specific settlement semantics remain **UNKNOWN** and require a dedicated source search before the capability matrix can be marked.
 
-## 7. Private execution boundary
+## 7. Instrument metadata and quantity normalization
+
+The shared `Product` catalogue model contains canonical market/venue/symbol/base/quote/kind, optional native symbol/name, optional `price_decimals`, 24h quote volume, last price and percentage change. It does **not** carry the trading-rule fields required to validate an order: exact tick size, quantity/lot step, min/max quantity, min notional, contract value/multiplier, settlement currency, linear/inverse flag, price bands, or leverage/margin tiers.
+
+The Binance product parser inspects `PRICE_FILTER.tickSize` to derive `price_decimals`; the inspected parser does not populate LOT_SIZE `stepSize` or `minQty` into the shared Product model. This catalogue is suitable for symbol search and chart display, not for authoritative order validation.
+
+Browser Order Flow quantity normalization is selective:
+- OKX perpetuals read `ctVal` from public instrument metadata.
+- Gate perpetuals read `quanto_multiplier`.
+- HTX perpetuals estimate coins-per-contract from one monthly candle's `amount / vol`.
+- Other venues default to a multiplier of 1 in the generic helper unless a protocol performs its own conversion.
+- Deribit has a separate conversion: USD-sized perpetual amounts are divided by price; underscore-named USDC instruments are treated as coin amounts.
+
+This is an analytics/display conversion path, not a canonical instrument-specification service. The HTX ratio-from-candle method is an estimate derived from traded data rather than a stable contract-rule record; the fallback-to-1 behavior can conceal missing metadata. NEXUS must never use these fallbacks to validate or size live orders.
+
+Additional arithmetic observation: the inspected catalogue parser, OI parser and browser book/print structures use floating-point numbers. Decimal precision cannot be reconstructed reliably after arbitrary binary-float operations. NEXUS needs versioned exact tick/lot/contract metadata and integer tick/lot or fixed-point values from ingestion through risk and execution.
+
+**Evidence:** [Product model](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/catalog.rs#L7-L75), [Binance metadata extraction](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/binance.rs#L160-L195), [Order Flow contract-size conversion](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/lib/orderflow.ts#L391-L430), [Deribit size conversion](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/orderflow-venues.ts#L130-L152).
+
+## 8. Private execution boundary
 
 The inspected topology and venue source registry establish public market-data parsing, not authenticated private account streams or order placement. No evidence in this bounded pass establishes signed private REST, authenticated user streams, order lifecycle tracking, fill reconciliation or safe retry semantics for the listed venues. Mark all such capabilities **UNKNOWN**, not supported or unsupported, until their own source-level audit is complete.
 
-## 8. NEXUS decisions implied by this audit (proposed, not owner-approved)
+## 9. NEXUS decisions implied by this audit (proposed, not owner-approved)
 
 1. Do not use Tradoor's browser Order Flow hub as NEXUS's autonomous feed.
 2. Keep chart/UI reuse separate from backend market-data ingestion.
@@ -134,13 +155,13 @@ The inspected topology and venue source registry establish public market-data pa
 7. Audit contract-size conversion, inverse/linear units and exact arithmetic before reusing any quantity normalization.
 8. Keep funding and private execution UNKNOWN until evidence is gathered.
 
-## 9. Scope closure and next bounded work
+## 10. Scope closure and next bounded work
 
 This pass closes only the first source-topology/trade/book/OI/liquidation scan. It does **not** close the full exchange capabilities matrix.
 
 Next bounded package:
 - inspect the browser `BookSync` caller and reconnection/resnapshot lifecycle;
-- inspect each venue's native instrument metadata and contract-size conversion;
+- complete a per-venue instrument-rule audit: exact tick/lot sizes, min/max quantity/notional, contract multiplier, settlement, inverse/linear semantics and margin tiers;
 - locate and audit funding-rate support (or confirm its absence within the server/browser source tree);
 - enumerate private API/order/user-stream capabilities separately;
 - produce a normalized per-venue capability matrix with evidence and explicit UNKNOWN cells.
