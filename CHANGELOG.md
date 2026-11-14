@@ -409,3 +409,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - No Node.js 20 or punycode deprecation warnings remain in the job logs.
 - PR #16 remains a 265-commit / 32-file / 4,467-addition / 72-deletion Draft in the verified parent-first stack.
 - No Rust runtime, production DB, signer, Trusted Egress, venue connection or live order path was introduced.
+
+### Full stacked-PR ancestry and current exact-head CI — 2026-11-14
+
+- Verified direct PR chain #1 → #2 → #3 → #4 → #5 → #6 → #7 → #9 → #10 → #11 → #12 → #13 → #14 → #16 by exact parent-head / child-base SHA equality. PR #8 is parallel from #7, not an ancestor of #16.
+- All direct-chain PRs remain open/Draft/unmerged; #16 correctly targets #14's head.
+- Exact PR #16 head `9e9035033da77d958601cb6b69128e13e2551a0d` passed [workflow #43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737): Python 3.11/3.12/3.13, 13 suites / 239 tests each, 717 successful executions.
+- No failures or Node.js 20 / `punycode` deprecation warnings. This is Python reference-model CI only, not Rust, persistence, Trusted Egress, venue or live-safety evidence.
