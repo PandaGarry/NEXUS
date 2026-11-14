@@ -688,7 +688,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 **Disposition:** protocol requirement clarified; no CBOR implementation or dependency selected. Cross-language parser proof remains G1-gated.
 
 
-## 18.25 Full stacked-PR ancestry and current exact-head CI — 2026-11-14
+## 18.26 Full stacked-PR ancestry and current exact-head CI — 2026-11-14
 
 - [x] Verify PR #1 -> #2 -> #3 -> #4 -> #5 -> #6 -> #7 -> #9 -> #10 -> #11 -> #12 -> #13 -> #14 -> #16 by exact base-SHA / parent-head-SHA equality.
 - [x] Verify PR #8 is a parallel branch from the v1-scope base, not an ancestor of PR #16.
@@ -701,7 +701,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 
 **Disposition:** PR #16 is correctly stacked but is not independently mergeable. The blocking condition is its open Draft ancestry, not a wrong base branch. Exact-head CI verifies Python reference models only; no Rust, PostgreSQL, COSE implementation, Trusted Egress, venue adapter or live-trading behavior is tested.
 
-## 18.26 Final synchronized G1 baseline / standards-correction exact-head CI — 2026-11-14
+## 18.27 Final synchronized G1 baseline / standards-correction exact-head CI — 2026-11-14
 
 - [x] Verify final branch HEAD `7914772358d2ee49c87374373bad5c589d0a2905` with GitHub Actions [#43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349).
 - [x] Confirm Python 3.11, 3.12 and 3.13 jobs all succeeded.
@@ -712,7 +712,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 
 **Disposition:** exact synchronized branch-head Python reference regression passed. G0D/G1 implementation/evidence gates remain open; PR #16 remains Draft; live trading NOT AUTHORIZED.
 
-## 18.27 Post-synchronization exact-head regression — 2026-11-14
+## 18.28 Post-synchronization exact-head regression — 2026-11-14
 
 - [x] Verify branch HEAD `928d5fd261553676c3fad6a8e88b984a862af338` with workflow [#43615282210](https://github.com/PandaGarry/NEXUS/actions/runs/43615282210).
 - [x] Confirm Python 3.11/3.12/3.13 all passed; 13 isolated suites / 239 tests per runtime; 717 successful executions.
