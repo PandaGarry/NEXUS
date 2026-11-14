@@ -377,3 +377,13 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Require preferred shortest forms, definite lengths, RFC 8949 core bytewise-lexicographic map ordering, schema-defined text keys, duplicate/unknown-key rejection and rejection of trailing bytes.
 - Explicitly reject legacy length-first ordering and parser behavior that silently normalizes malformed input.
 - No CBOR library or runtime dependency selected; cross-language adversarial byte vectors and decoder qualification remain open.
+
+
+### Full PR ancestry audit and exact-head CI — 2026-11-14
+
+- Verified the direct stacked ancestry #1 -> #2 -> #3 -> #4 -> #5 -> #6 -> #7 -> #9 -> #10 -> #11 -> #12 -> #13 -> #14 -> #16 by exact child-base / parent-head SHA equality; PR #8 is a parallel branch.
+- Confirmed all direct ancestors remain open/Draft/unmerged. PR #16's immediate base is correct (PR #14 head), but it is not independently mergeable until parent-first integration.
+- Current PR #16 diff: 248 commits beyond base, 32 files, 4,399 additions, 72 deletions.
+- Current exact branch HEAD `7914772358d2ee49c87374373bad5c589d0a2905` passed [workflow #43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349): 13 isolated suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 successful executions).
+- Direct GitHub Actions are full-SHA pinned; no Node.js 20 or punycode deprecation warning appears in the verified logs.
+- CI scope remains Python reference models only. No Rust, PostgreSQL, COSE, Trusted Egress, venue or live-execution evidence is implied. No PR was merged or retargeted.
