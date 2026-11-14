@@ -128,3 +128,7 @@ Public market-data catalogue endpoints are not assumed to contain all private/ac
 - Which venue/market families are required for the initial release?
 - What metadata freshness thresholds apply to tick/lot rules versus margin tiers?
 - Which inverse/quanto products are in initial scope, or should they be deferred until the first linear/spot release?
+
+## Related financial-operation contract
+
+[NX-REF-DOMAIN-009 — Operation-Specific Financial Rounding & Valuation Contract](NX-REF-DOMAIN-009-operation-specific-financial-rounding-valuation-contract.md) defines the operation-by-operation policy boundary built on this ADR's exact numeric and immutable instrument-specification foundations. It is a PROPOSED design artifact only. It does not select rounding modes, venue formulas, production numeric limits, accounting policy or production implementation. Venue/product/account qualification and owner review remain required.
