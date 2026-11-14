@@ -134,7 +134,7 @@ def validate_manifest(manifest: Any) -> None:
         if not isinstance(item, dict) or frozenset(item) != {"object_kind", "semantic_id", "properties"}:
             _fail("MANIFEST.INVALID_INVENTORY_ITEM", f"inventory[{index}] has an invalid shape")
         kind, semantic_id, properties = item["object_kind"], item["semantic_id"], item["properties"]
-        if kind not in ALLOWED_OBJECT_KINDS or kind not in kinds:
+        if not isinstance(kind, str) or kind not in ALLOWED_OBJECT_KINDS or kind not in kinds:
             _fail("MANIFEST.OUT_OF_SCOPE_OBJECT", f"inventory[{index}] object kind is outside declared scope")
         if not _is_nonempty_text(semantic_id):
             _fail("MANIFEST.INVALID_SEMANTIC_ID", f"inventory[{index}] semantic_id must be non-empty text")
@@ -194,6 +194,11 @@ def admission_decision(
 
         if type(last_accepted_sequence) is not int or last_accepted_sequence < 0:
             _fail("MANIFEST.INVALID_TRUST_STATE", "last accepted sequence must be a non-negative integer")
+        if last_accepted_sequence == 0:
+            if last_accepted_digest is not None:
+                _fail("MANIFEST.INVALID_TRUST_STATE", "genesis trust state must not have a predecessor digest")
+        elif not isinstance(last_accepted_digest, str) or not HEX_DIGEST.fullmatch(last_accepted_digest):
+            _fail("MANIFEST.INVALID_TRUST_STATE", "non-genesis trust state requires a lowercase SHA-256 digest")
         if manifest["sequence"] != last_accepted_sequence + 1:
             _fail("MANIFEST.SEQUENCE_ROLLBACK_OR_GAP", "manifest sequence must be exactly the next approved sequence")
         if manifest["predecessor_digest"] != last_accepted_digest:
