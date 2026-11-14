@@ -90,7 +90,7 @@ The old worker may later return an ACK or timeout. That response is recorded as 
 
 ## 6. Reference conformance scenarios
 
-A test-only Python control-plane state machine now exists at `foundation/reference-model/egress-fencing/`. Its unit tests cover transition ordering (HALTING → FENCING → FENCED → RECONCILING → READY_TO_GRANT), stale epoch rejection and fail-closed behavior. It does not revoke a network route, terminate a host, validate trusted fence attestations or prove actual egress isolation. A passing state-machine test is not a production fence.
+A test-only Python control-plane state machine now exists at `foundation/reference-model/egress-fencing/`. Its 13 unit tests cover transition ordering (HALTING → FENCING → FENCED → RECONCILING → READY_TO_GRANT), stale epoch rejection and fail-closed behavior. GitHub Actions run [#43590804814](https://github.com/PandaGarry/NEXUS/actions/runs/43590804814) passed the suite on Python 3.11–3.13 at exact branch HEAD `a7ee5426077005a6135e9f1b6f1c4044cc41d459`. It does not revoke a network route, terminate a host, validate trusted fence attestations or prove actual egress isolation. A passing state-machine test is not a production fence.
 
 A production-grade conformance harness must prove:
 1. A worker paused immediately before egress cannot send after its egress identity is revoked.
