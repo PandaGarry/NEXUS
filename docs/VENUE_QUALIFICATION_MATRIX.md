@@ -19,20 +19,20 @@
 
 ## 2. Evidence-backed public-data snapshot (checked 2026-11-15)
 
-| Public-data capability | Bybit V5 linear | Kraken Spot WS v2 | Coinbase Advanced Trade | OKX V5 |
-|---|---|---|---|---|
-| Public trades channel documented | YES | YES | UNKNOWN in this snapshot | YES |
-| Trade ID documented | YES — execution ID `i` | YES — `trade_id`, unique per book | UNKNOWN | YES — `tradeId` |
-| Trade event timestamp documented | YES — milliseconds | YES — RFC3339 | UNKNOWN | YES — milliseconds |
-| L2 book documented | YES — full depth | YES — aggregated L2 | UNKNOWN in this snapshot | YES — 400 levels on standard `books` channel |
-| WS initial book snapshot | NO — full-depth stream is delta-only | YES — snapshot sent by default | UNKNOWN | YES — full snapshot |
-| WS incremental updates | YES — delta-only | YES — update messages | UNKNOWN | YES — every 100 ms on `books` |
-| Continuity evidence documented | YES — update ID `u` and cross sequence `seq` | YES — CRC32 checksum over top 10 bids/asks | UNKNOWN | YES — `prevSeqId` + `seqId`; checksum deprecated |
-| REST snapshot required for initial book | YES | NO for documented WS snapshot flow | UNKNOWN | NO for documented WS snapshot flow |
-| Public L3 / order-level feed entitlement | UNKNOWN | UNKNOWN for Spot; separate FIX examples show Futures L3 | UNKNOWN | UNKNOWN |
-| Historical trade archive | Public BTCUSDT daily CSV listing from 2020-03-25; completeness/freshness unverified | Spot Time & Sales from each pair's first trade through 2026-09-30 | UNKNOWN | Tick-level trades from 2021-09 |
-| Historical L2 archive | UNKNOWN — official path/schema not validated | UNKNOWN — Time & Sales only; no L2 evidence | UNKNOWN | Portal advertises high-resolution L2 from 2023-03; archive sample not validated |
-| Live public smoke evidence in NEXUS | YES — 10-minute raw capture/replay | NO | NO | NO |
+| Public-data capability | Bybit V5 linear | Kraken Spot WS v2 | Coinbase Advanced Trade | OKX V5 | Binance public data / USD-M |
+|---|---|---|---|---|---|
+| Public trades channel documented | YES | YES | UNKNOWN in this snapshot | YES | YES — raw trades and aggTrades |
+| Trade ID documented | YES — execution ID `i` | YES — `trade_id`, unique per book | UNKNOWN | YES — `tradeId` | YES — trade `id`, aggTrade ID |
+| Trade event timestamp documented | YES — milliseconds | YES — RFC3339 | UNKNOWN | YES — milliseconds | YES — Spot microseconds since 2025-01-01; Futures milliseconds |
+| L2 book documented | YES — full depth | YES — aggregated L2 | UNKNOWN in this snapshot | YES — 400 levels on standard `books` channel | Public depth stream; exact channel contract not qualified here |
+| WS initial book snapshot | NO — full-depth stream is delta-only | YES — snapshot sent by default | UNKNOWN | YES — full snapshot | UNKNOWN in this snapshot |
+| WS incremental updates | YES — delta-only | YES — update messages | UNKNOWN | YES — every 100 ms on `books` | YES — public diff-depth stream |
+| Continuity evidence documented | YES — update ID `u` and cross sequence `seq` | YES — CRC32 checksum over top 10 bids/asks | UNKNOWN | YES — `prevSeqId` + `seqId`; checksum deprecated | UNKNOWN in this snapshot |
+| REST snapshot required for initial book | YES | NO for documented WS snapshot flow | UNKNOWN | NO for documented WS snapshot flow | UNKNOWN in this snapshot |
+| Public L3 / order-level feed entitlement | UNKNOWN | UNKNOWN for Spot; separate FIX examples show Futures L3 | UNKNOWN | UNKNOWN | UNKNOWN |
+| Historical trade archive | Public BTCUSDT daily CSV listing from 2020-03-25; completeness/freshness unverified | Spot Time & Sales from each pair's first trade through 2026-09-30 | UNKNOWN | Tick-level trades from 2021-09 | Daily/monthly Spot and Futures trades/aggTrades; per-symbol coverage must be inventoried |
+| Historical L2 archive | UNKNOWN — official path/schema not validated | UNKNOWN — Time & Sales only; no L2 evidence | UNKNOWN | Portal advertises high-resolution L2 from 2023-03; archive sample not validated | NO per-level L2 evidence; `bookDepth` is percentage-band aggregate depth |
+| Live public smoke evidence in NEXUS | YES — 10-minute raw capture/replay | NO | NO | NO | NO |
 
 ### Bybit V5 linear evidence
 
@@ -103,8 +103,8 @@ The following remain UNKNOWN until exact jurisdiction, account type, product fam
 | Spot eligibility | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Perpetual swap eligibility | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Dated futures / expiry semantics | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
-| Historical trade archive coverage / start date | YES — public BTCUSDT daily CSV listing begins 2020-03-25; current freshness/completeness unverified | UNKNOWN | YES — Spot Time & Sales from each pair's first trade through 2026-09-30 | YES — tick-level trades from 2021-09 | UNKNOWN |
-| Historical L2 archive coverage | UNKNOWN | UNKNOWN | UNKNOWN — no L2 shown in Time & Sales archive | YES — high-resolution L2 from 2023-03 | UNKNOWN |
+| Historical trade archive coverage / start date | YES — public BTCUSDT daily CSV listing begins 2020-03-25; current freshness/completeness unverified | UNKNOWN | YES — Spot Time & Sales from each pair's first trade through 2026-09-30 | YES — tick-level trades from 2021-09 | YES — daily/monthly Spot/Futures trade archives; coverage varies by symbol |
+| Historical L2 archive coverage | UNKNOWN | UNKNOWN | UNKNOWN — no L2 shown in Time & Sales archive | YES — high-resolution L2 from 2023-03 | NO per-level L2 evidence; percentage-band `bookDepth` only |
 | Private order/fill/account streams | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | REST reconciliation for unknown order outcome | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Client order ID constraints / idempotency semantics | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
@@ -116,7 +116,7 @@ The following remain UNKNOWN until exact jurisdiction, account type, product fam
 | API key permission separation / no-withdrawal scope | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | IP allowlisting | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Fees / funding / settlement specification | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
-| Market-data license / redistribution restrictions | UNKNOWN — API terms restrict benchmarking, resale and commercial exploitation; public-endpoint/API-key applicability needs clarification | UNKNOWN | UNKNOWN — prior permission for certain non-personal commercial public-data uses; redistribution scope needs confirmation | YES — personal non-commercial use only; no redistribution/competing analytics without written consent | UNKNOWN |
+| Market-data license / redistribution restrictions | UNKNOWN — API terms restrict benchmarking, resale and commercial exploitation; public-endpoint/API-key applicability needs clarification | UNKNOWN | UNKNOWN — prior permission for certain non-personal commercial public-data uses; redistribution scope needs confirmation | YES — personal non-commercial use only; no redistribution/competing analytics without written consent | YES — CC BY-NC-SA 4.0 non-commercial; no live proprietary execution or commercial order generation |
 | Specification change / deprecation policy | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 
 ## 4. Evidence record required for each cell
