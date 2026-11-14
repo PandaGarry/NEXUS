@@ -1,6 +1,6 @@
 # Prototype Readiness Gates
 
-**Current decision: BLOCKED**
+**Current decision: BLOCKED**\n\nOperational evidence register: [NX-PROJECT-CHECKLIST-001](NX-PROJECT-CHECKLIST-001-execution-and-evidence.md).
 
 Прототипирование не начинается, пока критические gates не имеют PASS и evidence.
 
