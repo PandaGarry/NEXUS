@@ -23,7 +23,7 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 |---|---|---|
 | Product scope | DONE for bounded v1 scope | OD-01 and OD-04 accepted; OD-15 partially accepted. See NX-OWNER-DECISIONS-001 |
 | PR #10 | OPEN / Draft / unmerged | Current branch contains reference models and docs; not a production implementation |
-| Exact-decimal oracle | DONE as reference slice only | 11 tests, 15 golden vectors and 1,000 deterministic rational-oracle property cases; exact PR-head CI passed on Python 3.11–3.13; no bounded production numeric type, dimensional wrappers, division or rounding |
+| Instrument specification validator | IN PROGRESS / test-only slice | NX-REF-DOMAIN-001; synthetic fixture and exact tick/lot/minimum-rule validator added on a stacked branch; awaiting exact-head CI; no official venue fixture or production registry |\n| Exact-decimal oracle | DONE as reference slice only | 11 tests, 15 golden vectors and 1,000 deterministic rational-oracle property cases; exact PR-head CI passed on Python 3.11–3.13; no bounded production numeric type, dimensional wrappers, division or rounding |
 | Command-gateway oracle | DONE as test-only slice only | 24 tests; fake adapter; local SQLite concurrency only; conditional state guards cover late ACK, pre-send rejection and adapter-error races; recovery scan is serialized |
 | Stale dispatcher fencing | BLOCKED | NX-REF-EXEC-001 counterexample proves stale worker can still reach adapter after recovery |
 | Stale dispatcher state overwrite | DONE in reference model only | Conditional transitions reject stale ACK, pre-send rejection and adapter-error writes after recovery; recovery scan is serialized; observations retained; does not stop external send |
@@ -47,8 +47,8 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 ## 4. Technical workstreams
 
 ### W1 — Market data and instrument truth
-- [ ] Publish a venue-neutral canonical instrument-spec schema and provenance/version rules.
-- [ ] Define exact metadata fields: tick, quantity step, min/max quantity, min notional, contract type/value/multiplier, settlement, price bands, leverage tiers and status.
+- [x] Publish a first venue-neutral instrument-spec reference schema, provenance fields and immutable snapshot validator (NX-REF-DOMAIN-001); full registry/version authority remains open.
+- [ ] Complete the canonical metadata contract for price bands, leverage tiers, margin brackets, order capabilities and all contract denomination semantics; the current reference slice covers only a narrow subset.
 - [ ] Build venue fixtures only from official documented responses; preserve unknown/unsupported fields explicitly.
 - [ ] Define stream identity, sequence scope, snapshot bridge, gap detection, stale/degraded states and replay evidence.
 - [ ] Keep Tradoor public-data adapters as research candidates only; do not infer private execution capability.
