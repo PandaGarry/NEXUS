@@ -488,3 +488,9 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - PR #16 snapshot at verification: 33 changed files, 4,937 additions, 72 deletions and 322 commits including stacked history.
 - Synchronized exact COSE_Sign1 wire profile and key-resolution trust requirements across ADR, research, owner decisions, status, roadmap and checklist.
 - CI proves Python reference-model regression only; no Rust, CBOR/COSE runtime, PostgreSQL, Trusted Egress, venue or live behavior.
+
+### COSE_Sign1 wire-profile exact-head CI — 2026-11-14
+
+- Branch HEAD `8d2c2f404782b718f1a3a422bb0ce918bb6b922d` passed [workflow #43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308).
+- Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no test failures or Node.js 20 / `punycode` warnings.
+- This is reference-model regression only; no COSE parser, signer, verifier, key registry or cross-language vectors were executed.
