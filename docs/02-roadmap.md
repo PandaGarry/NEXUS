@@ -484,15 +484,6 @@ Selection establishes a G1 design direction only. It does not authorize dependen
 
 ## COSE Ed25519 interoperability gate
 
-- [x] Update NX-ADR-008 from polymorphic COSE EdDSA (-8) to fully specified COSE Ed25519 (-19) per RFC 9864.
-- [x] Define key type/curve constraints and reject deprecated -8, Ed448 and key/algorithm mismatch.
-- [x] Treat protected `kid` as a lookup hint only; require issuer- and purpose-bound registry resolution with ambiguity rejection.
-- [ ] Add deterministic Python/Rust COSE vectors and negative tests for algorithm, curve, issuer, audience, key status and ambiguous key ID.
-- [ ] Qualify exact COSE libraries, provider/HSM support and key lifecycle before implementing signing or verification.
-
-
-## COSE Ed25519 interoperability gate
-
 - [x] Replace deprecated polymorphic COSE EdDSA (-8) with fully specified COSE Ed25519 (-19) per RFC 9864.
 - [x] Require OKP / Ed25519 key type/curve and reject algorithm/key mismatch, Ed448 and substitution.
 - [x] Treat kid as a non-authoritative lookup hint; bind key resolution to issuer, algorithm, purpose, status and registry generation.
