@@ -177,3 +177,11 @@ This checklist does not authorize:
 - commercial, multi-tenant or third-party capital management.
 
 **Current overall disposition: FOUNDATION IN PROGRESS; PROTOTYPE READINESS BLOCKED; LIVE NOT AUTHORIZED.**
+
+## 10. Instrument quantity-unit semantics increment
+
+- Added `InstrumentUnitModel`, pinned to exact `InstrumentSpec` version and identity.
+- Spot maps explicitly to base-asset amount; linear contracts use base-asset units per contract; inverse contracts use quote-asset units per contract.
+- QUANTO is explicitly unsupported; inverse base exposure remains blocked until exact division and rounding/precision policy exist.
+- Venue `quantity_unit` remains opaque: quantity kind and multiplier dimension are caller-declared, never inferred from a string.
+- Dedicated tests and CI workflow step added; current-head CI evidence pending.
