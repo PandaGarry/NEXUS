@@ -2,7 +2,7 @@
 
 **Дата среза:** 2026-11-14  
 **Общий статус:** BLOCKED — Prototype Readiness Gate не пройден; bounded v1 scope decisions OD-01/04 accepted  
-**Текущая фаза:** Phase 0 — Foundation Audit / Architecture Synthesis
+**Текущая фаза:** Phase 0 — Foundation Audit / Architecture Synthesis; bounded instrument-spec reference implementation in a stacked Draft PR
 
 | Область | Статус | Комментарий |
 |---|---|---|
@@ -11,9 +11,9 @@
 | Tradoor audit | In Progress | Source pass обновлён до HEAD 6ab3877; funding/private execution capability audit добавлен в NX-RESEARCH-002. Полная per-venue сертификация, instrument metadata и runtime verification остаются открыты |
 | Exchange capabilities matrix | Incomplete | Trade/book/OI/liquidation первично просмотрены; per-channel matrix и UNKNOWN поля ещё не закрыты |
 | Simulation fidelity | In Progress | Tradoor paper-модель недостаточна для реалистичного исполнения |
-| Runtime verification | Partial / reference-only | GitHub Actions run [#43591592168](https://github.com/PandaGarry/NEXUS/actions/runs/43591592168) passed exact PR HEAD `2128771d6de67636f3b86dc40e137049c6e41fbd`: 11 exact-decimal, 24 gateway and 13 egress-handover tests on Python 3.11, 3.12 and 3.13 (144 test executions across the matrix; 1,000 seeded rational-oracle cases run inside each exact-decimal suite). Reference-only; no production runtime, real egress fencing or exchange-adapter verification claimed |
+| Runtime verification | Partial / reference-only | GitHub Actions run [#43591651328](https://github.com/PandaGarry/NEXUS/actions/runs/43591651328) passed exact PR #10 HEAD `3458ffac87adda08650a040f6be0861784fb509b`: 11 exact-decimal, 24 gateway and 13 egress-handover tests on Python 3.11, 3.12 and 3.13 (144 test executions across the matrix; 1,000 seeded rational-oracle cases run inside each exact-decimal suite). Reference-only; no production runtime, real egress fencing or exchange-adapter verification claimed |
 | Security threat model | Drafted / Proposed | NX-SEC-001 сохранён; owner review, deployment-specific analysis и security verification не выполнены |
-| Exact arithmetic / instrument specs | ADR proposed / implementation not started | NX-ADR-005 drafted; требует owner review и последующих golden tests. Блокер реализации сохраняется |
+| Exact arithmetic / instrument specs | ADR proposed / reference slice in progress | NX-ADR-005 remains PROPOSED. NX-REF-DOMAIN-001 adds a test-only immutable spec snapshot and exact tick/lot/minimum-rule validator with synthetic fixture; no venue adapter, registry persistence, contract formulas or production authority | NX-ADR-005 drafted; требует owner review и последующих golden tests. Блокер реализации сохраняется |
 | Unified market event contract | PROPOSED | NX-ADR-001 опубликован; owner review и conformance design review требуются |
 | Professional Order Flow specification | PROPOSED | ТЗ-NX-002 опубликовано; формулы, golden datasets и реализация не проверялись |
 | Quant & Strategy Engine specification | PROPOSED | ТЗ-NX-003 опубликовано; research protocol, runtime, feature registry и стратегии не реализованы/не проверены |
