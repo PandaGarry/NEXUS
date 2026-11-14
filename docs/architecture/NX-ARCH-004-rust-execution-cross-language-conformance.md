@@ -210,3 +210,7 @@ A targeted readback of NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SE
 **DOCUMENTATION DESIGN DRAFT ONLY.** This change does not add Rust source, Cargo workspace, production numeric types, production adapter, signer, persistence, trusted egress, venue connectivity or executable trading capability.
 
 Prototype readiness remains BLOCKED. Live trading remains NOT AUTHORIZED.
+
+### Cross-contract ordering clarification — 2026-11-14
+
+A targeted review of NX-IF-001..005, NX-ADR-002, NX-SEC-001 and NX-ARCH-REVIEW-001 clarified the IF-002 exposure lifecycle label: the dispatcher commits the durable pre-egress attempt marker before any network side effect. The marker moves exposure from `PRE_DISPATCH_RESERVATION` to `DISPATCH_OUTCOME_UNKNOWN`; it is not proof that bytes were sent. This aligns the exposure contract with ADR-002's ordered dispatch sequence and IF-004's ambiguous-outcome recovery barrier. This is documentation harmonization only; transactional durability, distributed fencing and trusted-egress enforcement remain unimplemented and unverified.
