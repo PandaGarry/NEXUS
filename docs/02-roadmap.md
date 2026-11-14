@@ -141,3 +141,6 @@ Phase 0 не означает исследовать все существующ
 - Domain kernel: exact rational division and explicit quantization reference (NX-REF-DOMAIN-005) added; financial-operation-specific rounding policies remain a separate decision.
 
 - Inverse contracts: exact rational base exposure reference added; venue-specific contract semantics, P&L, margin and rounding policy remain open.
+
+- Domain kernel: NX-REF-DOMAIN-007 adds a test-only bounded numeric context with mandatory caller-supplied budgets; production limits remain unselected.
+- Domain kernel: NX-REF-DOMAIN-008 adds canonical scalar decimal/rational wire formats; cross-language and typed event/command integration remain open.
