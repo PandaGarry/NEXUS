@@ -212,3 +212,5 @@ Correction to the preceding NX-ARCH-005 cross-review: linear and inverse financi
 ## Partial-fill aggregation reference extraction — 2026-11-14
 
 Extracted the previously inline weighted-average calculation into `foundation/reference-model/financial_aggregation.py` as `aggregate_partial_fills`. The callable returns typed base quantity and quote notional plus an exact rational average; it rejects empty input and relies on domain wrappers for base/quote dimension safety. Golden-vector and seeded permutation/partition tests now exercise the named callable, with additional empty/mismatch/non-terminating cases. This remains a test-only arithmetic oracle: no venue fill admissibility, fees, funding, P&L, accounting, rounding, production runtime or normalized fixture runner is implied. NX-ARCH-005 owner approval remains required before normalized schema/runner work.
+
+The aggregation boundary was further tested for a non-empty signed fill set with zero aggregate quantity: it raises the existing typed `DivisionByZero`. Empty input remains a separate `ValueError` input-contract failure. This keeps mathematical division-by-zero distinct from malformed operation input.
