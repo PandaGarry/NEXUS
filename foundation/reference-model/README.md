@@ -9,7 +9,7 @@ This directory contains a dependency-free Python reference implementation used t
 From this directory:
 
 ```bash
-python -m unittest -v  # 10 tests, including shared golden vectors
+python -m unittest -v  # run the exact-decimal suite; see workflow for isolated suite counts
 ```
 
 ## Scope
@@ -50,3 +50,8 @@ python -m unittest -v
 ```
 
 The GitHub Actions workflow runs both reference suites on Python 3.11, 3.12 and 3.13. Run [#43588330433](https://github.com/PandaGarry/NEXUS/actions/runs/43588330433) passed on current exact HEAD `31c99f0b4a0591a41d97afa265145567cf1ddbd3` (10 exact-decimal tests + 17 gateway tests on each runtime). This is reference-model CI only; no production, multi-process or live-exchange guarantees are claimed.
+
+
+## Exact rational division extension
+
+Run `python -m unittest -v test_exact_division.py` from this directory. The dedicated suite contains 18 tests, including language-neutral vectors and 1,000 deterministic rational quantization property cases. GitHub Actions PR run [#43594118145](https://github.com/PandaGarry/NEXUS/actions/runs/43594118145) passed exact PR HEAD `a46b49a2cbb7a5960ce483f93a736a3fbc945554` on Python 3.11, 3.12 and 3.13: eight isolated suites, 127 tests per runtime / 381 matrix executions. This remains a test-only oracle.
