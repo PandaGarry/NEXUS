@@ -38,3 +38,4 @@
 - [NX-RESEARCH-012 — PostgreSQL 18.7 G1 Evaluation Qualification](NX-RESEARCH-012-postgresql-18-7-g1-evaluation-qualification.md) — selects 18.7 as the exact G1 test target and records the November 12, 2026 security/bugfix release caveats; no database or production deployment approved.
 
 - [NX-RESEARCH-012 — PostgreSQL 18.7 G1 Evaluation Qualification](NX-RESEARCH-012-postgresql-18-7-g1-evaluation-qualification.md) — exact patch-level G1 target, release security/index/backup caveats, role and extension hardening; no database installed or production-approved.
+- [NX-RESEARCH-013 — Bybit V5 Public Market-Data Vertical Slice Qualification](NX-RESEARCH-013-bybit-v5-market-data-vertical-slice.md) — official V5 contract audit and bounded public-only recorder/replay plan; Bybit is not selected as v1 venue and no private access/trading is authorized.
