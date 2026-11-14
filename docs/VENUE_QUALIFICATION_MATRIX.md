@@ -8,16 +8,14 @@
 
 | Candidate | Why it is in the research universe | Current role | Selection status |
 |---|---|---|---|
-| Bybit | Concrete V5 full-depth public stream and linear derivatives market; first live raw capture succeeded | Reference adapter experiment #1 | Not selected for trading |
-| Kraken Spot WebSocket v2 | Spot L2 stream sends a WS snapshot and updates with CRC32 checksum; materially contrasts with Bybit full-depth delta-only + REST snapshot model | **Recommended technical adapter #2 candidate** | Public protocol research only; not selected for trading |
-| Coinbase Advanced Trade | Distinct API/product family and useful comparator; do not conflate with Coinbase Exchange API | Alternative technical adapter #2 candidate | Not selected |
+| Bybit | Concrete V5 full-depth public stream and linear derivatives market; first live raw capture succeeded | Reference adapter experiment #1; M2 is the active implementation priority | Not selected for trading |
+| Kraken Spot WebSocket v2 | Spot L2 stream sends a WS snapshot and updates with CRC32 checksum; materially contrasts with Bybit full-depth delta-only + REST snapshot model | Protocol/terms research candidate #2; no recorder implementation until Bybit M2 passes | Not selected for trading |
+| Coinbase Advanced Trade | Distinct API/product family and useful comparator; do not conflate with Coinbase Exchange API | Alternative technical adapter candidate | Not selected |
 | OKX | Potentially useful distinct market-data and derivatives model | Discovery backlog; no qualification claim here | Unknown |
 | Binance | Potentially useful large-scale spot/derivatives API comparator | Discovery backlog; no qualification claim here | Unknown |
 | Domestic brokers / listed derivatives venues | May offer a materially different legal, clearing and instrument model | Separate broker/venue adapter research | Not selected |
 
-**Why Kraken Spot is the current technical recommendation for adapter #2:** Bybit's full-depth channel is delta-only and requires a REST snapshot plus u/seq alignment. Kraken Spot WebSocket v2 book documents an initial snapshot followed by updates and a CRC32 checksum over the top 10 bid/ask levels; its trade channel has a per-book trade identifier and RFC3339 timestamp. This gives us a meaningful contrast in market type (spot vs linear perpetual), initialization and continuity evidence. This is a technical test choice only, not a live-trading recommendation or eligibility finding.
-
-Coinbase remains a valid alternative if a source-backed review identifies a stronger protocol contrast or materially better test conditions.
+**Sequencing decision (2026-11-15):** finish and accept Bybit M2 before writing a second recorder. Kraken Spot remains the leading protocol-research candidate, not a committed implementation. This avoids two incomplete adapters and gives one working synchronization path before comparing implementations.
 
 ## 2. Evidence-backed public-data snapshot (checked 2026-11-15)
 
@@ -27,33 +25,39 @@ Coinbase remains a valid alternative if a source-backed review identifies a stro
 | Trade ID documented | YES — execution ID i | YES — trade_id, unique per book | UNKNOWN |
 | Trade event timestamp documented | YES | YES — RFC3339 | UNKNOWN |
 | L2 book documented | YES — full depth | YES — aggregated L2 | UNKNOWN in this snapshot |
-| WS initial book snapshot | NO — full-depth stream is delta-only | YES — snapshot can be requested and defaults true | UNKNOWN |
+| WS initial book snapshot | NO — full-depth stream is delta-only | YES — snapshot sent by default; can be controlled by subscription | UNKNOWN |
 | WS incremental updates | YES — delta-only | YES — update messages | UNKNOWN |
-| Continuity evidence documented | YES — update ID u and cross sequence seq | YES — CRC32 checksum for top 10 bids/asks | UNKNOWN |
+| Continuity evidence documented | YES — update ID u and cross sequence seq | YES — CRC32 checksum over top 10 bids/asks | UNKNOWN |
 | REST snapshot required for initial book | YES | NO for documented WS snapshot flow | UNKNOWN |
 | Public L3 / order-level feed entitlement | UNKNOWN | UNKNOWN for Spot; separate FIX examples show Futures L3 | UNKNOWN |
 | Live public smoke evidence in NEXUS | YES — 10-minute capture/replay | NO | NO |
 
 ### Bybit V5 linear evidence
 
-- Full-depth WS topic orderbook.full.{symbol} is explicitly delta-only; no initial snapshot is sent. A REST full-depth snapshot must be obtained and aligned with buffered deltas.
-- u is consecutive within a session and resets to 1 on reinitialization; seq is monotonic but not necessarily consecutive.
-- Full-depth stream excludes RPI orders.
-- NEXUS run #10 captured 8,149 public trade messages and 2,998 full-depth delta messages over approximately 10 minutes. One connection generation was observed; this does not prove reconnect recovery or valid book reconstruction.
+- Full-depth WS topic `orderbook.full.{symbol}` is explicitly delta-only; no initial snapshot is sent. A REST full-depth snapshot must be obtained and aligned with buffered deltas.
+- Official synchronization requires consecutive `u` within a session, discarding a delta whose `seq` decreases, discarding deltas older than the REST snapshot `seq`, and matching both `seq` and `u` before applying subsequent deltas.
+- `u=1` is a reinitialization signal. `seq` is monotonic but not necessarily consecutive.
+- Full-depth stream and REST snapshot exclude RPI orders.
+- NEXUS run #10 captured 8,149 public trade messages and 2,998 full-depth delta messages over approximately 10 minutes. Total journal records were 11,177, leaving 30 records unclassified in the published count breakdown. One connection generation was observed.
 
-Official source: https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob  
-Trade channel: https://bybit-exchange.github.io/docs/v5/websocket/public/trade
+Official sources:
+- Full-depth WS and synchronization: https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob
+- Full-depth REST snapshot: https://bybit-exchange.github.io/docs/v5/market/full-ob
+- Trade channel: https://bybit-exchange.github.io/docs/v5/websocket/public/trade
 
 ### Kraken Spot WebSocket v2 evidence
 
-- book is aggregated L2, with supported depths 10, 25, 100, 500 and 1,000.
-- A snapshot is sent on subscription by default; it includes CRC32 checksum for top 10 bids and asks.
-- Updates include the same checksum; multiple updates to the same price level in one message must be processed sequentially.
-- trade events include taker side, quantity, price, per-book trade_id and RFC3339 timestamp; a message may batch multiple trades.
+- `book` is aggregated L2, with supported depths 10, 25, 100, 500 and 1,000.
+- A snapshot is sent on subscription by default; updates follow. Each message carries a CRC32 checksum.
+- The checksum is always calculated over the top 10 price levels regardless of subscribed depth. It validates only the top 10 levels, not the entire subscribed depth.
+- For checksum construction, parse price and quantity without floating-point precision loss; remove decimal points and leading zeroes from each string; concatenate the top 10 asks in ascending price order, then the top 10 bids in descending price order; compute CRC32 and compare as an unsigned 32-bit integer.
+- Apply all price-level updates in a message before calculating the checksum. Remove zero-quantity levels and truncate to subscribed depth; the feed does not send zero-quantity updates for levels falling out of scope.
+- Trade events include taker side, quantity, price, per-book `trade_id` and RFC3339 timestamp; a message may batch multiple trades.
 - This is L2, not proof of Spot L3/order-level access.
 
 Official sources:
 - Book L2: https://docs.kraken.com/api/docs/websocket-v2/book
+- Book checksum v2 algorithm: https://docs.kraken.com/exchange/guides/websockets/book-checksum-v2
 - Trades: https://docs.kraken.com/api/docs/websocket-v2/trade
 
 ## 3. Full qualification matrix
@@ -108,9 +112,9 @@ The lack of a live-eligible venue does not block public data research. The lack 
 
 ## 6. Architecture rule: first concrete, second contrasting, then abstract
 
-- Adapter #1 is implemented concretely and may initially contain venue-specific parsing and recovery semantics.
-- Adapter #2 candidate is Kraken Spot WS v2, subject to a bounded protocol/terms review. Coinbase Advanced Trade remains the alternative.
-- Compare both implementations and their failure/recovery models.
+- Adapter #1 remains concrete and venue-specific while Bybit M2 is completed.
+- Kraken Spot WS v2 is the leading protocol-research candidate for adapter #2; recorder implementation is deferred until Bybit M2 acceptance. Coinbase Advanced Trade remains the alternative.
+- Compare both implementations and their failure/recovery models before defining a generic adapter interface.
 - Only then define the smallest shared contracts supported by both. Do not force a lowest-common-denominator interface that erases useful venue-specific guarantees.
 - Keep raw source frames, source timestamps and venue-specific evidence. Normalize only into a shared layer with explicit provenance and loss annotations.
 
@@ -126,7 +130,7 @@ Future normalized records should carry:
 - raw source reference / payload digest;
 - source-specific continuity evidence.
 
-Each adapter owns its own parser and continuity proof. The core consumes a venue-neutral statement of continuity/validity, not Bybit's u or seq, Coinbase's sequence semantics, or Kraken's checksum as if they were interchangeable.
+Each adapter owns its own parser and continuity proof. The core consumes a venue-neutral statement of continuity/validity, not Bybit's `u` or `seq`, Coinbase's sequence semantics, or Kraken's checksum as if they were interchangeable.
 
 ## 8. Order command contract (future execution scope)
 
@@ -138,7 +142,7 @@ The domain-level command identity should be stable and idempotent. Each venue ad
 - Bybit recorder prototype: [PR #19](https://github.com/PandaGarry/NEXUS/pull/19).
 - Bybit public-feed API research: [PR #17](https://github.com/PandaGarry/NEXUS/pull/17).
 - Second adapter qualification issue: [Issue #21](https://github.com/PandaGarry/NEXUS/issues/21).
-- Venue eligibility research: [NX-RESEARCH-009](research/NX-RESEARCH-009-russia-jurisdiction-product-and-venue-eligibility.md) on the relevant research branch. Do not treat a branch-only document as a main-branch accepted decision.
+- Current M2 acceptance checklist: [M2-ACCEPTANCE.md](https://github.com/PandaGarry/NEXUS/blob/prototype/bybit-public-data-recorder-python-v0/experiments/bybit-public-recorder/M2-ACCEPTANCE.md).
 
 ## 10. Explicit non-goals
 
