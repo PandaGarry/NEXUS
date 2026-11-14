@@ -768,3 +768,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep G0D/G1 library, strict-validator, cross-language, cryptographic and runtime gates open.
 
 **Disposition:** exact synchronized branch-head Python reference regression passed. It does not exercise Rust, CBOR/COSE libraries, PostgreSQL, Trusted Egress, external fencing, venues or live trading.
+
+## 18.33 Final CI action-runtime and serialization-research exact-head verification — 2026-11-14
+
+- [x] Verify current branch HEAD `69657a0808b859b17ab94a6d3e008a2ae9671cc7` with [workflow #43615820603](https://github.com/PandaGarry/NEXUS/actions/runs/43615820603).
+- [x] Confirm Python 3.11, 3.12 and 3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
+- [x] Inspect all three logs: no test failures, Node.js 20 deprecation or `punycode` warnings.
+- [x] Independently fetch the exact pinned `action.yml` files: `actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1` and `actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0` both declare `runs.using: node24`.
+- [x] Confirm current PR #16 snapshot: 33 files, 4,758 additions, 72 deletions; Draft/open/unmerged and correctly stacked on PR #14.
+- [ ] Continue to treat CI as Python reference-model regression only; no CBOR/COSE parser, Rust, PostgreSQL, Trusted Egress, venue or live-safety proof is implied.
+
+**Disposition:** exact-head reference CI passed and direct action runtime pins are verified. G0D/G1 implementation, strict parser and crypto-provider qualification remain open.
