@@ -8,7 +8,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from nexus_decimal import ExactDecimal, ExactRational, InvalidStep, RoundingMode
-from numeric_wire import parse_decimal as parse_decimal_wire, parse_rational as parse_rational_wire
+from numeric_wire import (
+    parse_decimal as parse_decimal_wire,
+    parse_rational as parse_rational_wire,
+    serialize_decimal as serialize_decimal_wire,
+    serialize_rational as serialize_rational_wire,
+)
 
 
 class NumericLimitExceeded(ValueError):
@@ -133,6 +138,20 @@ class BoundedNumericContext:
     def parse_rational_wire(self, encoded: str) -> ExactRational:
         value = parse_rational_wire(encoded, max_chars=self.limits.max_input_chars)
         return self._check_rational(value)
+
+    def serialize_decimal_wire(self, value: ExactDecimal) -> str:
+        self._check_decimal(value, "wire decimal")
+        encoded = serialize_decimal_wire(value)
+        if len(encoded) > self.limits.max_input_chars:
+            raise NumericLimitExceeded("decimal wire output exceeds configured character budget")
+        return encoded
+
+    def serialize_rational_wire(self, value: ExactRational) -> str:
+        self._check_rational(value)
+        encoded = serialize_rational_wire(value)
+        if len(encoded) > self.limits.max_input_chars:
+            raise NumericLimitExceeded("rational wire output exceeds configured character budget")
+        return encoded
 
     def validate_rational(self, value: ExactRational) -> ExactRational:
         return self._check_rational(value)
