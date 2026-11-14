@@ -521,3 +521,10 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Verify `928d5fd261553676c3fad6a8e88b984a862af338` on workflow [#43615282210](https://github.com/PandaGarry/NEXUS/actions/runs/43615282210).
 - [x] Pass 13 suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 total).
 - [ ] Continue to treat Python-only success as reference-oracle evidence, not cross-language, persistence, egress or live-readiness proof.
+
+
+## Post-sync verification record
+
+- [x] Exact normalized HEAD `9e9035033da77d958601cb6b69128e13e2551a0d` passed workflow [#43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737): 13 suites / 239 tests on each Python 3.11/3.12/3.13 runtime (717 executions).
+- [x] No Node.js 20 or punycode deprecation warnings in the three job logs.
+- [ ] Rust/DB/COSE/Egress/venue conformance remain separate future gates; this matrix does not cover them.
