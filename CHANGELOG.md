@@ -514,3 +514,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Specified deterministic multi-scope processing, atomic reservation commit, stable idempotency, bounded whole-transaction retry for 40001/40P01 and fail-closed ambiguous commit behavior.
 - Synchronized NX-ADR-008, NX-IF-002 and OD-09; added adversarial concurrency/recovery evidence gates.
 - No database, schema, service or runtime was implemented.
+
+### Field-level data lineage and projection governance — NX-ARCH-REVIEW-006 — 2026-11-14
+
+- Added a source-grounded field inventory for NX-IF-001..005 and NX-SEC-001.
+- Proposed data classifications and accountable owners for trade intent/command/approval, Risk scope/exposure/reservations, execution events/Ledger, evidence/recovery, halt/emergency and security assets.
+- Defined future projection restrictions for Analytics, Portfolio, Notifications, Strategy, Demo, Learning and Billing.
+- Identified the missing complete Ledger journal-leg schema and explicitly avoided inventing fields.
+- Retention/legal basis and field classifications remain proposals; no projection API, database table, access policy or runtime was implemented.
