@@ -169,3 +169,16 @@ This package validates mathematical identities only; it does not pass financial 
 - [x] Add venue-neutral exact dimensional math fixtures for spot, explicitly mapped linear/inverse contracts and partial-fill weighted-average arithmetic; initial Python 3.11–3.13 CI passed.
 - [ ] Verify final exact PR head and freeze the bounded mathematical fixture package.
 - [ ] Obtain owner decisions and venue qualification before authoring fee/funding/P&L/margin/liquidation/FX/accounting golden vectors.
+
+### Russia jurisdiction and first-venue qualification gate
+
+- [x] Publish NX-RESEARCH-009 with current Law 282-FZ, Bank of Russia guidance, domestic crypto-exchange registry, MOEX/SPB product eligibility and foreign-venue screening.
+- [x] Mark earlier Coinbase/Kraken and Russian-citizenship shortlist memos as historical/superseded for live venue selection.
+- [ ] Confirm owner qualified-investor status directly with the actual broker.
+- [ ] Verify T-Invest API instrument access flags and streaming/order/fill support for exact crypto-index futures/neoassets; no orders.
+- [ ] Obtain written T-Invest Lab confirmation of live spot crypto service, product terms and API availability.
+- [ ] Obtain product-specific legal advice on Articles 30–32 of Law 282-FZ and Article 30(2) software-assistance scope.
+- [ ] Draft NX-ADR-007 Venue Eligibility & Jurisdictional Activation Gate after evidence and owner review.
+- [ ] Keep all foreign venues RESEARCH_ONLY until legal, KYC, product and API eligibility are evidenced.
+
+First-venue selection remains BLOCKED; no live trading is authorized.
