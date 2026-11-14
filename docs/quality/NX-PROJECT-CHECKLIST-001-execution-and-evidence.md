@@ -294,7 +294,7 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [x] Define language-neutral conformance expectations and rejection-class comparison.
 - [x] Define crash/replay/duplicate/partial-fill/cancel-fill/eligibility-suspension/stale-worker failure matrix.
 - [ ] Review RUST-01..06 with the owner; publication is not acceptance.
-- [ ] Cross-review NX-ARCH-004 against NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SEC-001.
+- [x] Cross-review NX-ARCH-004 against NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SEC-001; no remaining blocking authority-order contradiction found in the reviewed documentation path.
 - [ ] Approve production Rust toolchain/workspace only after applicable G0D/G1 gates.
 - [ ] Implement Rust pure-domain slice and run existing golden vectors.
 - [ ] Add Python/Rust differential and bounded-resource tests under an approved numeric profile.
@@ -302,3 +302,14 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [ ] Record exact commit SHA, toolchain, lockfile and CI evidence before claiming conformance.
 
 **Disposition:** no Rust source, Cargo workspace, production numeric profile, venue adapter, trusted egress, credentials or live capability added. Prototype readiness BLOCKED; live NOT AUTHORIZED.
+
+
+### 17.1 Cross-contract ordering closure — 2026-11-14
+
+- [x] Correct NX-ADR-002 so durable `PRE_DISPATCH_RESERVATION` commits across all affected scopes before Risk issues `RiskApprovalCapability`.
+- [x] Require the Command Coordinator to atomically consume the single-use approval while committing the canonical command, reservation reference and outbox record.
+- [x] Clarify the durable pre-egress attempt marker: it conservatively moves exposure to `DISPATCH_OUTCOME_UNKNOWN`; a crash before the socket write remains potentially sent until authoritative reconciliation.
+- [x] Align NX-ARCH-004 sequence and cross-contract review note with NX-IF-001, NX-IF-002, NX-IF-005, NX-ADR-002 and NX-SEC-001.
+- [ ] Obtain owner/architecture/security acceptance; documentation harmonization is not implementation evidence.
+
+**Evidence boundary:** documentation-only closure. No transaction store, signer, dispatcher, network fence, venue adapter or runtime behavior was implemented or tested by this change.
