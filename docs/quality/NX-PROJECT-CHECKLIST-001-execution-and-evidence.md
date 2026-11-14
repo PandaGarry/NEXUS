@@ -1003,3 +1003,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Add crash/race tests at final-gate commit, immediately-before-socket-write and after socket-write initiation; inspect durable attempt and actual instrumented egress boundary.
 
 **Disposition:** semantic protocol added to NX-IF-002 and NX-REF-EXEC-002. No egress authorization runtime or database schema implemented.
+
+## 18.52 Risk approval / valuation evidence cross-contract synchronization — 2026-11-14
+
+- [x] Align NX-IF-001 RiskEvaluationRequest, RiskDecision and RiskApprovalCapability with immutable valuation_input_vector_id/version from NX-IF-002.
+- [x] Align NX-IF-001 COSE profile with NX-ADR-008: untagged embedded four-element COSE_Sign1, alg=-19, bounded kid, empty unprotected map and deterministic payload.
+- [x] Require exact protected/payload byte preservation, local-only bounded key registry and rejection of token-directed remote key discovery.
+- [x] Require Egress to validate the signed vector against the authoritative persisted Risk evidence manifest and latest consumed source watermark/correction state.
+- [x] Prohibit remote market/FX/fee/collateral source calls or valuation replacement on the dispatch path; missing/unverifiable manifest denies send.
+- [x] Add negative conformance vectors for malformed COSE wire forms, key ambiguity, private-key exposure, manifest gaps/corrections and valuation-input changes.
+- [ ] Execute cross-language COSE vectors and Egress manifest race/fault tests after G0D/G1 readiness; no signer, verifier or egress runtime is implemented.
+
+**Disposition:** NX-IF-001/002, NX-ADR-008, NX-ARCH-REVIEW-007 and NX-REF-EXEC-002 now share the same proposed contract. Runtime and security evidence remain open.
