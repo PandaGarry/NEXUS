@@ -175,7 +175,7 @@ PostgreSQL documentation supports the transaction/error semantics above; it does
 
 - Market/index/FX/fee/collateral values are source-owned immutable snapshots, not mutable fields read opportunistically during a reservation transaction.
 - The Risk transaction binds to an exact version vector and validates source identity, value/digest, completeness/watermark and freshness evidence. Cross-domain snapshots are not presumed to share a database or distributed transaction.
-- Trusted Egress validates the same bound vector against source-specific freshness and any configured drift/admissibility policy immediately before send. A newer snapshot does not automatically replace the signed approval's inputs.
+- Trusted Egress validates the same bound `valuation_input_vector_id/version` against the authoritative persisted Risk evidence manifest, source-specific freshness and any configured drift/admissibility policy immediately before send. It MUST NOT fetch replacement market/FX/fee/collateral values or call source services on the dispatch path. A newer snapshot does not automatically replace the signed approval's inputs.
 - If the exact bound vector is stale, incomplete, contradictory, outside a configured drift bound or the policy is unconfigured, Egress denies send. Risk must perform a new evaluation and reservation; it must not mutate an existing approval in place.
 - The interface schema and exact version-vector representation remain future source-owner contract work; this review does not invent an executable schema or numeric thresholds.
 
