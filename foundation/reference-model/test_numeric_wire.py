@@ -91,5 +91,31 @@ class NumericWireTests(unittest.TestCase):
             parse_rational("nxr1:0:7", max_chars=128)
 
 
+    def test_numeric_wire_errors_expose_stable_classes_and_preserve_base_type(self):
+        cases = (
+            (lambda: parse_decimal("nxd2:1:0", max_chars=128),
+             "NUMERIC.UNSUPPORTED_WIRE_VERSION"),
+            (lambda: parse_decimal("nxd1:1", max_chars=128),
+             "NUMERIC.INVALID_WIRE"),
+            (lambda: parse_decimal("nxd1:01:0", max_chars=128),
+             "NUMERIC.NON_CANONICAL"),
+            (lambda: parse_decimal("nxd1:123456:0", max_chars=8),
+             "NUMERIC.RESOURCE_LIMIT"),
+            (lambda: parse_rational("nxr2:1:3", max_chars=128),
+             "NUMERIC.UNSUPPORTED_WIRE_VERSION"),
+            (lambda: parse_rational("nxr1:1", max_chars=128),
+             "NUMERIC.INVALID_WIRE"),
+            (lambda: parse_rational("nxr1:2:6", max_chars=128),
+             "NUMERIC.NON_CANONICAL"),
+            (lambda: parse_rational("nxr1:123456:1", max_chars=8),
+             "NUMERIC.RESOURCE_LIMIT"),
+        )
+        for operation, expected_class in cases:
+            with self.subTest(expected_class=expected_class, operation=operation):
+                with self.assertRaises(NumericWireError) as caught:
+                    operation()
+                self.assertEqual(caught.exception.error_class, expected_class)
+
+
 if __name__ == "__main__":
     unittest.main()
