@@ -862,3 +862,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Implement durable schema/unique constraints and exact retry/changed-binding behavior.
 - [ ] Test ambiguous grant response, HEGC restart, paused Egress, duplicate attempts and sender fencing.
 - [ ] Prove no untrusted workload can write HEGC control records or mint grants.
+
+## HEGC trust-boundary qualification
+
+- [x] Classify HEGC as critical control-plane authority with no Risk private key or venue credentials/socket.
+- [x] Require Egress to independently verify RiskApprovalCapability and exact command/reservation/evidence bindings in addition to the HEGC grant.
+- [ ] Test compromised HEGC cannot mint Risk approvals, bypass missing/invalid Risk signature, access venue credentials or open a venue socket.
+- [ ] Test compromised Egress cannot write HaltState or mint grants; test no other workload can write HEGC control schema.
+- [ ] Complete independent security review of HEGC identity, service role, audit, recovery and software supply chain.
