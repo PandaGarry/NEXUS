@@ -571,3 +571,9 @@ NX-IF-005, NX-ADR-008 and NX-ARCH-REVIEW-005 now require the halt-epoch transiti
 ## Halt / Egress adversarial conformance cases — 2026-11-14
 
 NX-IF-005 now enumerates cases 36–42: halt-before-gate denial with zero socket-write initiation; gate-before-halt in-flight attempt; paused Egress process after gate commit; missing/unproven external fence; halt-store outage; venue acceptance after a pre-acknowledgement socket initiation; and proof at the actual socket/network boundary that no stale/queued attempt can initiate after acknowledgement. These are required future tests, not implemented or passed evidence. Egress/host/network fencing remains unproven.
+
+## Halt / final Egress gate race — 2026-11-14
+
+NX-IF-005 and NX-REF-EXEC-002 now require the authoritative halt-epoch transition and final EgressBoundaryAuthorization commit to serialize against the same halt-state generation. If halt commits first, Egress denies. If the gate commits first, the attempt is in-flight and cannot be retroactively revoked; it remains reserved until socket-write initiation is observed or the old sender is positively fenced. Egress cannot acknowledge the newer halt epoch while a paused pre-halt attempt could still resume and initiate a write. HALTED therefore means no stale/queued attempt can newly initiate a write after boundary acknowledgement; it does not mean the venue cannot process bytes already initiated.
+
+The crash-point matrix now covers both lock orders, paused process, unavailable halt store, external fencing failure and venue acceptance after acknowledgement. This is a proposed linearization contract, not a proven production guarantee. Actual socket/network instrumentation and independent process/host fencing remain unimplemented.
