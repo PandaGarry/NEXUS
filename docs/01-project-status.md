@@ -354,3 +354,8 @@ Exact branch HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed GitHub Actio
 - Kept authorization freshness, source-data freshness, halt/control propagation and RecoveryBarrier readiness as distinct concepts.
 - Proposed conservative non-production authorization-cache/revocation/cancellation targets for discussion only; explicitly did not select global market/account/Ledger freshness thresholds or a halt deadline.
 - OD-10 and OD-12 remain OPEN; all numeric objectives require owner/security/domain-owner approval and boundary-observed measurement. No policy engine, cache, revocation service, runtime or network fence was implemented.
+
+
+### NX-ARCH-REVIEW-005 exact-head regression evidence — 2026-11-14
+
+Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actions [#43613493976](https://github.com/PandaGarry/NEXUS/actions/runs/43613493976): Python 3.11/3.12/3.13, 13 isolated reference-model suites / 237 tests per runtime (711 successful executions). This verifies existing Python reference-model regression only; it does not test proposed authorization cache/revocation objectives, outage behavior, source freshness, halt propagation, cancellation, actual process/DB/secret/network fencing, Rust or venue integration. Numeric targets in NX-ARCH-REVIEW-005 remain proposals; OD-10/12 and owner/security acceptance remain open.
