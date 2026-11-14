@@ -1,0 +1,105 @@
+# NX-REF-EXEC-001 — Command Gateway Reference Conformance Slice
+
+**Status:** EXPERIMENTAL REFERENCE MODEL — NOT PRODUCTION IMPLEMENTATION  
+**Date:** 2026-11-14  
+**Branch:** `foundation/domain-kernel-reference-v0`  
+**Related contracts:** NX-IF-001, NX-IF-002, NX-IF-005, NX-ADR-002  
+**Scope:** One local Python/SQLite CREATE-command path with a fake adapter. No exchange integration.
+
+## 1. Objective
+
+Turn a bounded subset of the NEXUS command authorization and execution-integrity contracts into executable fault-injection scenarios. The goal is to expose contract ambiguities before selecting a production language, database, signer or venue.
+
+## 2. Modeled sequence
+
+`CanonicalCommand → Approval verification → active reservation check → atomic approval consumption + outbox persistence → durable DISPATCHING marker → fake adapter invocation → ACKNOWLEDGED or OUTCOME_UNKNOWN`
+
+The approval is bound to command ID/digest, account, venue, instrument, instrument-spec version, policy version, reservation, halt epoch, audience and expiry. The command payload is immutable and exact-decimal-only for its represented quantity/price fields.
+
+## 3. Safety properties exercised
+
+1. Invalid signature, wrong digest, wrong scope, expired approval or stale halt epoch blocks intake.
+2. Reservation must be active and bound to the command.
+3. Approval consumption, reservation consumption and command/outbox insertion commit atomically in the SQLite fixture.
+4. Transaction failure before commit leaves no command and makes no adapter call.
+5. No adapter call occurs while command state is only PERSISTED.
+6. Dispatch first commits a DISPATCHING marker.
+7. Process restart while DISPATCHING converts the command to OUTCOME_UNKNOWN; it is never blindly resent.
+8. Transport timeout is OUTCOME_UNKNOWN, not rejection.
+9. An approval that expires or whose halt epoch changes after persistence is rejected before adapter invocation in the deterministic harness.
+10. Unsupported command types are rejected rather than treated as CREATE.
+11. Venue acknowledgement is labeled ACCEPTED_NOT_FILLED.
+12. Approval and command replay are rejected by durable uniqueness constraints.
+
+## 4. Test scenarios
+
+The test suite currently covers 24 deterministic cases:
+- valid approval and one adapter invocation;
+- tampered signature;
+- command payload mutation;
+- account scope mismatch;
+- expired approval at intake;
+- stale halt epoch at intake;
+- released/wrong reservation;
+- transaction failure before commit;
+- crash after commit but before dispatch;
+- crash after durable dispatch marker;
+- restart using a new SQLite connection;
+- halt epoch advance after persistence;
+- approval expiry after persistence;
+- unsupported CANCEL command;
+- timeout after possible send;
+- crash after simulated venue acceptance but before ACK persistence;
+- duplicate approval/command replay;
+- two gateway instances concurrently racing to consume the same approval/reservation;
+- two dispatcher instances racing to claim one persisted command while the winning adapter call is held open;
+- non-canonical decimal rejection;
+- stale worker resumes after recovery: venue send still occurs without an egress fence, while conditional state transitions reject the late ACK and record it as a stale observation;
+- stale pre-send guard runs after recovery: conditional rejection preserves OUTCOME_UNKNOWN and records a dispatch observation instead of overwriting recovered state;
+- stale adapter timeout/error after recovery: conditional rejection preserves OUTCOME_UNKNOWN and records the stale error separately;
+- two independent recovery workers racing to recover one DISPATCHING command: one atomic recovery claim succeeds, the other observes no remaining claim.
+
+## 5. Verification record
+
+Local command:
+
+```bash
+cd foundation/reference-model/execution-gateway
+python -m unittest -v
+```
+
+GitHub Actions run [#43591524490](https://github.com/PandaGarry/NEXUS/actions/runs/43591524490) completed with **success** on exact PR HEAD `4f836d0f9d1a43161927331c05e6cc19bb12072b`. All three suites passed on Python 3.11, 3.12 and 3.13: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases), 24 gateway tests and 13 egress-handover tests in each runtime. The gateway suite includes the stale-worker egress counterexample and conditional guards for late ACK, pre-send rejection and adapter error paths, plus serialized recovery claims across two independent SQLite connections.
+
+This is CI verification of the checked-in reference model only. It is not production, multi-process, database durability, security or exchange-adapter verification.
+
+## 6. Known unsafe counterexample — explicit failure evidence
+
+The new adversarial test deliberately demonstrates a defect in the current model; it is expected to pass because it asserts the unsafe behavior is reproducible. Conditional state transitions now prevent late ACK, stale pre-send rejection and adapter-error paths from overwriting recovery state; stale responses/errors are recorded separately. A worker pauses after its final local halt/expiry check and immediately before network send. A second gateway runs restart recovery and changes DISPATCHING to OUTCOME_UNKNOWN. The old worker then resumes and sends to the adapter. The reference model rejects its late ACK as a state transition and appends LATE_ACK_STALE_STATE to the venue-observation inbox, preserving OUTCOME_UNKNOWN. The same compare-and-swap discipline now protects the second pre-send guard and adapter-error handling: if recovery has already changed the command state, the stale worker records a dispatch observation and cannot replace OUTCOME_UNKNOWN. These guards protect authoritative state only; they do not prevent the old process from having already reached or reaching the venue adapter. The test still proves the more fundamental egress-fencing defect: local state CAS cannot prevent a stale process with direct network access from sending. This is a counterexample, not a safety pass.
+
+Required production invariant: once a dispatcher loses authority or recovery takes ownership, the stale dispatcher must be technically unable to reach the venue egress boundary and must be unable to mutate authoritative command state. A database lease/token checked by the stale process itself is insufficient if that process retains direct venue credentials or an open network path. Only a separately fenced egress authority may hold venue credentials/network capability; recovery must acquire/fence that authority before changing dispatch ownership. Venue idempotency/client-order IDs and reconciliation are additional defenses, not substitutes for egress fencing.
+
+## 7. Deliberate exclusions and unresolved risks
+
+- CREATE only. AMEND, CANCEL, CLOSE, REDUCE_ONLY, CANCEL_ALL and FLATTEN require separate complete command schemas and policy matrices.
+- Risk decision creation and numeric exposure calculations are not implemented. The reservation row is a pre-created fixture, not a risk engine.
+- HMAC test helper is not production cryptography. No production signing key, key rotation, HSM/KMS or signer boundary exists.
+- SQLite local transaction semantics are not a production database decision.
+- No durable dispatcher lease, cross-host claim fencing, serializable reservation-capacity transaction or distributed halt-epoch authority. The new two-connection/thread tests exercise SQLite's local write serialization only; they are not proof of process supervision, host failure handling or a production multi-worker lease protocol.
+- A process crash after DISPATCHING is conservatively unknown even if the network call had not yet happened. This intentional false-positive is safer than a duplicate send.
+- A final local halt check cannot fully eliminate the race between local state read and external network side effect. Production needs a single fenced gateway boundary and venue-aware reconciliation.
+- No order/fill private stream, ledger journal, reconciliation, rate-limit policy or external/manual order handling.
+- No live credentials, venue account, network order, risk limit or production deployment.
+
+## 8. Next conformance gate
+
+Before promoting this model into a production-language prototype:
+1. Owner/security review the canonical command and approval schemas.
+2. Define the durable reservation/outbox transaction boundary and DB isolation requirements.
+3. Define a fenced dispatch protocol for halt epochs and concurrent dispatchers.
+4. Add durable dispatcher leases and multi-process race tests.
+5. Add crash injection at every transaction/network boundary, including acknowledgement persistence.
+6. Add venue capability and reconciliation interfaces without implementing a real venue.
+7. Implement the same golden scenarios independently in the selected production language.
+8. Prove the adapter is inaccessible to Strategy/AI and every state-changing path passes the gateway.
+
+No production-readiness gate is satisfied by this reference slice.

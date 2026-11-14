@@ -3,6 +3,18 @@
 Статусы меняются только при наличии проверяемых свидетельств.
 
 ## Phase 0 — Foundation Audit (In Progress)
+
+**Operational checklist:** [NX-PROJECT-CHECKLIST-001](quality/NX-PROJECT-CHECKLIST-001-execution-and-evidence.md). It is the current source for D1–D8 package status and ordered engineering work.
+
+### Foundation close-out track (active)
+- [ ] Complete NX-DOC-REVIEW-001 packages D1–D8 or explicitly defer each behind a named gate.
+- [x] Add test-only egress authority handover state-machine model; actual network/host fencing remains BLOCKED.
+- [x] Add exact-decimal reference oracle and unit tests (11/11; reference-only evidence).
+- [x] Publish language-neutral golden vectors v1.0.0 (15 cases); Python oracle passes all vectors.
+- [x] Add deterministic exact-arithmetic property checks: 1,000 seeded cases cross-checked against independent `fractions.Fraction` arithmetic.
+- [ ] Add broader fuzz coverage and cross-language conformance.
+- [ ] Approve production numeric bounds, overflow behavior, typed units and rounding ownership before financial runtime implementation.
+- [ ] Establish implementation workspace, pinned toolchain, dependency policy and reproducible CI before production-language kernel work.
 - [ ] Зафиксировать baseline commit и структуру Tradoor.
 - [ ] Завершить аудит exchange adapters и capabilities matrix. (Initial Tradoor source pass recorded in NX-RESEARCH-002; private/funding and full instrument rules remain UNKNOWN.)
 - [ ] Проверить ingestion, recorder, backfill, migrations и persistence.
@@ -55,7 +67,8 @@
 
 ## Phase 3 — Quant & Simulation (Blocked)
 - [ ] Утвердить ТЗ-NX-003 Quant & Strategy Engine. (Draft published; owner review and strategy-runtime decisions required.)
-- [ ] Утвердить NX-ADR-003 и NX-ADR-006.
+- [x] Publish NX-ADR-003 simulation and strategy-validation protocol (PROPOSED; owner review remains open).
+- [ ] NX-ADR-006 explicitly deferred: NX-ADR-003 already covers the current strategy-validation governance scope; reopen only if a distinct architectural decision is identified.
 - [ ] Определить execution simulation levels L1/L2/L3.
 - [ ] Утвердить out-of-sample, purge/embargo и walk-forward protocols.
 - [ ] Проверить latency, queue position, partial fills, slippage и adverse selection.
