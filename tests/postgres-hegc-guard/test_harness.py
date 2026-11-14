@@ -269,7 +269,7 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         account, scopes = self.seed()
         attempt = str(uuid.uuid4())
         holder = start_sql(
-            self.gate_sql(account, scopes, attempt, "lost-response", sleep=10),
+            self.gate_sql(account, scopes, attempt, "lost-response") + "SELECT pg_sleep(10);",
             "nexus_hegc", "hegc-test-only", "lost-response-holder",
         )
         try:
