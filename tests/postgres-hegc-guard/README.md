@@ -23,6 +23,8 @@ GitHub Actions runs the same harness with the postgres:18.7 service image in the
 - One reviewed HEGC grant entrypoint and one reviewed source-writer entrypoint. Runtime logins have EXECUTE-only access and no direct source/control-table DML.
 - Fixed search paths with pg_temp last, fully qualified relation references, exact-attempt retry identity and changed-binding conflict.
 - Adversarial checks for direct SELECT/UPDATE/INSERT, helper invocation, SET ROLE, temp-object/search_path spoofing and caller-asserted custom-GUC identity.
+- Negative runtime-role tests for role creation/escalation, definer-role membership grants, PUBLIC EXECUTE grants, SECURITY INVOKER alteration, default-privilege changes against the definer owner and trusted-schema function creation.
+- Restrictive RLS composition: a restrictive HEGC SELECT policy excludes a negative source row from the SECURITY DEFINER snapshot despite the permissive policy.
 - Concurrent duplicate attempt: the blocked duplicate receives 40001, retries the whole transaction and receives the original grant.
 - Lost post-commit client response: the caller connection is terminated after grant commit but before the client consumes the response; retry by the same attempt ID returns the committed grant.
 
@@ -47,9 +49,13 @@ The earlier PostgreSQL run #43621620302 correctly exposed a harness orchestratio
 
 ## Explicit limitations
 
-This fixture proves only the behavior of these test-only SQL functions and role grants. Its RLS test is limited to the fixture source table and two fixture policies; it does not establish production policy correctness. It does not establish production schema correctness, production caller identity, complete NEXUS source-writer participation, out-of-band role/ACL and authorization-catalog mutation races, crash/restore, halt-epoch semantics, Egress process identity, socket initiation, host/network fencing, venue reconciliation, backup/PITR or production readiness. The lost-response case tests a committed grant whose client response is lost; it is not a complete crash/failover or uncertain-COMMIT recovery qualification.
+This fixture proves only the behavior of these test-only SQL functions and role grants. Its RLS tests are limited to the fixture source table and fixture policies; they do not establish production policy correctness. It does not establish production schema correctness, production caller identity, complete NEXUS source-writer participation, DBA/superuser role or ACL mutation safety, catalog-manifest drift detection, migration governance, crash/restore, halt-epoch semantics, Egress process identity, socket initiation, host/network fencing, venue reconciliation, backup/PITR or production readiness. The lost-response case tests a committed grant whose client response is lost; it is not a complete crash/failover or uncertain-COMMIT recovery qualification.
 
 The test binding_digest is an opaque fixture string, not a cryptographic canonicalization or signature. The image is selected by the postgres:18.7 tag; image digest/provenance pinning remains open. No production role, credential, database, schema or service is created by this work.
 
 
 The documentation-only synchronization HEAD 806832a2a15ea25376408c7d27cde409438451ce also triggered CI: PostgreSQL workflow #43628569042 passed all 8 tests, and Python workflow #43628569028 passed 264 tests on each of Python 3.11, 3.12 and 3.13. No source/test changes were made after the verified code/test HEAD.
+
+## Additional privilege and RLS regression scope
+
+The new runtime tests deliberately attempt PostgreSQL role/ACL operations from each fixture login. Expected denial is limited to those runtime identities and exact statements. PostgreSQL superuser/DBA changes remain outside the application row-guard protocol and require a separate reviewed migration/control-plane process, catalog-manifest drift detection, audit and session termination/reconciliation. The restrictive-policy test checks one composition case only; owner bypass, role inheritance combinations, policy subqueries and covert channels remain open.
