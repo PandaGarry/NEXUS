@@ -1213,3 +1213,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove trusted socket-initiation evidence, fence attestation and reconciliation at the actual Egress boundary; never release reservation from fence receipt alone.
 
 **Disposition:** reference model now distinguishes "cannot send again" from "definitely did not send". Production evidence remains open.
+
+## 18.70 HEGC ownership and halt-gate reference-model edge coverage — 2026-11-14
+
+- [x] Select HEGC as the sole logical writer of HaltState and EgressBoundaryAuthorization; separate it from Risk, Command Coordinator and credential-owning Egress.
+- [x] Define HEGC as no-credentials/no-socket/no-Risk-signing-key; Egress has no direct write access to halt/gate records and receives one-use attempt-scoped grants.
+- [x] Define one active HEGC instance, PostgreSQL 18.7 control-owned schema/role, fail-closed outage and no automatic failover before fencing/grant reconciliation.
+- [x] Add a test-only Python oracle for the two legal halt/gate commit orders, pause-after-gate, positive sender fencing, unknown outcome and halt-store outage.
+- [x] Extend the oracle with pending-halt/store-recovery races, repeated halt idempotency and signed-64-bit halt-epoch exhaustion.
+- [ ] Prove HEGC role grants, API authentication, one-use grant consumption, workload identity and audit integrity.
+- [ ] Prove actual socket-initiation reporting and independent process/host/network fencing; the Python oracle is sequential and not a production concurrency proof.
+
+**Disposition:** logical ownership and test-only state-machine semantics are specified. HEGC, database schema, API, grants, network fence and production Egress remain NOT IMPLEMENTED.
