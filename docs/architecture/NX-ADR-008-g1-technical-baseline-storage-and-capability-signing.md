@@ -3,7 +3,7 @@
 **Date:** 2026-11-14  
 **Status:** TECHNICAL BASELINE SELECTED FOR G1 DESIGN / PROTOTYPE EVALUATION — NOT PRODUCTION APPROVAL  
 **Decision authority:** Technical lead under the owner's explicit delegation to choose conservative technical solutions  
-**Related:** NX-IF-001..005, NX-REF-EXEC-002, NX-ARCH-004/005, NX-ARCH-REVIEW-005, NX-OWNER-DECISIONS-001, NX-SEC-001, NX-RESEARCH-010
+**Related:** NX-IF-001..005, NX-REF-EXEC-002, NX-ARCH-004/005, NX-ARCH-REVIEW-005, NX-OWNER-DECISIONS-001, NX-SEC-001, NX-RESEARCH-010/011
 
 ## 1. Context
 
