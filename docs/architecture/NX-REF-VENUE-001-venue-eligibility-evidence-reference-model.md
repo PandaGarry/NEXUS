@@ -85,8 +85,8 @@ Production implementation requires a separate design for canonical scope, authen
 
 ## Exact-head CI evidence
 
-- PR #14 exact head at final verification: `36cef91468e16713be121da431d0354a00cc02d9`.
-- GitHub Actions run: [43598389571](https://github.com/PandaGarry/NEXUS/actions/runs/43598389571).
+- PR #14 exact head at final verification: `8c7eed6ac781a40c81652da08ff3207f4d46bc6d`.
+- GitHub Actions run: [43598444584](https://github.com/PandaGarry/NEXUS/actions/runs/43598444584).
 - Python 3.11: 210 tests, SUCCESS.
 - Python 3.12: 210 tests, SUCCESS.
 - Python 3.13: 210 tests, SUCCESS.
