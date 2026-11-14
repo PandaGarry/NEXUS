@@ -1317,3 +1317,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Measure guard contention, bounded scope limits, throughput and retry behavior under realistic G1 load.
 
 **Disposition:** preferred database-boundary pattern recorded for evaluation only. No function, schema, role, grant or PostgreSQL integration harness is implemented or approved.
+
+## 18.73 PostgreSQL SSI commit-order and HEGC guard qualification — 2026-11-14
+
+- [x] Cross-check PostgreSQL SSI internals and research: SERIALIZABLE guarantees equivalence to some serial order, not necessarily wall-clock commit order for overlapping transactions.
+- [x] Separate Risk aggregate scope-state guard from HEGC gate-validation commit-order guard; do not assume one row proves both invariants.
+- [x] Require HEGC and every invalidating writer to acquire the shared gate guard as the first SQL statement after BEGIN, before any protected read/write, and hold it through commit.
+- [x] Require stale-snapshot transactions to abort/retry; multi-scope guards are acquired in deterministic order, root/account first.
+- [x] Record a least-privilege coordination-schema / SECURITY DEFINER guard function as a G1 candidate only; fixed search_path, fully qualified names, no dynamic SQL, PUBLIC execution revoked, no direct DML bypass.
+- [ ] On PostgreSQL 18.7, test writer-first and HEGC-first ordering, wait/retry behavior, stale snapshots, all invalidating writer classes, bypass denial, deadlocks, ambiguous commits and multi-scope lock order.
+- [ ] Select physical guard ownership/procedure only after the G1 concurrency harness proves commit order and role grants.
+
+**Disposition:** design correction based on PostgreSQL SSI semantics; no guard table/function/schema/runtime implemented. See NX-RESEARCH-012 §4.2.
