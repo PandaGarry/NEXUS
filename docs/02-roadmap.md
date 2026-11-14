@@ -994,3 +994,13 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Define adversarial function privilege, search_path, role membership, RLS, identity and direct-DML bypass tests.
 - [ ] Implement no SQL function or role until G1 approval gates are satisfied.
 - [ ] Run PostgreSQL 18.7 multi-connection and adversarial privilege tests; require independent security review.
+
+## Logical venue-request transmission
+
+- [x] Define one logical venue-request transmission attempt per consumed grant.
+- [x] Reject duplicate logical initiation from the same consumed grant in the reference oracle.
+- [x] Define SOCKET_INITIATED as first transport write, not full delivery or venue acceptance.
+- [x] Disable automatic retries, redirects, request replay and proxy/service-mesh/WebSocket replay for order mutations by default.
+- [x] Verify 264 tests/runtime (792 total), egress-fencing 38 tests / HaltEgressGate 25 on exact branch-head workflow #43620613920.
+- [ ] Qualify actual HTTP/WebSocket libraries, proxy/mesh configuration and partial-write/response-loss behavior.
+- [ ] Instrument the sole socket-owning Egress boundary and prove no alternate send path.
