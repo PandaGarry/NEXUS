@@ -439,3 +439,7 @@ NX-ADR-008 and OD-08 now restrict command map keys to schema-defined ASCII text 
 ## Exact-head CI after CBOR / COSE qualification and OD-08 key-profile refinement — 2026-11-14
 
 Branch HEAD `1bb2192e6746e0f86659f006ef204990adc81188` passed [GitHub Actions #43615753905](https://github.com/PandaGarry/NEXUS/actions/runs/43615753905): Python 3.11/3.12/3.13 each passed 13 isolated reference suites / 239 tests (717 successful executions total). No failures or Node.js 20 / `punycode` deprecation warnings. The run verifies Python reference models only; it does not execute CBOR/COSE candidates, the strict byte validator, Rust, PostgreSQL, Trusted Egress, external fencing, venues or live safety.
+
+## Final CI action-runtime and serialization-research verification — 2026-11-14
+
+Branch HEAD `69657a0808b859b17ab94a6d3e008a2ae9671cc7` passed [workflow #43615820603](https://github.com/PandaGarry/NEXUS/actions/runs/43615820603): Python 3.11/3.12/3.13 each passed 13 isolated reference suites / 239 tests (717 successful executions total). Job logs contain no failures or Node.js 20 / `punycode` deprecation warnings. The exact pinned `actions/checkout` v7.0.1 and `actions/setup-python` v7.1.0 manifests were fetched from their pinned commit SHAs and both declare Node 24. This verifies the Python reference models and direct action runtime only; it does not validate Rust, CBOR/COSE libraries, PostgreSQL, Trusted Egress, external fencing, venue adapters or live trading.
