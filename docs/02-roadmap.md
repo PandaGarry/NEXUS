@@ -853,3 +853,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Replace model assumptions with actual PostgreSQL shared-row/conditional-update proof and instrumented socket-boundary fault injection.
 - [ ] Prove external process/host/network fencing independently of the old Egress workload.
 
+## HEGC logical authority and grant idempotency
+
+- [x] Assign HaltState / EgressBoundaryAuthorization sole-write ownership to HEGC, separate from Risk, Command and credential-owning Egress.
+- [x] Keep HEGC free of venue credentials/socket and Risk signing key; restrict Egress from direct control-record writes.
+- [x] Define least-privilege HEGC access to source records and control-owned schema.
+- [x] Define idempotent grant issuance/recovery by stable attempt ID.
+- [ ] Implement durable schema/unique constraints and exact retry/changed-binding behavior.
+- [ ] Test ambiguous grant response, HEGC restart, paused Egress, duplicate attempts and sender fencing.
+- [ ] Prove no untrusted workload can write HEGC control records or mint grants.
