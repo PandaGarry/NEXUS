@@ -16,6 +16,14 @@
 | Exact arithmetic / instrument specs | Not started | Блокер |
 | Prototype readiness | BLOCKED | Не начинать прототипирование |
 
+## Новые архитектурные артефакты (PROPOSED)
+
+- [NX-ADR-004 — Market Data Recovery State Machine](architecture/NX-ADR-004-market-data-recovery-state-machine.md)
+- [NX-ADR-005 — Instrument Specification & Exact Arithmetic](architecture/NX-ADR-005-instrument-specification-exact-arithmetic.md)
+- [ТЗ-NX-001 — Market Data Infrastructure](specifications/TZ-NX-001-market-data-infrastructure.md)
+
+Эти документы сохранены и повторно прочитаны из GitHub; они не утверждены владельцем и не являются реализацией.
+
 ## Новые наблюдения по Tradoor (NX-RESEARCH-002)
 
 - Аудит закреплён за Tradoor SHA `39a1826816f973ff46c15a848ad1cbe3be7b1dc8`; последний проверенный commit был преимущественно переименованием Frost Script, без изменения просмотренных market-data файлов.
