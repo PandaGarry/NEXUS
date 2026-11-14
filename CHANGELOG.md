@@ -735,10 +735,17 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 
 ### Sender-fence semantic correction and expanded HaltEgressGate CI — 2026-11-14
 
-- Extended the sequential halt/Egress oracle to 16 dedicated HaltEgressGate cases, including pending-halt/store-recovery ordering, repeated halt idempotency and signed-64-bit epoch exhaustion; the package contains 24 tests total.
+- Extended the sequential halt/Egress oracle to 16 dedicated HaltEgressGate cases, including pending-halt/store-recovery ordering, repeated halt idempotency and signed-64-bit epoch exhaustion; the package contained 29 tests at that historical SHA.
 - Preserved OUTCOME_UNKNOWN and reservation retention after a sender fence when trusted socket-initiation evidence is absent; a fence only blocks future writes.
 - Exact code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` passed [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 suites / 255 tests on each of Python 3.11, 3.12 and 3.13 (765 successful executions).
 - All three job logs were inspected; no test failures or deprecation warnings were found.
 - This remains sequential Python reference evidence only; no production HEGC, PostgreSQL linearizability, socket observer, process/host/network fence or venue reconciliation runtime was exercised.
 
 - Exact code HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` passed [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 suites / 255 tests per Python 3.11/3.12/3.13 runtime (765 executions). Halt/Egress state-machine oracle now has 18 tests; this remains sequential model evidence only.
+
+### Exact-head CI — 18-case HEGC halt-gate reference model — 2026-11-14
+
+- PR #16 HEAD `9b88eabb80e44510e29013fe02315c354c4b488b` passed [workflow #43618875958](https://github.com/PandaGarry/NEXUS/actions/runs/43618875958).
+- Python 3.11/3.12/3.13 each passed 257 tests (771 successful executions total); egress-fencing package passed 31 tests, including 18 HaltEgressGate cases.
+- All three job logs show no failures or Node.js 20 / `punycode` deprecation warnings.
+- The later signed-64-bit epoch-exhaustion grant-denial guard requires a fresh exact-head rerun. This remains sequential reference-model evidence, not HEGC/database/socket/network proof.
