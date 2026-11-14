@@ -850,7 +850,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** branch ancestry is valid and deliberately stacked; all direct-chain PRs remain Draft. Exact-head Python reference CI passed. PR #16 remains open/Draft/unmerged; no owner approval for merge or production/live action is implied.
 
-## 18.39 Final exact-head CI after COSE wire profile and documentation synchronization — 2026-11-14
+## 18.40 Final exact-head CI after COSE wire profile and documentation synchronization — 2026-11-14
 
 - [x] Verify branch HEAD `71afa64c00affed017c1f072600f4f0e4aaeccc6` with [workflow #43616247630](https://github.com/PandaGarry/NEXUS/actions/runs/43616247630).
 - [x] Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
@@ -861,7 +861,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** exact-head Python reference-model regression passed. It is not cryptographic, Rust, persistence, egress, venue or live-trading evidence.
 
-## 18.40 Final synchronized PR #16 exact-head regression — 2026-11-14
+## 18.41 Final synchronized PR #16 exact-head regression — 2026-11-14
 
 - [x] Verify branch HEAD `3af0453897545b77fee358b9902a6301f662232e` with [workflow #43616348161](https://github.com/PandaGarry/NEXUS/actions/runs/43616348161).
 - [x] Python 3.11, 3.12 and 3.13 all passed 13 isolated suites / 239 tests per runtime; 717 successful executions total.
