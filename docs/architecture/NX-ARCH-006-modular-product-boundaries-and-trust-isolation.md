@@ -3,7 +3,7 @@
 **Status:** PROPOSED — architecture direction for review; not an accepted implementation baseline  
 **Date:** 2026-11-14  
 **Scope:** Product modularity, independent evolution, module admission, trust boundaries, identity/access, demo and learning domains  
-**Related:** NX-ARCH-001..005, NX-SEC-001, NX-IF-001..005, NX-REF-EXEC-002, NX-RESEARCH-010  
+**Related:** NX-ARCH-001..005, NX-SEC-001, NX-IF-001..005, NX-REF-EXEC-002, NX-RESEARCH-010, NX-ARCH-REVIEW-002  
 **Non-goals:** Selecting a framework, service mesh, database, identity provider, plugin runtime, cloud, or deployment topology; authorizing public registration, real users, live trading, or third-party extensions.
 
 ## 1. Executive decision proposal
@@ -212,3 +212,6 @@ No gate is passed by this proposal alone.
 ## 13. Current disposition
 
 **PROPOSED / DESIGN ONLY.** No service, package, identity provider, plugin framework, database, deployment topology or runtime module is selected or installed. No public registration, production account, live trading, credentials or real egress is enabled.
+
+
+**Cross-review note (2026-11-14):** NX-ARCH-REVIEW-002 clarifies that the Contract Gateway performs admission-level checks while the resource-owning service remains authoritative for action/resource authorization. The review is design-level only; G0D/G1 remain open.
