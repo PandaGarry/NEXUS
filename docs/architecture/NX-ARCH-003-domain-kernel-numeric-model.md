@@ -116,6 +116,6 @@ Production implementation must match the golden vectors and add bounded-overflow
 
 The reference oracle is a conformance aid only. It does not establish production readiness. The first-slice scalar acceptance criteria above are verified at reference-model level; production bounds, units, fuzzing and cross-language conformance remain open.
 
-GitHub Actions run [#43590253167](https://github.com/PandaGarry/NEXUS/actions/runs/43590253167) passed exact PR HEAD `9529d0fe424e73c5f303bb9780ffe194911f30c6`: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases) and 21 gateway tests on Python 3.11, 3.12 and 3.13.
+GitHub Actions run [#43590395882](https://github.com/PandaGarry/NEXUS/actions/runs/43590395882) passed exact PR HEAD `3fb21aa53c9d6c72afcf6761493388f417fcb56b`: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases) and 21 gateway tests on Python 3.11, 3.12 and 3.13.
 
 **Status remains PROPOSED.**
