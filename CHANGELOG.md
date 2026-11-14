@@ -131,3 +131,9 @@
 - Added explicit BLOCKED/OWNER-DECISION boundaries, evidence classes, a venue qualification dossier and a language-neutral fixture schema.
 - Comparative official Binance Spot, OKX and Bybit documentation is cited as evidence of product differences only; no venue/product/account or production policy is selected.
 - Documentation only: no calculator, runtime, numeric limits, rounding defaults, venue adapter or live capability added.
+
+### Added — Venue-neutral financial math fixtures (test-only)
+- Added NX-REF-DOMAIN-010 and language-neutral synthetic vectors for spot notional, explicit linear contract notional, inverse rational exposure and partial-fill weighted-average arithmetic.
+- Added independent rational-oracle assertions, dimension/instrument-identity negative tests and exact non-terminating rational preservation.
+- Added the new test suite to the Python 3.11–3.13 reference workflow.
+- No venue, fee/funding/P&L/margin/liquidation/FX/accounting policy or production rounding rule was selected.
