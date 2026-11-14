@@ -952,7 +952,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** Python reference parser now has deterministic integer-digit resource behavior. Cross-language fixture parity remains open; this does not establish production numeric policy.
 
-## 18.26 Immutable valuation-input vector and dispatch-time race control — 2026-11-14
+## 18.48 Immutable valuation-input vector and dispatch-time race control — 2026-11-14
 
 - [x] Separate source-owned mark/index/FX/fee/collateral snapshots from Risk's PostgreSQL scope-state serialization records.
 - [x] State explicitly that source snapshots are not assumed to share the Risk database transaction or a distributed transaction.
@@ -966,7 +966,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** design boundary clarified across NX-ADR-008, NX-IF-002 and NX-ARCH-REVIEW-007. No valuation service, schema or dispatch runtime implemented.
 
-## 18.27 PostgreSQL 18.7 exact G1 evaluation target — 2026-11-14
+## 18.49 PostgreSQL 18.7 exact G1 evaluation target — 2026-11-14
 
 - [x] Verify PostgreSQL 18.7 is the latest supported PostgreSQL 18 minor release on 2026-11-14.
 - [x] Select 18.7 as the exact G1 database qualification patch only; production remains unselected.
@@ -978,7 +978,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** PostgreSQL 18.7 is the bounded G1 evaluation target only. No instance, schema, extension or production topology is selected or installed.
 
-## 18.28 Persisted valuation-evidence manifest at Trusted Egress — 2026-11-14
+## 18.50 Persisted valuation-evidence manifest at Trusted Egress — 2026-11-14
 
 - [x] Define immutable ValuationInputVector identity/version and source provenance in NX-IF-002.
 - [x] Bind ExposureSnapshot, RiskReservation and RiskApprovalCapability to the same exact vector ID/version.
@@ -991,7 +991,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** synchronized NX-IF-002, NX-ADR-008, NX-ARCH-REVIEW-007 and NX-REF-EXEC-002. No valuation service, evidence store, egress runtime or numeric threshold is implemented.
 
-## 18.29 Trusted Egress send-authorization linearization — 2026-11-14
+## 18.51 Trusted Egress send-authorization linearization — 2026-11-14
 
 - [x] Define the final egress decision as a short attempt-scoped transaction over the persisted valuation manifest generation and active reservation/halt/eligibility/dispatcher fence versions.
 - [x] Bind a single-use EgressBoundaryAuthorization to the exact attempt ID and observed versions.
