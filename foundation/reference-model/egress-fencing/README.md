@@ -18,12 +18,11 @@ A separate `HaltEgressGate` oracle models the final EgressBoundaryAuthorization 
 
 - halt epoch commits first: the new final gate is denied;
 - final gate commits first: the attempt is in-flight and blocks halt acknowledgement until socket initiation is observed or the sender is positively fenced;
-- sender fencing prevents future socket initiation but does not prove that no earlier side effect occurred; without a trusted initiation report, the attempt remains OUTCOME_UNKNOWN and reconciliation-required;
-- positive sender fencing only prevents a future write; without a trusted initiation report it does **not** prove no earlier socket side effect occurred, so the attempt remains OUTCOME_UNKNOWN and reconciliation-required;
+- sender fencing prevents future socket initiation but does not prove that no earlier side effect occurred; without a trusted initiation report, the attempt remains OUTCOME_UNKNOWN, retains its reservation and requires reconciliation;
 - socket-initiated attempts remain reconciliation obligations after HALTED acknowledgement;
 - authoritative halt-store outage blocks new final gates and leaves a request pending rather than claiming HALTED.
 
-The model uses sequential method calls to represent the two commit orders. It does not prove database lock semantics or real concurrent linearizability. A positive sender-fence fixture never classifies an attempt as DEFINITELY_NOT_SENT. The sender-fence fixture is intentionally not treated as proof of definitely-not-sent; reconciliation remains mandatory when socket initiation was not authoritatively observed.
+The model uses sequential method calls to represent the two commit orders. It does not prove database lock semantics or real concurrent linearizability. A positive sender-fence fixture never classifies an attempt as DEFINITELY_NOT_SENT; reconciliation and reservation retention remain mandatory when socket initiation was not authoritatively observed.
 
 Run:
 
