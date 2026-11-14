@@ -81,7 +81,19 @@ async def record_public(
             stop = asyncio.Event()
             heartbeat_task = None
             snapshot_task = None
+            snapshot_retry_delay = 0.5
+            last_snapshot_request_at = 0.0
             synchronizer = BookSynchronizer(normalized_symbol, max_buffered_deltas=max_buffered_deltas)
+
+            def schedule_snapshot_fetch(requested_delay: float = 0.0):
+                nonlocal last_snapshot_request_at
+                now = time.monotonic()
+                rate_limit_delay = max(0.0, 0.5 - (now - last_snapshot_request_at))
+                last_snapshot_request_at = now
+                return _snapshot_fetch_task(
+                    normalized_symbol, testnet,
+                    delay_seconds=max(requested_delay, rate_limit_delay),
+                )
             try:
                 LOG.info("connecting generation=%d endpoint=%s", generation, public_linear_url(testnet))
                 async with connect(
@@ -122,7 +134,7 @@ async def record_public(
                                             await snapshot_task
                                         except (asyncio.CancelledError, Exception):
                                             pass
-                                    snapshot_task = _snapshot_fetch_task(normalized_symbol, testnet)
+                                    snapshot_task = schedule_snapshot_fetch(snapshot_retry_delay if force_refresh else 0.0)
 
                         if snapshot_task is not None and snapshot_task.done():
                             completed_task = snapshot_task
@@ -138,6 +150,7 @@ async def record_public(
                                     generation, record_type="rest_snapshot_error",
                                 )
                                 synchronizer.invalidate("rest_snapshot_fetch_failed")
+                                snapshot_retry_delay = min(snapshot_retry_delay * 2, 5.0)
                                 response = None
                             if response is not None:
                                 journal.append(
@@ -155,7 +168,9 @@ async def record_public(
                                         generation, record_type="snapshot_validation_error",
                                     )
                                     synchronizer.invalidate("rest_snapshot_validation_failed")
+                                    snapshot_retry_delay = min(snapshot_retry_delay * 2, 5.0)
                                 else:
+                                    snapshot_retry_delay = 0.5
                                     sync_outcome = synchronizer.on_snapshot(snapshot)
                                     _journal_book_state(
                                         journal, generation, sync_outcome.state,
@@ -169,7 +184,7 @@ async def record_public(
                                             synchronizer.book.cross_seq, sync_outcome.applied_buffered_deltas,
                                         )
                                     if sync_outcome.request_snapshot:
-                                        snapshot_task = _snapshot_fetch_task(normalized_symbol, testnet, delay_seconds=0.25)
+                                        snapshot_task = schedule_snapshot_fetch(snapshot_retry_delay)
 
                         if deadline is not None and time.monotonic() >= deadline:
                             break
