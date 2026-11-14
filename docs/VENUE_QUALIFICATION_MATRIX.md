@@ -19,7 +19,7 @@
 
 ## 2. Evidence-backed public-data snapshot (checked 2026-11-15)
 
-| Public-data capability | Bybit V5 linear | Kraken Spot WS v2 | Coinbase Advanced Trade |
+| Public-data capability | Bybit V5 linear | Kraken Spot WS v2 | Coinbase Advanced Trade | OKX V5 |
 |---|---|---|---|
 | Public trades channel documented | YES | YES | UNKNOWN in this snapshot |
 | Trade ID documented | YES — execution ID i | YES — trade_id, unique per book | UNKNOWN |
@@ -29,8 +29,8 @@
 | WS incremental updates | YES — delta-only | YES — update messages | UNKNOWN | YES — every 100 ms on `books` |
 | Continuity evidence documented | YES — update ID u and cross sequence seq | YES — CRC32 checksum over top 10 bids/asks | UNKNOWN | YES — `prevSeqId` + `seqId`; checksum deprecated |
 | REST snapshot required for initial book | YES | NO for documented WS snapshot flow | UNKNOWN | NO for documented WS snapshot flow |
-| Public L3 / order-level feed entitlement | UNKNOWN | UNKNOWN for Spot; separate FIX examples show Futures L3 | UNKNOWN |
-| Live public smoke evidence in NEXUS | YES — 10-minute capture/replay | NO | NO |
+| Public L3 / order-level feed entitlement | UNKNOWN | UNKNOWN for Spot; separate FIX examples show Futures L3 | UNKNOWN | UNKNOWN |
+| Live public smoke evidence in NEXUS | YES — 10-minute raw capture/replay | NO | NO | NO |
 
 ### Bybit V5 linear evidence
 
@@ -39,7 +39,7 @@
 - `u=1` is a reinitialization signal. `seq` is monotonic but not necessarily consecutive.
 - Full-depth stream and REST snapshot exclude RPI orders.
 - Bybit API Terms & Conditions (support page last updated 2026-10-20) grant a limited revocable API license for development/testing/support (Section 5.1), prohibit API/Service Data availability or performance benchmarking (6.6), prohibit repackaging/reselling Service Data (6.7), and prohibit commercial exploitation (6.9). Section 2.3 says API use requires API-key identity verification; applicability to technically unauthenticated public market-data endpoints requires clarification. NEXUS therefore keeps raw data private and gates future automated live capture pending explicit terms review.
-- NEXUS run #10 captured 8,149 public trade messages and 2,998 full-depth delta messages over approximately 10 minutes. Total journal records were 11,177, leaving 30 records unclassified in the published count breakdown. One connection generation was observed.
+- NEXUS run #10 captured 8,149 public trade messages, 2,998 full-depth delta messages, 29 pong replies and 1 subscription acknowledgement = 11,177 records exactly. Independent inspection found zero malformed lines and zero raw SHA-256 mismatches. One connection generation was observed.
 
 Official sources:
 - Full-depth WS and synchronization: https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob
@@ -70,6 +70,21 @@ Official sources:
 - Historical Spot Time & Sales archive: https://support.kraken.com/in/articles/360047543791-downloadable-historical-market-data-time-and-sales-
 - API terms / prior permission for certain commercial public-data uses: https://docs-legacy.kraken.com/api/docs/guides/global-intro/
 - Global Terms: https://www.kraken.com/legal/global-terms
+
+### OKX V5 evidence
+
+- The official historical-data portal lists tick-level trades from September 2021, high-resolution L2 from March 2023, perpetual funding rates from March 2022 and candlesticks from July 2023.
+- Standard `books` sends a 400-level initial full snapshot and incremental updates every 100 ms. `books-l2-tbt` (400 levels / 10 ms) and `books50-l2-tbt` (50 levels / 10 ms) are restricted to VIP4+ fee tiers; do not assume access to these higher-frequency channels.
+- Current continuity contract is `prevSeqId` + `seqId`: snapshot has `prevSeqId=-1`; normal incremental `prevSeqId` matches the previous `seqId`; maintenance may reset `seqId` lower than `prevSeqId`, after which normal sequencing resumes.
+- JSON order-book checksum was deprecated in production on 2026-06-23; checksum fields remain but are always zero. Do not use checksum as integrity evidence.
+- Historical-data terms allow personal use including development of one's own trading strategy, but prohibit redistribution and disclaim completeness/accuracy. The API Agreement limits Market Data to personal, non-commercial use and prohibits redistribution, competing data/analytics products and commercialized AI model training without written consent. No raw OKX data may be published or committed to NEXUS.
+
+Official sources:
+- Historical data: https://www.okx.com/historical-data
+- V5 API/book sequence semantics: https://www.okx.com/docs-v5/en/
+- Checksum deprecation: https://www.okx.com/en-sg/help/okx-order-book-channels-checksum-field-deprecation
+- API Agreement: https://www.okx.com/help/okx-api-agreement
+- Historical-data terms: https://www.okx.com/help/historicaldata-terms-and-conditions
 
 ## 3. Full qualification matrix
 
@@ -124,7 +139,7 @@ The lack of a live-eligible venue does not block public data research. The lack 
 ## 6. Architecture rule: first concrete, second contrasting, then abstract
 
 - Adapter #1 remains concrete and venue-specific while Bybit M2 is completed.
-- Kraken Spot WS v2 is the leading protocol-research candidate for adapter #2; recorder implementation is deferred until Bybit M2 acceptance. Coinbase Advanced Trade remains the alternative.
+- OKX is the leading historical-L2 research candidate for HYP-001; Kraken Spot WS v2 remains the leading Spot checksum/protocol contrast. Neither recorder is implemented until Bybit M2 acceptance and terms review. Coinbase Advanced Trade remains an alternative.
 - Compare both implementations and their failure/recovery models before defining a generic adapter interface.
 - Only then define the smallest shared contracts supported by both. Do not force a lowest-common-denominator interface that erases useful venue-specific guarantees.
 - Keep raw source frames, source timestamps and venue-specific evidence. Normalize only into a shared layer with explicit provenance and loss annotations.
