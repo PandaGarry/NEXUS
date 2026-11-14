@@ -281,3 +281,24 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [ ] Design production evidence authentication/signing, trusted time, persistence, distributed revocation, cross-process egress fencing, reviewer roles and crash recovery before implementation.
 
 **Disposition:** FIRST VENUE BLOCKED. No venue selected, no account/API credentials connected, no orders/transfers/deposits/withdrawals, and no live trading authorized. All foreign venues remain RESEARCH_ONLY.
+
+## 17. Rust execution and cross-language conformance work package
+
+**Owning artifact:** [NX-ARCH-004](../architecture/NX-ARCH-004-rust-execution-cross-language-conformance.md)  
+**Tracking:** GitHub Issue #15  
+**Branch:** `engineering/rust-execution-domain-conformance-v0`  
+**Status:** IN PROGRESS — documentation design only; implementation readiness remains BLOCKED.
+
+- [x] Publish NX-ARCH-004 as a PROPOSED architecture design with explicit non-authorizations.
+- [x] Define NEXUS-owned command, Risk, durable outbox, trusted egress, adapter, Ledger and recovery authority boundaries.
+- [x] Define language-neutral conformance expectations and rejection-class comparison.
+- [x] Define crash/replay/duplicate/partial-fill/cancel-fill/eligibility-suspension/stale-worker failure matrix.
+- [ ] Review RUST-01..06 with the owner; publication is not acceptance.
+- [ ] Cross-review NX-ARCH-004 against NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SEC-001.
+- [ ] Approve production Rust toolchain/workspace only after applicable G0D/G1 gates.
+- [ ] Implement Rust pure-domain slice and run existing golden vectors.
+- [ ] Add Python/Rust differential and bounded-resource tests under an approved numeric profile.
+- [ ] Prove a concrete independently enforced egress fence against stale-worker network-send attempts.
+- [ ] Record exact commit SHA, toolchain, lockfile and CI evidence before claiming conformance.
+
+**Disposition:** no Rust source, Cargo workspace, production numeric profile, venue adapter, trusted egress, credentials or live capability added. Prototype readiness BLOCKED; live NOT AUTHORIZED.
