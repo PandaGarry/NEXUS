@@ -27,9 +27,13 @@ def serialize_decimal(value: ExactDecimal) -> str:
     return f"{_DECIMAL_PREFIX}:{value.coefficient}:{value.scale}"
 
 
-def parse_decimal(encoded: str) -> ExactDecimal:
+def parse_decimal(encoded: str, *, max_chars: int) -> ExactDecimal:
     if not isinstance(encoded, str):
         raise TypeError("encoded value must be str")
+    if not isinstance(max_chars, int) or isinstance(max_chars, bool) or max_chars <= 0:
+        raise ValueError("max_chars must be a positive integer")
+    if len(encoded) > max_chars:
+        raise NumericWireError("decimal wire value exceeds input character budget")
     parts = encoded.split(":")
     if len(parts) != 3 or parts[0] != _DECIMAL_PREFIX:
         raise NumericWireError("unsupported decimal wire version or shape")
@@ -49,9 +53,13 @@ def serialize_rational(value: ExactRational) -> str:
     return f"{_RATIONAL_PREFIX}:{value.numerator}:{value.denominator}"
 
 
-def parse_rational(encoded: str) -> ExactRational:
+def parse_rational(encoded: str, *, max_chars: int) -> ExactRational:
     if not isinstance(encoded, str):
         raise TypeError("encoded value must be str")
+    if not isinstance(max_chars, int) or isinstance(max_chars, bool) or max_chars <= 0:
+        raise ValueError("max_chars must be a positive integer")
+    if len(encoded) > max_chars:
+        raise NumericWireError("rational wire value exceeds input character budget")
     parts = encoded.split(":")
     if len(parts) != 3 or parts[0] != _RATIONAL_PREFIX:
         raise NumericWireError("unsupported rational wire version or shape")
