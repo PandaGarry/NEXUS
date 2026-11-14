@@ -8,8 +8,8 @@ import unittest
 from fractions import Fraction
 from pathlib import Path
 
-from nexus_decimal import ExactDecimal as D, ExactRational
-from domain_types import AssetAmount, DimensionMismatch, Notional, Price, RationalAssetAmount
+from nexus_decimal import ExactDecimal as D, ExactRational, InexactDivision
+from domain_types import AssetAmount, ContractCount, DimensionMismatch, Notional, Price
 from instrument_spec import Applicability, ContractType, InstrumentSpec, InstrumentStatus, MarketType
 from instrument_units import InstrumentUnitModel, MultiplierDimension, QuantityKind
 
@@ -148,6 +148,8 @@ class FinancialMathFixtureTests(unittest.TestCase):
         self.assertEqual((str(exposure.amount.numerator), str(exposure.amount.denominator)),
                          (expected["numerator"], expected["denominator"]))
         self.assertEqual(exposure.asset_code, expected["unit"])
+        with self.assertRaises(InexactDivision):
+            exposure.to_asset_amount_exact()
         # Independent standard-library rational oracle; no decimal rounding.
         self.assertEqual(Fraction(exposure.amount.numerator, exposure.amount.denominator),
                          Fraction(100 * 100, 1) / Fraction(6500025, 100))
@@ -179,7 +181,7 @@ class FinancialMathFixtureTests(unittest.TestCase):
         model = inverse_model()
         with self.assertRaises(DimensionMismatch):
             model.inverse_quote_notional(
-                model.contract_count(d("1")).__class__("nexus:other:BTC-USD", d("1"))
+                ContractCount("nexus:other:BTC-USD", d("1"))
             )
 
 
