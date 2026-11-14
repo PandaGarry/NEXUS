@@ -790,3 +790,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Investigated failures #43618969753 (`913ef9e`) and #43619038468 (`f9f385d`): stale tests did not model GRANT_CONSUMED before socket initiation and incorrectly expected a fenced sender to write later.
 - Updated tests to consume the committed grant before simulated store outage and to deny future socket initiation after sender fencing while retaining OUTCOME_UNKNOWN.
 - Corrected code/test HEAD `fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8` passed [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619194630): 262 tests/runtime on each Python 3.11/3.12/3.13 (786 executions), 36 egress-fencing tests / 23 halt-gate tests.
+
+### HEGC guard first-statement enforcement requirement clarified — 2026-11-14
+
+- Recorded that a standalone SECURITY DEFINER guard function cannot prevent callers from performing protected reads before invoking it.
+- G1 must use a reviewed HEGC transaction entrypoint or DB-enforced first-statement API; every invalidating writer must use guarded procedures with direct DML bypass revoked.
+- Added security requirements for NOLOGIN/non-superuser guard owner, guard-row-only writes, fixed search_path, pg_temp last, schema-qualified names, no dynamic SQL and PUBLIC EXECUTE revoked.
+- No function, schema, role or runtime implemented.
