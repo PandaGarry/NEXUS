@@ -161,26 +161,27 @@ class GatewayTests(unittest.TestCase):
         self.assertEqual(len(self.adapter.calls), 1)
 
     def test_two_gateway_instances_race_for_same_approval_only_one_commits(self):
-        store2 = SQLiteOutbox(self.path)
-        gateway2 = CommandGateway(store2, FakeVenueAdapter(), verification_key=KEY,
-                                  clock=lambda: self.now,
-                                  current_halt_epoch=lambda _account: self.epoch)
         barrier = threading.Barrier(3)
         outcomes = []
         lock = threading.Lock()
 
-        def submit(gateway):
+        def submit():
+            store = SQLiteOutbox(self.path)
+            gateway = CommandGateway(store, FakeVenueAdapter(), verification_key=KEY,
+                                     clock=lambda: self.now,
+                                     current_halt_epoch=lambda _account: self.epoch)
             barrier.wait()
             try:
                 gateway.persist_approved(self.cmd, self.approval)
                 result = "COMMITTED"
             except Denied:
                 result = "DENIED"
+            finally:
+                store.close()
             with lock:
                 outcomes.append(result)
 
-        threads = [threading.Thread(target=submit, args=(g,))
-                   for g in (self.gateway, gateway2)]
+        threads = [threading.Thread(target=submit) for _ in range(2)]
         for thread in threads:
             thread.start()
         barrier.wait()
@@ -193,9 +194,7 @@ class GatewayTests(unittest.TestCase):
                 "SELECT COUNT(*) FROM commands WHERE command_id='cmd-001'").fetchone()[0], 1)
             self.assertEqual(self.store.db.execute(
                 "SELECT state FROM reservations WHERE reservation_id='res-1'").fetchone()[0], "CONSUMED")
-        finally:
-            store2.close()
-
+    
     def test_two_dispatcher_instances_cannot_claim_same_command(self):
         entered = threading.Event()
         release = threading.Event()
@@ -209,19 +208,24 @@ class GatewayTests(unittest.TestCase):
                 return "venue-order-1"
 
         blocking = BlockingAdapter()
-        self.gateway = CommandGateway(self.store, blocking, verification_key=KEY,
-                                       clock=lambda: self.now,
-                                       current_halt_epoch=lambda _account: self.epoch)
-        store2 = SQLiteOutbox(self.path)
         adapter2 = FakeVenueAdapter()
+        store2 = SQLiteOutbox(self.path)
         gateway2 = CommandGateway(store2, adapter2, verification_key=KEY,
                                   clock=lambda: self.now,
                                   current_halt_epoch=lambda _account: self.epoch)
         self.gateway.persist_approved(self.cmd, self.approval)
         outcomes = []
+        adapter1 = blocking
 
         def first_dispatch():
-            outcomes.append(self.gateway.dispatch("cmd-001"))
+            store1 = SQLiteOutbox(self.path)
+            gateway1 = CommandGateway(store1, adapter1, verification_key=KEY,
+                                      clock=lambda: self.now,
+                                      current_halt_epoch=lambda _account: self.epoch)
+            try:
+                outcomes.append(gateway1.dispatch("cmd-001"))
+            finally:
+                store1.close()
 
         thread = threading.Thread(target=first_dispatch)
         thread.start()
