@@ -147,7 +147,7 @@ The owner subsequently instructed the technical lead to perform the deeper proje
 
 ### OD-08 — Canonical bytes, digest and approval signature
 
-- **G1 baseline:** RFC 8949 core deterministic CBOR under the strict NEXUS profile in NX-ADR-008; reject duplicate map keys, invalid UTF-8, tags, indefinite lengths and all floats; use exact strings/typed values for financial data and signed 64-bit integers only for declared control metadata.
+- **G1 baseline:** RFC 8949 core deterministic CBOR under the strict NEXUS profile in NX-ADR-008; command map keys are schema-defined ASCII text names only; reject non-ASCII/unknown/duplicate keys, invalid UTF-8, tags, indefinite lengths and all floats; use exact strings/typed values for financial data and signed 64-bit integers only for declared control metadata.
 - **Digest:** SHA-256 over a fixed NEXUS command-domain separator and deterministic command bytes.
 - **Capability signature:** COSE_Sign1 with fully specified COSE Ed25519 algorithm (-19, RFC 9864); protected algorithm and kid; COSE key type OKP / Ed25519 only; reject deprecated polymorphic EdDSA (-8), Ed448 and key/algorithm mismatch. Treat kid only as an integrity-protected lookup hint; resolve by issuer, algorithm, purpose, validity/revocation state and registry generation, requiring exactly one eligible key. Risk signing authority is isolated and asymmetric; Execution receives public verification material only.
 - **Not selected:** exact encoder/decoder crates, key custody provider/HSM/KMS, production key ceremony, rotation windows and jurisdictional acceptance. These require exact-version security review and cross-language vectors before implementation or production.
