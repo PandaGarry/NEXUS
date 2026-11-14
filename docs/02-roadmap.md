@@ -726,3 +726,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Deny send when manifest is missing, stale, incomplete, has watermark gaps or cannot prove admissibility.
 - [ ] Define ingestion lag/correction invalidation objective and measurement.
 - [ ] Add race/fault tests for source updates and corrections between approval and send.
+
+## Trusted Egress authorization linearization
+
+- [x] Define a single-use attempt-bound EgressBoundaryAuthorization over manifest/reservation/halt/eligibility/fence versions.
+- [x] Define final-gate commit as the send-authorization linearization point.
+- [x] Require immediate socket-write initiation and no DB transaction across network I/O.
+- [ ] Test update-before-gate vs update-after-gate ordering for valuation correction, halt and venue eligibility.
+- [ ] Inject crash after final authorization commit but before socket write; recover as potentially sent and reconcile.
+- [ ] Inject crash during/after socket write; verify no blind retry and inspect actual instrumented egress boundary.
