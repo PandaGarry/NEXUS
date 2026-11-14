@@ -26,7 +26,7 @@ A status is valid only for the exact commit, test, artifact or dated source link
 
 ## Active work and next sequence
 
-1. **Keep #19 and #20 as the only primary active PRs.** Review #20 first as the public documentation landing page; reconcile its README with #19 before integration. No automatic merge.
+1. **Keep #19 and #20 as the only primary active PRs.** Review #20 first as the public documentation landing page. The current changed-file inventory shows #19 does not modify the root `README.md`; after #20 is integrated, verify #19 against the new base and preserve its recorder-specific README. No automatic merge.
 2. **Continue M2 in parallel with bounded documentation cleanup.** Do not create a new audit phase that blocks engineering.
 3. **Close the Bybit terms question** before another live capture or raw-data publication. Do not treat technical reachability as permission.
 4. **Strengthen M2 evidence:** independent protocol review; controlled disconnect/reconnect; injected `u=1` and update-ID gap; replay of a real permitted session; compare a fresh REST snapshot with the local book over a defined observation window and documented tolerance.
