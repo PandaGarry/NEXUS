@@ -797,3 +797,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - G1 must use a reviewed HEGC transaction entrypoint or DB-enforced first-statement API; every invalidating writer must use guarded procedures with direct DML bypass revoked.
 - Added security requirements for NOLOGIN/non-superuser guard owner, guard-row-only writes, fixed search_path, pg_temp last, schema-qualified names, no dynamic SQL and PUBLIC EXECUTE revoked.
 - No function, schema, role or runtime implemented.
+
+
+### Idempotent HEGC grant issuance and binding-conflict coverage — 2026-11-14
+
+- Added a canonical authorization binding digest to the test-only attempt model.
+- Exact retries on the same attempt ID, observed halt epoch and digest return the original attempt; a changed digest or epoch conflicts and never mints a replacement grant.
+- Exact code/test HEAD c2350f7807587e0428b760890f6fdba09ba60f60 passed [workflow #43619636403](https://github.com/PandaGarry/NEXUS/actions/runs/43619636403).
+- Python 3.11/3.12/3.13 each passed 13 suites / 263 tests (789 executions); egress-fencing passed 37 tests, including 24 HaltEgressGate cases.
+- This is sequential reference-model evidence only. Canonical production digest construction, database uniqueness, concurrent idempotency, HEGC identity and PostgreSQL commit-order guard remain unimplemented.
