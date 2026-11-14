@@ -11,7 +11,7 @@ The arbitrary-precision oracle remains unchanged as the mathematical source of e
 
 ## 2. Mandatory limits; no default profile
 
-NumericLimits requires all of the following positive integer budgets:
+NumericLimits requires explicit integer budgets. Input/digit/intermediate budgets must be positive; max_scale and max_power10_exponent may be zero (integer-only/no-expansion profiles):
 
 - max_input_chars
 - max_coefficient_digits
@@ -69,3 +69,6 @@ CI runs the suite on Python 3.11, 3.12 and 3.13. This is reference-level conform
 ## 8. Exit boundary
 
 Before production adoption, select and justify limits per deployment profile, prove checked arithmetic in the chosen language, add boundary/property/fuzz tests, benchmark worst-case resource use, define overflow/error mapping, and verify cross-language parity against shared vectors.
+
+
+**CI evidence:** PR run [#43594861745](https://github.com/PandaGarry/NEXUS/actions/runs/43594861745) passed exact PR HEAD `2c0135f1205a27f070b0b6a835aa3c19e904e540` on Python 3.11, 3.12 and 3.13. The bounded suite ran 27 tests per runtime. The complete matrix ran 166 tests per runtime / 498 test executions across ten isolated suites. This remains reference-level evidence only.
