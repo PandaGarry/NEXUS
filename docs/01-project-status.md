@@ -16,6 +16,7 @@
 | Exact arithmetic / instrument specs | ADR proposed / implementation not started | NX-ADR-005 drafted; требует owner review и последующих golden tests. Блокер реализации сохраняется |
 | Unified market event contract | PROPOSED | NX-ADR-001 опубликован; owner review и conformance design review требуются |
 | Professional Order Flow specification | PROPOSED | ТЗ-NX-002 опубликовано; формулы, golden datasets и реализация не проверялись |
+| Quant & Strategy Engine specification | PROPOSED | ТЗ-NX-003 опубликовано; research protocol, runtime, feature registry и стратегии не реализованы/не проверены |
 | Target architecture | PROPOSED | NX-ARCH-001 опубликован; owner review и согласование TBD deployment decisions требуются |
 | Prototype readiness | BLOCKED | Не начинать прототипирование |
 
@@ -31,6 +32,7 @@
 - [NX-ADR-005 — Instrument Specification & Exact Arithmetic](architecture/NX-ADR-005-instrument-specification-exact-arithmetic.md)
 - [ТЗ-NX-001 — Market Data Infrastructure](specifications/TZ-NX-001-market-data-infrastructure.md)
 - [ТЗ-NX-002 — Professional Order Flow](specifications/TZ-NX-002-professional-order-flow.md) — функциональные требования и критерии корректности; implementation NOT STARTED
+- [ТЗ-NX-003 — Quant & Strategy Engine](specifications/TZ-NX-003-quant-strategy-engine.md) — strategy artifacts, DecisionContext/TradeIntent, research governance, simulation fidelity and promotion gates; implementation NOT STARTED
 - [NX-SEC-001 — Threat Model & Credential Isolation](security/NX-SEC-001-threat-model-credential-isolation.md)
 
 Эти документы сохранены и повторно прочитаны из GitHub; они не утверждены владельцем и не являются реализацией.
@@ -57,5 +59,3 @@
 - Лицензия Tradoor заявлена как AGPL-3.0-only; юридический анализ обязателен.
 
 Это контрольная точка, а не отчёт о полном аудите. Выводы связывать с точным commit SHA, путями/строками, датой и методом. Непроверенное помечать UNKNOWN, а не PASS.
-
-
