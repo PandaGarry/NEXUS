@@ -477,3 +477,7 @@ Branch HEAD `8d2c2f404782b718f1a3a422bb0ce918bb6b922d` passed [workflow #4361614
 ## Final exact-head CI after COSE wire-profile synchronization — 2026-11-14
 
 Branch HEAD `71afa64c00affed017c1f072600f4f0e4aaeccc6` passed [workflow #43616247630](https://github.com/PandaGarry/NEXUS/actions/runs/43616247630): Python 3.11/3.12/3.13 each passed 13 isolated reference suites / 239 tests (717 successful executions total). No failures or Node.js 20 / `punycode` deprecation warnings. This is Python reference-model regression only; it does not execute the COSE wire profile, strict CBOR parser, Rust, PostgreSQL, Trusted Egress, venue adapters or live execution.
+
+## Final synchronized PR #16 exact-head CI — 2026-11-14
+
+Branch HEAD `3af0453897545b77fee358b9902a6301f662232e` passed [workflow #43616348161](https://github.com/PandaGarry/NEXUS/actions/runs/43616348161): Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions total). All three logs show no failures or Node.js 20 / `punycode` deprecation warnings. This is reference-model CI only; Rust, CBOR/COSE, PostgreSQL, Trusted Egress, venue adapters and live execution remain untested. PR #16 remains Draft/open/unmerged and stacked parent-first.
