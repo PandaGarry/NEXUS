@@ -589,3 +589,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Committed single-use EgressBoundaryAuthorization is the send-authorization linearization point; the single-writer Egress process immediately initiates socket write.
 - No source fetch/queue hop/unbounded async preparation is allowed after the final gate; no database transaction is held over network I/O.
 - Post-gate updates are causally later; the attempt remains potentially sent and requires reconciliation. Crash/race runtime tests remain open.
+
+### Risk approval and valuation-evidence contracts synchronized — 2026-11-14
+
+- Aligned NX-IF-001 RiskEvaluationRequest/RiskDecision/RiskApprovalCapability with immutable valuation_input_vector_id/version from NX-IF-002.
+- Aligned NX-IF-001 with exact COSE_Sign1 untagged embedded four-element profile, alg=-19, bounded kid and empty unprotected map.
+- Required local-only bounded key resolution, exact signed byte preservation and rejection of token-directed remote key discovery.
+- Required Trusted Egress to validate the signed valuation vector against the persisted Risk evidence manifest with no remote source fetch; missing/unverifiable evidence denies send.
+- Added negative conformance vectors; no cryptographic or Egress runtime implemented.
