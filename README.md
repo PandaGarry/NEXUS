@@ -25,7 +25,7 @@ nexus-bybit-replay data/bybit-public-raw.jsonl --replay-book
 
 ## Live smoke and evidence
 
-A push to the prototype branch runs unit tests and a public-only 10-minute smoke. The smoke requires both public topics, exact journal classification, a journaled REST snapshot, at least one `LIVE_VALID` book event, and replay agreement with recorded valid-book watermarks. A failed or blocked run is evidence of a blocker, not a passing capture. No credentials or account access are used.
+A push to the prototype branch runs the unit-test matrix. The 10-minute public-feed smoke is gated by repository variable `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true` and remains disabled until the Bybit API terms are reviewed. When enabled, it requires both public topics, exact journal classification, a journaled REST snapshot, at least one `LIVE_VALID` book event, and replay agreement with recorded valid-book watermarks. No credentials or account access are used.
 
 GitHub-hosted runner timing is not a production latency benchmark. The original 10-minute artifact is retained only until 2026-11-28; preserve it privately before expiry and do not publish raw exchange frames until applicable terms and redistribution rights have been reviewed.
 
