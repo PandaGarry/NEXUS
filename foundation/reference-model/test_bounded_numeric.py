@@ -100,19 +100,39 @@ class BoundedNumericTests(unittest.TestCase):
         ctx = context()
         self.assertEqual(ctx.add(d("1.25"), d("0.005")), d("1.255"))
 
+    def test_add_accepts_exact_result_at_digit_budget_boundary(self):
+        ctx = context(max_coefficient_digits=3, max_scale=0,
+                      max_rational_numerator_digits=3, max_rational_denominator_digits=3,
+                      max_intermediate_digits=3, max_power10_exponent=0)
+        self.assertEqual(ctx.add(d("100"), d("200")), d("300"))
+        self.assertEqual(ctx.subtract(d("300"), d("200")), d("100"))
+
+    def test_add_rejects_only_when_carry_exceeds_intermediate_budget(self):
+        ctx = context(max_coefficient_digits=3, max_scale=0,
+                      max_rational_numerator_digits=3, max_rational_denominator_digits=3,
+                      max_intermediate_digits=3, max_power10_exponent=0)
+        with self.assertRaisesRegex(NumericLimitExceeded, "addition"):
+            ctx.add(d("999"), d("1"))
+
     def test_add_preflights_alignment_before_power_of_ten(self):
         ctx = context(max_power10_exponent=2)
         with self.assertRaisesRegex(NumericLimitExceeded, "exponent"):
             ctx.add(d("1"), d("0.0001"))
 
     def test_add_preflights_intermediate_growth(self):
-        ctx = context(max_intermediate_digits=16, max_rational_numerator_digits=8,
+        ctx = context(max_intermediate_digits=8, max_rational_numerator_digits=8,
                       max_rational_denominator_digits=8, max_coefficient_digits=8)
-        with self.assertRaises(NumericLimitExceeded):
+        with self.assertRaisesRegex(NumericLimitExceeded, "addition"):
             ctx.add(d("99999999"), d("99999999"))
 
     def test_subtract_exact_within_budget(self):
         self.assertEqual(context().subtract(d("100"), d("0.01")), d("99.99"))
+
+    def test_multiply_accepts_small_product_at_minimum_digit_budget(self):
+        ctx = context(max_input_chars=8, max_coefficient_digits=1, max_scale=0,
+                      max_rational_numerator_digits=1, max_rational_denominator_digits=1,
+                      max_intermediate_digits=1, max_power10_exponent=0)
+        self.assertEqual(ctx.multiply(d("1"), d("1")), d("1"))
 
     def test_multiply_rejects_scale_growth(self):
         ctx = context(max_scale=7)
