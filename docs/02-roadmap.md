@@ -187,3 +187,5 @@ First-venue selection remains BLOCKED; no live trading is authorized.
 - [x] Add test-only venue eligibility evidence evaluator and 24 deterministic fail-closed scenarios; exact-head CI verification pending.
 - [ ] Verify the venue eligibility reference suite passes on Python 3.11, 3.12 and 3.13 at the exact PR head.
 - [ ] Keep NX-ADR-007 PROPOSED until owner and qualified legal review are complete.
+
+- [x] Verify venue eligibility reference suite and complete reference matrix: 210 tests/runtime on Python 3.11/3.12/3.13; 630 successful executions at PR #14 SHA `acfa421d79b3e7c71d2a5f49d8a622b8e98b0879` (run 43598284579).
