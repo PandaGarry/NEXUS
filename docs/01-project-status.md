@@ -545,3 +545,7 @@ Selected PostgreSQL 18.7 as the exact G1 evaluation patch only; it was the lates
 PR #16 branch HEAD `7fb396df5f3e700adf0ad151c446e38930fdadb0` passed [workflow #43617605777](https://github.com/PandaGarry/NEXUS/actions/runs/43617605777). Python 3.11, 3.12 and 3.13 each passed all 13 isolated reference suites / 239 tests: **717 successful executions total**. All three job logs were inspected; no test failures, Node.js 20 or `punycode` deprecation warnings were found. This includes the deterministic 512/513-digit numeric-wire boundary tests.
 
 This remains Python reference-model CI only. It does not execute the strict CBOR parser, COSE signer/verifier, Rust, PostgreSQL 18.7, Risk concurrency, Trusted Egress, external host/network fencing, venue adapters or live trading. PR #16 remains Draft/open/unmerged and parent-first.
+
+## PostgreSQL 18.7 / valuation-vector reference CI evidence correction — 2026-11-14
+
+The exact tested SHA `7fb396df5f3e700adf0ad151c446e38930fdadb0` passed [workflow #43617626344](https://github.com/PandaGarry/NEXUS/actions/runs/43617626344), not the earlier workflow reference previously written in the checklist. Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); logs show no failures or Node.js 20 / `punycode` warnings. This run is Python reference-only and does not validate PostgreSQL 18.7, valuation evidence manifests, CBOR/COSE, Rust or Trusted Egress.
