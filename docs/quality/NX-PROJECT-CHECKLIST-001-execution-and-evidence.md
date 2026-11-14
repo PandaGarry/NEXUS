@@ -401,3 +401,18 @@ The exact decimal oracle is arbitrary precision; `BoundedNumericContext` wraps i
 - [ ] Implement crash/partition/stale-worker fault injection after owner/security review.
 
 **Disposition:** documentation ambiguity resolved; runtime and distributed-safety proof remain NOT IMPLEMENTED / NOT VERIFIED.
+
+
+### 18.5 Transaction-boundary and stale-egress crash analysis — 2026-11-14
+
+- [x] Specify separate ordered Risk reservation and Command acceptance commits; do not imply a cross-service distributed ACID transaction.
+- [x] Require capability single-use consumption atomic with canonical command + reservation reference + outbox persistence.
+- [x] Specify attempt marker persistence before egress and keep reservation held through ambiguous outcomes.
+- [x] Define account-scoped credential-owning Egress boundary; dispatcher/adapter workers have no direct venue credentials or route.
+- [x] Add a crash-point matrix spanning reservation, capability, command/outbox, attempt marker, socket write, venue acceptance, fill/Ledger posting, halt fencing and RecoveryBarrier.
+- [ ] Select authoritative storage/isolation, workload identity, host/network fence and egress topology under OD-09/OD-10/OD-12.
+- [ ] Approve capability serialization/signing and key custody under OD-08/security review.
+- [ ] Implement process/network fault injection against the actual send boundary; a fake adapter or database-only epoch test is insufficient.
+- [ ] Prove old egress is positively fenced under host/network partition before granting a new authority generation.
+
+**Disposition:** design recommendation and test plan only. OD-09 remains open; no provider, database, cryptographic scheme, network fence, credential or production runtime was selected or implemented. CREATE remains non-production-safe.
