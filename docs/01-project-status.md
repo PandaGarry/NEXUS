@@ -759,3 +759,8 @@ Added a disposable-fixture catalog fingerprint regression covering role attribut
 ## SHA-256 catalog fingerprint verification — 2026-11-14
 
 Replaced the fixture fingerprint's MD5 with Python `hashlib.sha256` over deterministic JSONB catalog snapshot text. Exact code/test HEAD `d9c7bf5fddf68792ed565fecbcef83b73dab11a7`: PostgreSQL workflow [#43631854964](https://github.com/PandaGarry/NEXUS) passed 12/12; Python workflow [#43631854995](https://github.com/PandaGarry/NEXUS) passed 264 tests/runtime on Python 3.11/3.12/3.13 (792 executions). Production manifest signing/approval and fail-closed enforcement remain OPEN.
+
+
+## Production authorization-catalog manifest lifecycle — 2026-11-14
+
+NX-ARCH-REVIEW-009 now defines the proposed production lifecycle for an independently approved and signed PostgreSQL authorization-catalog manifest: context binding, semantic inventory, canonicalization/signature constraints, separated approval/signing/audit roles, fail-closed deployment verification, post-startup drift response and emergency reconciliation. It also enumerates the broader catalog surfaces that the current disposable fixture does not yet cover. This is a design artifact only; no production manifest, signer, key custody, verifier, drift monitor or deployment gate exists. G0D/G1 remain open; live trading remains NOT AUTHORIZED.
