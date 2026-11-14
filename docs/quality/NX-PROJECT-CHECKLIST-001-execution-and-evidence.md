@@ -247,7 +247,7 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [x] Add test-only conformance tests with independent `fractions.Fraction` checks for selected outputs.
 - [x] Preserve repeating inverse exposure as a rational; assert that exact decimal conversion rejects a non-terminating result rather than rounding.
 - [x] Add the suite to the Python 3.11/3.12/3.13 reference workflow.
-- [ ] Verify exact PR-head CI and inspect all test logs.
+- [x] Verify exact PR-head code/test commit and inspect all three runtime logs: run [#43596710483](https://github.com/PandaGarry/NEXUS/actions/runs/43596710483), commit `9d0bf48c3ddc66facf408d60b1c64beb971eebb6`, passed 179/179 tests on each of Python 3.11, 3.12 and 3.13.
 - [ ] Add cross-language implementation only after a production-language contract and resource profile are approved.
 
 **Disposition:** TEST-ONLY MATHEMATICAL FIXTURES; no venue/account semantics or production financial policies are qualified. Fees, funding, P&L, margin, liquidation, FX and accounting remain BLOCKED/OWNER-DECISION as defined by NX-REF-DOMAIN-009. G0/G1 unchanged.
