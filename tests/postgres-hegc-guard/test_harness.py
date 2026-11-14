@@ -66,6 +66,10 @@ def finish(proc: subprocess.Popen[str], timeout: int = 12) -> tuple[int, str, st
     proc.wait(timeout=timeout)
     stdout = proc.stdout.read() if proc.stdout else ""
     stderr = proc.stderr.read() if proc.stderr else ""
+    if proc.stdout:
+        proc.stdout.close()
+    if proc.stderr:
+        proc.stderr.close()
     return proc.returncode or 0, stdout, stderr
 
 
