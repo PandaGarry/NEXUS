@@ -239,12 +239,12 @@ Expanded NX-REF-EXEC-002 with a proposed implementation decomposition and minimu
 
 The egress recommendation is one account-scoped credential-owning boundary; ordinary workers and adapters have no direct venue route. A takeover requires positive external revocation/fencing of the old egress path, not lease expiry or a local epoch check. Added crash cases for ambiguous commits, before/during/after socket write, venue acceptance, fill-to-Ledger handoff, halt epoch transfer and incomplete RecoveryBarrier.
 
-**Status:** architecture/test-plan refinement only. OD-08/OD-09/OD-10/OD-12 decisions and concrete provider/database/network/security choices remain open. No runtime, production transaction, trusted fence or venue credential was added. The stale-egress race remains a blocker.
+**Status:** architecture/test-plan refinement only. G1 technical baselines for OD-08/09/10/12 are selected in NX-ADR-008; exact libraries/providers, production security, numeric thresholds, operator identity and deployment choices remain open. No runtime, production transaction, trusted fence or venue credential was added. The stale-egress race remains a blocker.
 
 
 ## Persistence and trusted-egress option analysis — 2026-11-14
 
-NX-REF-EXEC-002 §4.5 now compares persistence and egress topologies. Candidate model: Risk and Command use separately owned local ACID transactions (all-scope reservation commit before capability issuance; atomic single-use consume + command/outbox at Command); Ledger remains independently atomic/idempotent. Candidate egress boundary is one account-scoped credential/socket-owning workload with workers denied direct venue routes and takeover gated on positive external fencing. A DB lease/local epoch is explicitly insufficient to stop a stale process already past its final check. OD-08/09/10/12 remain open. Documentation/design only; no provider, DB, crypto, proxy, host or deployment selection and no implementation. No new CI evidence is claimed for this documentation increment.
+NX-REF-EXEC-002 §4.5 now compares persistence and egress topologies. Candidate model: Risk and Command use separately owned local ACID transactions (all-scope reservation commit before capability issuance; atomic single-use consume + command/outbox at Command); Ledger remains independently atomic/idempotent. Candidate egress boundary is one account-scoped credential/socket-owning workload with workers denied direct venue routes and takeover gated on positive external fencing. A DB lease/local epoch is explicitly insufficient to stop a stale process already past its final check. G1 technical baselines for OD-08/09/10/12 are selected in NX-ADR-008. Documentation/design only; no provider, database, key, proxy, host or deployment is installed or production-selected, and no runtime implementation is claimed. Exact-head CI evidence is recorded in the current checklist.
 
 
 
