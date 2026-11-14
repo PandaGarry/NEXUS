@@ -515,3 +515,9 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Confirm no test failures or Node.js 20 / `punycode` deprecation warnings.
 - [ ] Build and run the proposed CBOR/COSE cross-language conformance suite only after exact libraries and schemas are reviewed; current CI is Python reference-only.
 - [ ] Prove database, crash/recovery, external egress fencing and venue behavior independently; no production readiness is implied.
+
+## Post-synchronization exact-head regression
+
+- [x] Verify `928d5fd261553676c3fad6a8e88b984a862af338` on workflow [#43615282210](https://github.com/PandaGarry/NEXUS/actions/runs/43615282210).
+- [x] Pass 13 suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 total).
+- [ ] Continue to treat Python-only success as reference-oracle evidence, not cross-language, persistence, egress or live-readiness proof.
