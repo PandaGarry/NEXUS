@@ -689,3 +689,9 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 executions total).
 - All logs show no failures or Node.js 20 / `punycode` deprecation warnings.
 - This is Python reference-model CI only; no signing keys, halt store, Egress, PostgreSQL, Rust or venue path was exercised.
+
+### Test-only halt / final Egress gate reference oracle — 2026-11-14
+
+- Added `HaltEgressGate` sequential state-machine oracle and 11 tests covering both logical commit orders, paused sender acknowledgement blocking, positive sender fencing, single-use attempt IDs, control-store outage and reconciliation after socket initiation.
+- Linked the oracle to NX-IF-005 / NX-REF-EXEC-002 and documented its strict limitation: it does not prove database linearizability, durable state, real process/socket behavior or external network fencing.
+- Exact-head CI for the expanded test matrix remains pending.
