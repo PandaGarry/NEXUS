@@ -871,7 +871,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** final synchronized branch-head reference regression passed. PR #16 remains Draft/open/unmerged and parent-first integration is required.
 
-## 18.42 Risk-owned reservation serialization and PostgreSQL concurrency proof plan — 2026-11-14
+## 18.41 Risk-owned reservation serialization and PostgreSQL concurrency proof plan — 2026-11-14
 
 - [x] Define a Risk-owned scope-state record as the common serialization point for reservation commits and Risk exposure-projection updates.
 - [x] Preserve Ledger journal ownership; Ledger MUST NOT write Risk-owned projection/scope-state records directly.
@@ -888,7 +888,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** design protocol clarified in NX-ADR-008 §5.3, NX-IF-002 §6.4 and OD-09. No PostgreSQL instance/schema, reservation service or concurrency runtime was implemented. G1 remains gated on exact-version evidence.
 
-## 18.41 Field-level data lineage and projection governance — 2026-11-14
+## 18.42 Field-level data lineage and projection governance — 2026-11-14
 
 - [x] Inspect actual field definitions in NX-IF-001..005 and security asset/trust boundaries in NX-SEC-001.
 - [x] Map TradeIntent, CanonicalTradeCommand, RiskDecision, RiskApprovalCapability, RiskScope, ExposureItem, ExposureSnapshot, RiskReservation, ExecutionEvent, StateEvidenceVector, FreshnessPolicy, RecoveryCase, RecoveryBarrier, HaltState, EmergencyActionPlan and EmergencyCommand fields.
@@ -914,3 +914,17 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep PostgreSQL as G1 evaluation target only; no production database, schema or reservation service is installed.
 
 **Disposition:** design and test obligations synchronized; no database/runtime behavior is implemented or verified. G1 remains gated.
+
+## 18.44 Risk scope serialization and PostgreSQL concurrency review — 2026-11-14
+
+- [x] Cross-review NX-ADR-008 §5.3–5.4, NX-IF-002 §6.3–7 and OD-09 against PostgreSQL 18 official documentation.
+- [x] Require projection updates to lock/update every affected parent/account and child scope row atomically.
+- [x] Require privileged scope-hierarchy changes to serialize with reservations/projections and advance scope_config_version.
+- [x] Define minimum logical scope-state version metadata without selecting a physical SQL schema.
+- [x] Clarify SQLSTATE 23505 idempotency collision resolution; prohibit generic unique/exclusion retry.
+- [x] Define whole-transaction retry for 40001/40P01, ambiguous commit handling and primary authority requirements.
+- [x] Add concurrency/fault matrix for capacity races, projection fan-out, scope changes, duplicate/reordered events, idempotency collisions, stale writers, direct Ledger writes and failover.
+- [ ] Implement and run the PostgreSQL 18 test harness with exact patch, role separation, concurrency/load/failover instrumentation.
+- [ ] Prove source completeness and freshness for every exposure-affecting venue/Ledger/manual event before G1 acceptance.
+
+**Disposition:** NX-ARCH-REVIEW-007 published; transaction design refined and synchronized into ADR-008, IF-002 and OD-09. No database, schema, migration or runtime was implemented.
