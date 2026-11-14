@@ -11,6 +11,7 @@
 | [NX-ADR-005](NX-ADR-005-instrument-specification-exact-arithmetic.md) | Instrument Specification & Exact Arithmetic | Proposed |
 | NX-ADR-006 | Strategy Validation / Research Governance | Deferred — covered by NX-ADR-003 unless a distinct governance decision emerges |
 | [NX-ADR-007](NX-ADR-007-venue-eligibility-jurisdictional-activation-gate.md) | Venue Eligibility & Jurisdictional Activation Gate | Proposed — cross-document review complete; owner/legal review and conformance evidence required |
+| [NX-ADR-008](NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md) | G1 Technical Baseline: Canonical Commands, Persistence & Safe Operations | Selected for G1 design/qualification only; not production approval |
 | [NX-REF-VENUE-001](NX-REF-VENUE-001-venue-eligibility-evidence-reference-model.md) | Venue Eligibility Evidence Reference Model | Test-only reference; no production authorization |
 | [NX-REF-VENUE-002](NX-REF-VENUE-002-eligibility-egress-fencing-reference-model.md) | Eligibility Egress Fencing Reference Model | Test-only single-process race model; no production fencing |
 | [NX-SEC-001](../security/NX-SEC-001-threat-model-credential-isolation.md) | Threat Model / Credential Isolation | Proposed |
@@ -37,7 +38,7 @@
 - [NX-IF-004 — State Evidence, Freshness & Recovery Barrier Contract](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md) — Proposed; WP-D design artifact for per-source evidence vectors, freshness policy, quarantine, scoped recovery cases and restart/reconciliation barriers; not accepted or implemented.
 - [NX-IF-005 — Emergency Operations, Halt & Risk-Reduction Authorization Contract](NX-IF-005-emergency-operations-halt-risk-reduction-contract.md) — Proposed; WP-E design artifact for monotonic scoped halts, operation-class authorization, bounded emergency plans, protective-order handling and controlled resume; not accepted or implemented.
 - [NX-ARCH-REVIEW-001 — Cross-Specification Contract Review](NX-ARCH-REVIEW-001-cross-specification-contract-review.md) — Proposed; WP-A..WP-E design drafts published; owner decisions and conformance evidence remain open.
-- [NX-OWNER-DECISIONS-001 — Critical Owner Decision Register](NX-OWNER-DECISIONS-001-critical-owner-decision-register.md) — Proposed register; OD-01/04 accepted, OD-15 partially accepted; remaining decisions open/deferred by gate.
+- [NX-OWNER-DECISIONS-001 — Critical Owner Decision Register](NX-OWNER-DECISIONS-001-critical-owner-decision-register.md) — Proposed register; OD-01/04 accepted, OD-15 partially accepted; G1 technical baselines selected for OD-08/09/10/12; production/owner-only decisions remain open.
 
 ADR, подготовленные в обсуждении, не считаются опубликованными или принятыми до появления полного документа в репозитории и review. Interface contracts также требуют owner/security review и conformance evidence.
 
@@ -68,7 +69,7 @@ ADR, подготовленные в обсуждении, не считаютс
 
 ### Persistence and egress decision analysis (2026-11-14)
 
-See [NX-REF-EXEC-002 §4.5](NX-REF-EXEC-002-dispatcher-authority-transfer-egress-fencing.md) for the proposed option matrix. Current candidate: Risk reservation and Command acceptance use separate service-owned local ACID transactions; no distributed transaction is assumed. A single account-scoped Egress Authority owns credentials and the actual venue socket; workers have no direct venue route. Authority takeover requires positive external fencing of the previous workload/host, not lease expiry. OD-08/09/10/12 remain open; no provider or concrete mechanism has been selected.
+See [NX-REF-EXEC-002 §4.5](NX-REF-EXEC-002-dispatcher-authority-transfer-egress-fencing.md) for the proposed option matrix. Current candidate: Risk reservation and Command acceptance use separate service-owned local ACID transactions; no distributed transaction is assumed. A single account-scoped Egress Authority owns credentials and the actual venue socket; workers have no direct venue route. Authority takeover requires positive external fencing of the previous workload/host, not lease expiry. OD-08/09/10/12 G1 technical baselines are selected in NX-ADR-008; exact provider, libraries, deployment and production acceptance remain open.
 
 
 ### Modular product boundaries proposal (2026-11-14)
