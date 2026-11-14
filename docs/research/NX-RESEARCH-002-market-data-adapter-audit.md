@@ -15,7 +15,7 @@
 4. There are two separate trade parsers with materially different coverage. The server-side parser in `bins/server/src/trades.rs` feeds alerts/flow and assigns zero event time for Kraken Spot and Coinbase Spot; Lighter's server parser reads `market_stats` only, with zero quantity/time and no aggressor side. The browser Order Flow parser has richer Kraken/Coinbase timestamps and a distinct Lighter `trade` channel. These findings must not be generalized across both paths.
 5. Open Interest exists as a server recorder, but it is polling-based and only covers eight named venue/market families. It polls every 15 seconds, records minute rows, and marks observations stale after two hours. Its calculations use `f64`; historical reach and venue support differ.
 6. A server-side liquidation collector exists for 11 perpetual venues, with one socket per venue and 24-hour retention. Hyperliquid is explicitly absent from the liquidation venue list because its public feed is described as unavailable.
-7. The inspected server module list includes `open_interest`, `liquidations`, `trades`, and `flow`, but no funding collector module. Funding-rate availability/normalization is therefore **UNKNOWN / not established by this pass**; do not infer it from the paper-trading funding settlement code.
+7. The inspected server module list includes `open_interest`, `liquidations`, `trades`, and `flow`, but no funding collector module. Funding-rate collection/normalization is **not implemented in the inspected Tradoor server collectors and remains UNKNOWN at application level**. Official venue APIs do expose funding data for at least Bybit and Hyperliquid; this proves exchange capability, not Tradoor integration. Do not infer collection from paper-trading funding settlement.
 
 ## 2. Source inventory
 
@@ -155,7 +155,19 @@ The inspected topology and venue source registry establish public market-data pa
 7. Audit contract-size conversion, inverse/linear units and exact arithmetic before reusing any quantity normalization.
 8. Keep funding and private execution UNKNOWN until evidence is gathered.
 
-## 10. Scope closure and next bounded work
+## 10. Official API documentation cross-check (2026-11-14)
+
+The following official references confirm that several instrument/funding fields exist at the exchange API level but are not carried into Tradoor's shared catalogue/parser:
+
+- Binance USDⓈ-M `exchangeInfo` documents `PRICE_FILTER`, `LOT_SIZE`, `minQty`, `maxQty`, `stepSize`, notional and order filters. Tradoor's Binance Product parser currently extracts only tick decimals from `PRICE_FILTER.tickSize`. [Official Binance docs](https://developers.binance.info/en/docs/catalog/core-trading-derivatives-trading-usd-s-m-futures/api/rest-api/market-data).
+- Bybit `/v5/market/instruments-info` exposes `priceFilter`, `lotSizeFilter`, `fundingInterval`, `settleCoin`, leverage filters and pagination. Tradoor's parser extracts price tick decimals and selected display fields, but not the lot/risk/funding metadata. [Official Bybit docs](https://bybit-exchange.github.io/docs/v5/market/instrument).
+- Bybit `/v5/market/funding/history` exposes historical `fundingRate` and `fundingRateTimestamp`. This confirms public API capability; no Tradoor collector was found in the inspected server source. [Official Bybit docs](https://bybit-exchange.github.io/docs/v5/market/history-fund-rate).
+- OKX public instrument metadata includes `tickSz`, `lotSz`, `minSz`, `ctType`, `ctVal`, `ctValCcy`, `settleCcy`; Tradoor filters to linear USDT/USDC swaps and retains tick decimals but not contract/lot metadata in Product. [Official OKX docs](https://my.okx.com/docs-v5/en/).
+- Hyperliquid `metaAndAssetCtxs` includes `funding`, `openInterest`, `markPx`, `oraclePx`; its `meta` provides `szDecimals` and margin tables. Tradoor's current parser uses mark/volume/previous price for catalogue rows but does not map funding/OI from this context. [Official Hyperliquid perpetual API docs](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals).
+
+These references are protocol capability evidence, not runtime tests or proof of all current venue account/region eligibility.
+
+## 11. Scope closure and next bounded work
 
 This pass closes only the first source-topology/trade/book/OI/liquidation scan. It does **not** close the full exchange capabilities matrix.
 
