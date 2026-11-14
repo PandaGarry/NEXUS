@@ -837,3 +837,10 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Keep Risk private key out of Execution/Trusted Egress; keep venue secrets out of Risk signer.
 - [ ] Prove negative access paths and compromised-workload containment.
 - [ ] Qualify key custody, HSM/KMS, rotation, revocation and recovery before implementation.
+
+## Exact-head CI after halt / signing authority clarification
+
+- [x] Verify PR #16 HEAD `dbfba513b86a79b8b6574a80c1beb136b28836c7` on workflow #43618114058.
+- [x] Pass 13 suites / 239 tests on Python 3.11–3.13 (717 successful executions).
+- [x] Inspect logs for failures and deprecated Node.js runtime warnings; none found.
+- [ ] Continue separate implementation gates for signing, halt store, egress fencing, PostgreSQL 18.7 and Rust conformance.
