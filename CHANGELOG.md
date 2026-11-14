@@ -234,3 +234,11 @@
 - Reworded the NX-IF-002 lifecycle row to require the durable pre-egress attempt marker before any network side effect.
 - Explicitly separated the marker from proof of transmission and retained conservative exposure through outcome reconciliation.
 - Recorded the cross-contract clarification in NX-ARCH-REVIEW-001, checklist, project status and roadmap. No runtime behavior or production safety guarantee is implied.
+
+
+### Added — transaction decomposition and execution crash-point matrix (2026-11-14)
+
+- Expanded NX-REF-EXEC-002 with the recommended logical transaction split: Risk commits all required reservations before approval; Command atomically consumes the single-use capability with canonical command/reservation-reference/outbox persistence; dispatcher records the pre-egress attempt marker; trusted Egress owns credentials and the actual venue socket.
+- Explicitly avoided claiming a distributed ACID transaction across Risk and Command. Added ambiguous-commit recovery by stable idempotency identity and conservative reservation retention.
+- Added a crash-point matrix from reservation/capability through socket write, venue acceptance, fills/Ledger posting, halt takeover and RecoveryBarrier.
+- Kept database/isolation, capability signing, host/network fence, provider, availability and operator decisions open under OD-08/09/10/12. Design/test plan only; no production runtime, credentials or egress fence implemented.
