@@ -155,16 +155,24 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         checks = run_sql(
             "SELECT has_table_privilege('nexus_hegc','nexus_source.exposure','SELECT'),"
             "has_table_privilege('nexus_hegc','nexus_hegc.egress_grant','INSERT'),"
+            "has_table_privilege('nexus_hegc','nexus_hegc.egress_grant','SELECT'),"
+            "has_table_privilege('nexus_hegc','nexus_control.scope_guard','UPDATE'),"
+            "has_table_privilege('nexus_writer','nexus_source.exposure','UPDATE'),"
             "has_function_privilege('nexus_hegc','nexus_control.acquire_scope_guards(uuid,uuid[])','EXECUTE'),"
             "pg_has_role('nexus_hegc','nexus_hegc_owner','MEMBER'),"
             "(SELECT rolsuper OR rolbypassrls OR rolcanlogin OR rolinherit FROM pg_roles WHERE rolname='nexus_hegc_owner');"
         )
         self.assertEqual(checks.returncode, 0, checks.stderr)
-        self.assertEqual(checks.stdout.strip(), "f|f|f|f|f")
+        self.assertEqual(checks.stdout.strip(), "f|f|f|f|f|f|f|f")
         denied = run_sql("SELECT * FROM nexus_source.exposure;", user="nexus_hegc", password="hegc-test-only")
         self.assertNotEqual(denied.returncode, 0)
         role_denied = run_sql("SET ROLE nexus_hegc_owner;", user="nexus_hegc", password="hegc-test-only")
         self.assertNotEqual(role_denied.returncode, 0)
+        direct_writer_dml = run_sql(
+            f"UPDATE nexus_source.exposure SET exposure_units=0 WHERE account_id={lit(account)}::uuid;",
+            user="nexus_writer", password="writer-test-only",
+        )
+        self.assertNotEqual(direct_writer_dml.returncode, 0)
 
         attempt = str(uuid.uuid4())
         spoof = run_sql(
@@ -175,6 +183,18 @@ class PostgreSQLGuardHarness(unittest.TestCase):
             user="nexus_hegc", password="hegc-test-only",
         )
         self.assertEqual(spoof.returncode, 0, spoof.stderr)
+
+        run_sql(
+            f"DELETE FROM nexus_control.service_principal WHERE principal='nexus_hegc' AND account_id={lit(account)}::uuid;"
+        )
+        guc_spoof = run_sql(
+            "SET nexus.claimed_principal = 'nexus_hegc';"
+            f"SELECT nexus_hegc.issue_egress_grant({lit(account)}::uuid,{uuid_array(scopes)},"
+            f"{lit(str(uuid.uuid4()))}::uuid,'guc-spoof');",
+            user="nexus_hegc", password="hegc-test-only",
+        )
+        self.assertNotEqual(guc_spoof.returncode, 0)
+        self.assertIn("42501", guc_spoof.stderr)
 
     def test_scope_set_must_be_complete_and_canonical(self) -> None:
         account, scopes = self.seed()
