@@ -37,6 +37,7 @@
 
 ## Phase 4 — Risk & Execution (Blocked)
 - [ ] Утвердить ТЗ-NX-004 Autonomous Execution Engine. (Draft published; venue shortlist, kill-switch playbook and persistence decisions require owner review.)
+- [ ] Утвердить ТЗ-NX-005 Independent Risk Engine. (Draft published; owner limits, policy scopes, kill-switch governance and risk input contracts require owner review.)
 - [ ] Утвердить NX-ADR-002 Execution Integrity & Reconciliation.
 - [ ] Утвердить независимый Risk Engine и NX-SEC-001 threat model.
 - [ ] Проверить kill switch, limits, secrets, audit и disaster recovery.
