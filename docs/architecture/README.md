@@ -60,3 +60,6 @@ ADR, подготовленные в обсуждении, не считаютс
 
 - [NX-ARCH-004 — Rust Execution & Cross-Language Conformance Boundary](NX-ARCH-004-rust-execution-cross-language-conformance.md) — Proposed; defines candidate Rust domain/execution boundaries, adapter trust limits and egress requirements. Documentation only; no Rust workspace or production implementation.
 - [NX-ARCH-005 — Language-Neutral Conformance Fixture & Runner Contract](NX-ARCH-005-language-neutral-conformance-fixture-and-runner.md) — Proposed; defines a common fixture envelope, stable rejection classes, deterministic runner protocol, versioning and CI evidence. No runner or Rust implementation added.
+
+
+**2026-11-14 review note:** NX-ARCH-REVIEW-001 records the clarification that the IF-002 durable pre-egress attempt marker precedes any network side effect and is not evidence of transmission. See the review note and current IF-002 lifecycle table for the aligned wording.
