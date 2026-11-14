@@ -760,3 +760,18 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - The sequential oracle still does not prove real DB concurrency, HEGC persistence, socket behavior or external fencing.
 
 - Added durable one-use `ConsumeEgressGrant` transition before socket initiation; only a positive response permits one send. Lost/indeterminate response cannot be retried as a new attempt; reservation remains held pending fence/reconciliation. The Python oracle now covers 21 state-machine cases.
+
+
+### HEGC one-use grant consumption and exact-head CI — 2026-11-14
+
+- Added the separate GRANT_CONSUMED state before socket initiation; a positive durable HEGC consume response is required for one socket-write attempt.
+- Added regression coverage for repeated consumption, lost consume response, consume-store outage, consumed grant during halt/store recovery and sender-fenced attempts.
+- Fixed two stale test expectations exposed by workflow #43618969753; the corrected exact code/test HEAD 9d618131ac9951e23c589491b2fb1039f6dc1d86 passed [workflow #43619080626](https://github.com/PandaGarry/NEXUS/actions/runs/43619080626).
+- Python 3.11/3.12/3.13 each passed 13 suites / 260 tests (780 executions); egress-fencing passed 34 tests, including 21 HaltEgressGate cases.
+- This is test-only sequential reference evidence. No production HEGC, durable database grant, actual socket boundary or external process/network fence was exercised.
+
+### PostgreSQL SSI commit-order qualification — 2026-11-14
+
+- Clarified that PostgreSQL SERIALIZABLE guarantees equivalence to some serial order, not by itself the contract's wall-clock commit-order/linearization requirement for overlapping source writers.
+- Added an open G1 requirement for an enforced common per-scope generation/guard shared atomically by HEGC and every invalidating source writer, with direct-DML bypass prevention and PostgreSQL 18.7 concurrency proof.
+- No database guard or production transaction protocol is implemented or selected.
