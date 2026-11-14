@@ -20,9 +20,9 @@ Its documented strengths are material:
 
 The same primary documentation exposes several material differences from NEXUS contracts:
 1. The built-in RiskEngine is a useful validation layer, not an independent NEXUS authorization boundary. Some cancel/query routes bypass it; order paths can branch through emulators and execution algorithms.
-2. The built-in cache persistence is asynchronous. The execution policy explicitly says persistence failures are logged and sending does not wait for durable storage. This does not satisfy NEXUS's required durable-before-dispatch outbox boundary.
+2. The built-in cache persistence is asynchronous and best-effort. The execution policy says persistence failures are logged and sending does not wait for durable storage; the cache implementation further states that a successful cache call does not confirm queue admission or durable storage, and persistence failures do not propagate or interrupt command processing. This does not satisfy NEXUS's required durable-before-dispatch outbox boundary.
 3. NautilusTrader does not promise universal exactly-once delivery/application. It has scoped trade-ID deduplication and unknown-outcome handling, but those guarantees depend on retained state and venue adapter semantics.
-4. Numeric value types use bounded integer precision modes (128-bit / up to 16 decimal places, or 64-bit / up to 9). This differs from the unbounded Python reference oracle and is not yet proven sufficient for every NEXUS instrument, fee, funding and accounting domain.
+4. Numeric value types use bounded integer/fixed-point modes: standard precision is 64-bit with up to 9 decimals; high precision is 128-bit with up to 16 decimals; the optional `defi` feature permits 18-decimal wei precision. These are feature- and type-bounded modes, not an unbounded decimal domain, and are not yet proven sufficient for every NEXUS instrument, fee, funding and accounting domain.
 5. Its reconciliation is valuable, but cannot replace NEXUS's separate ledger journal, exposure reservations, freshness barrier and cross-contract handoff.
 6. The inspected README/MIGRATION_V2 guide describes the v2 Rust/PyO3 transition; legacy v1 is on `develop_v1` and receives only critical security backports for approximately three months after cutover, with no feature/parity work. This increases API migration and version-selection risk.
 
@@ -37,6 +37,9 @@ Primary references:
 - Architecture: https://nautilustrader.io/docs/latest/concepts/architecture/
 - Execution: https://nautilustrader.io/docs/latest/concepts/execution/
 - Execution policies: https://nautilustrader.io/docs/latest/concepts/execution/policies/
+- Inspected cache implementation: https://github.com/nautechsystems/nautilus_trader/blob/97ecbafd6621241a2222ef5a31cf887c6d96d950/crates/common/src/cache/mod.rs
+- Inspected fixed-point implementation: https://github.com/nautechsystems/nautilus_trader/blob/97ecbafd6621241a2222ef5a31cf887c6d96d950/crates/model/src/types/fixed.rs
+- Inspected Price/Quantity/Money implementations: https://github.com/nautechsystems/nautilus_trader/tree/97ecbafd6621241a2222ef5a31cf887c6d96d950/crates/model/src/types
 - Execution reconciliation: https://nautilustrader.io/docs/latest/concepts/execution/reconciliation/
 - Value types: https://nautilustrader.io/docs/latest/concepts/value-types/
 - Backtest data and venues: https://nautilustrader.io/docs/latest/concepts/backtesting/data-and-venues/
@@ -47,6 +50,8 @@ Primary references:
 This is a bounded documentation and targeted source-discovery pass against upstream snapshot `97ecbafd6621241a2222ef5a31cf887c6d96d950`, not a complete source audit, build, security review, performance benchmark, adapter certification or live test. Any behavior not explicitly established below remains UNKNOWN.
 
 ## 3. Fit against NEXUS contracts
+
+The targeted source pass inspected the following paths at the pinned snapshot: `crates/common/src/cache/mod.rs`, `crates/model/src/types/fixed.rs`, `price.rs`, `quantity.rs`, `money.rs`, `docs/concepts/execution/policies.md`, `docs/concepts/execution/index.md` and `MIGRATION_V2.md`. This remains a targeted inspection, not a line-by-line audit of every adapter or code path.
 
 | NEXUS boundary | NautilusTrader evidence | Fit | Required NEXUS treatment |
 |---|---|---|---|
@@ -92,14 +97,15 @@ NEXUS should reuse these patterns and tests, not delegate its global recovery ba
 
 ### 3.4 Exact numeric compatibility
 
-The upstream repository documents two precision modes for core `Price`, `Quantity` and `Money` values:
-- high precision: 128-bit integers, up to 16 decimal places;
-- standard precision: 64-bit integers, up to 9 decimal places.
+The upstream repository documents fixed-point integer modes for core `Price`, `Quantity` and `Money` values:
+- standard precision: 64-bit integer backing and up to 9 decimal places;
+- high precision: 128-bit integer backing and up to 16 decimal places;
+- optional `defi` feature: `MAX_PRECISION` is set to the 18-decimal `WEI_PRECISION` for DeFi contexts.
 
-The default Python wheels are documented as high precision; pure Rust crates default to standard precision unless the `high-precision` feature is enabled.
+The default Python wheels are documented as high precision; pure Rust crates default to standard precision unless the `high-precision` feature is enabled. The implementation has type-specific raw integer widths and explicit representable bounds; enabling a feature does not turn these types into arbitrary-precision decimals.
 
 This is materially better than floating-point authoritative financial values, but it is not equivalent to an unbounded exact-decimal model. Before adoption, NEXUS must test:
-- maximum coefficient and scale for every selected venue/instrument;
+- maximum coefficient and scale for every selected venue/instrument and the exact feature combination used by each crate;
 - prices, base/quote quantities, contract sizes and multipliers;
 - fees, rebates, funding, margin, notional and P&L;
 - multiplication/addition overflow boundaries;
