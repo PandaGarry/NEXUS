@@ -102,7 +102,7 @@ A valid signature proves integrity and issuer possession only. Before dispatch, 
 - durable active reservation;
 - durable single-use consumption;
 - current policy/spec/evidence versions and exact signed valuation_input_vector_id/version from the durable reservation;
-- source-specific freshness, clock uncertainty, quality, correction/revocation and policy-defined drift validity for every immutable valuation input; a newer market tick alone does not invalidate a still-valid bound vector unless policy requires latest;
+- source-specific freshness, clock uncertainty, quality, correction/revocation and policy-defined drift validity for every immutable valuation input; Egress validates the exact bound vector against the authoritative persisted Risk evidence manifest and MUST NOT fetch replacement market/FX/fee/collateral values or call source services on the dispatch path; a newer market tick alone does not invalidate a still-valid bound vector unless policy requires latest;
 - current halt and eligibility epochs;
 - dispatcher fence and final Trusted Egress authorization.
 
