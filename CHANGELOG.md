@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+### Added — Instrument quantity-unit semantics reference (test-only; CI pending)
+- Added `InstrumentUnitModel`, explicitly bound to an immutable `InstrumentSpec` version, for spot base-asset quantities, linear contract counts and inverse contract counts.
+- Linear multiplier is typed as base-asset units per contract; inverse multiplier is typed as quote-asset units per contract. Inverse base exposure and QUANTO remain explicitly blocked.
+- Added a dedicated Python 3.11–3.13 conformance suite; exact-head CI pending. No production venue mapping or order authority is implied.
+
+
 ### Added — Dimensional financial types reference (test-only; CI verified)
 - Added `AssetAmount`, `Money`, `Price`, `Notional` and instrument-scoped `ContractCount`, backed exclusively by `ExactDecimal`.
 - Added 16 focused tests for exact quote notional calculation, unit compatibility, cross-dimension rejection, contract-count separation and signed position deltas.
