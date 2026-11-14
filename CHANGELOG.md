@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+### Fixed — Stale dispatcher state transitions
+- Added compare-and-swap guards to the post-marker pre-send rejection and adapter-error paths. If recovery has already moved a command out of DISPATCHING, a stale worker can no longer overwrite OUTCOME_UNKNOWN; it records a separate dispatch observation instead.
+- Added two adversarial tests for recovery during the final pre-send guard and during a simulated ambiguous adapter timeout. The gateway reference suite now has 23 tests.
+- GitHub Actions run [#43591389103](https://github.com/PandaGarry/NEXUS/actions/runs/43591389103) passed exact PR HEAD `f2dc357e9c65f0c2e108e670c4211bb36ff1a162` on Python 3.11–3.13 (11 decimal + 23 gateway + 13 egress tests per runtime). This is test-only state-integrity evidence; stale network egress remains unresolved.
+
+
 ### Added — Egress authority handover reference model
 - Added a test-only control-plane state machine and 13 deterministic tests for freeze, fence-attestation sequencing, reconciliation gating, epoch transition and fail-closed behavior. GitHub Actions run [#43590804814](https://github.com/PandaGarry/NEXUS/actions/runs/43590804814) passed exact branch HEAD `a7ee5426077005a6135e9f1b6f1c4044cc41d459` on Python 3.11–3.13. It checks protocol ordering only; it cannot revoke real network access, terminate stale hosts or verify trusted fence attestations. Actual egress fencing remains BLOCKED.
 - Extended the Python reference-model CI matrix to run the egress handover suite on Python 3.11, 3.12 and 3.13.
