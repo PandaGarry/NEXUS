@@ -16,6 +16,7 @@
 | [NX-SEC-001](../security/NX-SEC-001-threat-model-credential-isolation.md) | Threat Model / Credential Isolation | Proposed |
 | [NX-ARCH-001](NX-ARCH-001-target-architecture.md) | Target Architecture & Deployment Topology | Proposed |
 | [NX-ARCH-003](NX-ARCH-003-domain-kernel-numeric-model.md) | Domain Kernel & Exact Numeric Model | Proposed |
+| [NX-ARCH-006](NX-ARCH-006-modular-product-boundaries-and-trust-isolation.md) | Modular Product Boundaries, Extension Contracts & Trust Isolation | Proposed — design only; no runtime module or public registration approved |
 
 ## Architecture reviews and foundation design
 - [NX-PROJECT-CHECKLIST-001 — Project Execution and Evidence Checklist](../quality/NX-PROJECT-CHECKLIST-001-execution-and-evidence.md) — Active living checklist with G0D D1–D8 status, engineering workstreams, evidence requirements and explicit non-authorizations.
@@ -68,3 +69,8 @@ ADR, подготовленные в обсуждении, не считаютс
 ### Persistence and egress decision analysis (2026-11-14)
 
 See [NX-REF-EXEC-002 §4.5](NX-REF-EXEC-002-dispatcher-authority-transfer-egress-fencing.md) for the proposed option matrix. Current candidate: Risk reservation and Command acceptance use separate service-owned local ACID transactions; no distributed transaction is assumed. A single account-scoped Egress Authority owns credentials and the actual venue socket; workers have no direct venue route. Authority takeover requires positive external fencing of the previous workload/host, not lease expiry. OD-08/09/10/12 remain open; no provider or concrete mechanism has been selected.
+
+
+### Modular product boundaries proposal (2026-11-14)
+
+See [NX-ARCH-006](NX-ARCH-006-modular-product-boundaries-and-trust-isolation.md). The proposal defines bounded product domains, versioned contracts, deny-by-default module admission, workload identities, least-privilege capabilities, hard Demo/live separation, and a low-privilege Learning/Wiki domain. Modular monolith / limited trust-domain separation is preferred initially; arbitrary in-process plugin loading is not approved. Design only; no technology or deployment topology selected.
