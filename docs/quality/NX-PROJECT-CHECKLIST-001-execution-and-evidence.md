@@ -720,3 +720,14 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Keep verification scope limited to Python reference models; this run does not exercise the proposed CBOR/COSE implementation, PostgreSQL, Rust, egress fencing, venue behavior or live safety.
 
 **Disposition:** exact tested SHA passed. This evidence is regression-only; G0D/G1 implementation gates remain open.
+
+
+## 18.26 Post-sync exact-head verification — 2026-11-14
+
+- [x] Verify post-normalization branch HEAD `9e9035033da77d958601cb6b69128e13e2551a0d` with GitHub Actions [#43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737).
+- [x] All 3 Python runtime jobs passed; 13 isolated suites / 239 tests per Python 3.11, 3.12 and 3.13 (717 successful executions).
+- [x] Confirm no Node.js 20 or punycode deprecation warnings in any job log.
+- [x] Confirm current PR #16 snapshot: 265 commits beyond base, 32 changed files, 4,467 additions and 72 deletions; PR remains Draft/open/unmerged.
+- [ ] Do not claim this matrix verifies Rust, PostgreSQL, COSE signing, Trusted Egress, venue or live behavior.
+
+The exact-head workflow above verifies the current normalized documentation tree plus the existing Python reference suites. The last code change remains the numeric-wire resource hardening at b0fb99d; no production runtime has been introduced.
