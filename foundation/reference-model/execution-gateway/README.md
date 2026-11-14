@@ -34,7 +34,9 @@ The current model supports only one command class: `CREATE` in a test fixture. I
 - acknowledgement is not represented as a fill;
 - unsupported command classes fail closed rather than inheriting CREATE semantics.
 
-The suite also contains an intentionally passing **unsafe counterexample**: a stale worker pauses immediately before network send, recovery marks its command OUTCOME_UNKNOWN, and the worker then resumes, sends, and overwrites the recovered state with a late ACK. This test documents a known defect in the reference model; it is not a safety guarantee. It demonstrates why local SQLite state and a self-checked lease token cannot fence a stale process that still has direct venue egress access.\n\n## Explicit limitations
+The suite also contains an intentionally passing **unsafe counterexample**: a stale worker pauses immediately before network send, recovery marks its command OUTCOME_UNKNOWN, and the worker then resumes and sends anyway. The model rejects the late ACK as a state transition and records it as a stale venue observation, preserving OUTCOME_UNKNOWN. The test still documents the unresolved egress-fencing defect; it is not a safety guarantee. It demonstrates why local SQLite state and a self-checked lease token cannot fence a stale process that still has direct venue egress access.
+
+## Explicit limitations
 
 - SQLite is a local transaction-boundary test fixture, not the selected production database or a deployment durability guarantee.
 - HMAC is used only to make approval verification executable in tests. It is not the selected production signature scheme or key custody design.
