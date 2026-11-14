@@ -1154,3 +1154,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep signing key custody, halt-store, Egress gate, PostgreSQL, Rust and external fencing evidence separate from Python reference CI.
 
 **Disposition:** exact PR-head reference CI passed. No production signing or live execution authority is implied.
+
+## 18.36 Execution preflight / Trusted Egress final authorization boundary — 2026-11-14
+
+- [x] Define Execution verification as non-authorizing preflight and defense in depth.
+- [x] Define Trusted Egress as the sole final send-authorization boundary and sole owner of venue socket initiation.
+- [x] Require final Egress revalidation of persisted Risk approval, reservation, both evidence vectors, source manifest, eligibility, halt and fence generations.
+- [x] Bind final Egress authorization and halt transition to the same authoritative halt-state generation.
+- [ ] Add conformance tests proving stale state introduced after Execution preflight is rejected by the final Egress gate.
+- [ ] Verify at the process/network boundary that only Trusted Egress has venue credentials and direct venue egress.
+
+**Disposition:** contract wording aligned; runtime and boundary-observed proof remain open.
