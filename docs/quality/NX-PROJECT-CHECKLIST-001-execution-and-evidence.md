@@ -276,6 +276,7 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [ ] Owner/legal acceptance of ADR-007 and qualified legal opinion on Articles 30–32 / Article 30(2).
 - [ ] Confirm qualified-investor status and T-Invest product/API eligibility using authenticated account evidence; no orders.
 - [ ] Confirm T-Invest Lab crypto service and API availability in writing.
-- [ ] Add ADR-007 conformance tests and production evidence/signing design before implementation.
+- [x] Add test-only NX-REF-VENUE-001 conformance evaluator and 28 fail-closed tests; exact-head CI run 43598506837 passed 210 tests/runtime on Python 3.11/3.12/3.13.
+- [ ] Design production evidence authentication/signing, trusted time, persistence, revocation propagation, reviewer roles and final egress enforcement before implementation.
 
 **Disposition:** FIRST VENUE BLOCKED. No venue selected, no account/API credentials connected, no orders/transfers/deposits/withdrawals, and no live trading authorized. All foreign venues remain RESEARCH_ONLY.
