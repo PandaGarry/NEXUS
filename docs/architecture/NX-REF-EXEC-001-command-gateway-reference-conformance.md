@@ -50,7 +50,9 @@ The test suite currently covers 21 deterministic cases:
 - unsupported CANCEL command;
 - timeout after possible send;
 - crash after simulated venue acceptance but before ACK persistence;
-- duplicate approval/command replay;\n- two gateway instances concurrently racing to consume the same approval/reservation;\n- two dispatcher instances racing to claim one persisted command while the winning adapter call is held open;
+- duplicate approval/command replay;
+- two gateway instances concurrently racing to consume the same approval/reservation;
+- two dispatcher instances racing to claim one persisted command while the winning adapter call is held open;
 - non-canonical decimal rejection.
 
 ## 5. Verification record
@@ -66,7 +68,13 @@ GitHub Actions run [#43588971888](https://github.com/PandaGarry/NEXUS/actions/ru
 
 This is CI verification of the checked-in reference model only. It is not production, multi-process, database durability, security or exchange-adapter verification.
 
-## 6. Known unsafe counterexample — explicit failure evidence\n\nThe new adversarial test deliberately demonstrates a defect in the current model; it is expected to pass because it asserts the unsafe behavior is reproducible. A worker pauses after its final local halt/expiry check and immediately before network send. A second gateway runs restart recovery and changes DISPATCHING to OUTCOME_UNKNOWN. The old worker then resumes, sends to the adapter, and writes ACKNOWLEDGED over the recovery state. This proves that SQLite state transitions and a local pre-send check do not fence a stale process. The test is a counterexample, not a safety pass.\n\nRequired production invariant: once a dispatcher loses authority or recovery takes ownership, the stale dispatcher must be technically unable to reach the venue egress boundary and must be unable to mutate authoritative command state. A database lease/token checked by the stale process itself is insufficient if that process retains direct venue credentials or an open network path. Only a separately fenced egress authority may hold venue credentials/network capability; recovery must acquire/fence that authority before changing dispatch ownership. Venue idempotency/client-order IDs and reconciliation are additional defenses, not substitutes for egress fencing.\n\n## 7. Deliberate exclusions and unresolved risks
+## 6. Known unsafe counterexample — explicit failure evidence
+
+The new adversarial test deliberately demonstrates a defect in the current model; it is expected to pass because it asserts the unsafe behavior is reproducible. A separate local state-CAS guard now prevents a late ACK from overwriting recovery state and records the response as an observation. A worker pauses after its final local halt/expiry check and immediately before network send. A second gateway runs restart recovery and changes DISPATCHING to OUTCOME_UNKNOWN. The old worker then resumes and sends to the adapter. The reference model now rejects its late ACK as a state transition and appends LATE_ACK_STALE_STATE to the venue-observation inbox, preserving OUTCOME_UNKNOWN. The test still proves the more fundamental egress-fencing defect: local state CAS cannot prevent a stale process with direct network access from sending. This is a counterexample, not a safety pass.
+
+Required production invariant: once a dispatcher loses authority or recovery takes ownership, the stale dispatcher must be technically unable to reach the venue egress boundary and must be unable to mutate authoritative command state. A database lease/token checked by the stale process itself is insufficient if that process retains direct venue credentials or an open network path. Only a separately fenced egress authority may hold venue credentials/network capability; recovery must acquire/fence that authority before changing dispatch ownership. Venue idempotency/client-order IDs and reconciliation are additional defenses, not substitutes for egress fencing.
+
+## 7. Deliberate exclusions and unresolved risks
 
 - CREATE only. AMEND, CANCEL, CLOSE, REDUCE_ONLY, CANCEL_ALL and FLATTEN require separate complete command schemas and policy matrices.
 - Risk decision creation and numeric exposure calculations are not implemented. The reservation row is a pre-created fixture, not a risk engine.
@@ -88,6 +96,6 @@ Before promoting this model into a production-language prototype:
 5. Add crash injection at every transaction/network boundary, including acknowledgement persistence.
 6. Add venue capability and reconciliation interfaces without implementing a real venue.
 7. Implement the same golden scenarios independently in the selected production language.
-9. Prove the adapter is inaccessible to Strategy/AI and every state-changing path passes the gateway.
+8. Prove the adapter is inaccessible to Strategy/AI and every state-changing path passes the gateway.
 
 No production-readiness gate is satisfied by this reference slice.
