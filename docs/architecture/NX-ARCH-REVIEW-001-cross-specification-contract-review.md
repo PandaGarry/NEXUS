@@ -181,3 +181,14 @@ No source code, exchange connection, credentials, risk limits, live trading, PR 
 - ТЗ-NX-001..006 — market data, order flow, quant, execution, risk and ledger.
 - NX-SEC-001 — Threat Model & Credential Isolation.
 - NX-RESEARCH-002 — Market Data & Exchange Adapter Audit.
+
+
+## 10. Follow-up clarification — pre-egress exposure transition (2026-11-14)
+
+**Finding F-13 — IF-002 lifecycle wording could be read as recording dispatch after the network action.**
+
+The prior IF-002 row said “Dispatcher durably marks command as dispatching / sends it”. That phrasing combined a durable state transition and an external side effect in one label, leaving the temporal boundary less explicit than NX-ADR-002 and NX-ARCH-004.
+
+**Resolution:** IF-002 now states that the dispatcher commits the durable pre-egress attempt marker *before any network side effect*. The same transition moves the exposure from `PRE_DISPATCH_RESERVATION` to `DISPATCH_OUTCOME_UNKNOWN`. The marker is explicitly not proof that bytes were sent; full conservative exposure remains held until authoritative venue outcome and reconciliation resolve it.
+
+**Cross-contract disposition:** this is a wording clarification, not a new state or implementation decision. It aligns IF-002 with ADR-002 steps 5–7, IF-001's single-use approval consumption boundary, IF-004's recovery treatment of ambiguous dispatch, IF-003's separation of execution facts from Ledger posting, and IF-005's final halt-epoch check. No remaining contradiction is inferred from this wording review; implementation semantics, store/transaction choice, fencing proof and fault-injection evidence remain open.
