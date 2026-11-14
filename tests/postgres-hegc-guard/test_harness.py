@@ -216,6 +216,70 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         self.assertNotEqual(guc_spoof.returncode, 0)
         self.assertIn("42501", guc_spoof.stderr)
 
+    def test_runtime_roles_cannot_mutate_role_or_trusted_function_authority(self) -> None:
+        self.seed()
+        runtime_principals = [
+            ("nexus_hegc", "hegc-test-only"),
+            ("nexus_writer", "writer-test-only"),
+            ("nexus_membership_admin", "membership-test-only"),
+        ]
+        for principal, password in runtime_principals:
+            catalog = run_sql(
+                "SELECT rolsuper OR rolcreaterole OR rolcreatedb OR rolreplication "
+                "OR rolbypassrls OR rolinherit FROM pg_roles "
+                f"WHERE rolname={lit(principal)};"
+                "SELECT pg_has_role("
+                f"{lit(principal)}::name,'nexus_hegc_owner'::name,'MEMBER');"
+                "SELECT has_schema_privilege("
+                f"{lit(principal)},'nexus_hegc','CREATE');"
+            )
+            self.assertEqual(catalog.returncode, 0, catalog.stderr)
+            self.assertEqual(catalog.stdout.strip().splitlines(), ["f", "f", "f"])
+
+            forbidden = [
+                "CREATE ROLE nexus_runtime_escalation;",
+                f"ALTER ROLE {principal} CREATEROLE;",
+                f"GRANT nexus_hegc_owner TO {principal};",
+                "GRANT EXECUTE ON FUNCTION "
+                "nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text) TO PUBLIC;",
+                "ALTER FUNCTION "
+                "nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text) SECURITY INVOKER;",
+                "ALTER DEFAULT PRIVILEGES FOR ROLE nexus_hegc_owner "
+                "IN SCHEMA nexus_hegc GRANT EXECUTE ON FUNCTIONS TO PUBLIC;",
+                "CREATE FUNCTION nexus_hegc.runtime_escalation() RETURNS integer "
+                "LANGUAGE sql AS $ SELECT 1 $;",
+            ]
+            for statement in forbidden:
+                denied = run_sql(statement, user=principal, password=password)
+                self.assertNotEqual(
+                    denied.returncode, 0,
+                    f"{principal} unexpectedly executed: {statement}",
+                )
+
+    def test_restrictive_rls_policy_composes_with_permissive_policy(self) -> None:
+        account, scopes = self.seed()
+        # A restrictive policy must narrow the permissive HEGC read policy.
+        # The negative row remains present but must not enter the gate snapshot.
+        setup = run_sql(
+            "CREATE POLICY exposure_hegc_nonnegative ON nexus_source.exposure "
+            "AS RESTRICTIVE FOR SELECT TO nexus_hegc_owner "
+            "USING (exposure_units >= 0);"
+            f"UPDATE nexus_source.exposure SET exposure_units=-50 "
+            f"WHERE account_id={lit(account)}::uuid AND scope_id={lit(scopes[1])}::uuid;"
+        )
+        self.assertEqual(setup.returncode, 0, setup.stderr)
+        attempt = str(uuid.uuid4())
+        grant = run_sql(
+            self.gate_sql(account, scopes, attempt, "restrictive-rls"),
+            user="nexus_hegc", password="hegc-test-only",
+        )
+        self.assertEqual(grant.returncode, 0, grant.stderr)
+        snapshot = run_sql(
+            f"SELECT snapshot_total FROM nexus_hegc.egress_grant "
+            f"WHERE attempt_id={lit(attempt)}::uuid;"
+        )
+        self.assertEqual(snapshot.stdout.strip(), "200")
+
     def test_scope_set_must_be_complete_and_canonical(self) -> None:
         account, scopes = self.seed()
         attempt = str(uuid.uuid4())
