@@ -438,3 +438,17 @@ Disposition: PROPOSED design analysis only. No database/provider/crypto/network 
 - GitHub Actions run [#43606550889](https://github.com/PandaGarry/NEXUS/actions/runs/43606550889) completed successfully on that exact head.
 - Three jobs passed: Python 3.11, 3.12 and 3.13. Each executed 13 isolated reference-model suites with counts 11, 24, 13, 17, 12, 16, 18, 18, 32, 12, 15, 28 and 21 = 237 tests per runtime; 711 successful test executions total.
 - This CI run verifies the existing Python reference-model suites at the exact documentation-analysis head. It does not test the newly documented transaction alternatives, database isolation, production egress topology, external host/network fencing, Rust, venue behavior or live safety.
+
+
+## 18.7 Open-source component qualification — 2026-11-14
+
+- [x] Create NX-RESEARCH-010 candidate matrix and qualification rules.
+- [x] Record authority exclusions: no module owns Risk, reservations, command/outbox, Ledger, halt or trusted venue-send authority by default.
+- [x] Identify PostgreSQL as leading persistence candidate for evaluation only; OpenTelemetry Collector as preferred observability candidate; OpenBao as secrets candidate; NATS as optional later transport; Cilium conditional on Kubernetes; Temporal deferred; NautilusTrader remains test-only.
+- [ ] Establish dependency policy, license register, SBOM, provenance and vulnerability scanning in G0D.
+- [ ] Run exact-version PostgreSQL transaction/concurrency/crash/restore evaluation before OD-09 selection.
+- [ ] Define OpenTelemetry redaction, bounded-cardinality and telemetry-isolation tests.
+- [ ] Complete OpenBao/managed KMS/HSM threat and license review before secrets integration.
+- [ ] Add NATS only if measured fan-out/replay requirements justify its operational cost.
+
+Disposition: research-only. No package, service, broker, database, vault or deployment module has been added to runtime. See NX-RESEARCH-010.
