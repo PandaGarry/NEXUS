@@ -44,14 +44,15 @@ class BookSynchronizer:
     def on_delta(self, message: dict[str, Any]) -> SyncOutcome:
         if message.get("topic") != f"orderbook.full.{self.symbol}":
             self.invalidate("unexpected_topic")
-            return SyncOutcome("INVALID", True, "unexpected_topic")
+            return SyncOutcome("INVALID", False, "unexpected_topic")
         try:
             delta = Delta.from_message(message)
-            if message.get("data", {}).get("s") != self.symbol:
-                raise ValueError("unexpected symbol")
-        except (KeyError, TypeError, ValueError) as exc:
+            data = message.get("data")
+            if not isinstance(data, dict) or data.get("s") != self.symbol:
+                raise ValueError("unexpected or missing symbol")
+        except (KeyError, TypeError, ValueError, AttributeError) as exc:
             self.invalidate(f"malformed_delta:{exc}")
-            return SyncOutcome("INVALID", True, self.last_invalidation_reason)
+            return SyncOutcome("INVALID", False, self.last_invalidation_reason)
 
         if self.valid:
             try:
@@ -70,10 +71,8 @@ class BookSynchronizer:
             return SyncOutcome("SYNCING", False, "decreasing_seq_delta_discarded")
 
         if self._buffer and delta.update_id != self._buffer[-1].update_id + 1:
-            self.invalidate(
-                f"buffer_update_id_gap:expected_{self._buffer[-1].update_id + 1}_got_{delta.update_id}",
-                retain_delta=delta,
-            )
+            expected = self._buffer[-1].update_id + 1
+            self.invalidate(f"buffer_update_id_gap:expected_{expected}_got_{delta.update_id}", retain_delta=delta)
             return SyncOutcome("SYNCING", True, self.last_invalidation_reason)
 
         self._buffer.append(delta)
@@ -85,7 +84,7 @@ class BookSynchronizer:
     def on_snapshot(self, snapshot: dict[str, Any]) -> SyncOutcome:
         if not self._buffer:
             self.invalidate("snapshot_arrived_without_buffer")
-            return SyncOutcome("SYNCING", True, self.last_invalidation_reason)
+            return SyncOutcome("SYNCING", False, self.last_invalidation_reason)
         try:
             book, consumed = bridge_snapshot(snapshot, self._buffer)
         except SnapshotNotCaughtUp as exc:
