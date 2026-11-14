@@ -537,3 +537,13 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Verify `9e9035033da77d958601cb6b69128e13e2551a0d` on [workflow #43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737): 13 suites / 239 tests on Python 3.11/3.12/3.13 (717 executions).
 - [ ] Integrate only parent-first after bounded review; PR #16 remains Draft.
 - [ ] Keep the CI result scoped to Python reference models; it does not close Rust, database, egress or venue gates.
+
+## CBOR / COSE library qualification — NX-RESEARCH-011
+
+- [x] Compare Rust CBOR encoder/decoder and COSE structure candidates against the selected wire profile.
+- [x] Record cbor2's canonical-encoder strengths and strict-ingress limitation.
+- [x] Record cbor-core's draft/profile and unstable-API mismatch.
+- [x] Record coset's alg=-19/original-protected-bytes/custom-crypto strengths and its maturity/dependency caveats.
+- [x] Reject the cose2 built-in Ed25519 provider because it uses deprecated alg=-8; any future test requires a custom -19 signer/verifier.
+- [ ] Build strict byte-level validator and cross-language positive/negative vectors.
+- [ ] Complete exact-version provenance, license, SBOM, vulnerability, fuzz and resource-boundary review before any dependency adoption.
