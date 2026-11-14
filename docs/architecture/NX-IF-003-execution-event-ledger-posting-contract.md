@@ -376,3 +376,8 @@ Until these decisions are approved, unsupported instruments, event types and acc
 ## 15. Verification limits
 
 This is a proposed interface contract only. No NEXUS Execution event schema, outbox worker, Ledger inbox, journal posting engine, accounting projection, venue adapter, database transaction, conformance test, fault-injection test, reconciliation run or runtime behavior has been implemented or verified. No exchange account has been connected, no credentials or orders have been used, and no live trading or asset movement is authorized.
+
+
+## WP-D evidence and recovery composition
+
+Execution delivery, Ledger inbox commit, journal posting, projection application and venue reconciliation MUST publish distinct source watermarks and quality/recovery evidence consumable by [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md). A successful outbox delivery or inbox acknowledgement alone does not make the Ledger projection current or reconciled. RecoveryBarrier MUST restore durable inbox/outbox and journal state, reconcile private venue evidence, drain pending events idempotently, rebuild projections, then permit Risk exposure reconstruction. Pending fills remain in the conservative WP-B bucket until the matching posting/projection/reconciliation evidence is proven. This is a proposed contract link; no implementation is claimed.
