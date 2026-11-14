@@ -4,9 +4,9 @@
 
 ## Unreleased
 
-### Added — Append-only instrument registry reference (stacked Draft PR; CI pending)
+### Added — Append-only instrument registry reference (stacked Draft PR; CI verified)
 - Added a test-only in-memory registry for immutable InstrumentSpec snapshots: historical lookup, idempotent identical replays, same-version content conflicts, monotonic version checks, stable internal identity checks and effective-time regression checks across unknown intermediate timestamps.
-- Added 12 deterministic registry tests and a dedicated Python 3.11–3.13 CI step. No persistence, concurrent-writer protocol, venue source precedence, freshness policy or production authority is implemented.
+- Added 12 deterministic registry tests and a dedicated Python 3.11–3.13 CI step. Run [#43592862627](https://github.com/PandaGarry/NEXUS/actions/runs/43592862627) passed exact code/index HEAD `7654c67774f3b6131b498a57c5de6b6621f6513f` across Python 3.11–3.13: 77 tests per runtime across all five reference suites. No persistence, concurrent-writer protocol, venue source precedence, freshness policy or production authority is implemented.
 
 
 ### Added — Instrument specification reference slice (stacked Draft PR; CI verified)
