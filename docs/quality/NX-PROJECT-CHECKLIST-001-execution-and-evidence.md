@@ -416,3 +416,16 @@ The exact decimal oracle is arbitrary precision; `BoundedNumericContext` wraps i
 - [ ] Prove old egress is positively fenced under host/network partition before granting a new authority generation.
 
 **Disposition:** design recommendation and test plan only. OD-09 remains open; no provider, database, cryptographic scheme, network fence, credential or production runtime was selected or implemented. CREATE remains non-production-safe.
+
+
+## 18.6 Persistence and trusted-egress option analysis — 2026-11-14
+
+- [x] Compared shared-transaction, service-owned local relational transactions, separate databases and event-store/coordination options at design level.
+- [x] Defined candidate boundary: Risk commits all required reservations locally before capability issuance; Command atomically consumes the single-use capability with command + outbox in its own local transaction; Ledger posting remains separately atomic/idempotent.
+- [x] Compared DB lease, gateway/proxy, isolated workload and dedicated host options; rejected lease/local epoch as sole egress fence.
+- [x] Defined positive external fence acknowledgement and fail-closed takeover requirements.
+- [ ] OD-09 storage/isolation selection and transaction proof.
+- [ ] OD-08 canonicalization/signing/key custody; OD-10 recovery objectives; OD-12 operator/break-glass governance.
+- [ ] Real egress-boundary fault injection, network bypass testing and host/workload fencing evidence.
+
+Disposition: PROPOSED design analysis only. No database/provider/crypto/network technology selected or implemented; no new runtime or venue capability. See NX-REF-EXEC-002 §4.5.
