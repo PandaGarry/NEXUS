@@ -244,8 +244,9 @@ Immediately before dispatch, Execution MUST verify:
 7. nonce/approval has not already been consumed;
 8. reservation is active and bound to this command;
 9. valuation_input_vector_id/version matches the signed capability and durable reservation; every referenced immutable input remains within its source-specific freshness, clock-uncertainty, quality, correction and policy-defined drift bounds;
-10. halt epoch matches current authoritative epoch and scope is not halted;
-11. command/outbox payload being dispatched is exactly the approved canonical payload.
+10. the exact StateEvidenceVector/FreshnessPolicy and RecoveryBarrier requirements remain compatible with the requested operation class;
+11. halt epoch matches current authoritative epoch and scope is not halted;
+12. command/outbox payload being dispatched is exactly the approved canonical payload.
 
 Any failed check rejects dispatch and records a stable reason code. A valid signature alone is insufficient.
 
@@ -272,6 +273,7 @@ Approval is invalid if any of the following occurs before dispatch:
 - instrument spec version changes incompatibly;
 - policy version changes in a material way;
 - exposure snapshot/reservation becomes stale, released, consumed by another command or invalidated;
+- the bound valuation input vector is corrected/revoked, falls outside source-specific freshness/uncertainty/drift bounds or fails a policy that requires a newer/latest snapshot; a newer monotonic tick alone does not invalidate a still-valid bound vector;
 - halt epoch advances or scope is halted;
 - approval expires or issuer key is revoked/disabled;
 - required account/market/reconciliation evidence falls outside policy freshness bounds;
