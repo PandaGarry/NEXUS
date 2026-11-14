@@ -356,3 +356,13 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 The earlier NX-ARCH-005 cross-review note incorrectly stated that linear-contract and inverse-exposure callable references were absent. A second direct inspection of `instrument_units.py` and `test_financial_math_fixtures.py` supersedes that statement: spot (`Price.notional_for`), linear (`InstrumentUnitModel.linear_base_exposure` / `linear_notional`) and inverse (`inverse_quote_notional` / `inverse_base_exposure`) paths have executable reference coverage. Inverse exposure remains rational. Partial-fill weighted-average aggregation is tested, including permutation/partition invariance, but is currently inline in the test module and should be extracted as a named pure oracle before becoming a reusable normalized operation.
 
 The exact decimal oracle is arbitrary precision; `BoundedNumericContext` wraps it with mandatory explicit synthetic `NumericLimits`. Map `NumericLimitExceeded` by exception type to the candidate `NUMERIC.RESOURCE_LIMIT`, never by message text. Keep malformed API arguments (e.g. negative/boolean quantization scale or invalid rounding mode) separate from valid mathematical inexactness. No production numeric profile is implied.
+
+
+### 18.1 Partial-fill arithmetic extraction — 2026-11-14
+
+- [x] Extract the weighted-average partial-fill calculation into `financial_aggregation.aggregate_partial_fills` as a named test-only reference operation.
+- [x] Preserve dimensional output types: base `AssetAmount`, quote `Notional`, exact rational average.
+- [x] Add explicit tests for empty input, base/quote dimension mismatch and non-terminating averages; retain seeded permutation/partition invariance through the extracted callable.
+- [ ] Add the operation to normalized fixtures only after NX-ARCH-005 owner review and schema/runner approval.
+
+**Boundary:** arithmetic over supplied typed values only; no venue fill validation, fees, funding, P&L, accounting or rounding policy. No production code or authorization is added.
