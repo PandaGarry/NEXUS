@@ -4,7 +4,7 @@
 
 | ID | Название | Статус |
 |---|---|---|
-| NX-ADR-001 | Unified Market Event Contract | Proposed |
+| NX-ADR-001 | Unified Market Event Contract | Planned — document not yet present in branch |
 | [NX-ADR-002](NX-ADR-002-execution-integrity-reconciliation.md) | Execution Integrity & Reconciliation | Proposed |
 | [NX-ADR-003](NX-ADR-003-simulation-fidelity-strategy-validation.md) | Simulation Fidelity & Strategy Validation | Proposed |
 | [NX-ADR-004](NX-ADR-004-market-data-recovery-state-machine.md) | Market Data Recovery State Machine | Proposed |
