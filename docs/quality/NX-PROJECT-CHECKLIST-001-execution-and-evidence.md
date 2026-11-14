@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE — living execution register  
 **Snapshot:** 2026-11-14  
-**Branch:** `foundation/instrument-spec-reference-v0`  
+**Branch:** `foundation/financial-operation-contract-v0`  
 **Scope:** NEXUS v1 foundation, documentation close-out, safe reference work and readiness-controlled implementation.
 
 This checklist is the operational index for the next actions. It does not replace ADRs, specifications, owner decisions or readiness gates. Each checked item must point to a durable artifact or commit-specific evidence. A document being published is not the same as a decision being accepted; a test passing in a reference model is not production verification.
@@ -217,3 +217,26 @@ This checklist does not authorize:
 - Conservative division preflight may reject a quotient whose unreduced values exceed budget even if GCD reduction would fit; this behavior is documented.
 - Dedicated bounded numeric (32 tests) and numeric wire (11 tests, including shared language-neutral vectors) suites passed PR run [#43595449902](https://github.com/PandaGarry/NEXUS/actions/runs/43595199511) on exact PR HEAD `6200bae99e9b7ce865487a40312d0074c0e2a276`, Python 3.11–3.13; full matrix 172 tests per runtime / 516 executions.
 - No production limits, fixed-width integer choice, resource-safety proof, Rust implementation or cross-language conformance is approved.
+
+## 14. Operation-specific financial rounding and valuation increment
+
+- [x] Publish NX-REF-DOMAIN-009 as a proposed design contract enumerating tick/lot, minimum notional, fees, funding, realized/unrealized P&L, margin, liquidation, FX/collateral valuation and Ledger posting boundaries.
+- [x] Separate exact mathematical invariants from venue/product/account semantics and owner-controlled accounting policy.
+- [x] Define evidence classes, provenance requirements, calculation pipeline, fixture schema and venue qualification dossier.
+- [x] Cross-review NX-REF-DOMAIN-009 against NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006; no blocking contradiction found, with owner/venue gaps retained.
+- [ ] Owner review of inventory/position matching, realized P&L, fee/funding treatment, FX/collateral and accounting rounding.
+- [ ] Select and legally qualify exact venue/product/account before filling venue-specific formulas or fixtures.
+
+**Disposition:** DESIGN DRAFT PUBLISHED; G0/G1 remain BLOCKED. No generic production rounding mode, fee/funding formula, margin/liquidation model, FX source, numeric limit or accounting method is selected. No code or financial runtime was added.
+
+
+### 14.1 Cross-document review result
+
+Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branch blob SHAs recorded in NX-REF-DOMAIN-009. Their authority boundaries align: Instrument Specification owns immutable product semantics; Risk consumes qualified valuation/exposure; Ledger owns authoritative accounting; Execution supplies immutable fill/account evidence. No blocking contradiction was found. Owner accounting decisions, venue qualification and production formulas remain OPEN/BLOCKED.
+
+
+### 14.2 Exact-head regression evidence
+
+- GitHub Actions run [#43596156300](https://github.com/PandaGarry/NEXUS/actions/runs/43596156300) passed exact PR HEAD `546a0e74fa055acba2c2de6694c1ba43f65debf5` on Python 3.11, 3.12 and 3.13.
+- Ten existing reference suites passed on each runtime: 11 exact-decimal, 24 execution-gateway, 13 egress-handover, 17 instrument-specification, 12 instrument-registry, 16 dimensional-types, 18 instrument-units, 18 exact-division, 32 bounded-numeric and 11 numeric-wire tests (172 per runtime / 516 executions).
+- This is regression evidence for pre-existing test-only reference models. It does not test or validate the proposed financial-operation policies, and it is not production/runtime/venue conformance evidence.

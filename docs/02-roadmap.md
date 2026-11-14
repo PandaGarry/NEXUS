@@ -144,3 +144,13 @@ Phase 0 не означает исследовать все существующ
 
 - Domain kernel: NX-REF-DOMAIN-007 adds a test-only bounded numeric context with mandatory caller-supplied budgets; production limits remain unselected.
 - Domain kernel: NX-REF-DOMAIN-008 adds canonical scalar decimal/rational wire formats; cross-language and typed event/command integration remain open.
+
+### Financial-operation correctness increment
+
+- [x] Publish NX-REF-DOMAIN-009 proposed operation-specific rounding and valuation contract; define universal exactness invariants, policy boundaries, provenance and venue qualification dossier.
+- [ ] Cross-review financial-operation contract against NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006.
+- [ ] Obtain owner decisions for position matching, fee/funding accounting, FX/collateral valuation and journal rounding.
+- [ ] Qualify exact venue/product/account and capture authoritative fee, funding, margin, liquidation and price-source fixtures.
+- [ ] Add independent mathematical golden fixtures only after each formula's universality or venue-specific authority is established.
+
+No production financial calculator or execution/risk/ledger implementation is authorized by this documentation increment.

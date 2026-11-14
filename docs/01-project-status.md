@@ -127,3 +127,12 @@ NX-REF-DOMAIN-006 adds a rational base-exposure result for the conventional inve
 ### Bounded numeric and canonical wire increment
 
 NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context with preflight checks; the arbitrary-precision oracle remains unchanged. NX-REF-DOMAIN-008 adds strict versioned scalar decimal/rational wire formats. PR CI run #43595449902 passed exact PR HEAD `6200bae99e9b7ce865487a40312d0074c0e2a276` on Python 3.11–3.13 (172 tests per runtime / 516 executions). Production numeric limits, fixed-width representation, resource-safety proof and cross-language integration remain open.
+
+## Financial-operation contract increment (2026-11-14)
+
+- NX-REF-DOMAIN-009 published on the stacked Draft branch as a PROPOSED design contract for operation-specific rounding and valuation.
+- Enumerates tick/lot normalization, minimum notional, trading fees, funding, realized/unrealized P&L, initial/maintenance margin, liquidation, FX/collateral conversion and Ledger posting/reconciliation.
+- Establishes global exactness/dimensionality/provenance invariants, separates estimates from authoritative account facts, defines explicit rounding boundaries and a venue-qualification dossier.
+- Official Binance Spot, OKX and Bybit documentation is used only to demonstrate venue/product differences; no venue is selected or qualified.
+- All venue/account formulas and owner accounting policies remain BLOCKED/OWNER-DECISION as applicable. No calculator, Risk/Ledger implementation, venue adapter, credentials, orders or live capability was added.
+- Prototype readiness remains BLOCKED; live trading remains NOT AUTHORIZED.
