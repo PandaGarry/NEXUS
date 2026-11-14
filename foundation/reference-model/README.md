@@ -66,3 +66,6 @@ Run `python -m unittest -v test_bounded_numeric.py` for mandatory caller-supplie
 
 
 Latest verified PR matrix: [#43594861745](https://github.com/PandaGarry/NEXUS/actions/runs/43594861745) passed exact PR HEAD `2c0135f1205a27f070b0b6a835aa3c19e904e540` on Python 3.11–3.13. Ten isolated suites, 166 tests per runtime / 498 matrix executions; bounded numeric 27 per runtime and numeric wire 10 per runtime.
+
+
+Canonical wire fixtures: `numeric-wire-golden-v1.json` (version 1.0.0) provides language-neutral valid/invalid decimal and rational cases, including integers beyond JavaScript's exact-number range. Run with `python -m unittest -v test_numeric_wire.py`.
