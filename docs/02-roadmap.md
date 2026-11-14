@@ -699,3 +699,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Keep market-data ticks out of the serialized scope-state write path; stale or invalid valuation snapshots block dispatch.
 - [ ] Add concurrency tests for scope membership change racing reservation and for valuation-input changes between reservation and dispatch.
 - [ ] Prove exact version-vector lineage, source freshness and dispatch-time invalidation in the G1 harness.
+
+## Valuation-input snapshot race qualification
+
+- [x] Define immutable source-owned valuation snapshots and version-vector binding.
+- [x] Keep per-tick market-data updates outside the Risk scope-state serialization write path.
+- [x] Require dispatch-time Trusted Egress revalidation and fail-closed behavior on stale/unconfigured/drift-invalid inputs.
+- [ ] Specify the source-owner snapshot-vector contract and cross-source coherence evidence.
+- [ ] Add reservation/approval/dispatch race tests for changed, stale, missing and contradictory valuation inputs.
+- [ ] Select no numeric thresholds until source/domain evidence and owner policy exist.
