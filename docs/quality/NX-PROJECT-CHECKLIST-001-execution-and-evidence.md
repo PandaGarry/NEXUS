@@ -957,7 +957,8 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Separate source-owned mark/index/FX/fee/collateral snapshots from Risk's PostgreSQL scope-state serialization records.
 - [x] State explicitly that source snapshots are not assumed to share the Risk database transaction or a distributed transaction.
 - [x] Bind Risk reservation and approval to an immutable version vector with source identity, value/digest, completeness/watermark and freshness evidence.
-- [x] Require Trusted Egress to revalidate the exact bound vector against versioned source-specific freshness and configured drift/admissibility policy immediately before send.
+- [x] Require Trusted Egress to revalidate the exact bound valuation_input_vector_id/version against the authoritative persisted Risk evidence manifest and source-specific freshness/drift policy immediately before send.
+- [x] Prohibit Egress from fetching replacement market/FX/fee/collateral values or calling source services on the dispatch path; unavailable/unverifiable manifest denies send.
 - [x] Prohibit silently replacing the approval's valuation inputs when a newer source snapshot arrives; require a new Risk evaluation/reservation if the old vector is no longer admissible.
 - [ ] Define the source-owner interface schema and cross-source snapshot-coherence contract without inventing fields before source contracts are approved.
 - [ ] Add race tests: source update during reservation, update after approval/before dispatch, missing watermark, contradictory vector, stale mark, drift-bound breach and unconfigured policy.
