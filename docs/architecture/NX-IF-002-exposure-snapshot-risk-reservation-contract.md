@@ -89,7 +89,7 @@ An immutable `ExposureSnapshot` is a coherent risk view for a specific scope and
 - health/quality state and explicit completeness coverage;
 - per-bucket totals and item references;
 - unknowns, discrepancies, quarantined identities and their conservative bounds;
-- valuation inputs, currency/unit dimensions and calculation version;
+- valuation_input_vector_id/version for immutable mark/index/FX/fee/collateral inputs, source freshness evidence, currency/unit dimensions and calculation version;
 - previous snapshot reference and transition/event range.
 
 A snapshot MUST distinguish at least COMPLETE, DEGRADED, STALE, INCOMPLETE, UNSYNCHRONIZED and INVALID. A numerically populated snapshot is not automatically complete. The risk policy determines which quality states are acceptable for a particular command class. Missing components remain UNKNOWN and must be surfaced, not silently omitted.
@@ -170,7 +170,7 @@ A durable `RiskReservation` contains:
 - account, venue, market type, instrument ID and immutable spec version;
 - policy version and exposure snapshot ID/version;
 - exact reserved dimensions (quantity, notional, margin, fee/cost buffer, collateral impact or other policy-defined dimensions), each with units/currency;
-- conservative valuation assumptions plus the exact immutable market/index/FX/fee/collateral input-version vector and source freshness evidence used for the decision;
+- conservative valuation assumptions plus valuation_input_vector_id/version referencing the exact immutable market/index/FX/fee/collateral input-version vector and source freshness evidence used for the decision;
 - lifecycle state, state version and fencing token;
 - created/updated/expiry timestamps and expiry policy;
 - actor/service, reason codes, correlation lineage and audit evidence;
@@ -332,7 +332,7 @@ An approval/reservation binds to immutable versions of:
 - halt epoch;
 - source freshness/reconciliation watermarks required by policy.
 
-A material change to any bound version invalidates the approval for dispatch. The reservation does not automatically vanish: it remains held or enters `INVALIDATED` / `RECONCILIATION_REQUIRED` until a safe transition is committed. A fresh evaluation may atomically replace or resize it only after proving that the old command cannot dispatch and that no venue-side exposure was created.
+A material change to the bound command, instrument spec, policy/scope config, exposure projection, reservation state, halt epoch, source generation, sequence continuity, correction status, completeness/quality or the source-specific freshness/uncertainty/drift policy invalidates the approval for dispatch. A newer monotonic market-data tick or watermark alone does not automatically invalidate an older bound valuation vector if that immutable vector remains within its accepted source-specific freshness and drift window; a policy may explicitly require the latest version. The signed valuation_input_vector_id/version is never rebound in place. The reservation does not automatically vanish: it remains held or enters `INVALIDATED` / `RECONCILIATION_REQUIRED` until a safe transition is committed. A fresh evaluation may atomically replace or resize it only after proving that the old command cannot dispatch and that no venue-side exposure was created.
 
 Snapshot age thresholds, allowed source lag and policy behavior are owner-configurable and venue/account-mode-specific. No universal TTL is assumed here.
 
