@@ -48,7 +48,7 @@ Digit counting is exact for the already materialized integer values. External te
 
 ## 5. Failure behavior
 
-Budget violations raise NumericLimitExceeded; malformed types and invalid limits raise type/value errors; division by zero preserves DivisionByZero; non-terminating exact conversion preserves InexactDivision; quantization still requires a typed explicit RoundingMode.
+Budget violations, including encoded-wire input/output length violations, raise NumericLimitExceeded; malformed wire syntax preserves NumericWireError; malformed types and invalid limits raise type/value errors; division by zero preserves DivisionByZero; non-terminating exact conversion preserves InexactDivision; quantization still requires a typed explicit RoundingMode.
 
 A caller must treat any limit violation as a rejected calculation. It must not retry with silently expanded limits, truncate, fall back to float, or substitute zero.
 
