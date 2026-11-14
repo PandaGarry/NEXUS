@@ -2,12 +2,15 @@
 
 Статусы меняются только при наличии проверяемых свидетельств.
 
-## Phase 0 — Foundation Audit (In Progress)\n\n**Operational checklist:** [NX-PROJECT-CHECKLIST-001](quality/NX-PROJECT-CHECKLIST-001-execution-and-evidence.md). It is the current source for D1–D8 package status and ordered engineering work.
+## Phase 0 — Foundation Audit (In Progress)
+
+**Operational checklist:** [NX-PROJECT-CHECKLIST-001](quality/NX-PROJECT-CHECKLIST-001-execution-and-evidence.md). It is the current source for D1–D8 package status and ordered engineering work.
 
 ### Foundation close-out track (active)
 - [ ] Complete NX-DOC-REVIEW-001 packages D1–D8 or explicitly defer each behind a named gate.
 - [x] Add exact-decimal reference oracle and unit tests (10/10; reference-only evidence).
-- [x] Publish language-neutral golden vectors v1.0.0 (15 cases); Python oracle passes all vectors.\n- [ ] Add deterministic property/fuzz coverage and cross-language conformance.
+- [x] Publish language-neutral golden vectors v1.0.0 (15 cases); Python oracle passes all vectors.
+- [ ] Add deterministic property/fuzz coverage and cross-language conformance.
 - [ ] Approve production numeric bounds, overflow behavior, typed units and rounding ownership before financial runtime implementation.
 - [ ] Establish implementation workspace, pinned toolchain, dependency policy and reproducible CI before production-language kernel work.
 - [ ] Зафиксировать baseline commit и структуру Tradoor.
@@ -62,7 +65,8 @@
 
 ## Phase 3 — Quant & Simulation (Blocked)
 - [ ] Утвердить ТЗ-NX-003 Quant & Strategy Engine. (Draft published; owner review and strategy-runtime decisions required.)
-- [x] Publish NX-ADR-003 simulation and strategy-validation protocol (PROPOSED; owner review remains open).\n- [ ] NX-ADR-006 explicitly deferred: NX-ADR-003 already covers the current strategy-validation governance scope; reopen only if a distinct architectural decision is identified.
+- [x] Publish NX-ADR-003 simulation and strategy-validation protocol (PROPOSED; owner review remains open).
+- [ ] NX-ADR-006 explicitly deferred: NX-ADR-003 already covers the current strategy-validation governance scope; reopen only if a distinct architectural decision is identified.
 - [ ] Определить execution simulation levels L1/L2/L3.
 - [ ] Утвердить out-of-sample, purge/embargo и walk-forward protocols.
 - [ ] Проверить latency, queue position, partial fills, slippage и adverse selection.
