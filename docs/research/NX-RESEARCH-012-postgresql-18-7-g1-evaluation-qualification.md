@@ -41,7 +41,7 @@ G1 requirements:
 - Do not carry forward incremental backup chains created before the relevant fix level. The initial G1 backup/restore exercise uses a new full base backup.
 - The first G1 design remains single-primary with no automatic failover. PITR and restore must be exercised from a fresh, verified base backup plus WAL.
 - Review the full 18.7 release notes for every `REINDEX` entry against the actual schema/index types before using migrated data.
-- Avoid unbounded `CHAR(n)` / `bpchar` and GIN indexes in the initial schema unless a concrete need exists and the relevant reindex/recovery requirements are explicitly qualified. No index is presumed safe merely because the server has been patched.
+- Avoid unconstrained `bpchar` columns (the release-note issue concerns the type without a length constraint); the PostgreSQL 18.7 notes explicitly say ordinary fixed-length `CHAR(n)` is not affected by this specific bug. Prefer TEXT/VARCHAR for new schema unless fixed-width semantics are required. Avoid GIN and `gist_trgm_ops` indexes in the initial schema unless a concrete need exists and the relevant reindex/recovery requirements are explicitly qualified. No index is presumed safe merely because the server has been patched.
 
 ### 3.2 C extensions and extension scripts
 
@@ -56,15 +56,16 @@ G1 requirements:
 
 ### 3.3 Privilege and SQL execution boundaries
 
-18.7 fixes issues involving `INSERT ... ON CONFLICT` against auto-updatable views and row-level security policy checks, among other privilege and SQL execution issues.
+18.7 fixes several security issues directly relevant to database isolation and privileged operations: CVE-2026-16237 (`INSERT ... ON CONFLICT` could bypass an auto-updatable view's WHERE visibility), CVE-2026-120154 (ON CONFLICT row visibility against RLS), CVE-2026-14661 (`dblink`/replication subscriptions could append arbitrary files), CVE-2026-6460 (concurrent composite-type changes could trigger type confusion/code execution), CVE-2026-6467 (extension script schema handling could execute arbitrary SQL), and CVE-2026-116314 (corrupt `pg_restore` archives could trigger out-of-bounds access/path traversal).
 
 G1 requirements:
 
-- Authoritative Risk/Command/Ledger writes target base tables through narrowly scoped service roles; updatable views are not write APIs.
-- Row-level security, if later used, is defense-in-depth and is not the only tenant/service isolation boundary.
-- Database role grants, schema ownership and SECURITY DEFINER functions require explicit review; no shared application superuser.
-- Do not use `dblink`, untrusted replication subscriptions, or dynamic extension/script execution in the initial G1 environment.
-- Do not use `COPY FROM ... ON_ERROR` as a privileged import path. All imports are bounded, validated and performed by a narrowly scoped process.
+- Authoritative Risk/Command/Ledger writes target base tables through narrowly scoped service roles; auto-updatable views are not write APIs.
+- Row-level security, if later used, is defense-in-depth and is not the only tenant/service isolation boundary. Prove base-table grants and cross-role access independently, including ON CONFLICT paths.
+- Database role grants, schema ownership and SECURITY DEFINER functions require explicit review; no shared application superuser. Runtime roles receive no SUPERUSER, CREATEDB, CREATEROLE, REPLICATION, BYPASSRLS or schema/extension DDL privileges.
+- Do not install or enable `dblink`, replication subscriptions, untrusted extensions or dynamic extension/script execution in the initial G1 environment.
+- C-language extensions are excluded; any later C extension must be rebuilt and requalified for PostgreSQL 18.7 and the current server patch.
+- Do not restore untrusted `pg_restore` archives or treat backup manifests as trusted input. All imports are bounded, validated and performed by a narrowly scoped process.
 
 ## 4. Implications for the selected transaction model
 
