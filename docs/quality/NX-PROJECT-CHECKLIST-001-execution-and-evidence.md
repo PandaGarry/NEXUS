@@ -938,3 +938,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Execute the PostgreSQL 18 concurrency, idempotency, failover and external-fencing proof matrix before G1 acceptance.
 
 **Disposition:** exact-head Python reference regression passed. PostgreSQL concurrency design is refined but not implemented or proven.
+
+## 18.25 Numeric-wire integer conversion determinism — 2026-11-14
+
+- [x] Remove dependence on Python's interpreter-configurable integer-string conversion threshold for ordinary wire acceptance.
+- [x] Add a fixed 512-decimal-digit budget for coefficient, scale, numerator and denominator fields, independent of max_chars.
+- [x] Reject values over the fixed budget as NUMERIC.RESOURCE_LIMIT before calling int().
+- [x] Add boundary tests: 512 digits accepted and 513 rejected for decimal and rational wire values.
+- [ ] Mirror the same 512-digit parser budget in the future Rust implementation and language-neutral negative fixtures.
+- [ ] Decide whether the future production wire profile needs a different bound; do not infer this reference-model bound as a production financial limit.
+
+**Disposition:** Python reference parser now has deterministic integer-digit resource behavior. Cross-language fixture parity remains open; this does not establish production numeric policy.
