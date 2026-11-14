@@ -1,0 +1,90 @@
+{
+  "version": "1.0.0",
+  "wire_versions": {
+    "decimal": "nxd1",
+    "rational": "nxr1"
+  },
+  "cases": [
+    {
+      "id": "decimal_positive_fraction",
+      "kind": "decimal",
+      "wire": "nxd1:12345:2",
+      "expected_coefficient": "12345",
+      "expected_scale": 2
+    },
+    {
+      "id": "decimal_negative_small",
+      "kind": "decimal",
+      "wire": "nxd1:-1:8",
+      "expected_coefficient": "-1",
+      "expected_scale": 8
+    },
+    {
+      "id": "decimal_canonical_zero",
+      "kind": "decimal",
+      "wire": "nxd1:0:0",
+      "expected_coefficient": "0",
+      "expected_scale": 0
+    },
+    {
+      "id": "decimal_integer",
+      "kind": "decimal",
+      "wire": "nxd1:9007199254740993:0",
+      "expected_coefficient": "9007199254740993",
+      "expected_scale": 0
+    },
+    {
+      "id": "rational_one_three_hundred",
+      "kind": "rational",
+      "wire": "nxr1:1:300",
+      "expected_numerator": "1",
+      "expected_denominator": "300"
+    },
+    {
+      "id": "rational_negative_seven_twenty",
+      "kind": "rational",
+      "wire": "nxr1:-7:20",
+      "expected_numerator": "-7",
+      "expected_denominator": "20"
+    },
+    {
+      "id": "rational_large_integer",
+      "kind": "rational",
+      "wire": "nxr1:100000000000000000001:7",
+      "expected_numerator": "100000000000000000001",
+      "expected_denominator": "7"
+    },
+    {
+      "id": "rational_canonical_zero",
+      "kind": "rational",
+      "wire": "nxr1:0:1",
+      "expected_numerator": "0",
+      "expected_denominator": "1"
+    },
+    {
+      "id": "reject_decimal_non_normalized",
+      "kind": "decimal_invalid",
+      "wire": "nxd1:120:2"
+    },
+    {
+      "id": "reject_decimal_leading_zero",
+      "kind": "decimal_invalid",
+      "wire": "nxd1:01:0"
+    },
+    {
+      "id": "reject_rational_unreduced",
+      "kind": "rational_invalid",
+      "wire": "nxr1:2:6"
+    },
+    {
+      "id": "reject_rational_negative_denominator",
+      "kind": "rational_invalid",
+      "wire": "nxr1:1:-3"
+    },
+    {
+      "id": "reject_rational_zero_denominator",
+      "kind": "rational_invalid",
+      "wire": "nxr1:1:0"
+    }
+  ]
+}
