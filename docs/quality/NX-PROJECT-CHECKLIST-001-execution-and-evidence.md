@@ -1050,7 +1050,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** documentation consistency correction only; no signer, verifier, key or dispatch runtime implemented.
 
-## 18.53 WP-D StateEvidenceVector / ValuationInputVector / Egress synchronization — 2026-11-14
+## 18.56 WP-D StateEvidenceVector / ValuationInputVector / Egress synchronization — 2026-11-14
 
 - [x] Keep StateEvidenceVector (NX-IF-004) distinct from ValuationInputVector (NX-IF-002); RiskApprovalCapability binds both exact immutable IDs/versions and required digests/policy references.
 - [x] Require Trusted Egress to validate the signed valuation vector against the authoritative persisted Risk evidence manifest and latest consumed source watermark/correction state.
@@ -1063,7 +1063,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 
 
-## 18.56 Halt / egress race exact-head documentation synchronization — 2026-11-14
+## 18.57 Halt / egress race exact-head documentation synchronization — 2026-11-14
 
 - [x] Synchronize NX-IF-005, NX-ADR-008, NX-ARCH-REVIEW-005 and NX-REF-EXEC-002 on the shared halt/final-egress serialization point.
 - [x] Define both race outcomes and require Egress to drain or positively fence gate-committed attempts before halt acknowledgement.
@@ -1071,7 +1071,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Run exact-head CI after this documentation synchronization and record the resulting SHA/run.
 - [ ] Execute actual halt/gate race tests at the instrumented Egress boundary; documentation synchronization is not runtime proof.
 
-## 18.57 Halt / final-egress authorization race semantics — 2026-11-14
+## 18.58 Halt / final-egress authorization race semantics — 2026-11-14
 
 - [x] Identify and reconcile the ambiguity between NX-IF-005's "immediately before send" halt check and NX-ADR-008's persisted send-authorization linearization point.
 - [x] Require halt-epoch commit and final EgressBoundaryAuthorization commit to serialize against the same authoritative halt-state generation.
