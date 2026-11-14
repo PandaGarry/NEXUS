@@ -917,3 +917,8 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Verify 31 egress-fencing tests (13 authority-handover + 18 HaltEgressGate).
 - [ ] Re-run CI after final documentation synchronization; current PR head is docs-only beyond the tested code/test SHA.
 - [ ] Prove the same semantics with real PostgreSQL concurrent transactions, HEGC grant persistence, instrumented sockets and independently verified sender fencing.
+
+- [x] Specify durable `ConsumeEgressGrant` transition and single-use GATE_COMMITTED → GRANT_CONSUMED state.
+- [x] Deny send on lost/indeterminate consume response; no new attempt or second permit.
+- [x] Require reservation retention, sender fencing and reconciliation when consume committed but socket initiation is unconfirmed.
+- [ ] Prove grant replay prevention and lost-response semantics against the real HEGC/PostgreSQL transaction boundary.
