@@ -1060,3 +1060,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove source-owned snapshot immutability, vector coherence, manifest freshness and no-fetch behavior at instrumented process/network boundaries after G0D/G1 readiness.
 
 **Disposition:** NX-IF-001/002/004, NX-ADR-008, NX-ARCH-REVIEW-007 and NX-REF-EXEC-002 are aligned at the design level. No runtime or production authorization exists.
+
+## 18.57 Halt / final-egress authorization race semantics — 2026-11-14
+
+- [x] Identify and reconcile the ambiguity between NX-IF-005's "immediately before send" halt check and NX-ADR-008's persisted send-authorization linearization point.
+- [x] Require halt-epoch commit and final EgressBoundaryAuthorization commit to serialize against the same authoritative halt-state generation.
+- [x] Define both commit orders: halt-first denies socket initiation; gate-first creates an irrevocable in-flight attempt requiring reservation retention and reconciliation.
+- [x] Require Egress to track gate-committed attempts until socket initiation is observed or the sender is positively fenced.
+- [x] Prevent Egress from acknowledging the new halt epoch while a paused pre-halt authorized attempt could still resume and initiate a socket write.
+- [x] Clarify that HALTED means no stale/queued attempt can newly initiate a write after boundary acknowledgement; it does not recall bytes already initiated or prevent venue processing of in-flight requests.
+- [ ] Add fault-injection tests for halt-first, gate-first, pause-after-gate-before-socket, process crash, network partition, positive fence and acknowledgement ordering; inspect the actual instrumented egress boundary.
+- [ ] Decide whether the product requires the stronger guarantee "no socket initiation after halt commit"; if so, design and prove a transport-level cancellation/fencing primitive before production.
+
+**Disposition:** semantic race closed at design level across NX-IF-005, NX-ADR-008, NX-ARCH-REVIEW-005 and NX-REF-EXEC-002. No runtime or transport fence is implemented; halt propagation remains unproven.
