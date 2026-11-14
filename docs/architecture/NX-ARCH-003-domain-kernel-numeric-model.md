@@ -89,14 +89,16 @@ Production implementation must match the golden vectors and add bounded-overflow
 
 ## 7. Acceptance criteria for this slice
 
-- [ ] Decimal grammar and canonicalization are documented and tested.
-- [ ] No float conversion occurs in the reference path.
-- [ ] Add/subtract/multiply/compare are exact.
-- [ ] Exact quantization rejects any operation that would discard non-zero digits.
-- [ ] Tick/lot divisibility rejects non-positive steps.
-- [ ] Negative, zero, large magnitude and high-scale values have test coverage.
-- [ ] Division/rounding are not exposed as accidental defaults.
-- [x] Golden vectors are language-neutral and reusable by production implementations (v1.0.0, 15 cases).\n- [x] Deterministic property checks compare 1,000 generated cases against an independent rational representation.\n- [ ] Fuzz/property coverage with broader input generation and cross-language conformance.
+- [x] Decimal grammar and canonicalization are implemented and covered by reference tests.
+- [x] No float conversion occurs in the reference path (source inspection; exact arithmetic CI).
+- [x] Add/subtract/multiply/compare are exact (golden vectors and 1,000 rational-oracle property cases).
+- [x] Exact quantization rejects any operation that would discard non-zero digits.
+- [x] Tick/lot divisibility rejects non-positive steps.
+- [x] Negative, zero, large magnitude and high-scale values have test coverage.
+- [x] Division/rounding are not exposed as accidental defaults.
+- [x] Golden vectors are language-neutral and reusable by production implementations (v1.0.0, 15 cases).
+- [x] Deterministic property checks compare 1,000 generated cases against an independent rational representation.
+- [ ] Fuzz/property coverage with broader input generation and cross-language conformance.
 - [ ] Production numeric bounds and overflow behavior are decided before live financial calculations.
 - [ ] Unit-bearing Price/Quantity/Money types are separately specified before order/risk/ledger integration.
 
@@ -112,6 +114,6 @@ Production implementation must match the golden vectors and add bounded-overflow
 
 ## 9. Verification status
 
-The reference oracle is a conformance aid only. It does not establish production readiness. Acceptance criteria remain unchecked until tests and artifacts are linked to an exact commit.
+The reference oracle is a conformance aid only. It does not establish production readiness. The first-slice scalar acceptance criteria above are verified at reference-model level; production bounds, units, fuzzing and cross-language conformance remain open.\n\nGitHub Actions run [#43590253167](https://github.com/PandaGarry/NEXUS/actions/runs/43590253167) passed exact PR HEAD `9529d0fe424e73c5f303bb9780ffe194911f30c6`: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases) and 21 gateway tests on Python 3.11, 3.12 and 3.13.
 
 **Status remains PROPOSED.**
