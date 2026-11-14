@@ -447,3 +447,7 @@ Branch HEAD `69657a0808b859b17ab94a6d3e008a2ae9671cc7` passed [workflow #4361582
 ## COSE key-resolution trust boundary — 2026-11-14
 
 NX-ADR-008 and NX-RESEARCH-011 now explicitly treat all token-supplied metadata—including protected `kid`/`alg` and payload issuer/audience—as untrusted until signature verification. Candidate lookup is bounded to a local versioned registry; token-directed remote key retrieval is forbidden. Local expected issuer/audience and key-purpose policy must be enforced, then signed claims checked against that context. Verification accepts only public OKP/Ed25519 (32-byte public key), rejects private key material outside Risk, requires a 64-byte signature and fails closed on ambiguous/stale/revoked key resolution. This is a protocol requirement, not an implemented verifier.
+
+## COSE_Sign1 serialization profile — 2026-11-14
+
+NX-ADR-008 and NX-RESEARCH-011 now define one exact wire representation: untagged embedded-payload four-element COSE_Sign1; protected header has only alg=-19 and bounded byte-string kid; unprotected map is empty; capability claims are a single NEXUS deterministic-CBOR payload. The verifier preserves exact protected-header and payload bytes, constructs Sig_structure using RFC 9052 §9 deterministic encoding and rejects detached/tagged/extra-header alternatives. This removes representation ambiguity from the design; no implementation has been selected or tested yet.
