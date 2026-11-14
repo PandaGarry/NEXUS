@@ -708,3 +708,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Specify the source-owner snapshot-vector contract and cross-source coherence evidence.
 - [ ] Add reservation/approval/dispatch race tests for changed, stale, missing and contradictory valuation inputs.
 - [ ] Select no numeric thresholds until source/domain evidence and owner policy exist.
+
+## PostgreSQL 18.7 G1 patch qualification
+
+- [x] Select PostgreSQL 18.7 as the exact G1 evaluation patch, based on current supported-release status.
+- [x] Review official release notes and record index/REINDEX, incremental-backup, C-extension and privilege/extension caveats.
+- [ ] Pin and verify package checksum/image digest, provenance, platform and configuration.
+- [ ] Run fresh-full-backup restore/PITR, crash recovery and index integrity checks.
+- [ ] Run transaction/concurrency and role-separation tests on the exact patch.
+- [ ] Requalify latest supported 18.x minor before any deployment decision; 18.7 is not a permanent production pin.
