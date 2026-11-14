@@ -4,6 +4,15 @@
 
 ## Unreleased
 
+
+### Added — Authorization-catalog manifest admission reference (2026-11-14)
+
+- Added a test-only Python logical manifest validator and admission-precondition model for exact schema, bounded scope, semantic object identity, deny rules, context binding, validity and anti-rollback sequencing.
+- Added adversarial tests for unknown/missing fields, wildcard/duplicate scope, unknown object kinds, duplicate identities/rules, invalid digests/intervals, signature/approval failure, unavailable revocation, context mismatch, sequence/predecessor mismatch and freshness failures.
+- Wired the isolated suite into the Python 3.11/3.12/3.13 reference-model workflow.
+- This is not a CBOR parser, COSE/Ed25519 verifier, trust service, PostgreSQL catalog observer or production deployment gate; CI evidence for the new HEAD is pending.
+
+
 ### Added — Production authorization-catalog manifest lifecycle (NX-ARCH-REVIEW-009, 2026-11-14)
 
 - Added a design-level threat model and candidate schema for an independently approved/signed production PostgreSQL authorization-catalog manifest.
