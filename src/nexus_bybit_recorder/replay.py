@@ -13,7 +13,7 @@ class JournalIntegrityError(ValueError):
 
 
 def iter_verified_frames(path: str | Path) -> Iterator[dict]:
-    """Read journal in append order and verify each exact raw-frame digest."""
+    """Read journal in append order and verify each exact raw-payload digest."""
     with Path(path).open("r", encoding="utf-8") as stream:
         for line_number, line in enumerate(stream, start=1):
             try:
@@ -25,25 +25,57 @@ def iter_verified_frames(path: str | Path) -> Iterator[dict]:
                 raise JournalIntegrityError(f"missing raw frame at line {line_number}")
             actual = hashlib.sha256(raw.encode("utf-8")).hexdigest()
             if actual != record.get("raw_sha256"):
-                raise JournalIntegrityError(f"raw frame checksum mismatch at line {line_number}")
+                raise JournalIntegrityError(f"raw payload checksum mismatch at line {line_number}")
             yield record
 
 
 def summarize(path: str | Path) -> dict:
     generations: set[int] = set()
     topics: Counter[str] = Counter()
+    record_types: Counter[str] = Counter()
+    control_ops: Counter[str] = Counter()
+    control_frames = 0
+    non_json_frames = 0
+    other_json_frames = 0
     frames = 0
     for record in iter_verified_frames(path):
         frames += 1
         generations.add(int(record["connection_generation"]))
+        record_types[str(record.get("record_type", "unknown"))] += 1
         try:
             payload = json.loads(record["raw_frame"])
         except json.JSONDecodeError:
+            non_json_frames += 1
+            continue
+        if not isinstance(payload, dict):
+            other_json_frames += 1
             continue
         topic = payload.get("topic")
         if isinstance(topic, str):
             topics[topic] += 1
-    return {"frames": frames, "connection_generations": len(generations), "topics": dict(sorted(topics.items()))}
+            continue
+        op = payload.get("op")
+        if isinstance(op, str):
+            control_ops[op] += 1
+            control_frames += 1
+        elif any(key in payload for key in ("success", "retCode", "ret_msg", "conn_id", "req_id")):
+            control_ops["control_without_op"] += 1
+            control_frames += 1
+        else:
+            other_json_frames += 1
+    classified = sum(topics.values()) + control_frames + non_json_frames + other_json_frames
+    return {
+        "frames": frames,
+        "connection_generations": len(generations),
+        "record_types": dict(sorted(record_types.items())),
+        "topics": dict(sorted(topics.items())),
+        "control_frames": control_frames,
+        "control_ops": dict(sorted(control_ops.items())),
+        "non_json_frames": non_json_frames,
+        "other_json_frames": other_json_frames,
+        "classification_total": classified,
+        "classification_reconciles": classified == frames,
+    }
 
 
 def main() -> None:
