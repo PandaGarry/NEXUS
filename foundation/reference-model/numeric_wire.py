@@ -16,6 +16,10 @@ _SIGNED_INTEGER = re.compile(r"^(?:0|-[1-9][0-9]*|[1-9][0-9]*)$")
 _UNSIGNED_INTEGER = re.compile(r"^(?:0|[1-9][0-9]*)$")
 _POSITIVE_INTEGER = re.compile(r"^[1-9][0-9]*$")
 
+# Fixed protocol-level parser budget, below Python 3.11+ minimum configurable
+# int-string conversion threshold. This keeps acceptance identical on 3.10–3.13.
+_MAX_WIRE_INTEGER_DIGITS = 512
+
 
 class NumericWireError(ValueError):
     """Base class for malformed, unsupported or non-canonical numeric wire values.
@@ -51,6 +55,11 @@ def serialize_decimal(value: ExactDecimal) -> str:
 
 def _parse_wire_integer(encoded: str, *, field: str) -> int:
     """Parse a regex-validated integer and normalize interpreter digit-budget failures."""
+    digits = encoded[1:] if encoded.startswith("-") else encoded
+    if len(digits) > _MAX_WIRE_INTEGER_DIGITS:
+        raise NumericWireResourceLimit(
+            f"{field} exceeds the {_MAX_WIRE_INTEGER_DIGITS}-digit wire integer budget"
+        )
     try:
         return int(encoded)
     except ValueError as exc:
