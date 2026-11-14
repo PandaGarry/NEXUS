@@ -1318,7 +1318,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** preferred database-boundary pattern recorded for evaluation only. No function, schema, role, grant or PostgreSQL integration harness is implemented or approved.
 
-## 18.73 PostgreSQL SSI commit-order and HEGC guard qualification — 2026-11-14
+## 18.77 PostgreSQL SSI commit-order and HEGC guard qualification — 2026-11-14
 
 - [x] Cross-check PostgreSQL SSI internals and research: SERIALIZABLE guarantees equivalence to some serial order, not necessarily wall-clock commit order for overlapping transactions.
 - [x] Separate Risk aggregate scope-state guard from HEGC gate-validation commit-order guard; do not assume one row proves both invariants.
