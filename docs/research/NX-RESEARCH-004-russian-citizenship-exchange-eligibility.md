@@ -7,9 +7,7 @@
 
 ## 1. Owner context
 
-The owner confirmed Russian citizenship on 2026-11-14 and indicated that Russia is the currently available operating/residence scenario, while lawful remote account opening in another territory would be a plus.
-
-The owner's current tax residence, actual country of residence, any additional citizenship/residence permits, and sanctions status have not been confirmed. Do not infer them from IP or approximate location metadata.
+This research evaluates Russian-citizenship and Russian-residence scenarios as separate KYC and legal variables. It does not determine any individual's statutory residency or tax residency, and it records no personal identifiers, account details or address information. Any applicant's additional citizenship/residence permits and sanctions status must be verified independently; do not infer them from IP or approximate location metadata.
 
 ## 2. Findings
 
