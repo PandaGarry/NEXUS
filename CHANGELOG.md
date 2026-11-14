@@ -224,6 +224,13 @@
 
 ### Clarified — pre-egress exposure transition (2026-11-14)
 
+### Corrected — stale reservation/dispatch review finding (2026-11-14)
+
+- Refreshed NX-ARCH-REVIEW-001 F-02: its original statement that reservation/command ordering was unspecified had become stale after NX-IF-001 / NX-IF-002 / NX-ADR-002 were harmonized.
+- Marked the finding partially resolved at design level only and enumerated the remaining owner, transaction/isolation, crash/concurrency, reservation-lifecycle and egress-fence proof requirements.
+- Updated the living checklist and project status. No implementation, transaction guarantee or live authorization added.
+
+
 - Reworded the NX-IF-002 lifecycle row to require the durable pre-egress attempt marker before any network side effect.
 - Explicitly separated the marker from proof of transmission and retained conservative exposure through outcome reconciliation.
 - Recorded the cross-contract clarification in NX-ARCH-REVIEW-001, checklist, project status and roadmap. No runtime behavior or production safety guarantee is implied.
