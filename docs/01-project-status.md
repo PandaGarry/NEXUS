@@ -6,7 +6,7 @@
 
 | Область | Статус | Комментарий |
 |---|---|---|
-| Цель и продуктовые границы | Accepted | Зафиксированы в Project Charter |
+| Цель и продуктовые границы | Accepted / personal-first proposal | NEXUS v1 proposed as closed single-owner personal product; no public users or commercial service in initial scope. NX-ARCH-002 is proposed and requires owner review |
 | Архитектурные принципы | Proposed / Partially accepted | Требуются финальные ADR |
 | Tradoor audit | In Progress | Source pass обновлён до HEAD 6ab3877; funding/private execution capability audit добавлен в NX-RESEARCH-002. Полная per-venue сертификация, instrument metadata и runtime verification остаются открыты |
 | Exchange capabilities matrix | Incomplete | Trade/book/OI/liquidation первично просмотрены; per-channel matrix и UNKNOWN поля ещё не закрыты |
@@ -32,6 +32,8 @@
 - [NX-RESEARCH-003 — First-Venue Shortlist](research/NX-RESEARCH-003-first-venue-shortlist.md) — Coinbase/Kraken conditional comparison; exact venue/product selection remains open pending legal/account eligibility and API capability qualification.
 
 ## Новые архитектурные артефакты (PROPOSED)
+
+- [NX-ARCH-002 — Product & Deployment Profiles](architecture/NX-ARCH-002-product-deployment-profiles.md) — personal-first single-owner scope; PERSONAL_DEV / PERSONAL_TEST / PERSONAL_PRODUCTION and separately gated future COMMERCIAL profile. Design only; no runtime enforcement or live authorization.
 
 - [NX-ADR-001 — Unified Market Event Contract](architecture/NX-ADR-001-unified-market-event-contract.md) — canonical event envelope, typed payload semantics, exact units, timestamps, provenance, ordering and schema evolution. Design only; no implementation or conformance tests.
 - [NX-ARCH-001 — Target Architecture & Deployment Topology](architecture/NX-ARCH-001-target-architecture.md) — logical boundaries, trust model, command/data flows, deployment baseline and owner decisions. Design only; no implementation or runtime verification.
