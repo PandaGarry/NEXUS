@@ -211,7 +211,7 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         noncanonical_scopes = [scopes[0], scopes[2], scopes[1]]
         noncanonical = run_sql(
             "BEGIN ISOLATION LEVEL SERIALIZABLE;"
-            f"SELECT nexus_hegc.issue_egress_grant({lit(account)}::uuid,{uuid_array(noncanonical)},"
+            f"SELECT nexus_hegc.issue_egress_grant({lit(account)}::uuid,{uuid_array(noncanonical_scopes)},"
             f"{lit(str(uuid.uuid4()))}::uuid,'noncanonical-scope-test'); COMMIT;",
             user="nexus_hegc", password="hegc-test-only",
         )
