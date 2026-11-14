@@ -96,6 +96,6 @@
 ## Reference-platform fit assessment (2026-11-14)
 
 - NX-RESEARCH-006 added as an evidence-backed first fit assessment. NautilusTrader is a leading candidate for selected runtime reuse, not a selected full-stack foundation.
-- Documented gaps against NEXUS: asynchronous cache persistence does not establish durable-before-dispatch; the built-in RiskEngine is not the independent NEXUS authorization boundary; bounded 128-bit/16-decimal and 64-bit/9-decimal precision modes require domain-fit proof; scoped deduplication/reconciliation do not replace the NEXUS ledger and recovery contracts.
+- Documented gaps against NEXUS: asynchronous cache persistence does not establish durable-before-dispatch; the built-in RiskEngine is not the independent NEXUS authorization boundary; bounded 128-bit/16-decimal and 64-bit/9-decimal modes (plus optional 18-decimal DeFi precision) require feature/domain-fit proof; v2 transition adds API migration risk; scoped deduplication/reconciliation do not replace the NEXUS ledger and recovery contracts.
 - Recommended next work is a bounded source audit and conformance spike. No dependency, fork, live adapter or production integration is approved.
 - The 10-test result applies to the exact reference-model files fetched from GitHub and executed in an isolated local directory. PR #10 HEAD returned no GitHub Actions workflow runs; no CI PASS is claimed.
