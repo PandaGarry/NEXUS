@@ -1302,3 +1302,18 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove grant-consumption ambiguity, per-scope commit-order guard and actual socket/process/network fencing in integration tests.
 
 **Disposition:** duplicate-halt cause behavior is verified in the sequential reference model only; production persistence and control-plane guarantees remain open.
+
+
+## 18.76 HEGC shared scope-guard function candidate — 2026-11-14
+
+- [x] Identify that PostgreSQL SERIALIZABLE alone does not prove the required commit-order visibility for overlapping transactions.
+- [x] Record a preferred G1 evaluation shape: SECURITY DEFINER scope-guard function, dedicated NOLOGIN/non-superuser owner, guard-table-only write rights, caller EXECUTE-only grants and direct-DML bypass prevention.
+- [x] Require the guard to be acquired as the first SQL statement after BEGIN, before protected reads/writes, and held through source mutation or HEGC grant commit.
+- [x] Require a fresh post-wait view or 40001 whole-transaction restart when the SERIALIZABLE snapshot predates a concurrent guard update.
+- [x] Specify fixed trusted search_path with pg_temp last, schema-qualified objects, no dynamic SQL, PUBLIC EXECUTE revoked, explicit grants and caller/scope authorization.
+- [ ] Prove the guard function and all invalidating writer procedures use the same guard rows in the same outer PostgreSQL 18.7 transaction.
+- [ ] Prove source-table direct DML is denied to bypassing roles and guard-owner privileges cannot mutate Risk/Command source records.
+- [ ] Fault-inject source-writer-first and HEGC-first ordering, stale snapshot, 40001/40P01, connection loss, ambiguous commit, duplicate attempt and multi-scope deadlock ordering.
+- [ ] Measure guard contention, bounded scope limits, throughput and retry behavior under realistic G1 load.
+
+**Disposition:** preferred database-boundary pattern recorded for evaluation only. No function, schema, role, grant or PostgreSQL integration harness is implemented or approved.
