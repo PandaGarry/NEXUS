@@ -437,3 +437,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Branch HEAD `1bb2192e6746e0f86659f006ef204990adc81188` passed [workflow #43615753905](https://github.com/PandaGarry/NEXUS/actions/runs/43615753905).
 - Python 3.11, 3.12 and 3.13 passed 13 isolated suites / 239 tests each (717 successful executions).
 - No test failures or Node.js 20 / `punycode` deprecation warnings. Verification is limited to Python reference models.
+
+### Final action-runtime and exact-head verification — 2026-11-14
+
+- Exact branch HEAD `69657a0808b859b17ab94a6d3e008a2ae9671cc7` passed [workflow #43615820603](https://github.com/PandaGarry/NEXUS/actions/runs/43615820603): 13 suites / 239 tests on Python 3.11/3.12/3.13 (717 executions).
+- No test failures or Node.js 20 / `punycode` deprecation warnings.
+- Verified the exact pinned checkout v7.0.1 and setup-python v7.1.0 action manifests both use Node 24.
+- Evidence remains limited to Python reference models and action runtime; no Rust, CBOR/COSE, PostgreSQL, Trusted Egress or live behavior was exercised.
