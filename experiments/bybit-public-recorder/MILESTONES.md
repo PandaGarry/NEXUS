@@ -2,16 +2,19 @@
 
 **Plan date:** 2026-11-14  
 **Scope owner:** NEXUS engineering / research workstream  
-**Status:** targets, not claims of completed live verification
+**Status:** first real-feed gate passed; M1/M2/M3 remain open
 
-## Interim gate — first real bytes (target before 2026-11-20)
+## Interim gate — first real bytes
 
-- Run the recorder from an internet-enabled host (user PC or VPS) against the public Bybit linear WebSocket.
-- Capture at least 10 consecutive minutes of actual publicTrade.BTCUSDT and orderbook.full.BTCUSDT frames.
-- Preserve the original raw journal, exact command/configuration, UTC start/end, host OS/Python version, connection generations and replay summary.
-- Verify replay and every per-frame digest. Label the digest as an accidental-corruption check, not tamper-proof evidence.
-- Do not commit credentials, private data, machine secrets or unreviewed large raw dumps. Keep the raw evidence as a GitHub Actions artifact or a separately retained evidence bundle; commit only a small, sanitized, representative fixture if licensing, terms and size permit.
-- Acceptance: real frames from the actual exchange endpoint, both expected topics observed, no invented/synthetic fixture, replay succeeds. If no connection is possible, record the exact blocker and leave the gate open.
+<badge>PASS — 2026-11-14</badge>
+
+- Hosted GitHub Actions run #10 connected to the public Bybit linear WebSocket and captured approximately 10 minutes.
+- 11,177 raw journal records: 8,149 publicTrade.BTCUSDT messages and 2,998 orderbook.full.BTCUSDT messages, plus protocol/control frames.
+- One connection generation; both expected topics present; replay and the workflow acceptance check passed.
+- The downloaded artifact was independently inspected: 11,177 valid JSONL lines, no malformed records, no missing SHA-256 fields and no digest mismatches.
+- Raw artifact (retention until 2026-11-28): https://github.com/PandaGarry/NEXUS/actions/runs/43637091666/artifacts/14131465205
+- The first order-book messages were deltas. This is expected for the full-depth stream contract and reinforces that REST snapshot + buffered delta bridge is required before a book can be considered synchronized.
+- This gate proves public-feed reachability and raw capture/replay plumbing only. It does not prove snapshot synchronization, reconnect recovery, feed completeness, long-run reliability or trading eligibility.
 
 ## M1 — working raw recorder and replay (target 2026-11-21)
 
