@@ -553,3 +553,10 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Restrict command map keys to fixed schema-defined ASCII names only.
 - [x] Keep Unicode user text in values, with strict UTF-8 and no implicit normalization.
 - [ ] Add negative vectors for non-ASCII keys, Unicode normalization lookalikes, duplicate keys and unknown field names in both language implementations.
+
+## Exact-head CI after NX-RESEARCH-011
+
+- [x] Branch HEAD `1bb2192e6746e0f86659f006ef204990adc81188` passed [workflow #43615753905](https://github.com/PandaGarry/NEXUS/actions/runs/43615753905).
+- [x] Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions).
+- [x] No test failures or Node.js 20 / `punycode` deprecation warnings.
+- [ ] Continue strict CBOR, COSE and dependency qualification separately; this workflow remains Python reference-only.
