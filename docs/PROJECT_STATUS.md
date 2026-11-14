@@ -11,7 +11,8 @@ A status is valid only for the exact commit, test, artifact or dated source link
 
 | Workstream | Status | Current truth / evidence |
 |---|---|---|
-| Main branch protection | BLOCKED | Last repository audit (2026-11-15) found `main` unprotected and no repository rulesets; re-check GitHub settings and configure PR-only main, force-push block and required CI before relying on this control |
+| Main branch protection | BLOCKED | Last repository audit (2026-11-15) found `main` unprotected and no repository rulesets. A docs-link workflow is proposed in #20; configure PR-only main, block force-push/deletion and require available checks after workflow integration. GitHub settings still need owner-side verification |
+| Documentation CI | IN_PROGRESS | [docs-validation.yml](../.github/workflows/docs-validation.yml) in PR #20 checks relative Markdown links on every PR; not yet merged or verified green |
 | Public project landing page | IN_PROGRESS | PR [#20](https://github.com/PandaGarry/NEXUS/pull/20) contains the review hub and README replacement; not merged |
 | Bybit public recorder | IN_PROGRESS | PR [#19](https://github.com/PandaGarry/NEXUS/pull/19), Python research prototype only; no private API, credentials or orders |
 | Recorder unit/integration tests | IN_PROGRESS | Last passing [CI 43644001404](https://github.com/PandaGarry/NEXUS/actions/runs/43644001404) passed Python 3.11/3.12/3.13 at code head `1afaa21953aa369d634dd2c224f2495709bbdfd6`, including mocked WS → REST snapshot → LIVE_VALID → replay. Subsequent parser-hardening code/tests are committed in #19 (`ce773e1`, `54b0a51`) and require fresh CI verification; mocked integration is not exchange-live proof |
