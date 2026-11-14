@@ -361,6 +361,11 @@ Required test vectors before implementation approval:
 15. Unsupported venue capability and ambiguous reduce/close semantics reject.
 16. AI/Strategy caller cannot mint, mutate or consume approval.
 17. Risk timeout, signer outage, partial response or unknown decision enum never becomes APPROVE.
+18. COSE_Sign1 accepts only the untagged embedded-payload four-element profile with protected alg=-19 and bounded kid; tag 18, detached payload, extra headers, non-empty unprotected map and duplicate/colliding labels reject.
+19. Token-supplied kid/alg/issuer/audience cannot authorize or trigger remote key discovery before signature verification; ambiguous local key resolution fails closed.
+20. Execution never receives private Ed25519 key material; wrong COSE key type/curve, key/signature length or algorithm mismatch rejects.
+21. Missing/stale/incomplete Risk valuation evidence manifest, source watermark gap, correction/revocation or unconfigured freshness/drift policy denies dispatch; Egress makes no remote source-service call and never rebinds the signed vector.
+22. A newer market-data tick alone does not invalidate an admissible immutable valuation vector unless the configured policy explicitly requires latest; the signed valuation_input_vector_id/version remains unchanged.
 
 Golden vectors MUST include canonical input, expected canonical bytes, digest algorithm/version and expected digest. Vectors are not considered verified until executed in the selected implementation runtimes.
 
