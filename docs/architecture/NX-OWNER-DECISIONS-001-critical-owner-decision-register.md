@@ -40,7 +40,7 @@ A decision may be deferred to a later gate only if the earlier phase can safely 
 | OD-05 | Manual/external activity | Detect and quarantine external/manual orders and positions; do not attribute them to a strategy; choose later whether manual trading is prohibited or routed through NEXUS | G1/G2 | Unknown external exposure blocks affected risk-increasing scope |
 | OD-06 | Numeric risk policy | Owner must set hard limits for order notional/quantity, gross/net exposure, leverage/margin, concentration, daily loss, drawdown and halt triggers; no numeric defaults are invented | G3 | Live risk-increasing authorization is blocked |
 | OD-07 | Valuation, collateral and FX | Approve mark/index/FX source hierarchy, freshness, haircuts, collateral eligibility and inverse/quanto calculation policy; initially avoid cross-currency/cross-venue collateral if not fully modeled | G1/G3 | Material valuation remains UNKNOWN/PARTIAL; risk approval blocked |
-| OD-08 | Canonical serialization and signing | **G1 TECHNICAL BASELINE SELECTED:** RFC 8949 restricted deterministic CBOR; SHA-256 domain-separated digest; COSE_Sign1 EdDSA/Ed25519. Exact libraries, non-exportable key custody, rotation/revocation and security/jurisdictional review remain gated | G1/G3 | No production RiskApprovalCapability or live signing |
+| OD-08 | Canonical serialization and signing | **G1 TECHNICAL BASELINE SELECTED:** RFC 8949 restricted deterministic CBOR; SHA-256 domain-separated digest; COSE_Sign1 fully specified COSE Ed25519 algorithm (-19, RFC 9864); reject deprecated polymorphic EdDSA (-8). Exact libraries, non-exportable key custody, rotation/revocation and security/jurisdictional review remain gated | G1/G3 | No production RiskApprovalCapability or live signing |
 | OD-09 | Durable storage and transaction boundaries | **G1 TECHNICAL BASELINE SELECTED:** PostgreSQL 18 evaluation target, one primary, service-owned schemas/roles and separate Risk/Command/Ledger local ACID transactions; no distributed transaction or automatic failover before fencing proof | G1 | No production durability or financial-correctness claim until isolation, crash, backup/restore and egress proofs pass |
 | OD-10 | Freshness and recovery policy | **G1 TECHNICAL BASELINE SELECTED:** source-specific EvidenceRequirementSet/FreshnessPolicy, explicit completeness/watermarks and monotonic elapsed-time; no global TTL; unknown/unconfigured mandatory evidence fails closed. Numeric thresholds, retention, clock uncertainty and RTO/RPO remain owner/domain decisions | G1/G2 | Mandatory unconfigured evidence blocks risk-increasing authorization |
 | OD-11 | Accounting policy | Approve chart of accounts, fee/funding/interest/settlement treatment, realized-P&L precedence, timezone/session boundaries, precision and residual-dust policy | G1/G2 | Ledger remains proposed; unknown categories stay suspense/UNKNOWN |
@@ -149,7 +149,7 @@ The owner subsequently instructed the technical lead to perform the deeper proje
 
 - **G1 baseline:** RFC 8949 core deterministic CBOR under the strict NEXUS profile in NX-ADR-008; reject duplicate map keys, invalid UTF-8, tags, indefinite lengths and all floats; use exact strings/typed values for financial data and signed 64-bit integers only for declared control metadata.
 - **Digest:** SHA-256 over a fixed NEXUS command-domain separator and deterministic command bytes.
-- **Capability signature:** COSE_Sign1 with EdDSA / Ed25519; protected algorithm and key ID; fixed NEXUS external-AAD context. Risk signing authority is isolated and asymmetric; Execution receives public verification material only.
+- **Capability signature:** COSE_Sign1 with fully specified COSE Ed25519 algorithm (-19, RFC 9864); protected algorithm and kid; COSE key type OKP / Ed25519 only; reject deprecated polymorphic EdDSA (-8), Ed448 and key/algorithm mismatch. Treat kid only as an integrity-protected lookup hint; resolve by issuer, algorithm, purpose, validity/revocation state and registry generation, requiring exactly one eligible key. Risk signing authority is isolated and asymmetric; Execution receives public verification material only.
 - **Not selected:** exact encoder/decoder crates, key custody provider/HSM/KMS, production key ceremony, rotation windows and jurisdictional acceptance. These require exact-version security review and cross-language vectors before implementation or production.
 
 ### OD-09 — Persistence and transaction ownership
@@ -175,3 +175,8 @@ The owner subsequently instructed the technical lead to perform the deeper proje
 
 These choices close the technical direction for G1 design. They do not close OD-03, OD-06, OD-07, OD-11, OD-13, numeric operating thresholds, production deployment or G3 authorization.
 
+
+
+### OD-08 standards correction — RFC 9864
+
+A current IETF standards check found that the older COSE EdDSA identifier (-8) is polymorphic and has been deprecated by RFC 9864 (October 2025). The selected G1 profile therefore uses the fully specified COSE Ed25519 identifier **-19**. Verification rejects -8, Ed448, wrong key type/curve, algorithm/key mismatch and substitution. The protected kid is not treated as an authority by itself; issuer- and purpose-bound key-registry resolution must yield exactly one eligible key or fail closed. Exact COSE library/provider interoperability remains an open qualification gate.
