@@ -1096,7 +1096,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** ordering and failure semantics specified in NX-IF-005, NX-ADR-008, NX-ARCH-REVIEW-005 and NX-REF-EXEC-002. No halt store, egress runtime or network fence is implemented.
 
-## 18.33 Halt / Egress final-gate adversarial cases — 2026-11-14
+## 18.60 Halt / Egress final-gate adversarial cases — 2026-11-14
 
 - [x] Add explicit cases 36–42 to NX-IF-005 for halt-before-gate, gate-before-halt, paused process after gate commit, unproven external fence, halt-store outage, late venue acceptance and instrumented socket-boundary proof.
 - [x] Require zero socket-write initiation when halt epoch commits before final Egress authorization.
@@ -1107,7 +1107,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** adversarial requirements documented only; no runtime or external fencing proof exists.
 
-## 18.54 Halt epoch / final Egress authorization linearization — 2026-11-14
+## 18.61 Halt epoch / final Egress authorization linearization — 2026-11-14
 
 - [x] Define the final EgressBoundaryAuthorization commit and halt-epoch commit as serialized against the same authoritative halt-state record/generation.
 - [x] Define both outcomes: halt commits first → final gate denies; gate commits first → attempt is in-flight and cannot be retroactively revoked.
@@ -1121,7 +1121,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** linearization semantics are specified across NX-IF-005, NX-REF-EXEC-002 and NX-ARCH-REVIEW-005. No egress runtime, halt store or network fence is implemented; production halt guarantee remains unproven.
 
-## 18.60 Exact-head CI after halt / Egress linearization review — 2026-11-14
+## 18.62 Exact-head CI after halt / Egress linearization review — 2026-11-14
 
 - [x] Verify SHA `73841573e4e02b34a0c0363bbbe21155828d0c08` with [workflow #43617906166](https://github.com/PandaGarry/NEXUS/actions/runs/43617906166).
 - [x] Python 3.11, 3.12 and 3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
