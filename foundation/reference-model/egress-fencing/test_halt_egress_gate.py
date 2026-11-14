@@ -43,6 +43,7 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.attempts["paused"].phase, AttemptPhase.SENDER_FENCED_UNKNOWN)
         self.assertTrue(self.gate.attempts["paused"].reservation_held)
         self.assertEqual(self.gate.reconciliation_required(), ("paused",))
+        self.assertTrue(self.gate.attempts["paused"].reservation_held)
 
     def test_sender_fence_does_not_prove_no_prior_socket_side_effect(self):
         self.gate.authorize_attempt(attempt_id="possibly-sent", observed_epoch=7)
@@ -51,6 +52,7 @@ class HaltEgressGateTests(unittest.TestCase):
         self.gate.acknowledge_halt()
         # No initiation report was received, so the conservative outcome remains unknown.
         self.assertIn("possibly-sent", self.gate.reconciliation_required())
+        self.assertTrue(self.gate.attempts["possibly-sent"].reservation_held)
 
     def test_halt_blocks_new_gate_commits_while_existing_gate_commit_remains_in_flight(self):
         self.gate.authorize_attempt(attempt_id="old", observed_epoch=7)
@@ -131,12 +133,33 @@ class HaltEgressGateTests(unittest.TestCase):
         self.gate.acknowledge_halt()
         self.assertEqual(self.gate.phase, HaltPhase.HALTED)
         self.assertEqual(self.gate.reconciliation_required(), ("paused",))
+        self.assertTrue(self.gate.attempts["paused"].reservation_held)
 
     def test_repeated_halt_request_does_not_advance_epoch_twice(self):
         self.assertEqual(self.gate.request_halt(reason="operator halt"), 8)
         self.assertEqual(self.gate.request_halt(reason="repeated request"), 8)
         self.assertEqual(self.gate.epoch, 8)
         self.assertEqual(self.gate.phase, HaltPhase.HALTING)
+
+
+    def test_duplicate_halt_request_during_store_outage_does_not_downgrade_committed_epoch(self):
+        self.assertEqual(self.gate.request_halt(reason="operator halt"), 8)
+        self.assertEqual(self.gate.phase, HaltPhase.HALTING)
+        self.gate.store_available = False
+        self.assertEqual(self.gate.request_halt(reason="duplicate while store down"), 8)
+        self.assertEqual(self.gate.phase, HaltPhase.HALTING)
+        with self.assertRaises(GateDenied):
+            self.gate.acknowledge_halt()
+        self.gate.store_available = True
+        self.gate.acknowledge_halt()
+        self.assertEqual(self.gate.phase, HaltPhase.HALTED)
+
+    def test_duplicate_halt_request_after_halted_store_outage_preserves_halted_epoch(self):
+        self.gate.request_halt(reason="operator halt")
+        self.gate.acknowledge_halt()
+        self.gate.store_available = False
+        self.assertEqual(self.gate.request_halt(reason="duplicate while store down"), 8)
+        self.assertEqual(self.gate.phase, HaltPhase.HALTED)
 
     def test_halt_epoch_exhaustion_fails_closed(self):
         from halt_egress_gate import MAX_HALT_EPOCH
