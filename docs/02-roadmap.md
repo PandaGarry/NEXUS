@@ -635,3 +635,13 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Pass 13 suites / 239 tests on Python 3.11, 3.12 and 3.13 (717 executions).
 - [x] Confirm no test failures or Node.js 20 / `punycode` deprecation warnings.
 - [ ] Continue Rust, CBOR/COSE, persistence, egress and venue conformance as independent gates.
+
+## PostgreSQL Risk reservation serialization conformance
+
+- [x] Define shared Risk-owned scope-state serialization point for reservations and exposure projection updates.
+- [x] Keep Ledger journal authority separate; Risk consumes Ledger/venue facts through idempotent inbox/projection transactions.
+- [x] Specify deterministic multi-scope ordering, all-or-nothing reservation commit, stable idempotency and bounded full-transaction retries.
+- [x] Specify fail-closed behavior for stale/incomplete evidence, missing scope state and ambiguous commit/primary authority.
+- [ ] Implement a disposable G1 test harness only after G0D/OD-08/OD-09 acceptance; do not add production schema/runtime yet.
+- [ ] Prove concurrent reservation and projection-update races, duplicate delivery, idempotency collisions, serialization/deadlock retry and ambiguous commit on the exact PostgreSQL patch.
+- [ ] Prove service-role boundaries and recovery/backup/PITR plus old-primary fencing before any failover decision.
