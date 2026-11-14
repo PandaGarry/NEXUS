@@ -16,6 +16,7 @@
 ## Research records
 
 - [NX-RESEARCH-001 — Simulation systems landscape](NX-RESEARCH-001-simulation-landscape.md)
+- [NX-RESEARCH-002 — Tradoor market-data adapter audit](NX-RESEARCH-002-market-data-adapter-audit.md)
 
 ## Evidence labels
 - CONFIRMED — непосредственно подтверждено исходником или тестом.
