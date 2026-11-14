@@ -259,3 +259,12 @@ NX-REF-EXEC-002 §4.5 now compares persistence and egress topologies. Candidate 
 ## Open-source component qualification — 2026-11-14
 
 NX-RESEARCH-010 published a candidate shortlist. PostgreSQL is the leading persistence candidate for G1 evaluation only; OpenTelemetry Collector is the preferred observability candidate; OpenBao is a secrets-management candidate pending deployment/security/license review; NATS JetStream is deferred unless measured asynchronous fan-out/replay needs justify it; Cilium is conditional on a Kubernetes decision; Temporal is deferred; NautilusTrader remains test-only and is not trusted execution authority. No external dependency or runtime module was added. G0D dependency governance and OD-09 persistence selection remain open.
+
+
+## Modular product architecture — 2026-11-14
+
+- Published [NX-ARCH-006](architecture/NX-ARCH-006-modular-product-boundaries-and-trust-isolation.md) as PROPOSED / DESIGN ONLY.
+- Proposed a protected domain core with independently governed product modules behind versioned contracts and deny-by-default admission. The core remains sole authority for Risk, Ledger, durable execution state and trusted egress.
+- Identity & Access, Demo and Learning/Wiki are separate bounded domains. Demo/live separation must be enforced by account identity, storage/ledger ownership, service permissions and egress—not by UI flags. Learning has no access to trading secrets or financial write paths.
+- Initial direction: modular monolith / limited separate trust domains, not microservices per feature and not arbitrary in-process plugin loading.
+- No runtime modules, packages, identity provider, database, public registration, third-party extension mechanism or deployment topology selected/installed. No new CI/security evidence is claimed. Cross-review and owner/security decisions remain OPEN; G0D/G1 remain BLOCKED as applicable.
