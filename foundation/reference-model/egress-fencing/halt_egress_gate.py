@@ -52,7 +52,11 @@ class HaltEgressGate:
     attempts: dict[str, Attempt] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        if not isinstance(self.epoch, int) or isinstance(self.epoch, bool) or not 1 <= self.epoch <= MAX_HALT_EPOCH:
+        if (
+            not isinstance(self.epoch, int)
+            or isinstance(self.epoch, bool)
+            or not 1 <= self.epoch <= MAX_HALT_EPOCH
+        ):
             raise ValueError("epoch must be a positive signed 64-bit integer")
         if not isinstance(self.store_available, bool):
             raise ValueError("store_available must be boolean")
@@ -100,6 +104,8 @@ class HaltEgressGate:
             raise GateDenied("authoritative halt store is unavailable")
         if self.phase is not HaltPhase.ACTIVE:
             raise GateDenied("halt is pending, propagating or enforced")
+        if self.epoch >= MAX_HALT_EPOCH:
+            raise GateDenied("halt epoch exhausted; fail closed")
         if observed_epoch != self.epoch:
             raise GateDenied("stale halt epoch")
         if attempt_id in self.attempts:
