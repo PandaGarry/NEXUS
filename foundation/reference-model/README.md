@@ -34,7 +34,7 @@ The model uses arbitrary-precision integer coefficients. This is intentionally d
 - no production performance or memory claims;
 - no production rounding policy for exchange normalization, fees, funding, margin, P&L or accounting; no square roots or transcendental operations;
 - no financial units/currencies/contracts yet;
-- no bounded-overflow simulation;
+- no approved production numeric limits or fixed-width overflow policy; the separate bounded reference context uses explicit synthetic limits only;
 - no claim of production, Rust/WASM or backend conformance.
 
 Never import this package into a production trading service. Production code must independently implement the approved contract and pass shared golden vectors, property tests and integration tests.
@@ -58,3 +58,8 @@ Run `python -m unittest -v test_exact_division.py` from this directory. The dedi
 
 
 Latest full reference workflow: [#43594275808](https://github.com/PandaGarry/NEXUS/actions/runs/43594275808) passed current PR HEAD `a47085efd19826d9fea6edcaf2245dd689a288e8` on Python 3.11–3.13: 129 tests per runtime / 387 matrix executions across eight isolated suites.
+
+
+## Bounded numeric context and canonical wire
+
+Run `python -m unittest -v test_bounded_numeric.py` for mandatory caller-supplied budgets, preflight checks and bounded operations. Run `python -m unittest -v test_numeric_wire.py` for versioned canonical scalar wire encoding. `NumericLimits` has no default profile; zero scale/zero power-of-ten are valid limits, while digit and input budgets must be positive. These modules are reference-only and do not establish production resource safety or a selected production profile.
