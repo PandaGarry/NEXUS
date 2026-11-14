@@ -686,3 +686,17 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Confirm selected Python/Rust CBOR libraries expose raw-token/duplicate detection and deterministic-profile validation; reject a library if it normalizes malformed input before NEXUS can inspect it.
 
 **Disposition:** protocol requirement clarified; no CBOR implementation or dependency selected. Cross-language parser proof remains G1-gated.
+
+
+## 18.25 Full stacked-PR ancestry and current exact-head CI — 2026-11-14
+
+- [x] Verify PR #1 -> #2 -> #3 -> #4 -> #5 -> #6 -> #7 -> #9 -> #10 -> #11 -> #12 -> #13 -> #14 -> #16 by exact base-SHA / parent-head-SHA equality.
+- [x] Verify PR #8 is a parallel branch from the v1-scope base, not an ancestor of PR #16.
+- [x] Confirm all PRs in the direct ancestry are currently open, Draft and unmerged. PR #16 base remains PR #14 head; do not retarget or merge it ahead of its parents.
+- [x] Record current PR #16 diff: 248 commits beyond its base, 32 changed files, 4,399 additions and 72 deletions. This is an integration/reviewability concern, not evidence of incorrect branch ancestry.
+- [x] Verify current exact branch HEAD 7914772358d2ee49c87374373bad5c589d0a2905 with GitHub Actions [#43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349): 13 isolated suites, 239 tests per Python 3.11/3.12/3.13 runtime; 717 successful executions total.
+- [x] Inspect all three logs: no Node.js 20 or punycode deprecation warning remains after full-SHA action pinning.
+- [ ] Prepare a parent-first integration/review plan for the full stack; no merge, retarget, rebase or branch rewrite is performed without the required owner authorization.
+- [ ] Consider splitting independent architecture packages from PR #16 only if the file/commit dependency audit proves the split is safe and reduces reviewer burden.
+
+**Disposition:** PR #16 is correctly stacked but is not independently mergeable. The blocking condition is its open Draft ancestry, not a wrong base branch. Exact-head CI verifies Python reference models only; no Rust, PostgreSQL, COSE implementation, Trusted Egress, venue adapter or live-trading behavior is tested.
