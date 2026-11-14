@@ -22,6 +22,10 @@ nexus-bybit-record --symbol BTCUSDT --output data/bybit-public-raw.jsonl
 nexus-bybit-replay data/bybit-public-raw.jsonl
 ```
 
+## Milestones
+
+See [MILESTONES.md](experiments/bybit-public-recorder/MILESTONES.md): raw recorder/replay target 2026-11-21, live snapshot bridge and first alpha report target 2026-11-28, seven-day endurance report target 2026-12-05.
+
 ## Alpha research lane
 
 The first falsifiable experiment is pre-registered in [`NX-EXP-001`](experiments/bybit-public-recorder/NX-EXP-001-alpha-trade-flow-imbalance.md): short-horizon taker-flow imbalance, fixed parameter grid, chronological walk-forward validation, execution costs and a two-week stop rule. First report target: 2026-11-28; if valid data is unavailable, report the blocker rather than extending silently.
