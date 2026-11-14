@@ -62,7 +62,7 @@ cd foundation/reference-model/execution-gateway
 python -m unittest -v
 ```
 
-GitHub Actions run [#43588330433](https://github.com/PandaGarry/NEXUS/actions/runs/43588330433) completed with **success** on current exact HEAD `31c99f0b4a0591a41d97afa265145567cf1ddbd3`. Both suites passed on Python 3.11, 3.12 and 3.13: 10 exact-decimal tests and 20 gateway tests in each runtime.
+GitHub Actions run [#43588971888](https://github.com/PandaGarry/NEXUS/actions/runs/43588971888) completed with **success** on exact HEAD `d22d417da0d11dab5b9bb79298edd379eab46867`. Both suites passed on Python 3.11, 3.12 and 3.13: 10 exact-decimal tests and 20 gateway tests in each runtime.
 
 This is CI verification of the checked-in reference model only. It is not production, multi-process, database durability, security or exchange-adapter verification.
 
