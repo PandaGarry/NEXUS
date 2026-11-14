@@ -784,3 +784,9 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Exact code/test HEAD fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8 passed [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619194630).
 - Python 3.11/3.12/3.13 each passed 13 suites / 262 tests (786 executions); egress-fencing passed 36 tests, including 23 HaltEgressGate cases.
 - All three job logs were inspected; no test failures or deprecation warnings. This remains sequential Python reference evidence only.
+
+### Grant-consumption red-CI regression resolved — 2026-11-14
+
+- Investigated failures #43618969753 (`913ef9e`) and #43619038468 (`f9f385d`): stale tests did not model GRANT_CONSUMED before socket initiation and incorrectly expected a fenced sender to write later.
+- Updated tests to consume the committed grant before simulated store outage and to deny future socket initiation after sender fencing while retaining OUTCOME_UNKNOWN.
+- Corrected code/test HEAD `fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8` passed [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619194630): 262 tests/runtime on each Python 3.11/3.12/3.13 (786 executions), 36 egress-fencing tests / 23 halt-gate tests.
