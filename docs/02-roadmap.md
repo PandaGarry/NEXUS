@@ -29,9 +29,10 @@
 - [ ] UI/UX benchmark и производительные сценарии.
 
 ## Phase 3 — Quant & Simulation (Blocked)
+- [ ] Утвердить ТЗ-NX-003 Quant & Strategy Engine. (Draft published; owner review and strategy-runtime decisions required.)
 - [ ] Утвердить NX-ADR-003 и NX-ADR-006.
 - [ ] Определить execution simulation levels L1/L2/L3.
-- [ ] Утвердить out-of-sample и walk-forward protocols.
+- [ ] Утвердить out-of-sample, purge/embargo и walk-forward protocols.
 - [ ] Проверить latency, queue position, partial fills, slippage и adverse selection.
 
 ## Phase 4 — Risk & Execution (Blocked)
@@ -51,7 +52,6 @@
 - [ ] Подготовить production observability, backups и deployment runbooks.
 
 Live trading требует отдельного формального допуска, ограниченного rollout и подтверждённой эксплуатационной готовности.
-
 
 ## Правило завершения Foundation Audit (anti-infinite-audit)
 
