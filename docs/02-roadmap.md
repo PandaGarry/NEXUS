@@ -252,3 +252,6 @@ No venue fill policy, fees, funding, P&L, accounting or rounding semantics are i
 - [ ] Implement adapters/schema/runner only after approval.
 
 No production mapping or normalized wire contract is approved by this audit.
+
+
+- [x] Close the reference API type-check gap in `ExactDecimal.is_multiple_of`; malformed step types now produce explicit `TypeError` and have a regression test. No numeric semantics changed.
