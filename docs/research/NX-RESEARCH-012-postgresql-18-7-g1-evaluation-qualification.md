@@ -119,6 +119,14 @@ The preferred G1 mechanism to evaluate is a narrowly scoped database-owned funct
 
 This pattern preserves service ownership of source tables while giving the common guard one narrow, audited write authority. It is not implemented or approved for production.
 
+Preferred G1 implementation shape to evaluate:
+
+- `nexus_control.acquire_scope_guards(scope_ids uuid[])` is a narrowly scoped `SECURITY DEFINER` function owned by a dedicated NOLOGIN, non-superuser control role. It validates the caller's database service identity and authorization for the complete bounded scope set, includes the account/root scope, sorts canonical scope IDs and advances/locks each guard row.
+- The function owner has write access only to the guard table, not Risk/Command source tables. Callers receive EXECUTE only; direct guard-table DML is revoked. Direct DML against gate-critical source tables is revoked from application roles and all mutations are routed through reviewed domain-write procedures that call the guard function and mutate source rows in the same outer transaction.
+- The function uses a fixed trusted `search_path` with `pg_temp` last, schema-qualified objects, no dynamic SQL or caller-supplied object names, no untrusted procedural languages, PUBLIC EXECUTE revoked and explicit grants only.
+- HEGC and each domain-write procedure call the guard function as the first SQL statement after BEGIN, before any protected read or write, in the same outer SERIALIZABLE transaction. Guard locks remain held through the source mutation or grant commit. If a guard wait means the transaction snapshot predates the newly committed guard version, PostgreSQL must raise 40001 and the entire transaction restarts from BEGIN with guard acquisition first. A transaction that already read protected state before acquiring the guard is invalid and must abort/restart.
+- This is a preferred evaluation pattern, not an implementation approval. Prove caller/scope authorization, NOLOGIN role ownership, privilege closure, fixed search_path, PUBLIC revocation, bypass denial, stale-snapshot retry, deadlock order, bounded scope count and crash/ambiguous-commit behavior in PostgreSQL 18.7.
+
 This guard is a design candidate, not a selected/implemented mechanism. Before G1, run PostgreSQL 18.7 multi-connection tests proving both source-writer-first and HEGC-first order, pause/crash points, stale-snapshot retry, guard bypass denial, deterministic multi-scope locking and ambiguous commit recovery. Until the commit-order property is demonstrated, HEGC MUST deny a final grant whenever it cannot prove the bound validation state is current under the common guard.
 
 **Why this matters:** the existing contract says updates committed before the final gate are visible and updates committed after it are causally later. That is a real-time ordering requirement; ordinary SSI serializability alone must not be represented as proof.
