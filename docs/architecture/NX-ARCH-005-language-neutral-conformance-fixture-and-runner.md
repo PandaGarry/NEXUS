@@ -59,7 +59,6 @@ Illustrative shape:
     "version": "1.0.0",
     "domain": "EXACT_NUMERIC",
     "authority": "TEST_ONLY_NON_AUTHORIZING",
-    "numeric_profile_id": "REFERENCE_UNBOUNDED_OR_EXPLICIT_TEST_PROFILE"
   },
   "provenance": {
     "class": "SYNTHETIC_HAND_DERIVED",
@@ -103,7 +102,7 @@ This is an illustrative contract, not a published JSON Schema or accepted wire s
 - `suite.version`: semantic version of the suite's expected behavior.
 - `suite.domain`: bounded domain namespace such as `EXACT_NUMERIC`, `DIMENSIONAL_MATH`, `INSTRUMENT_SPEC` or `EXECUTION_STATE`.
 - `suite.authority`: must be explicitly non-authorizing for synthetic/reference suites.
-- `suite.numeric_profile_id`: required whenever a case is bounded by numeric/resource limits; it names a test profile, never an implicit production default.
+- `suite.numeric_profile_id`: required whenever a case is bounded by numeric/resource limits; it names a reviewed test profile, never an implicit production default. Omit it for explicitly unbounded mathematical-oracle suites; do not use a magic `UNBOUNDED` profile identifier.
 - `provenance.class`: e.g. `SYNTHETIC_HAND_DERIVED`, `REFERENCE_MODEL_DERIVED` or a separately reviewed source class.
 - `provenance.source_refs`: stable repository document or evidence identifiers.
 - `cases`: non-empty ordered array of uniquely identified cases.
@@ -125,12 +124,43 @@ Expected values may be strings, booleans, integers for non-financial enumerated 
 The initial proposed class families are:
 
 - `SCHEMA.INVALID`, `SCHEMA.UNSUPPORTED_VERSION`, `SCHEMA.MISSING_REQUIRED_FIELD`;
-- `NUMERIC.INVALID_SYNTAX`, `NUMERIC.NON_CANONICAL`, `NUMERIC.DIVISION_BY_ZERO`, `NUMERIC.OVERFLOW`, `NUMERIC.RESOURCE_LIMIT`;
+- `NUMERIC.INVALID_SYNTAX`, `NUMERIC.INVALID_WIRE`, `NUMERIC.NON_CANONICAL`, `NUMERIC.DIVISION_BY_ZERO`, `NUMERIC.INEXACT_RESULT`, `NUMERIC.INVALID_STEP`, `NUMERIC.OVERFLOW`, `NUMERIC.RESOURCE_LIMIT`;
 - `DOMAIN.UNIT_MISMATCH`, `DOMAIN.IDENTITY_MISMATCH`, `DOMAIN.UNSUPPORTED_OPERATION`;
 - `INSTRUMENT.UNKNOWN_SPEC`, `INSTRUMENT.INVALID_RULE`, `INSTRUMENT.STALE_VERSION`;
 - `STATE.INVALID_TRANSITION`, `STATE.STALE_EPOCH`, `STATE.DUPLICATE_IDENTITY`.
 
 This is a starting catalogue. Each operation suite must declare the subset it can emit. A new implementation-specific failure must be mapped to a stable class or treated as a harness failure; it must not invent a success result or silently coerce the input.
+
+### 3.4 Initial operation registry and migration contract
+
+The following stable operation identifiers are proposed for the first normalized suites. They name mathematical/domain behavior, not Python function names. Each implementation maps these identifiers to its own code without sharing implementation internals.
+
+| Suite domain | Operation ID | Canonical input | VALUE result | Rejection classes initially in scope |
+|---|---|---|---|---|
+| EXACT_NUMERIC | `decimal.parse` | `{"text":"..."}` | Canonical decimal string | `NUMERIC.INVALID_SYNTAX` |
+| EXACT_NUMERIC | `decimal.add`, `decimal.subtract`, `decimal.multiply` | `{"a":"...","b":"..."}` | Canonical decimal string | No expected rejection in current golden set |
+| EXACT_NUMERIC | `decimal.compare` | `{"a":"...","b":"..."}` | Integer exactly `-1`, `0` or `1` | No expected rejection in current golden set |
+| EXACT_NUMERIC | `decimal.quantize_exact` | `{"value":"...","scale":N}` | Canonical decimal string | `NUMERIC.INEXACT_RESULT`, invalid scale maps to schema/domain validation pending explicit contract |
+| EXACT_NUMERIC | `decimal.multiple_of` | `{"value":"...","step":"..."}` | Boolean | `NUMERIC.INVALID_STEP` |
+| EXACT_NUMERIC | `rational.divide_exact` | `{"numerator":"...","denominator":"..."}` or decimal operands under a separately named overload | Reduced rational object `{"numerator":"...","denominator":"..."}` | `NUMERIC.DIVISION_BY_ZERO` |
+| EXACT_NUMERIC | `rational.to_decimal_exact` | Reduced rational object | Canonical decimal string | `NUMERIC.INEXACT_RESULT` |
+| EXACT_NUMERIC | `rational.quantize` | Reduced rational object plus explicit non-negative scale and explicit rounding enum | Canonical decimal string | `NUMERIC.INEXACT_RESULT` for UNNECESSARY mode |
+| EXACT_NUMERIC | `numeric_wire.parse_decimal` | `{"wire":"...","max_chars":N}` | Typed decimal object `{"coefficient":"...","scale":N}` | `NUMERIC.INVALID_WIRE`, `NUMERIC.RESOURCE_LIMIT` |
+| EXACT_NUMERIC | `numeric_wire.parse_rational` | `{"wire":"...","max_chars":N}` | Typed rational object `{"numerator":"...","denominator":"..."}` | `NUMERIC.INVALID_WIRE`, `NUMERIC.RESOURCE_LIMIT` |
+| DIMENSIONAL_MATH | `financial.spot_notional`, `financial.linear_contract_notional`, `financial.inverse_contract_base_exposure`, `financial.partial_fill_aggregation_math` | Existing typed `inputs` object, migrated without dropping units/identity | Existing typed `expected` object, migrated without dropping units/identity | `DOMAIN.UNIT_MISMATCH`, `DOMAIN.IDENTITY_MISMATCH` only where explicit negative cases are added |
+| INSTRUMENT_SPEC | `instrument_spec.validate_limit_order` | Full instrument snapshot plus price/quantity | Explicit `{"outcome":"VALUE","value":{"valid":true}}` | Deferred until a dedicated fixture specifies invalid cases and exact stable rejection mapping |
+
+For `rational.divide_exact`, the current legacy vector takes decimal operands `a` and `b`; the normalized suite must preserve that public semantic input shape as `{"a":"...","b":"..."}` and return the reduced rational. The numerator/denominator form is for operations whose input is already a rational. These forms MUST NOT be conflated.
+
+The first migration should not add synthetic rejection cases just to populate a taxonomy. A rejection class enters a suite only when a legacy case or a separately reviewed negative vector proves that behavior.
+
+#### Current reference-model exception gap
+
+The existing Python oracle has useful typed exceptions for exact decimal behavior (`InvalidDecimal`, `InexactQuantization`, `InvalidStep`, `DivisionByZero`, `InexactDivision`). These can be mapped at the adapter boundary to the proposed stable classes above without changing their human-readable messages.
+
+The numeric wire parser is less expressive: all malformed, unsupported-version, non-canonical and over-budget values currently raise one `NumericWireError`. Existing tests assert that broad exception, not a stable subtype/code. Until the reference contract is deliberately refined, all such parser failures can only map to `NUMERIC.INVALID_WIRE`; the runner MUST NOT infer `RESOURCE_LIMIT` versus `NON_CANONICAL` by parsing message text. A future refinement should add a stable machine-readable error code or typed subclasses and tests, while preserving the public fail-closed behavior.
+
+The instrument-spec fixture is a snapshot, not an executable test case. Although the current reference model has exception subclasses, the fixture contains no expected behavior. Do not mark it migrated until dedicated cases and a reviewed mapping from exception classes to stable rejection classes exist.
 
 ## 4. Canonical comparison rules
 
@@ -141,7 +171,7 @@ The runner comparison is semantic but deliberately strict:
 3. JSON integer, string, boolean and null types remain distinct. In particular, booleans are not integers.
 4. Financial decimals and rationals compare as canonical strings/typed objects, not host-language floating-point values.
 5. Missing fields are not equivalent to null, zero, empty string or empty array.
-6. Unknown fields are rejected unless the envelope version explicitly permits extension fields.
+6. Unknown fields are rejected for contract version 1; the machine-readable schema should use closed objects (`additionalProperties: false`) at every envelope level. Extension fields require an explicit contract-version change, not ad hoc tolerance.
 7. A rejection matches only when the normalized `error_class` matches. Human-readable messages are diagnostic only and are not conformance outputs.
 8. The runner must not normalize away unit, currency, instrument, spec-version, sign, denominator or scale information.
 
