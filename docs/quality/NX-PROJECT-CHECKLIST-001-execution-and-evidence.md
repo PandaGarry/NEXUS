@@ -1106,3 +1106,17 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Verify post-ack venue acceptance of an earlier initiated request is reconciled without blind resend.
 
 **Disposition:** adversarial requirements documented only; no runtime or external fencing proof exists.
+
+## 18.54 Halt epoch / final Egress authorization linearization — 2026-11-14
+
+- [x] Define the final EgressBoundaryAuthorization commit and halt-epoch commit as serialized against the same authoritative halt-state record/generation.
+- [x] Define both outcomes: halt commits first → final gate denies; gate commits first → attempt is in-flight and cannot be retroactively revoked.
+- [x] Require Egress to track every gate-committed attempt until socket-write initiation is observed or the old sender is positively fenced.
+- [x] Prohibit halt-boundary acknowledgement while a paused pre-halt authorized attempt could still resume and initiate a write.
+- [x] Distinguish halt commit from fully enforced HALTED acknowledgement; previously initiated bytes may still be accepted/processed by the venue and must be reconciled.
+- [x] Define fail-closed behavior when the authoritative halt store is unavailable or external fence evidence is uncertain.
+- [x] Add crash-point rows and IF-005 conformance cases for both lock orders, paused process, lost ack, unknown socket outcome, unavailable control store and post-ack venue acceptance.
+- [ ] Prove both lock orders and paused-process behavior at the actual Egress socket/network boundary; database-only or mock-adapter tests are insufficient.
+- [ ] Prove external process/host/network fencing and that no stale/queued attempt can initiate a socket write after boundary acknowledgement.
+
+**Disposition:** linearization semantics are specified across NX-IF-005, NX-REF-EXEC-002 and NX-ARCH-REVIEW-005. No egress runtime, halt store or network fence is implemented; production halt guarantee remains unproven.
