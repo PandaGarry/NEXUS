@@ -1367,7 +1367,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 **Disposition:** idempotent grant issuance and changed-binding rejection pass in the sequential reference model. Production canonicalization, database idempotency, HEGC and external fencing remain open.
 
 
-## 18.79 HEGC idempotent grant issuance and exact code/test-head CI — 2026-11-14
+## 18.81 HEGC idempotent grant issuance and exact code/test-head CI — 2026-11-14
 
 - [x] Bind each attempt ID to an immutable authorization digest in the HaltEgressGate reference oracle.
 - [x] Verify exact retry returns the original attempt record, including after halt epoch advances; no second grant is created.
@@ -1380,7 +1380,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** exact Python reference CI passed. This does not prove durable grant idempotency or production HEGC behavior.
 
-## 18.80 HEGC guard entrypoint, caller identity and scope-completeness qualification — 2026-11-14
+## 18.82 HEGC guard entrypoint, caller identity and scope-completeness qualification — 2026-11-14
 
 - [x] Distinguish internal guard helper from the public-to-service HEGC transaction entrypoint; helper alone cannot enforce first-operation acquisition.
 - [x] Require HEGC EXECUTE-only entrypoint to acquire the common guard first, perform all protected reads and persist the grant in one outer transaction.
