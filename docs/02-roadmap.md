@@ -470,7 +470,7 @@ This hardening is confined to the Python reference oracle; it does not define pr
 
 ## G1 technical baseline qualification
 
-- [x] Select deterministic command encoding (RFC 8949 restricted deterministic CBOR), SHA-256 domain-separated digest and COSE_Sign1 EdDSA/Ed25519 capability-signing baseline.
+- [x] Select deterministic command encoding (RFC 8949 restricted deterministic CBOR), SHA-256 domain-separated digest and COSE_Sign1 fully specified COSE Ed25519 algorithm (-19, RFC 9864) capability-signing baseline.
 - [x] Select PostgreSQL 18 as the G1 persistence evaluation target with separate local Risk/Command/Ledger transactions and no automatic failover.
 - [x] Select source-specific freshness/recovery policy and fail-closed unknown handling; no global TTL.
 - [x] Select single-owner halt/resume and conservative emergency-operation defaults; no automatic cancel-all/flatten or offline emergency orders.
@@ -489,3 +489,11 @@ Selection establishes a G1 design direction only. It does not authorize dependen
 - [x] Treat protected `kid` as a lookup hint only; require issuer- and purpose-bound registry resolution with ambiguity rejection.
 - [ ] Add deterministic Python/Rust COSE vectors and negative tests for algorithm, curve, issuer, audience, key status and ambiguous key ID.
 - [ ] Qualify exact COSE libraries, provider/HSM support and key lifecycle before implementing signing or verification.
+
+
+## COSE Ed25519 interoperability gate
+
+- [x] Replace deprecated polymorphic COSE EdDSA (-8) with fully specified COSE Ed25519 (-19) per RFC 9864.
+- [x] Require OKP / Ed25519 key type/curve and reject algorithm/key mismatch, Ed448 and substitution.
+- [x] Treat kid as a non-authoritative lookup hint; bind key resolution to issuer, algorithm, purpose, status and registry generation.
+- [ ] Qualify library/provider support and cross-language COSE_Sign1 vectors, including rejection cases, before signer/verifier implementation.
