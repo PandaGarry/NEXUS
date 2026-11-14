@@ -379,3 +379,5 @@ The exact decimal oracle is arbitrary precision; `BoundedNumericContext` wraps i
 - [ ] Implement normalized adapters only after the operation registry and rejection taxonomy are approved.
 
 **Disposition:** audit only; proposed mappings are not accepted wire behavior. No schema, validator, runner or production adapter is authorized.
+
+- [x] Harden `ExactDecimal.is_multiple_of` to reject non-`ExactDecimal` step arguments with explicit `TypeError`, not incidental attribute access failure; add regression coverage.
