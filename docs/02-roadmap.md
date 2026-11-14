@@ -21,6 +21,8 @@
 - [ ] Утвердить NX-ADR-005 Instrument Specification & Exact Arithmetic.
 - [ ] Утвердить NX-ARCH-001 целевую архитектуру и deployment topology. (Draft published; owner review required.)
 - [ ] Закрыть NX-ARCH-REVIEW-001 WP-A..WP-E: canonical command/approval, exposure/reservations, Execution↔Ledger handoff, freshness/recovery, emergency operations.
+  - [x] WP-A design draft: NX-IF-001 published and readback verified.
+  - [ ] WP-A acceptance: owner/security decisions, canonicalization/digest selection, cross-language golden vectors and conformance tests.
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
 - [ ] Выполнить end-to-end contract review и зафиксировать owner decisions до выбора реализации.
 
