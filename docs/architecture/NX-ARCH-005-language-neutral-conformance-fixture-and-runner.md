@@ -58,7 +58,7 @@ Illustrative shape:
     "id": "nexus.numeric.scalar",
     "version": "1.0.0",
     "domain": "EXACT_NUMERIC",
-    "authority": "TEST_ONLY_NON_AUTHORIZING",
+    "authority": "TEST_ONLY_NON_AUTHORIZING"
   },
   "provenance": {
     "class": "SYNTHETIC_HAND_DERIVED",
@@ -161,6 +161,17 @@ The exact-decimal oracle exposes typed exceptions (`InvalidDecimal`, `InexactQua
 The normalized adapter MUST read the stable machine-readable class; it MUST NOT parse exception messages. The mapping is covered by a dedicated test in `test_numeric_wire.py`. This is reference-model evidence only and does not establish a production wire parser.
 
 The instrument-spec fixture remains a snapshot, not an executable test case. Although the current reference model has exception subclasses, the fixture contains no expected behavior. Do not mark it migrated until dedicated cases and a reviewed mapping from exception classes to stable rejection classes exist.
+
+#### Cross-review: operation registry versus executable reference surface
+
+The initial registry is a proposed normalization target, not a claim that every listed operation currently has an executable adapter:
+
+- `decimal.*` and `rational.*` operations map to methods on `ExactDecimal` / `ExactRational` in `nexus_decimal.py`. `rational.divide_exact` specifically accepts two decimal operands and returns a reduced rational.
+- `numeric_wire.parse_decimal` and `numeric_wire.parse_rational` map to `parse_decimal(encoded, max_chars=...)` and `parse_rational(encoded, max_chars=...)`. The normalized `wire` field is adapter input; the reference function's parameter is named `encoded`. The adapter must pass the profile-bounded `max_chars` explicitly.
+- `financial.*` entries are currently fixture-level operation labels only. The audited reference surface has dimensional primitives such as `Price.notional_for(AssetAmount)`, but no callable reference operations were found for the linear-contract notional, inverse-contract exposure or partial-fill aggregation labels. They MUST remain non-executable migration targets until independently specified adapters and reference implementations/tests exist. The fixture's hand-derived expected values are not a substitute for executable oracle coverage.
+- `instrument_spec.validate_limit_order` likewise remains deferred; the current instrument snapshot does not itself establish an executable operation contract.
+
+The exception mapping is also intentionally incomplete outside numeric-wire parsing. `InvalidDecimal` is a candidate for `NUMERIC.INVALID_SYNTAX`; `InexactQuantization` and `InexactDivision` are candidates for `NUMERIC.INEXACT_RESULT`; `DivisionByZero` and `InvalidStep` map directly to their named numeric classes. `NumericLimitExceeded` from `bounded_numeric.py` must be mapped to `NUMERIC.RESOURCE_LIMIT` by a reviewed adapter. Domain exceptions such as `DimensionMismatch` require operation/context-aware mapping; do not infer `UNIT_MISMATCH` versus `IDENTITY_MISMATCH` from exception text. No machine-readable mapping should be declared until each operation's negative cases and adapter behavior are reviewed.
 
 ## 4. Canonical comparison rules
 
