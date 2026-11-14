@@ -710,3 +710,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Defined least-privilege HEGC reads and control-schema-only writes.
 - Made grant issuance idempotent on stable attempt ID; exact retries return the same grant, changed bindings conflict, and ambiguous responses are resolved by the same ID.
 - No HEGC runtime, schema, role or database instance implemented.
+
+### HEGC / Risk approval independent verification boundary hardened — 2026-11-14
+
+- NX-SEC-001 classifies HEGC as a critical control-plane trust domain with no venue credentials/socket or Risk signing key.
+- Trusted Egress must independently verify the RiskApprovalCapability signature and exact command/reservation/evidence/audience/expiry/single-use bindings; the HEGC grant cannot replace Risk approval.
+- HEGC grant issuance is idempotent by attempt ID; changed bindings conflict and ambiguous responses resolve through the same ID.
+- No HEGC runtime or production security proof exists.
