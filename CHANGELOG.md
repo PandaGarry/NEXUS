@@ -828,3 +828,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Added NX-ARCH-REVIEW-008 to cross-review the EXECUTE-only HEGC runtime, SECURITY DEFINER owners, session_user identity, per-generation Egress principal, common guard and one-use grant lifecycle.
 - Added PostgreSQL 18 adversarial qualification requirements for search_path/temp-object spoofing, PUBLIC EXECUTE, function overload, role membership, RLS, direct-DML bypass, identity collapse and process-fence semantics.
 - Design only; no schema, role, function, database connection or runtime added.
+
+### Logical venue-request send boundary and retry prohibition — 2026-11-14
+
+- Clarified that one consumed grant authorizes one logical venue-request transmission, potentially spanning multiple OS/TLS writes; SOCKET_INITIATED is the first transport write, not delivery or venue acceptance.
+- Disabled automatic retries, redirects, request replay, proxy/service-mesh retries and WebSocket reconnect replay for order mutations by default; venue-specific exceptions require proven endpoint idempotency and explicit approval.
+- Added a regression preventing a second logical request initiation from the same consumed grant.
+- Code/test HEAD `fbccb65e3c75cbaf7081f6d1f6e02095fd53d8ee` passed 264 tests/runtime (792 executions); exact documentation-synchronized branch HEAD `3a8099750dfb562af63901163a123b8849a8d425` passed workflow #43620613920.
