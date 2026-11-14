@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+### Added — Exact rational inverse base exposure (test-only; CI pending)
+- Added `RationalAssetAmount` and a conventional inverse-contract formula: quote notional divided by quote-per-base price.
+- Preserves repeating results as reduced rationals (e.g. 1/300 BTC); finite decimal conversion is conditional and quantization requires an explicit mode.
+- Requires base-asset settlement in this reference model. Venue-specific product qualification remains open.
+
+
 ### Added — Exact rational division and explicit quantization (test-only; CI verified)
 - `ExactDecimal.divide_exact` returns a reduced `ExactRational`; division by zero fails closed and no rounding is implicit.
 - Added exact terminating-decimal conversion and explicit quantization modes: UNNECESSARY, DOWN, UP, FLOOR, CEILING, HALF_UP and HALF_EVEN.
