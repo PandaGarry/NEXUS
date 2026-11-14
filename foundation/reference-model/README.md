@@ -89,3 +89,6 @@ A non-empty signed fill set whose aggregate quantity is zero raises the typed `D
 
 The decimal wire parser now accepts an optional max_scale budget; if omitted, it uses the explicit max_chars input budget as a conservative scale ceiling. Python integer-string conversion limit failures are normalized to the stable NUMERIC.RESOURCE_LIMIT class for decimal coefficients/scales and rational numerators/denominators. The numeric wire suite now contains 14 tests. This is a reference-parser guard, not a production numeric profile or a substitute for the future NX-ARCH-005 fixture runner's explicit resource profiles.
 
+## Numeric wire integer-digit budget — 2026-11-14
+
+The decimal/rational wire parser applies a fixed **512 decimal-digit maximum** to every encoded integer coefficient, scale, numerator and denominator, independently of the caller's max_chars input-size budget. This bound is explicit and identical across supported Python runtimes; values beyond it fail with NUMERIC.RESOURCE_LIMIT before integer conversion. The bound is a parser resource limit, not a financial magnitude, precision, Risk or production numeric policy. The test suite covers the 512-digit accepted boundary and 513-digit rejection for both decimal and rational encodings.
