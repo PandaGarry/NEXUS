@@ -84,7 +84,7 @@
 ## Command gateway reference slice (2026-11-14)
 
 - NX-REF-EXEC-001 and `foundation/reference-model/execution-gateway/` add a test-only Python/SQLite model for CREATE command authorization, payload-bound approval, active reservation consumption, durable local outbox persistence, dispatch marker, and conservative ambiguous-outcome recovery.
-- The suite contains 17 deterministic tests. GitHub Actions run [#43588259035](https://github.com/PandaGarry/NEXUS/actions/runs/43588259035) completed successfully on the exact HEAD `fdfd54f093fbe0b3613738e02c823815c6b243d1` for Python 3.11, 3.12 and 3.13. Both reference suites passed in all three matrix jobs: 10 exact-decimal tests and 17 gateway tests per runtime.
+- The suite contains 17 deterministic tests. GitHub Actions run [#43588330433](https://github.com/PandaGarry/NEXUS/actions/runs/43588330433) completed successfully on the current exact HEAD `31c99f0b4a0591a41d97afa265145567cf1ddbd3` for Python 3.11, 3.12 and 3.13. Both reference suites passed in all three matrix jobs: 10 exact-decimal tests and 17 gateway tests per runtime.
 - Scope is intentionally narrow: fake adapter only; no production signer, production database, multi-process fencing, complete Risk calculation, ledger posting, venue reconciliation, or real exchange integration.
 - A fresh local container clone attempt failed because the environment could not resolve github.com; CI supplies the checked-in-source verification for this exact HEAD.
 - Prototype Readiness remains BLOCKED. The reference model grants no live permission and does not change any owner risk limits.
