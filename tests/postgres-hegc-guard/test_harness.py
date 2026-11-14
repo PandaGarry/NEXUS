@@ -120,7 +120,8 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         exposures = ", ".join(f"({lit(account)}::uuid, {lit(scope)}::uuid, 100)" for scope in scopes)
         principals = (
             f"({lit('nexus_hegc')}::name, 'hegc', {lit(account)}::uuid),"
-            f"({lit('nexus_writer')}::name, 'writer', {lit(account)}::uuid)"
+            f"({lit('nexus_writer')}::name, 'writer', {lit(account)}::uuid),"
+            f"({lit('nexus_membership_admin')}::name, 'membership_admin', {lit(account)}::uuid)"
         )
         result = run_sql(
             f"INSERT INTO nexus_control.scope_membership VALUES {rows};"
@@ -164,6 +165,20 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         )
         self.assertEqual(checks.returncode, 0, checks.stderr)
         self.assertEqual(checks.stdout.strip(), "f|f|f|f|f|f|f|f")
+        rls = run_sql(
+            "SELECT relrowsecurity, relforcerowsecurity FROM pg_class WHERE oid='nexus_source.exposure'::regclass;"
+        )
+        self.assertEqual(rls.stdout.strip(), "t|t")
+        admin_direct = run_sql(
+            "SELECT * FROM nexus_control.scope_membership;",
+            user="nexus_membership_admin", password="membership-test-only",
+        )
+        self.assertNotEqual(admin_direct.returncode, 0)
+        admin_helper = run_sql(
+            "SELECT nexus_control.acquire_scope_guards(NULL, NULL);",
+            user="nexus_membership_admin", password="membership-test-only",
+        )
+        self.assertNotEqual(admin_helper.returncode, 0)
         denied = run_sql("SELECT * FROM nexus_source.exposure;", user="nexus_hegc", password="hegc-test-only")
         self.assertNotEqual(denied.returncode, 0)
         role_denied = run_sql("SET ROLE nexus_hegc_owner;", user="nexus_hegc", password="hegc-test-only")
@@ -217,6 +232,72 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         )
         self.assertNotEqual(noncanonical.returncode, 0)
         self.assertIn("22023", noncanonical.stderr)
+
+    def test_scope_membership_change_serializes_with_gate(self) -> None:
+        account, scopes = self.seed()
+        added_scope = str(uuid.uuid4())
+        # Prepare source data while the scope is inactive; guarded membership
+        # mutation is the only operation that makes it part of the active set.
+        prepared = run_sql(
+            f"INSERT INTO nexus_source.exposure VALUES ({lit(account)}::uuid,{lit(added_scope)}::uuid,50);"
+        )
+        self.assertEqual(prepared.returncode, 0, prepared.stderr)
+
+        membership_change = start_sql(
+            "BEGIN ISOLATION LEVEL SERIALIZABLE;"
+            f"SELECT nexus_control.set_scope_active({lit(account)}::uuid,{uuid_array(scopes)},"
+            f"{lit(added_scope)}::uuid,true);"
+            "SELECT pg_sleep(3); COMMIT;",
+            "nexus_membership_admin", "membership-test-only", "membership-add-holder",
+        )
+        wait_for_activity("membership-add-holder", waiting_on_lock=False)
+        attempt = str(uuid.uuid4())
+        stale_gate = start_sql(
+            self.gate_sql(account, scopes, attempt, "membership-race"),
+            "nexus_hegc", "hegc-test-only", "membership-stale-gate",
+        )
+        try:
+            wait_for_activity("membership-stale-gate", waiting_on_lock=True)
+            holder_code, _, holder_err = finish(membership_change)
+            self.assertEqual(holder_code, 0, holder_err)
+            stale_code, _, stale_err = finish(stale_gate)
+        finally:
+            if membership_change.poll() is None:
+                membership_change.terminate()
+                finish(membership_change)
+            if stale_gate.poll() is None:
+                stale_gate.terminate()
+                finish(stale_gate)
+        self.assertNotEqual(stale_code, 0, stale_err)
+        self.assertIn("40001", stale_err)
+
+        expanded_scopes = [scopes[0], *sorted([*scopes[1:], added_scope])]
+        retry = run_sql(
+            self.gate_sql(account, expanded_scopes, attempt, "membership-race"),
+            user="nexus_hegc", password="hegc-test-only",
+        )
+        self.assertEqual(retry.returncode, 0, retry.stderr)
+        snapshot = run_sql(
+            f"SELECT snapshot_total FROM nexus_hegc.egress_grant WHERE attempt_id={lit(attempt)}::uuid;"
+        )
+        self.assertEqual(snapshot.stdout.strip(), "350")
+
+        # Deactivation is also guarded; the formerly complete set is now stale.
+        deactivate = run_sql(
+            "BEGIN ISOLATION LEVEL SERIALIZABLE;"
+            f"SELECT nexus_control.set_scope_active({lit(account)}::uuid,{uuid_array(expanded_scopes)},"
+            f"{lit(added_scope)}::uuid,false); COMMIT;",
+            user="nexus_membership_admin", password="membership-test-only",
+        )
+        self.assertEqual(deactivate.returncode, 0, deactivate.stderr)
+        stale_set = run_sql(
+            "BEGIN ISOLATION LEVEL SERIALIZABLE;"
+            f"SELECT nexus_hegc.issue_egress_grant({lit(account)}::uuid,{uuid_array(expanded_scopes)},"
+            f"{lit(str(uuid.uuid4()))}::uuid,'stale-membership'); COMMIT;",
+            user="nexus_hegc", password="hegc-test-only",
+        )
+        self.assertNotEqual(stale_set.returncode, 0)
+        self.assertIn("22023", stale_set.stderr)
 
     def test_exact_retry_returns_same_grant_and_changed_binding_conflicts(self) -> None:
         account, scopes = self.seed()
