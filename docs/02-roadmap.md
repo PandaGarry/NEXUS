@@ -497,3 +497,11 @@ Selection establishes a G1 design direction only. It does not authorize dependen
 - [x] Require OKP / Ed25519 key type/curve and reject algorithm/key mismatch, Ed448 and substitution.
 - [x] Treat kid as a non-authoritative lookup hint; bind key resolution to issuer, algorithm, purpose, status and registry generation.
 - [ ] Qualify library/provider support and cross-language COSE_Sign1 vectors, including rejection cases, before signer/verifier implementation.
+
+## Canonical CBOR parser qualification
+
+- [x] Specify RFC 8949 core deterministic map ordering and reject legacy length-first ordering.
+- [x] Require raw-byte canonicality validation before CBOR object materialization.
+- [x] Restrict command map keys to schema-defined text names; reject duplicate/unknown keys and trailing bytes.
+- [ ] Build adversarial byte vectors for non-shortest encodings, indefinite lengths, unsorted maps, duplicate keys, invalid UTF-8 and resource exhaustion.
+- [ ] Qualify Python and Rust decoders for raw-input visibility and identical rejection behavior before selecting dependencies.
