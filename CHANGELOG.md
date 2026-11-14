@@ -181,3 +181,10 @@
 - Expanded NX-ARCH-005 with an initial operation-ID/input/result registry and stable error mapping. Added catch-compatible typed numeric-wire error subclasses and tests for stable error classes; existing callers can continue catching `NumericWireError`. Updated the reference-model README and operation registry. No fixture migration or production parser qualification is claimed.
 
 - Added strict fixture-ingestion requirements to NX-ARCH-005: UTF-8 validation, duplicate-key/non-finite/float rejection, bounded control integers, raw-byte SHA-256 and explicit runner resource limits. No validator or runner implementation is claimed.
+
+### Corrected — NX-ARCH-005 contract-to-code cross-review (2026-11-14)
+
+- Fixed the illustrative fixture envelope so it is valid strict JSON.
+- Distinguished implemented decimal/rational and numeric-wire reference APIs from financial fixture operation labels that do not yet have callable reference implementations/adapters.
+- Kept instrument-spec operation migration deferred and clarified that non-numeric rejection classes require reviewed operation-aware mapping, never exception-message parsing.
+- Documentation and audit refinement only; no fixture migration, schema validator, runner, Rust source or production numeric profile added.
