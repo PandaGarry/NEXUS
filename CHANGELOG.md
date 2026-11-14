@@ -315,3 +315,12 @@ The then-current branch head `e15e47f9512bc07a1f6534a4f41b0d27d7d42578` passed G
 - Specified stable feature identifiers, auditable entitlement grants, subscription lifecycle, replay-safe billing event processing, product quotas distinct from trading Risk limits, downgrade/data-retention behavior and compatibility rules.
 - Preserved multi-tenancy, public SaaS, paid plans, payment providers, registration and commercial launch as future gated decisions, not v1 commitments.
 - Updated architecture index, checklist, project status and roadmap. Design only; no payment integration, subscription service, tenant runtime, module or product feature implemented.
+
+
+### Added — Capability-to-interface contract traceability review (2026-11-14)
+
+- Added NX-ARCH-REVIEW-004 after locating and inspecting the actual canonical NX-IF-001..005, NX-SEC-001 and owner decision register paths.
+- Mapped every NX-ARCH-009 candidate capability to existing contract evidence or an explicit missing product-domain contract; no endpoints or permissions were invented.
+- Reaffirmed protected Risk/reservation, command/egress, Ledger, recovery/halt and credential boundaries; optional modules receive no direct authority over them.
+- Added a source-grounded data inventory, cross-cutting contract checklist, open findings and G0D/G1 gates.
+- Updated architecture index, project checklist, status and roadmap. Design traceability only; no executable schema, grant, policy engine, runtime, dependency or production integration added.
