@@ -220,3 +220,10 @@
 - `ExactDecimal.is_multiple_of` now validates that `step` is an `ExactDecimal` before accessing its fields and raises explicit `TypeError` for malformed operand types.
 - Added a regression test; non-positive exact-decimal steps continue to raise the existing typed `InvalidStep`.
 - This is a reference-model API-hardening change, not a new numeric policy or production implementation.
+
+
+### Clarified — pre-egress exposure transition (2026-11-14)
+
+- Reworded the NX-IF-002 lifecycle row to require the durable pre-egress attempt marker before any network side effect.
+- Explicitly separated the marker from proof of transmission and retained conservative exposure through outcome reconciliation.
+- Recorded the cross-contract clarification in NX-ARCH-REVIEW-001, checklist, project status and roadmap. No runtime behavior or production safety guarantee is implied.
