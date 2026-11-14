@@ -604,3 +604,8 @@ PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` passed [workflow #4361821
 
 The new HaltEgressGate is a sequential test-only oracle. It does not prove real PostgreSQL lock ordering, concurrent linearizability, process pause/termination, network route fencing, socket behavior, venue acceptance or production halt safety. No live controls are implemented.
 
+## Halt/Egress Gate Coordinator (HEGC) logical authority — 2026-11-14
+
+NX-ADR-008, NX-IF-001, NX-IF-005 and NX-REF-EXEC-002 now assign the sole write authority for HaltState and EgressBoundaryAuthorization to a bounded HEGC Control Plane component. HEGC is separate from Risk, Command Coordinator and credential-owning Egress; it has no venue credentials/socket or Risk signing key, and writes only its control-owned schema. Egress has no direct write permission to halt/gate records. HEGC validates the exact Risk approval, reservation, evidence, eligibility and dispatcher state before issuing a one-use grant.
+
+Grant issuance is idempotent by stable attempt ID: exact retries return the same persisted grant; changed bindings conflict; ambiguous responses are recovered by reading the same attempt ID. No second grant or replacement attempt is allowed while the first may still initiate a socket write. This is a logical design authority only—no HEGC process, schema, role, database or runtime is implemented.
