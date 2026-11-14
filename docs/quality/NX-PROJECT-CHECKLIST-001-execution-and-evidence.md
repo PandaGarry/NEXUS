@@ -1458,9 +1458,11 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Inspect both workflows' job logs; no test failures, ResourceWarnings or deprecation warnings.
 - [x] Re-run both workflows on documentation-synchronized HEAD 806832a2a15ea25376408c7d27cde409438451ce: [PostgreSQL #43628569042](https://github.com/PandaGarry/NEXUS/actions/runs/43628569042) passed 8/8; [Python #43628569028](https://github.com/PandaGarry/NEXUS/actions/runs/43628569028) passed 264 tests on each supported Python runtime.
 - [x] Investigate prior harness regressions #43621620302 and #43622000189; correct and verify subsequent exact code/test heads.
-- [ ] Qualify out-of-band role grants/revocations, ACL/default-privilege drift and every production authorization-catalog writer against the guard protocol.
-- [ ] Expand RLS adversarial matrix to policy composition, restrictive policies, owner/role edge cases and covert-channel analysis.
-- [ ] Test function overloads, PUBLIC/default privileges, ACL drift and role graph from catalogs.
+- [ ] Qualify out-of-band role grants/revocations, ACL/default-privilege drift and every production authorization-catalog writer against the guard protocol; these are a separate DBA/migration control plane, not covered by the row guard.
+- [x] Add runtime-principal negative tests for CREATE/ALTER ROLE, CREATEROLE escalation, definer-role membership grants, PUBLIC EXECUTE grants, SECURITY INVOKER alteration, default-privilege changes against the definer owner and function creation in trusted schema; exact CI pending.
+- [x] Add a restrictive RLS policy regression and verify it composes with the permissive HEGC policy; exact CI pending.
+- [ ] Expand RLS adversarial matrix to owner/role edge cases, policy changes, subqueries and covert-channel analysis.
+- [ ] Test function overloads, PUBLIC/default privileges, ACL drift and role graph from catalogs; test-only runtime denials do not replace production catalog-manifest drift detection.
 - [ ] Qualify crash/restore, backup/PITR, failover and true uncertain-COMMIT recovery.
 - [ ] Pin and record PostgreSQL image digest/build provenance; obtain independent database security review before production design acceptance.
 
@@ -1476,3 +1478,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Activate external channels only after stable product availability, an accountable support process and repeatable release-note production exist.
 
 **Disposition:** communication process is documented; no public channels are launched and no product availability is implied.
+
+## 18.87 Runtime privilege-escalation and restrictive RLS regression — 2026-11-14
+
+- [x] Add negative tests from HEGC, writer and membership-admin runtime logins for role creation/escalation, definer-role membership grants, PUBLIC EXECUTE, definer-function security-mode changes, default-privilege mutation against the definer owner and trusted-schema function creation.
+- [x] Assert runtime role attributes, privileged-role membership and trusted-schema CREATE privilege from PostgreSQL catalogs.
+- [x] Add a restrictive HEGC SELECT policy and verify that a negative source row is excluded from the SECURITY DEFINER gate snapshot despite the existing permissive policy.
+- [ ] Pass PostgreSQL 18.7 workflow on exact test commit and inspect all job logs.
+- [ ] Update exact run evidence and re-run/synchronize documentation on the tested branch head.
+- [ ] Add production DBA/migration catalog-manifest drift detection and emergency role-change reconciliation; runtime-negative tests do not prove these controls.
+
+**Disposition:** additional test cases are authored; CI result pending. The tests cover only the disposable fixture and do not prove DBA/cluster-level role-change safety, production RLS correctness or production readiness.
+
