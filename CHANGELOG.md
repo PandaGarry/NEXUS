@@ -4,7 +4,7 @@
 
 ## Unreleased
 
-### Added — Exact rational inverse base exposure (test-only; CI pending)
+### Added — Exact rational inverse base exposure (test-only; CI verified)
 - Added `RationalAssetAmount` and a conventional inverse-contract formula: quote notional divided by quote-per-base price.
 - Preserves repeating results as reduced rationals (e.g. 1/300 BTC); finite decimal conversion is conditional and quantization requires an explicit mode.
 - Requires base-asset settlement in this reference model. Venue-specific product qualification remains open.
