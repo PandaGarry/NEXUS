@@ -27,7 +27,7 @@ This is a proposal, not an implementation or a security certification.
 ### 2.1 Logical boundaries
 
 - **Protected Domain Core:** canonical command model, independent Risk authority, durable reservation and command/outbox semantics, Execution state, Ledger posting/reconciliation, recovery barriers, halt state and trusted egress. The core owns all financial and trading invariants.
-- **Contract Gateway / Module Admission:** authenticates workload identity; checks module ID, approved build digest, contract/API version, capability grants, schema, request size/rate and current policy; rejects unknown, stale, revoked or over-privileged modules.
+- **Contract Gateway / Module Admission:** performs admission-level workload authentication and checks module ID, approved build digest, contract/API version, current workload grant, schema, request size/rate and admission/revocation state; rejects unknown, stale, revoked or over-privileged workloads.
 - **Identity & Access module:** registration (only when product scope allows it), authentication, MFA/passkeys, session lifecycle, account recovery and user-facing profile. It does not decide financial risk, grant trading authority, or hold venue credentials.
 - **Demo module/domain:** virtual accounts, synthetic balances, simulated orders/fills, demo positions, reset/replay and educational exercises. It uses a separate ledger namespace/store and simulated execution path.
 - **Learning & Knowledge module:** wiki, lessons, documentation, tutorials, quizzes and learning progress. It is not a source of market/trading commands and has no access to account secrets.
@@ -56,7 +56,7 @@ Every module must have a reviewed manifest containing at least:
 
 Admission is deny-by-default. The platform compares the manifest with a repository-controlled allowlist/policy and verifies the exact artifact digest and signature before enabling it. A valid signature proves provenance/integrity under a trust key; it does not prove the module is safe or correct.
 
-The gateway validates every request independently. A module-supplied user_id, role, account_id, risk_status, balance, approval, or venue_eligibility is untrusted input unless independently bound to authenticated context and authoritative core state. Never accept a module's assertion that a trade is safe or approved.
+The gateway performs admission-level checks on every request, but it is not the ultimate domain authorization authority. The service that owns the requested resource must independently authenticate/bind the caller, authorize the end-user and workload for the exact action/resource, and enforce its own domain invariants and current state. A module-supplied user_id, role, account_id, risk_status, balance, approval, or venue_eligibility is untrusted input unless independently bound to authenticated context and authoritative core state. Never accept a module's assertion that a trade is safe or approved.
 
 ### 3.1 Contract rules
 
