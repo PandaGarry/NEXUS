@@ -101,7 +101,8 @@ A valid signature proves integrity and issuer possession only. Before dispatch, 
 - command digest and immutable payload equality;
 - durable active reservation;
 - durable single-use consumption;
-- current policy/spec/evidence versions;
+- current policy/spec/evidence versions and exact signed valuation_input_vector_id/version from the durable reservation;
+- source-specific freshness, clock uncertainty, quality, correction/revocation and policy-defined drift validity for every immutable valuation input; a newer market tick alone does not invalidate a still-valid bound vector unless policy requires latest;
 - current halt and eligibility epochs;
 - dispatcher fence and final Trusted Egress authorization.
 
