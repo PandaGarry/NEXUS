@@ -97,4 +97,4 @@ The decimal/rational wire parser applies a fixed **512 decimal-digit maximum** t
 
 The `egress-fencing` package now includes `HaltEgressGate`, a test-only oracle for the final EgressBoundaryAuthorization / halt-epoch ordering. Its 11 tests cover halt-first denial, gate-first in-flight treatment, paused sender acknowledgement blocking, positive sender fencing, store outage, single-use attempt IDs and reconciliation obligations after socket initiation.
 
-This is a sequential state-machine oracle only. It does not test real database serialization, process scheduling, sockets, network paths or production fencing.
+This is a sequential state-machine oracle only. It does not test real database serialization, process scheduling, sockets, network paths or production fencing. A positive sender-fence fixture only blocks future socket initiation; without a trusted initiation report it does not prove the attempt was never sent. The model keeps such attempts reconciliation-required.
