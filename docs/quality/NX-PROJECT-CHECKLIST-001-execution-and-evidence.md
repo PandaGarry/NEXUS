@@ -1350,3 +1350,18 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Verify actual transaction snapshot behavior and commit-order guarantee on PostgreSQL 18.7.
 
 **Disposition:** threat-model and G1 candidate refined; no database function, role, schema or runtime exists.
+
+
+## 18.80 Idempotent HEGC attempt-grant issuance — 2026-11-14
+
+- [x] Bind each reference-model attempt to an authorization binding digest.
+- [x] Exact retry with same attempt ID, halt epoch and digest returns the original attempt without minting a second grant, even after the current halt epoch advances.
+- [x] Changed digest or changed epoch under the same attempt ID returns a hard conflict.
+- [x] Verify exact code/test HEAD c2350f7807587e0428b760890f6fdba09ba60f60 on [workflow #43619636403](https://github.com/PandaGarry/NEXUS/actions/runs/43619636403).
+- [x] Pass 13 isolated suites / 263 tests on Python 3.11, 3.12 and 3.13 (789 successful executions total).
+- [x] Confirm egress-fencing passes 37 tests, including 24 HaltEgressGate cases; inspect all three job logs.
+- [ ] Verify canonical binding digest covers command digest, account/venue/environment, reservation, evidence vector versions, eligibility revision, halt epoch, dispatcher generation, Egress workload and sender incarnation.
+- [ ] Prove concurrent duplicate requests and ambiguous commit recovery against durable HEGC storage; same attempt identity must return the same grant or a hard conflict.
+- [ ] Prove database-enforced first-statement guard entrypoint, per-scope commit order, no DML bypass and real socket/process fencing.
+
+**Disposition:** idempotent grant issuance and changed-binding rejection pass in the sequential reference model. Production canonicalization, database idempotency, HEGC and external fencing remain open.
