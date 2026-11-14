@@ -205,3 +205,11 @@
 - Updated NX-ARCH-005 audit, reference README, checklist, roadmap and project status. This is a test-only arithmetic oracle, not venue fill validation or production financial policy. Normalized fixture/schema/runner work remains owner-review gated.
 
 - Added a zero-total-quantity regression: the partial-fill helper preserves the typed `DivisionByZero` path, distinct from empty-input and malformed-argument failures.
+
+
+### Updated — operation-specific reference exception audit (2026-11-14)
+
+- Added a proposed operation-to-exception-to-rejection mapping audit in NX-ARCH-005 for decimal, rational, bounded numeric, dimensional, instrument-unit and partial-fill operations.
+- Explicitly separated mathematical failures from malformed API parameters/types and identified unresolved domain-invalid-value/identity cases.
+- Prohibited exception-message parsing and retained owner approval as a prerequisite for normalized schema/runner behavior.
+- Documentation/audit only; no stable wire mapping, validator, runner or production adapter is approved.
