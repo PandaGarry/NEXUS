@@ -678,3 +678,9 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Implement exact-version concurrency tests, role separation and failure injection.
 - [ ] Benchmark scope contention/fan-out without weakening atomicity.
 - [ ] Prove source watermark completeness, failover, backup/restore and external fencing before G1.
+
+## Exact-head regression after NX-ARCH-REVIEW-007
+
+- [x] Verify `e7c5461ae7ccea4f29fc77461db91d44566aba36` on [workflow #43616908979](https://github.com/PandaGarry/NEXUS/actions/runs/43616908979).
+- [x] Pass 13 suites / 239 tests on Python 3.11, 3.12 and 3.13 (717 executions).
+- [ ] Keep PostgreSQL concurrency, transaction isolation, failover and egress-fencing evidence separate from Python reference CI.
