@@ -81,6 +81,62 @@ def uuid_array(values: list[str]) -> str:
     return "ARRAY[" + ",".join(lit(v) + "::uuid" for v in values) + "]::uuid[]"
 
 
+CATALOG_FINGERPRINT_SQL = """
+SELECT md5(jsonb_build_object(
+  'roles', (SELECT COALESCE(jsonb_agg(jsonb_build_array(
+      r.rolname, r.rolsuper, r.rolinherit, r.rolcreaterole, r.rolcreatedb,
+      r.rolreplication, r.rolbypassrls, r.rolcanlogin
+    ) ORDER BY r.rolname), '[]'::jsonb)
+    FROM pg_roles r WHERE r.rolname LIKE 'nexus_%'),
+  'memberships', (SELECT COALESCE(jsonb_agg(jsonb_build_array(
+      parent.rolname, member.rolname, m.admin_option, m.inherit_option, m.set_option
+    ) ORDER BY parent.rolname, member.rolname), '[]'::jsonb)
+    FROM pg_auth_members m
+    JOIN pg_roles parent ON parent.oid = m.roleid
+    JOIN pg_roles member ON member.oid = m.member
+    WHERE parent.rolname LIKE 'nexus_%' OR member.rolname LIKE 'nexus_%'),
+  'schemas', (SELECT COALESCE(jsonb_agg(jsonb_build_array(
+      n.nspname, owner.rolname, COALESCE(n.nspacl::text, '')
+    ) ORDER BY n.nspname), '[]'::jsonb)
+    FROM pg_namespace n JOIN pg_roles owner ON owner.oid = n.nspowner
+    WHERE n.nspname LIKE 'nexus_%'),
+  'relations', (SELECT COALESCE(jsonb_agg(jsonb_build_array(
+      n.nspname, c.relname, owner.rolname, c.relkind, c.relrowsecurity,
+      c.relforcerowsecurity, COALESCE(c.relacl::text, '')
+    ) ORDER BY n.nspname, c.relname), '[]'::jsonb)
+    FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    JOIN pg_roles owner ON owner.oid = c.relowner
+    WHERE n.nspname LIKE 'nexus_%' AND c.relkind IN ('r','p','v','m','S','f')),
+  'functions', (SELECT COALESCE(jsonb_agg(jsonb_build_array(
+      n.nspname, p.proname, pg_get_function_identity_arguments(p.oid),
+      owner.rolname, p.prosecdef, COALESCE(p.proconfig::text, ''),
+      COALESCE(p.proacl::text, '')
+    ) ORDER BY n.nspname, p.proname, pg_get_function_identity_arguments(p.oid)), '[]'::jsonb)
+    FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+    JOIN pg_roles owner ON owner.oid = p.proowner
+    WHERE n.nspname LIKE 'nexus_%'),
+  'policies', (SELECT COALESCE(jsonb_agg(jsonb_build_array(
+      n.nspname, c.relname, p.polname, p.polcmd, p.polpermissive,
+      (SELECT COALESCE(jsonb_agg(r.rolname ORDER BY r.rolname), '[]'::jsonb)
+       FROM unnest(p.polroles) AS role_oid
+       JOIN pg_roles r ON r.oid = role_oid),
+      COALESCE(pg_get_expr(p.polqual, p.polrelid), ''),
+      COALESCE(pg_get_expr(p.polwithcheck, p.polrelid), '')
+    ) ORDER BY n.nspname, c.relname, p.polname), '[]'::jsonb)
+    FROM pg_policy p JOIN pg_class c ON c.oid = p.polrelid
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname LIKE 'nexus_%'),
+  'default_privileges', (SELECT COALESCE(jsonb_agg(jsonb_build_array(
+      owner.rolname, COALESCE(n.nspname, ''), d.defaclobjtype,
+      COALESCE(d.defaclacl::text, '')
+    ) ORDER BY owner.rolname, COALESCE(n.nspname, ''), d.defaclobjtype), '[]'::jsonb)
+    FROM pg_default_acl d JOIN pg_roles owner ON owner.oid = d.defaclrole
+    LEFT JOIN pg_namespace n ON n.oid = d.defaclnamespace
+    WHERE owner.rolname LIKE 'nexus_%')
+)::text);
+"""
+
+
 def wait_for_activity(app: str, *, waiting_on_lock: bool, timeout: float = 8.0) -> None:
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
@@ -279,6 +335,65 @@ class PostgreSQLGuardHarness(unittest.TestCase):
                 "'nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text)','EXECUTE');"
             )
             self.assertEqual(effective_acl.stdout.strip(), "t|f|f")
+
+    def test_catalog_fingerprint_detects_and_reconciles_privilege_drift(self) -> None:
+        self.seed()
+
+        def fingerprint() -> str:
+            result = run_sql(CATALOG_FINGERPRINT_SQL)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            value = result.stdout.strip()
+            self.assertRegex(value, r"^[0-9a-f]{32}$")
+            return value
+
+        approved = fingerprint()
+
+        # Role-attribute drift must be observable and reversible.
+        changed_role = run_sql("ALTER ROLE nexus_hegc CREATEROLE;")
+        self.assertEqual(changed_role.returncode, 0, changed_role.stderr)
+        self.assertNotEqual(fingerprint(), approved)
+        restored_role = run_sql("ALTER ROLE nexus_hegc NOCREATEROLE;")
+        self.assertEqual(restored_role.returncode, 0, restored_role.stderr)
+        self.assertEqual(fingerprint(), approved)
+
+        # PUBLIC EXECUTE drift must be observable even when the function body is unchanged.
+        grant_public = run_sql(
+            "GRANT EXECUTE ON FUNCTION "
+            "nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text) TO PUBLIC;"
+        )
+        self.assertEqual(grant_public.returncode, 0, grant_public.stderr)
+        self.assertNotEqual(fingerprint(), approved)
+        revoke_public = run_sql(
+            "REVOKE EXECUTE ON FUNCTION "
+            "nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text) FROM PUBLIC;"
+        )
+        self.assertEqual(revoke_public.returncode, 0, revoke_public.stderr)
+        self.assertEqual(fingerprint(), approved)
+
+        # SECURITY INVOKER/DEFINER mode is part of the catalog security baseline.
+        alter_mode = run_sql(
+            "ALTER FUNCTION nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text) "
+            "SECURITY INVOKER;"
+        )
+        self.assertEqual(alter_mode.returncode, 0, alter_mode.stderr)
+        self.assertNotEqual(fingerprint(), approved)
+        restore_mode = run_sql(
+            "ALTER FUNCTION nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text) "
+            "SECURITY DEFINER;"
+        )
+        self.assertEqual(restore_mode.returncode, 0, restore_mode.stderr)
+        self.assertEqual(fingerprint(), approved)
+
+        # An unexpected overload/object in a trusted schema changes the manifest.
+        add_overload = run_sql(
+            "CREATE FUNCTION nexus_hegc.manifest_probe() RETURNS integer "
+            "LANGUAGE sql IMMUTABLE AS $probe$ SELECT 1 $probe$;"
+        )
+        self.assertEqual(add_overload.returncode, 0, add_overload.stderr)
+        self.assertNotEqual(fingerprint(), approved)
+        drop_overload = run_sql("DROP FUNCTION nexus_hegc.manifest_probe();")
+        self.assertEqual(drop_overload.returncode, 0, drop_overload.stderr)
+        self.assertEqual(fingerprint(), approved)
 
     def test_restrictive_rls_policy_composes_with_permissive_policy(self) -> None:
         account, scopes = self.seed()
