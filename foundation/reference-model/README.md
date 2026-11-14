@@ -105,3 +105,17 @@ This is a sequential state-machine oracle only. It does not test real database s
 The latest exact code/test matrix is workflow #43619636403 at SHA c2350f7807587e0428b760890f6fdba09ba60f60: 13 suites / 263 tests on Python 3.11, 3.12 and 3.13 (789 successful executions). The egress-fencing package contains 37 tests, including 24 HaltEgressGate tests. The model now requires positive durable grant consumption before a socket attempt, preserves the initiating halt cause across duplicate requests, returns the original grant on exact attempt retries and rejects changed authorization bindings.
 
 This remains a sequential reference oracle. It does not prove PostgreSQL 18.7 commit-order guard behavior, HEGC role/identity enforcement, real socket initiation, process/host/network fencing or venue reconciliation. The preferred per-scope SECURITY DEFINER guard function remains a G1 candidate only.
+
+
+## Authorization-catalog manifest admission reference
+
+The isolated `auth-catalog` directory contains a test-only logical manifest schema and admission-precondition model. Run it with:
+
+```bash
+cd auth-catalog
+python -m unittest -v
+```
+
+The suite rejects schema drift, wildcard or duplicate scope, unknown object classes, duplicate semantic identities/rules, invalid digests and validity intervals, deployment-context mismatch, sequence/predecessor gaps, stale/not-yet-valid manifests, unverified signature/approval results and unavailable revocation state.
+
+This is not deterministic-CBOR ingress validation, COSE/Ed25519 verification, trust-root/key custody, a monotonic external ledger, PostgreSQL catalog extraction or production authorization. Signature/approval/revocation booleans are explicit test seams only. The selected wire profile and cryptographic implementation remain subject to NX-ADR-008/NX-RESEARCH-011 and independent conformance review.
