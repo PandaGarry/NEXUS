@@ -821,3 +821,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Add crash/conformance cases for halt-first, gate-first, pause-before-write, unavailable control store, positive fence failure and late venue acceptance.
 - [ ] Test both transaction lock orders and actual socket initiation at the real Egress boundary.
 - [ ] Prove external process/host/network fencing and post-ack no-new-send property under pause, partition and crash.
+
+## Halt / Egress race evidence
+
+- [x] Add explicit race matrix cases 36–42 to NX-IF-005.
+- [x] Align acceptance criteria with the final egress authorization linearization point and distinguish Risk outage from halt-store outage.
+- [x] Verify Python reference suites at SHA `73841573e4e02b34a0c0363bbbe21155828d0c08` (run #43617906166): 239 tests/runtime, 717 executions.
+- [ ] Re-run CI on the final documentation-synchronized branch HEAD.
+- [ ] Implement only after G0D/G1 gates: instrumented halt/Egress race tests, actual socket boundary, external process/host/network fencing and recovery evidence.
