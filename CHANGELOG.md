@@ -506,3 +506,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Exact branch HEAD `3af0453897545b77fee358b9902a6301f662232e` passed [workflow #43616348161](https://github.com/PandaGarry/NEXUS/actions/runs/43616348161).
 - Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions); no test failures or Node.js 20 / `punycode` warnings.
 - Evidence is limited to Python reference models. Rust, CBOR/COSE, PostgreSQL, Trusted Egress, venues and live execution remain untested.
+
+### Risk reservation concurrency protocol clarified — 2026-11-14
+
+- Added Risk-owned scope-state serialization point shared by capacity reservation and exposure-projection updates.
+- Preserved Ledger journal ownership and routed Ledger/venue/external exposure facts through Risk's idempotent projection inbox; no cross-service writes to Risk state.
+- Specified deterministic multi-scope processing, atomic reservation commit, stable idempotency, bounded whole-transaction retry for 40001/40P01 and fail-closed ambiguous commit behavior.
+- Synchronized NX-ADR-008, NX-IF-002 and OD-09; added adversarial concurrency/recovery evidence gates.
+- No database, schema, service or runtime was implemented.
