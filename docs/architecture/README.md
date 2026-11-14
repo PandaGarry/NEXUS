@@ -7,7 +7,8 @@
 | NX-ADR-001 | Unified Market Event Contract | Proposed |
 | NX-ADR-002 | Execution Integrity & Reconciliation | Proposed |
 | NX-ADR-003 | Simulation Fidelity & Strategy Validation | Proposed |
-| NX-ADR-004 | Market Data Recovery State Machine | Planned |
+| [NX-ADR-004](NX-ADR-004-market-data-recovery-state-machine.md) | Market Data Recovery State Machine | Proposed |
+| [NX-ADR-005](NX-ADR-005-instrument-specification-exact-arithmetic.md) | Instrument Specification & Exact Arithmetic | Proposed |
 | NX-ADR-005 | Instrument Specification & Exact Arithmetic | Planned |
 | NX-ADR-006 | Strategy Validation / Research Governance | Planned |
 | NX-SEC-001 | Threat Model / Credential Isolation | Planned |
