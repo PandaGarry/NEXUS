@@ -413,6 +413,8 @@ These decisions must be explicit before implementation of the affected capabilit
 
 ## 20. Evidence and references
 
+Cross-service exposure ownership and reservation handoff are specified as a proposal in [NX-IF-002](../architecture/NX-IF-002-exposure-snapshot-risk-reservation-contract.md). Execution remains authoritative for command/order/fill evidence; Risk owns the aggregate reservation projection; Ledger owns posted financial state. The interface is not implemented.
+
 Official venue documentation consulted on 2026-11-14:
 - Binance USDⓈ-M Futures REST trade API — create/query order, client order ID, order status and historical query limits: https://developers.binance.com/docs/derivatives/usds-margined-futures/trade/rest-api
 - Binance USDⓈ-M Futures User Data Streams — private order/account events and stream lifecycle: https://developers.binance.com/docs/derivatives/usds-margined-futures/user-data-streams
