@@ -588,3 +588,11 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Keep all capabilities proposal-only; no executable schema, grant, policy engine, module runtime or dependency until G0D acceptance and relevant OD decisions.
 
 **Disposition:** design traceability complete; acceptance not granted. See [NX-ARCH-REVIEW-004](../architecture/NX-ARCH-REVIEW-004-capability-to-interface-contract-traceability.md).
+
+
+## 18.18 NX-ARCH-REVIEW-004 exact-head regression evidence
+
+- Exact branch HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed GitHub Actions [#43613212116](https://github.com/PandaGarry/NEXUS/actions/runs/43613212116).
+- Python 3.11, 3.12 and 3.13 jobs all completed successfully. Each runtime executed 13 isolated reference-model suites and 237 tests; 711 successful test executions total.
+- This verifies the existing Python reference-model regression workflow only. It does not execute NX-ARCH-REVIEW-004's traceability matrix, proposed capabilities, new domain contracts, schema/grants, authorization service, module runtime/isolation, field-level data controls, Rust or venue integration.
+- NX-ARCH-REVIEW-004 is a design traceability artifact; domain-owner/security acceptance, field-level classification/retention, revocation objectives and boundary-observed G1 evidence remain open. No capability is approved or active.
