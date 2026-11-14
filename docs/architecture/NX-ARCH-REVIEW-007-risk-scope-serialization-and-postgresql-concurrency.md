@@ -21,7 +21,7 @@ This review does not approve PostgreSQL for production, a schema, automatic fail
 
 ## 2. Why the common serialization point is necessary
 
-A reservation decision reads current exposure and active reservations, checks all applicable limits, and commits a new reservation. A concurrent Ledger/venue/external-activity projection update can change the exposure against which that decision was made.
+A reservation decision reads current exposure, active reservations and exact immutable valuation-input snapshots, checks all applicable limits, and commits a new reservation. A concurrent Ledger/venue/external-activity projection update can change the exposure against which that decision was made. Market/index/FX updates are separate versioned valuation inputs and MUST NOT rewrite every Risk scope-state row on every market-data tick.
 
 If those operations update different rows or rely on advisory locks that some writer can omit, both can commit based on stale competing views. The Risk-owned scope-state row is therefore the mandatory serialization point for each scope whose shared capacity invariant is affected.
 
@@ -48,6 +48,8 @@ This is a logical contract for review, **not a selected SQL table schema**. The 
 | source_watermark_vector_ref/version | Identifies the source evidence/watermark set supporting the projection |
 | fencing_generation | Rejects stale Risk writer generations inside the authoritative store; not an external socket fence |
 | last_transition_id | Durable idempotent state transition lineage |
+
+The account/root scope-state record is mandatory in every v1 reservation and projection transaction and is the scope-configuration guard. After acquiring the complete scope lock set, the transaction rechecks the root `scope_config_version`; if membership changed, it aborts and recomputes the complete scope set.
 | updated_at | Operational timestamp only; not a substitute for monotonic version |
 
 The actual exposure items, valuation evidence, source events and reservation rows remain in their Risk-owned domain records. The scope-state row is not a duplicate Ledger or venue source of truth.
@@ -57,19 +59,19 @@ The actual exposure items, valuation evidence, source events and reservation row
 ### 4.1 Reservation transaction
 
 1. Begin one local Risk transaction at the G1 evaluation isolation level (PostgreSQL SERIALIZABLE).
-2. Resolve the immutable scope configuration and the complete account/child/ancestor scope set for the command.
+2. Resolve the immutable scope configuration and the complete account/child/ancestor scope set for the command. The account/root scope-state row is always included as the v1 scope-configuration guard.
 3. Require every corresponding scope-state row to be pre-provisioned and active. Missing, disabled, duplicate or ambiguous rows fail closed; the hot path never creates them.
 4. Lock all rows in one deterministic order using canonical scope-ID bytes. Do not use locale-sensitive text collation for lock order.
-5. Recheck scope configuration versions and the required source watermark/freshness vector after acquiring locks.
-6. Read the current exposure projection and active reservation aggregates inside the same transaction/snapshot. Do not reuse values calculated before the transaction or before lock acquisition.
+5. Recheck the root and descendant scope configuration versions and the required source watermark/freshness vector after acquiring locks. A changed root version invalidates the resolved scope set and requires a full retry.
+6. Read the current exposure projection, active reservation aggregates and exact immutable market/index/FX/fee/collateral input snapshots inside the same transaction/snapshot. Do not reuse values calculated before the transaction or before lock acquisition. Bind the reservation and capability to the exact valuation-input version vector and source freshness evidence.
 7. Recompute every affected limit with exact arithmetic, including parent/account aggregate limits and child constraints.
 8. If all scopes pass, persist the idempotency identity/result, all reservation rows, updated reservation totals and scope-state versions atomically. If any scope fails, persist no partial reservation.
-9. Commit. Issue the RiskApprovalCapability only after commit is positively confirmed and the result is bound to the canonical command digest and exact reservation state.
+9. Commit. Issue the RiskApprovalCapability only after commit is positively confirmed and the result is bound to the canonical command digest, exact reservation state and valuation-input version vector.
 10. If the result is unknown, resolve only through the same stable request identity and digest on a positively identified authoritative primary. Never mint a new identity to recover a timeout.
 
 ### 4.2 Projection-event transaction
 
-1. Receive source facts through a durable Risk-owned inbox; Ledger remains authoritative for journal posting and cannot write Risk state directly.
+1. Receive discrete economic exposure facts through a durable Risk-owned inbox; Ledger remains authoritative for journal posting and cannot write Risk state directly. Market-data ticks remain separate immutable valuation inputs and do not create per-tick scope-state writes.
 2. Deduplicate by the source-defined event identity and namespace, with payload digest binding. Same identity/same digest is idempotent; same identity/different digest is an integrity conflict and quarantines the affected scope.
 3. Determine the complete affected scope set, including all parent/account aggregates and any child scopes whose exposure projection changes.
 4. Lock every affected pre-provisioned scope-state row in canonical scope-ID byte order in one Risk transaction.
@@ -83,7 +85,7 @@ The actual exposure items, valuation evidence, source events and reservation row
 Parent/child membership, account aggregation membership, scope activation, policy linkage or limit configuration changes can alter which rows a reservation must serialize against.
 
 - Scope changes use a separate privileged configuration transaction, never an order hot-path side effect.
-- The transaction resolves and locks all old and new affected scope rows in canonical order, advances scope_config_version, and publishes the new membership/configuration only atomically.
+- The transaction includes the account/root configuration guard and locks all old and new affected scope rows in canonical order, advances the root and relevant descendant `scope_config_version` values, and publishes the new membership/configuration only atomically.
 - A reservation or projection transaction using a stale scope-config version aborts/recomputes from the new configuration.
 - Missing/ambiguous parent membership or an unbounded affected-scope set fails closed.
 - The maximum supported scope fan-out must be bounded by configuration and measured. The v1 single-account/subaccount scope keeps this small; no multi-tenant or arbitrary portfolio fan-out is assumed.
@@ -131,6 +133,7 @@ No statement-only retry, stale snapshot reuse, unbounded retry loop, or retry un
 | Risk writer stale generation | Cannot mutate authoritative scope state |
 | Ledger attempts direct Risk-state write | Database permission denial |
 | High contention / lock timeout / fan-out limit | Bounded latency/retries; fail closed without partial state |
+| Market-data mark/index/FX tick | No scope-state write per tick; reservation binds exact immutable valuation-input versions and stale/invalid inputs block dispatch |
 | Projection and reservation crash at every commit boundary | Durable inbox, projection, reservation and scope version remain mutually consistent |
 | PostgreSQL primary failover with old writer alive | No second authoritative writer; external egress remains separately fenced |
 
@@ -138,7 +141,7 @@ The actual test harness must inspect committed rows, source watermarks, inbox id
 
 ## 8. Performance and availability trade-offs
 
-A common scope-state row intentionally serializes writes to a shared capacity invariant. This may create contention; it is not free.
+A common scope-state row intentionally serializes writes to a shared economic exposure/capacity invariant. This may create contention; it is not free. G1 keeps market-data ticks out of this write path by reading immutable versioned valuation snapshots and binding their version vector to the decision.
 
 G1 must measure, on the exact PostgreSQL 18 patch and realistic data volume:
 
@@ -146,7 +149,8 @@ G1 must measure, on the exact PostgreSQL 18 patch and realistic data volume:
 - lock wait duration, serialization/deadlock rates and bounded retry exhaustion;
 - hot-scope skew and parent/child fan-out;
 - WAL/replication/commit latency and recovery behavior;
-- impact of projection bursts and reconnect/replay backlogs;
+- impact of discrete exposure-projection bursts and reconnect/replay backlogs;
+- valuation snapshot lookup latency and behavior when market-data/FX inputs change between reservation and dispatch;
 - behavior under lock timeout, pool exhaustion and primary uncertainty.
 
 If performance is insufficient, first examine query plans, scope partitioning consistent with the invariant, bounded projection batching and connection-pool policy. Do not remove the shared serialization point, split all-scope atomicity or weaken source freshness merely to increase throughput. Any alternative must re-prove the same no-overcommit invariant.
