@@ -1133,7 +1133,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** latest verified CI is exact for `7384157`; subsequent commits are documentation-only. No halt store, Egress runtime or external fence exists.
 
-## 18.34 Risk approval signing versus venue signing authority separation — 2026-11-14
+## 18.63 Risk approval signing versus venue signing authority separation — 2026-11-14
 
 - [x] Separate RiskApprovalCapability private signing authority from venue API credentials and venue request-signing authority.
 - [x] Require distinct keys, workload identities and policies; key reuse is prohibited.
@@ -1145,7 +1145,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** authority separation recorded in NX-SEC-001 and aligned with NX-IF-001 / NX-ADR-008. No keys, vault, signer or venue credentials are implemented.
 
-## 18.35 Exact-head CI after halt and signing-authority clarification — 2026-11-14
+## 18.64 Exact-head CI after halt and signing-authority clarification — 2026-11-14
 
 - [x] Verify PR #16 HEAD `dbfba513b86a79b8b6574a80c1beb136b28836c7` on [workflow #43618114058](https://github.com/PandaGarry/NEXUS/actions/runs/43618114058).
 - [x] Pass 13 isolated suites / 239 tests on Python 3.11, 3.12 and 3.13 (717 executions).
@@ -1155,7 +1155,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** exact PR-head reference CI passed. No production signing or live execution authority is implied.
 
-## 18.36 Execution preflight / Trusted Egress final authorization boundary — 2026-11-14
+## 18.65 Execution preflight / Trusted Egress final authorization boundary — 2026-11-14
 
 - [x] Define Execution verification as non-authorizing preflight and defense in depth.
 - [x] Define Trusted Egress as the sole final send-authorization boundary and sole owner of venue socket initiation.
@@ -1166,7 +1166,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** contract wording aligned; runtime and boundary-observed proof remain open.
 
-## 18.63 Test-only halt / final Egress gate reference oracle — 2026-11-14
+## 18.66 Test-only halt / final Egress gate reference oracle — 2026-11-14
 
 - [x] Add `halt_egress_gate.py` as a pure test-only state-machine oracle; no production imports or dependencies.
 - [x] Add 11 tests for halt-first denial, gate-first in-flight ordering, paused-process acknowledgement blocking, positive sender fencing, single-use attempt identity, halt-store outage and post-socket reconciliation.
@@ -1177,3 +1177,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Implement actual shared-row/conditional-update ordering and fault-inject both commit orders, process pause, store outage and positive fence at the real Egress boundary.
 
 **Disposition:** reference model and unit tests added; runtime, durable halt store, transport and external fence remain unimplemented.
+
+## 18.67 Halt / final Egress oracle exact-code CI — 2026-11-14
+
+- [x] Verify code/test SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1` with [workflow #43618215618](https://github.com/PandaGarry/NEXUS/actions/runs/43618215618).
+- [x] Python 3.11, 3.12 and 3.13 each passed all 13 suites; the egress-fencing package ran 24 tests/runtime (13 handover + 11 halt/gate oracle).
+- [x] Total matrix execution: 250 tests/runtime, 750 successful executions.
+- [x] Inspect all three logs: no test failures, Node.js 20 deprecation or `punycode` deprecation warnings.
+- [x] Confirm the new oracle is test-only and sequential; no DB, socket, process scheduler or network-fence behavior is claimed.
+- [ ] Re-run exact-head CI after the final documentation synchronization commits.
+- [ ] Replace sequential model assumptions with actual database/transport race proof at G1.
+
+**Disposition:** 11 new halt/gate reference tests pass across all three Python versions. Production halt/Egress implementation remains absent.
