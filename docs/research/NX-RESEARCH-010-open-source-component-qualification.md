@@ -11,7 +11,7 @@
 NEXUS should reuse mature infrastructure where it is a replaceable implementation detail, while keeping the authoritative trading state machine and capital-protection decisions inside NEXUS-owned contracts.
 
 **Shortlist**
-1. **PostgreSQL 18 — selected as the leading G1 persistence evaluation baseline**, subject to OD-09 transaction/concurrency proof and restore tests. No server, package or runtime is installed; exact patch/deployment remains unselected.
+1. **PostgreSQL 18.7 — selected as the exact G1 persistence evaluation patch**, subject to OD-09 transaction/concurrency proof and restore tests. See [NX-RESEARCH-012](NX-RESEARCH-012-postgresql-18-7-g1-evaluation-qualification.md) for the November 2026 release caveats. No server, package or runtime is installed; production deployment remains unselected.
 2. **OpenTelemetry Collector — preferred observability candidate**, once runtime services exist. Telemetry must be allowlisted/redacted and never carry credentials, signed payloads or unrestricted account data.
 3. **OpenBao — secrets-management candidate**, subject to threat/deployment review and MPL-2.0 obligations. Do not introduce until signer/Egress deployment boundaries are specified.
 4. **NATS JetStream — optional asynchronous fan-out/replay transport**, not a source of truth for reservations, command acceptance, outbox or Ledger journal. Defer until measured requirements justify another durable subsystem.
@@ -37,7 +37,7 @@ Every candidate must pass before becoming a dependency:
 
 | Component | Potential use | Evidence / license | Main concern / gate | Disposition |
 |---|---|---|---|---|
-| PostgreSQL | Risk reservations, command/outbox, Ledger journal, durable metadata | Official relational database; PostgreSQL License is permissive, similar to BSD/MIT | OD-09: prove isolation/locking/CAS, all-scope atomicity, failover, PITR and crash recovery | **Leading candidate; evaluate only** |
+| PostgreSQL | Risk reservations, command/outbox, Ledger journal, durable metadata | Official relational database; PostgreSQL License is permissive, similar to BSD/MIT | OD-09: prove isolation/locking/CAS, all-scope atomicity, failover, PITR and crash recovery | **G1 evaluation target: PostgreSQL 18.7 only** |
 | OpenTelemetry Collector | Metrics, traces and logs | Official collector repository; Apache-2.0 | Redaction, cardinality/resource limits, trace integrity; telemetry outage must not block safety | **Preferred observability candidate; defer deployment** |
 | OpenBao | Secrets, certificates, encryption and key-management boundary | Identity-based secrets/encryption manager; GitHub lists MPL-2.0 | File-level license obligations; HA, unseal/recovery, audit and signer integration need security design | **Candidate; not integrated** |
 | NATS + JetStream | Durable asynchronous distribution, replay, consumers | NATS server Apache-2.0; streams/consumers provide persistence, replay and at-least-once delivery | Duplicates/redelivery and ACK races; retention/limits need policy. Never replace transactional outbox or Ledger | **Optional later** |
@@ -134,12 +134,12 @@ This follow-up checks the candidate shortlist against current upstream documenta
 - OpenTelemetry Collector security: https://opentelemetry.io/docs/security/
 - OpenBao audit devices: https://openbao.org/docs/audit/
 
-**Disposition:** PostgreSQL 18 is now the selected G1 persistence evaluation baseline under NX-ADR-008, but is not installed and is not a production database selection. OpenTelemetry Collector, OpenBao and NATS JetStream remain candidates only. No runtime dependency, database, broker, secret manager or deployment topology is installed or production-selected. Exact versions, licenses, security advisories, transitive dependencies and deployment threat model must be requalified at adoption time.
+**Disposition:** PostgreSQL 18.7 is the exact G1 evaluation patch under NX-ADR-008 and NX-RESEARCH-012, but is not installed and is not a production database selection. OpenTelemetry Collector, OpenBao and NATS JetStream remain candidates only. No runtime dependency, database, broker, secret manager or deployment topology is installed or production-selected. Exact versions, licenses, security advisories, transitive dependencies and deployment threat model must be requalified at adoption time.
 
 
 ### G1 technical baseline cross-reference
 
-The delegated G1 technical selections are consolidated in [NX-ADR-008](../architecture/NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md). PostgreSQL 18 is the evaluation target only. PostgreSQL 18 documentation confirms that asynchronous streaming replication can lose acknowledged transactions on failover, while synchronous replication waits for standby WAL acknowledgement but adds availability/latency trade-offs; failover still requires positive fencing of the former primary. No automatic failover is selected for G1.
+The delegated G1 technical selections are consolidated in [NX-ADR-008](../architecture/NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md). PostgreSQL 18.7 is the exact G1 evaluation patch only; requalify the latest supported 18.x patch before any later deployment. PostgreSQL 18 documentation confirms that asynchronous streaming replication can lose acknowledged transactions on failover, while synchronous replication waits for standby WAL acknowledgement but adds availability/latency trade-offs; failover still requires positive fencing of the former primary. No automatic failover is selected for G1.
 
 Additional official references:
 - PostgreSQL 18 high availability: https://www.postgresql.org/docs/18/high-availability.html
