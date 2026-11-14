@@ -20,13 +20,14 @@
 | Autonomous Execution Engine specification | PROPOSED | ТЗ-NX-004 опубликовано; private adapters, durable outbox, reconciliation, vault/signer и runtime tests не реализованы/не проверены |
 | Independent Risk Engine specification | PROPOSED | ТЗ-NX-005 опубликовано; policy registry, exposure calculator, approval signer, reservations, kill-switch controller и conformance tests не реализованы/не проверены |
 | Portfolio & Financial Ledger specification | PROPOSED | ТЗ-NX-006 опубликовано; journal, posting engine, accounting projections, reconciliation, replay and restore tests не реализованы/не проверены |
-| Cross-specification interfaces | BLOCKED | NX-ARCH-REVIEW-001 выявил 12 design gaps. WP-A NX-IF-001, WP-B NX-IF-002, WP-C NX-IF-003 и WP-D NX-IF-004 опубликованы как PROPOSED design drafts; owner/security/accounting/operations review, open decisions and conformance evidence remain outstanding. WP-E design closure remains open |
+| Cross-specification interfaces | BLOCKED | NX-ARCH-REVIEW-001 выявил 12 design gaps. WP-A NX-IF-001, WP-B NX-IF-002, WP-C NX-IF-003, WP-D NX-IF-004 и WP-E NX-IF-005 опубликованы как PROPOSED design drafts; owner/security/accounting/operations review, open decisions and conformance evidence remain outstanding |
 | Target architecture | PROPOSED | NX-ARCH-001 опубликован; owner review и согласование TBD deployment decisions требуются |
 | Prototype readiness | BLOCKED | Не начинать прототипирование |
 
 
 - **WP-C — Execution ↔ Ledger:** NX-IF-003 создан как PROPOSED design draft. Определены source ownership, canonical fill identity, durable Execution outbox/Ledger inbox, atomic balanced journal posting, fee/correction semantics, projection watermark и WP-B FILL_PENDING_LEDGER handoff. Owner decisions, implementation choices and conformance evidence remain open; no implementation or tests claimed.
 - **WP-D — Freshness & Recovery:** NX-IF-004 создан как PROPOSED design draft. Определены StateEvidenceVector, source-specific freshness/quality/reconciliation dimensions, versioned EvidenceRequirementSet/FreshnessPolicy, RecoveryCase/quarantine, scoped generation-fenced RecoveryBarrier и dependency-aware restart/reconciliation ordering. Owner thresholds, venue/account scope, persistence and operator decisions remain open; no implementation or tests claimed.
+- **WP-E — Emergency Operations:** NX-IF-005 создан как PROPOSED design draft. Определены monotonic scoped HaltState/epochs, explicit CREATE/AMEND/CANCEL/CLOSE/REDUCE_ONLY/CANCEL_ALL/FLATTEN classification, bounded EmergencyActionPlan, protective-order handling, operator step-up/dual-control and gated resume. Venue capability certification, role assignments and emergency-policy decisions remain open; no implementation or tests claimed.
 
 ## Новые архитектурные артефакты (PROPOSED)
 
@@ -37,6 +38,7 @@
 - [NX-IF-002 — Exposure Snapshot & Risk Reservation Contract](architecture/NX-IF-002-exposure-snapshot-risk-reservation-contract.md) — WP-B proposed contract for exclusive exposure buckets, source authority, durable atomic reservations, fencing, partial-fill handoff and recovery; implementation and conformance tests NOT STARTED.
 - [NX-IF-003 — Execution Event & Ledger Posting Contract](architecture/NX-IF-003-execution-event-ledger-posting-contract.md) — WP-C proposed contract for canonical fill identity, durable outbox/inbox, atomic journal posting, corrections and projection-watermark exposure handoff; implementation and conformance tests NOT STARTED.
 - [NX-IF-004 — State Evidence, Freshness & Recovery Barrier Contract](architecture/NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md) — WP-D proposed contract for source evidence vectors, freshness policies, recovery cases/quarantine and scoped restart/reconciliation barriers; implementation and conformance tests NOT STARTED.
+- [NX-IF-005 — Emergency Operations, Halt & Risk-Reduction Authorization Contract](architecture/NX-IF-005-emergency-operations-halt-risk-reduction-contract.md) — WP-E proposed contract for monotonic halt epochs, command-class authorization, bounded emergency plans, protective-order handling and controlled resume; implementation and conformance tests NOT STARTED.
 - [NX-ADR-002 — Execution Integrity & Reconciliation](architecture/NX-ADR-002-execution-integrity-reconciliation.md)
 - [NX-ADR-003 — Simulation Fidelity & Strategy Validation](architecture/NX-ADR-003-simulation-fidelity-strategy-validation.md)
 - [NX-ADR-004 — Market Data Recovery State Machine](architecture/NX-ADR-004-market-data-recovery-state-machine.md)

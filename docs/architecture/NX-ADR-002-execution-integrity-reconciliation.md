@@ -171,3 +171,8 @@ Costs/limitations:
 ## Status note
 
 PROPOSED. No private execution adapter, vault, order placement, live credential, exchange account connection or runtime conformance test is implemented or approved by this ADR.
+
+
+## WP-E — Halt propagation and emergency command semantics
+
+[NX-IF-005 — Emergency Operations, Halt & Risk-Reduction Authorization Contract ](NX-IF-005-emergency-operations-halt-risk-reduction-contract.md) defines the proposed cross-service HaltState/epoch protocol and command-class matrix. Execution MUST check the current authoritative halt epoch immediately before dispatch, stop queued risk-increasing commands on epoch advance, and preserve already-dispatched/ambiguous outcomes for reconciliation. Cancel, amend, close, reduce-only, cancel-all and flatten are distinct commands; none is assumed safe from its name or caller flags. Cancel-all uses a complete immutable target set with explicit protective-order treatment; flatten is iterative and reconciled between bounded actions. This section is a proposed design link; no controller or adapter behavior is implemented.

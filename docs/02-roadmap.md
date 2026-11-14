@@ -20,7 +20,7 @@
 - [ ] Утвердить NX-ADR-004 Market Data Recovery State Machine.
 - [ ] Утвердить NX-ADR-005 Instrument Specification & Exact Arithmetic.
 - [ ] Утвердить NX-ARCH-001 целевую архитектуру и deployment topology. (Draft published; owner review required.)
-- [ ] Закрыть NX-ARCH-REVIEW-001 WP-A..WP-E: canonical command/approval, exposure/reservations, Execution↔Ledger handoff, freshness/recovery, emergency operations.
+- [ ] Закрыть NX-ARCH-REVIEW-001 WP-A..WP-E: canonical command/approval, exposure/reservations, Execution↔Ledger handoff, freshness/recovery, emergency operations. WP-A..WP-E design drafts now exist; acceptance and owner review remain open.
   - [x] WP-A design draft: NX-IF-001 published and readback verified.
   - [ ] WP-A acceptance: owner/security decisions, canonicalization/digest selection, cross-language golden vectors and conformance tests.
   - [x] WP-B design draft: NX-IF-002 published; exclusive buckets, reservation lifecycle, atomic concurrency and failure matrix specified.
@@ -29,6 +29,8 @@
   - [ ] WP-C acceptance: owner accounting decisions, transaction/store selection, schema conformance, golden accounting fixtures, replay and fault-injection evidence.
   - [x] WP-D design draft: NX-IF-004 published; StateEvidenceVector, source-specific freshness/quality, quarantine, RecoveryCase and scoped RecoveryBarrier/restart ordering specified.
   - [ ] WP-D acceptance: owner freshness thresholds and venue/account scope, durable persistence and operator policy decisions, schema conformance, restart/replay/reconciliation and fault-injection evidence.
+  - [x] WP-E design draft: NX-IF-005 published; monotonic scoped HaltState, command-class authorization, protective-order semantics, bounded emergency plans, operator governance and controlled resume specified.
+  - [ ] WP-E acceptance: owner role/dual-control/emergency-policy decisions, venue/account-mode capability certification, halt propagation, race, fault-injection and adapter conformance evidence.
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
 - [ ] Согласовать EvidenceRequirementSet/FreshnessPolicy thresholds и recovery objectives с владельцем до любой реализации.
 - [ ] Выполнить end-to-end contract review и зафиксировать owner decisions до выбора реализации.

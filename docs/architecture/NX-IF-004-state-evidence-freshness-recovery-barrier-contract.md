@@ -380,3 +380,8 @@ Until these are approved and encoded in versioned policy, no numeric freshness t
 This document is a proposed design contract only. No StateEvidenceVector schema, freshness evaluator, RecoveryCase store, barrier coordinator, adapter integration, database transaction, replay engine, reconciliation worker, fault-injection test or runtime behavior has been implemented or verified. No venue account, live credential or order was used. No risk limit or live-trading control was changed.
 
 **Prototype Readiness remains BLOCKED.**
+
+
+## WP-E — Emergency operation and resume gate
+
+[NX-IF-005 — Emergency Operations, Halt & Risk-Reduction Authorization Contract ](NX-IF-005-emergency-operations-halt-risk-reduction-contract.md) defines the operation-class matrix and privileged resume protocol that consume this contract's evidence. Emergency commands require a current StateEvidenceVector and an operation-specific RecoveryBarrier; a READY barrier for CREATE cannot be reused for CANCEL, REDUCE_ONLY, CLOSE, CANCEL_ALL or FLATTEN without their own requirement set. Resume requires reconciled source state, valid Ledger/Risk projections, current policy/spec versions, all applicable parent scopes ACTIVE and a new acknowledged halt epoch. WP-D does not grant a blanket emergency bypass.
