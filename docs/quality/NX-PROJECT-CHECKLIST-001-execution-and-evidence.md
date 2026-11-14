@@ -1144,3 +1144,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Qualify KMS/HSM/vault policies, key ceremony, rotation, revocation, backup and recovery before any key implementation.
 
 **Disposition:** authority separation recorded in NX-SEC-001 and aligned with NX-IF-001 / NX-ADR-008. No keys, vault, signer or venue credentials are implemented.
+
+## 18.35 Exact-head CI after halt and signing-authority clarification — 2026-11-14
+
+- [x] Verify PR #16 HEAD `dbfba513b86a79b8b6574a80c1beb136b28836c7` on [workflow #43618114058](https://github.com/PandaGarry/NEXUS/actions/runs/43618114058).
+- [x] Pass 13 isolated suites / 239 tests on Python 3.11, 3.12 and 3.13 (717 executions).
+- [x] Inspect all three logs: no failures or Node.js 20 / `punycode` deprecation warnings.
+- [x] Confirm current matrix includes numeric-wire 512/513-digit resource boundary tests.
+- [ ] Keep signing key custody, halt-store, Egress gate, PostgreSQL, Rust and external fencing evidence separate from Python reference CI.
+
+**Disposition:** exact PR-head reference CI passed. No production signing or live execution authority is implied.
