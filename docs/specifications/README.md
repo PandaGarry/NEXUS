@@ -17,3 +17,6 @@
 - [ТЗ-NX-004 — Autonomous Execution Engine](TZ-NX-004-autonomous-execution-engine.md) — Proposed
 - [ТЗ-NX-005 — Independent Risk Engine](TZ-NX-005-independent-risk-engine.md) — Proposed
 - [ТЗ-NX-006 — Portfolio & Financial Ledger](TZ-NX-006-portfolio-financial-ledger.md) — Proposed
+
+## Architecture review
+- [NX-ARCH-REVIEW-001 — Cross-Specification Contract Review](../architecture/NX-ARCH-REVIEW-001-cross-specification-contract-review.md) — Proposed; interface readiness BLOCKED pending WP-A..WP-E.
