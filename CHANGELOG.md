@@ -24,16 +24,10 @@
 - NX-WP-001: рабочий регламент AI Project Lead с правилами исследования, evidence, контроля качества, согласований и Definition of Done.
 - NX-OPS-001: ежедневный pulse, еженедельный deep review и событийный анализ внешних изменений.
 
-### Added
+### Added — Project foundation
 - Создана базовая структура документации NEXUS TRADING.
 - Зафиксированы устав проекта, текущий статус, roadmap и readiness gates.
 - Добавлены реестры ADR, спецификаций, исследований и безопасности.
-
-### Notes
-- Это документационный baseline, не программный релиз.
-- Прототипирование остаётся заблокированным до прохождения readiness gates.
-- NX-RESEARCH-003: preliminary official-docs comparison of Coinbase and Kraken as conditional first-venue candidates; no venue selected, account eligibility and exact API capabilities remain unverified.
-
 
 ### Added — Foundation documentation review and domain reference slice
 - NX-DOC-REVIEW-001: bounded final documentation review with PR integration findings, cross-document corrections, G0 close-out packages and finite exit criteria.
@@ -41,7 +35,11 @@
 - Added a dependency-free Python exact-decimal reference oracle plus language-neutral golden vectors v1.0.0 (15 cases) and 10 unit tests for parsing, canonicalization, exact arithmetic, comparison, quantization and tick/lot divisibility. Local tests passed; this is not production runtime evidence.
 - Corrected NX-ARCH-001 stale reference to NX-ADR-001 and added a separate G0D documentation-baseline gate. No prototype/live permission is granted.
 
-
 ### Added — Reference platform fit assessment
 - NX-RESEARCH-006: evidence-backed first assessment of NautilusTrader against NEXUS execution, risk, persistence, reconciliation, numeric and simulation contracts. NautilusTrader remains a leading candidate, not selected; no dependency integration or live use authorized.
 - Project status distinguishes isolated execution of the 10 exact-decimal reference tests from unavailable GitHub Actions evidence and absent production runtime.
+
+### Added — NautilusTrader v2 release baseline review
+- NX-RESEARCH-007: pinned v2.0.0rc9 tag/commit, verified its pre-release status and compared it with the previously inspected develop snapshot (diverged histories: 77 ahead / 72 behind).
+- Recorded RC9 precision conversion, SBE compatibility, at-least-once Redis retry and modify/cancel-denied semantics as mandatory NEXUS conformance topics.
+- NautilusTrader remains a leading candidate, not selected; RC9 is test-only and not approved for production use.
