@@ -4,6 +4,11 @@
 
 ## Unreleased
 
+### Added — Append-only instrument registry reference (stacked Draft PR; CI pending)
+- Added a test-only in-memory registry for immutable InstrumentSpec snapshots: historical lookup, idempotent identical replays, same-version content conflicts, monotonic version checks, stable internal identity checks and effective-time regression checks across unknown intermediate timestamps.
+- Added 12 deterministic registry tests and a dedicated Python 3.11–3.13 CI step. No persistence, concurrent-writer protocol, venue source precedence, freshness policy or production authority is implemented.
+
+
 ### Added — Instrument specification reference slice (stacked Draft PR; CI verified)
 - Added immutable venue-neutral instrument snapshots with explicit identity, market/contract/lifecycle types, provenance and timestamps.
 - Added exact tick-size, quantity-step, min/max quantity and minimum-notional checks; UNKNOWN metadata fails closed and NOT_APPLICABLE must be explicit.
