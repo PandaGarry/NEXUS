@@ -1012,8 +1012,10 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Exercise root-first guard acquisition, authoritative scope completeness and canonical child lock order.
 - [x] Prove writer-first and HEGC-first wait/retry behavior with two real sessions and SQLSTATE 40001.
 - [x] Verify runtime ACL closure, no direct DML, no helper invocation, no SET ROLE, no search_path/temp-object or custom-GUC identity spoofing.
-- [x] Verify exact grant retry and changed-binding conflict.
-- [x] Pass 5 tests on exact code/test HEAD 972ae546e432448ae995dee868b21194756b14e1, PostgreSQL workflow #43621246827; Python reference workflow #43621246829 also passed.
-- [ ] Extend to concurrent duplicate attempts, ambiguous commit, scope-membership mutation, RLS, function overload/PUBLIC EXECUTE and crash recovery.
+- [x] Verify exact grant retry, changed-binding conflict and concurrent duplicate-attempt retry to the original grant.
+- [x] Simulate a lost client response after COMMIT and recover the same persisted grant by attempt ID.
+- [x] Pass 7 tests on exact code/test HEAD 9a38c27e88c441054bd1d9d1d28cadd5f0b62ffd, PostgreSQL workflow #43621734616; Python reference workflow #43621734618 passed 264 tests per Python 3.11/3.12/3.13 runtime.
+- [x] Investigate red run #43621620302 and correct the response-loss test to disconnect after COMMIT.
+- [ ] Extend to scope-membership mutation, RLS, function overload/PUBLIC EXECUTE, crash/restore and true uncertain-COMMIT recovery.
 - [ ] Pin server image digest/provenance and complete independent security review.
 - [ ] Keep the fixture strictly separate from production migrations and services; no production authorization follows from these tests.

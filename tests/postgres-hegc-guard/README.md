@@ -21,22 +21,28 @@ GitHub Actions runs the same harness with the postgres:18.7 service image in the
 - One reviewed HEGC grant entrypoint and one reviewed source-writer entrypoint. Runtime logins have EXECUTE-only access and no direct source/control-table DML.
 - Fixed search paths with pg_temp last, fully qualified relation references, exact-attempt retry identity and changed-binding conflict.
 - Adversarial checks for direct SELECT/UPDATE/INSERT, helper invocation, SET ROLE, temp-object/search_path spoofing and caller-asserted custom-GUC identity.
+- Concurrent duplicate attempt: the blocked duplicate receives 40001, retries the whole transaction and receives the original grant.
+- Lost post-commit client response: the caller connection is terminated after grant commit but before the client consumes the response; retry by the same attempt ID returns the committed grant.
 
 ## Concurrency contract tested
 
-Each race uses two independent PostgreSQL sessions and observes the contender waiting on a row lock through pg_stat_activity.
+Each race uses independent PostgreSQL sessions and observes the contender waiting on a row lock through pg_stat_activity.
 
 1. **Writer first:** the source writer advances the guard and changes source state while holding the transaction open. HEGC waits, then PostgreSQL returns SQLSTATE 40001. The whole HEGC transaction is retried; the persisted grant snapshot includes the committed source change.
 2. **HEGC first:** HEGC advances the same guard and commits its grant while holding the transaction open. The source writer waits, receives 40001, and retries the whole transaction. Its source change commits after the grant snapshot.
+3. **Concurrent duplicate:** two HEGC sessions use the same attempt ID and binding. The second session is forced to retry after 40001 and then resolves to the first committed grant.
+4. **Lost response:** the grant commits, the client process is terminated before consuming the response, and an exact retry returns the same durable grant ID.
 
 These are real PostgreSQL 18.7 multi-connection results, not a sequential Python simulation. The retry in the tests is explicit; the fixture does not add an application retry framework.
 
 ## Verified result
 
-Exact code/test HEAD 972ae546e432448ae995dee868b21194756b14e1 passed workflow #43621246827: **5 tests passed** on PostgreSQL 18.7, including both commit-order races. The Python reference-model workflow #43621246829 also passed on the same HEAD. Job logs were inspected; no ResourceWarnings remained after subprocess stream cleanup.
+Exact code/test HEAD 9a38c27e88c441054bd1d9d1d28cadd5f0b62ffd passed PostgreSQL workflow #43621734616: **7 tests passed** on PostgreSQL 18.7. The Python reference-model workflow #43621734618 also passed: 13 suites / 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions). Job logs were inspected; no ResourceWarnings or test failures remained.
+
+The earlier PostgreSQL run #43621620302 correctly exposed a harness orchestration error: the simulated response-loss process slept before COMMIT, so the grant was not visible to the independent observer. The test was corrected to sleep after COMMIT, and the exact corrected head passed.
 
 ## Explicit limitations
 
-This fixture proves only the behavior of these test-only SQL functions and role grants. It does not establish production schema correctness, production caller identity, complete NEXUS source-writer participation, RLS policy correctness, concurrent duplicate-attempt serialization, scope-membership mutation races, crash/ambiguous-commit recovery, halt-epoch semantics, Egress process identity, socket initiation, host/network fencing, venue reconciliation, backup/PITR or production readiness.
+This fixture proves only the behavior of these test-only SQL functions and role grants. It does not establish production schema correctness, production caller identity, complete NEXUS source-writer participation, RLS policy correctness, scope-membership mutation races, crash/restore, halt-epoch semantics, Egress process identity, socket initiation, host/network fencing, venue reconciliation, backup/PITR or production readiness. The lost-response case tests a committed grant whose client response is lost; it is not a complete crash/failover or uncertain-COMMIT recovery qualification.
 
 The test binding_digest is an opaque fixture string, not a cryptographic canonicalization or signature. The image is selected by the postgres:18.7 tag; image digest/provenance pinning remains open. No production role, credential, database, schema or service is created by this work.

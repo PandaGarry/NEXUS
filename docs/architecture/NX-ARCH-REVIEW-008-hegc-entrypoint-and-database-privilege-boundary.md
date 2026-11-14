@@ -132,7 +132,7 @@ The following tests are required before implementation acceptance:
 ## 8. Open gates and disposition
 
 - [ ] Select the concrete PostgreSQL guard/entrypoint implementation only after comparative least-privilege review.
-- [x] Build an isolated PostgreSQL 18.7 multi-connection harness; its initial five-test fixture suite passes both writer-first and HEGC-first ordering.
+- [x] Build an isolated PostgreSQL 18.7 multi-connection harness; its seven-test fixture suite passes writer-first and HEGC-first ordering, concurrent duplicate-attempt retry and lost post-COMMIT client-response recovery.
 - [ ] Extend the fixture to the full adversarial matrix above, including RLS, overload/PUBLIC EXECUTE, crash/ambiguous-commit and restore cases.
 - [ ] Prove the exact database role graph, RLS policy behavior, function ownership, function ACLs and caller identity under the real connection/pooler topology.
 - [ ] Prove positive Egress process/host/network fencing independently of database leases and role revocation.

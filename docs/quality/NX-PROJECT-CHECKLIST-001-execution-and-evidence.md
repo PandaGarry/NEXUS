@@ -1449,10 +1449,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Validate complete active scope membership after root acquisition and lock child guards in canonical UUID-byte order.
 - [x] Revoke runtime direct source/control-table access and helper execution; test direct DML, SET ROLE, temp/search_path spoofing and custom-GUC identity spoofing.
 - [x] Verify exact-attempt retry returns the same grant and changed binding conflicts.
-- [x] Run two real multi-connection PostgreSQL 18.7 races: writer-first and HEGC-first; both stale waiters receive SQLSTATE 40001 and succeed only after whole-transaction retry.
-- [x] Verify exact code/test HEAD 972ae546e432448ae995dee868b21194756b14e1 on workflow #43621246827: 5 tests passed; inspect logs and remove Python ResourceWarnings.
-- [x] Verify Python reference-model workflow #43621246829 passed on the same code/test HEAD.
-- [ ] Add concurrent duplicate-attempt/ambiguous-commit tests, scope-membership mutation races, RLS/function-overload/PUBLIC-EXECUTE adversarial tests and crash recovery.
+- [x] Run real multi-connection PostgreSQL 18.7 writer-first and HEGC-first races; stale waiters receive SQLSTATE 40001 and succeed only after whole-transaction retry.
+- [x] Verify concurrent duplicate attempt ID forces a full retry and resolves to the original grant.
+- [x] Simulate lost client response after COMMIT; exact retry returns the same committed grant ID.
+- [x] Verify exact code/test HEAD 9a38c27e88c441054bd1d9d1d28cadd5f0b62ffd on [workflow #43621734616](https://github.com/PandaGarry/NEXUS/actions/runs/43621734616): 7 tests passed on PostgreSQL 18.7; inspect logs and confirm no ResourceWarnings.
+- [x] Verify Python reference-model workflow #43621734618: 13 suites / 264 tests on Python 3.11, 3.12 and 3.13 (792 executions).
+- [x] Investigate red run #43621620302: response-loss fixture slept before COMMIT; move the simulated disconnect after COMMIT and verify corrected exact head.
+- [ ] Add scope-membership mutation races, RLS/function-overload/PUBLIC-EXECUTE adversarial tests, crash/restore and true uncertain-COMMIT recovery.
 - [ ] Pin and record PostgreSQL image digest/build provenance; obtain independent database security review before any production design acceptance.
 
 **Disposition:** this qualifies the isolated fixture's guard/role protocol only. It does not implement or qualify production HEGC, NEXUS database schemas, service identities, Egress or live execution.
