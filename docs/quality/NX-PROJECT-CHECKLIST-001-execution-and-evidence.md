@@ -483,3 +483,19 @@ Disposition: research-only. No package, service, broker, database, vault or depl
 - [ ] Obtain separate owner/legal/security approval before public registration, paid plans, payment integration, teams/multi-tenancy or commercial launch.
 
 **Disposition:** strategic design only. No subscription, price, payment integration, entitlement service, tenant, public account, feature flag or commercial promise was created. NX-ARCH-007 publication passes no implementation or launch gate.
+
+
+## 18.10 Module registry, admission and capability governance (PROPOSED)
+
+- [x] Publish NX-ARCH-008 defining immutable module/release identity, registry record and manifest requirements, lifecycle state machine, module classes and trust tiers.
+- [x] Separate capability definitions, module declarations, independently issued workload grants and request-time authorization.
+- [x] Define a proposed cross-domain data-access matrix, protected-core exclusions, contract/dependency compatibility and revocation/rollback rules.
+- [x] Add 20 adversarial qualification scenarios covering forged identity, artifact/signature mismatch, stale grants, entitlement forgery, direct DB/venue access, Demo-to-live routing, SSRF, resource exhaustion, revocation races and telemetry leakage.
+- [ ] Cross-review NX-ARCH-008 against NX-ARCH-001..007, NX-SEC-001, NX-IF-001..005 and NX-OWNER-DECISIONS-001; resolve contradictions and owner/security findings.
+- [ ] Define and approve the canonical module registry/manifest schema, signing and provenance trust roots, workload identity and grant issuance policy.
+- [ ] Map each proposed permission-matrix cell to an owned API, enforcement point, data classification and testable deny case.
+- [ ] Define runtime isolation, secret/egress controls, revocation propagation objectives and resource budgets after deployment/security review.
+- [ ] Select one low-risk first-party read-model module for G1 only after G0D approval; prove actual boundary enforcement with adversarial tests.
+- [ ] Keep public plugin registration, third-party executable code, paid subscriptions, multi-tenancy and live authority separately gated.
+
+**Disposition:** design only. No registry, manifest validator, signing service, grant issuer, sandbox, module runtime, deployment technology or external dependency was added. NX-ARCH-008 publication passes no readiness or implementation gate.
