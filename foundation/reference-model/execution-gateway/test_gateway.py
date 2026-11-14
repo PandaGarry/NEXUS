@@ -268,13 +268,14 @@ class GatewayTests(unittest.TestCase):
             try:
                 outcomes.append(stale_gateway.dispatch("cmd-001"))
             except Exception as exc:
-                outcomes.append(type(exc).__name__)
+                outcomes.append(f"{type(exc).__name__}: {exc}")
 
         worker = threading.Thread(target=stale_dispatch)
         worker.start()
         try:
-            self.assertTrue(entered_adapter.wait(timeout=3),
-                            "stale worker did not reach the pre-network boundary")
+            reached = entered_adapter.wait(timeout=3)
+            self.assertTrue(reached,
+                            f"stale worker did not reach pre-network boundary; worker outcome={outcomes!r}")
             self.assertEqual(recovery_gateway.recover_after_restart(), ["cmd-001"])
             self.assertEqual(recovery_gateway.state("cmd-001"), "OUTCOME_UNKNOWN")
             release_adapter.set()
