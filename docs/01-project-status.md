@@ -174,3 +174,12 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 - Python reference models remain test-only oracles. No cross-language conformance is claimed.
 - NautilusTrader remains unselected; any reuse requires exact-version authority-boundary and adapter conformance review.
 - Prototype readiness remains BLOCKED. No venue/account selected, no credentials connected and live trading NOT AUTHORIZED.
+
+
+## Execution ordering cross-contract review update (2026-11-14)
+
+- Corrected NX-ADR-002 to make the durable reservation-before-approval sequence explicit, consistent with NX-IF-002 §6.1 and NX-IF-001 §8.3.
+- Defined two ordered durability boundaries: Risk commits all required `PRE_DISPATCH_RESERVATION` scopes before issuing `RiskApprovalCapability`; Command Coordinator atomically consumes the single-use capability while committing the canonical command, reservation reference and outbox record.
+- Clarified the pre-egress dispatch-attempt marker and conservative move to `DISPATCH_OUTCOME_UNKNOWN`. A crash after the marker but before the socket write remains potentially sent until authoritative reconciliation; this intentionally over-approximates uncertainty to prevent reservation release.
+- Cross-reviewed NX-ARCH-004 against NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SEC-001. No remaining blocking authority-order contradiction was found in the reviewed documentation path.
+- This closes a documentation sequencing gap only. No production transaction, dispatcher, trusted egress fence, Rust source, venue adapter or runtime test was added. Prototype readiness remains BLOCKED; live trading NOT AUTHORIZED.
