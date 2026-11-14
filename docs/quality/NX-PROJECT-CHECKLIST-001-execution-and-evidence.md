@@ -117,7 +117,7 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 |---|---|---|---|
 | P0 | Correct documentation contradictions, stale counts and CI references | IN PROGRESS | Updated status, roadmap, index and changelog on one exact HEAD |
 | P1 | Complete adversarial stale-egress analysis and concrete fencing design | IN PROGRESS | NX-REF-EXEC-002 plus threat/failure matrix; no fake safety pass |
-| P2 | Strengthen numeric reference oracle with deterministic property tests and additional negative vectors | IN PROGRESS | 1,000 seeded rational-oracle cases added and exact PR-head CI passed on Python 3.11–3.13; broader fuzz/cross-language vectors remain open |
+| P2 | Strengthen numeric reference oracle with deterministic property tests and additional negative vectors | IN PROGRESS | 1,000 seeded rational-oracle cases added; exact PR-head CI run #43590253167 passed on Python 3.11–3.13; broader fuzz/cross-language vectors remain open |
 | P3 | Produce G0D evidence matrix and D1–D8 disposition | OPEN | Checklist + review doc + commit-specific evidence |
 | P4 | Resolve PR integration sequence and owner review | BLOCKED | Explicit integration plan and required owner decisions |
 | P5 | Prototype workspace readiness | BLOCKED | G0D/G1 PASS and explicit authorization for safe read-only/paper prototype |
