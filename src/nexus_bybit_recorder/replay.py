@@ -7,6 +7,9 @@ from collections import Counter
 from pathlib import Path
 from typing import Iterator
 
+from .snapshot import SnapshotHttpResponse, parse_full_depth_snapshot
+from .synchronizer import BookSynchronizer
+
 
 class JournalIntegrityError(ValueError):
     pass
@@ -107,11 +110,125 @@ def summarize(path: str | Path) -> dict:
     }
 
 
+def replay_book(path: str | Path) -> dict:
+    """Rebuild book state from raw WS deltas and journaled REST snapshots."""
+    synchronizers: dict[tuple[int, str], BookSynchronizer] = {}
+    marker_matches = 0
+    marker_mismatches: list[str] = []
+    delta_events = 0
+    snapshot_events = 0
+    def get_sync(generation: int, symbol: str) -> BookSynchronizer:
+        key = (generation, symbol)
+        if key not in synchronizers:
+            synchronizers[key] = BookSynchronizer(symbol)
+        return synchronizers[key]
+
+    for index, record in enumerate(iter_verified_frames(path), start=1):
+        generation = int(record["connection_generation"])
+        record_type = record.get("record_type", "raw_ws_frame")
+        raw = record["raw_frame"]
+        if record_type == "raw_ws_frame":
+            try:
+                payload = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(payload, dict):
+                continue
+            topic = payload.get("topic")
+            if isinstance(topic, str) and topic.startswith("orderbook.full."):
+                symbol = topic.removeprefix("orderbook.full.")
+                sync = get_sync(generation, symbol)
+                sync.on_delta(payload)
+                delta_events += 1
+        elif record_type == "raw_rest_snapshot":
+            metadata = record.get("metadata") or {}
+            try:
+                payload = json.loads(raw)
+                result = payload.get("result", {}) if isinstance(payload, dict) else {}
+                symbol = result.get("s") if isinstance(result, dict) else None
+                if not isinstance(symbol, str):
+                    raise ValueError("snapshot has no symbol")
+                sync = get_sync(generation, symbol)
+                response = SnapshotHttpResponse(
+                    request_url=str(metadata.get("request_url", "")),
+                    http_status=int(metadata.get("http_status", 0)),
+                    body=raw,
+                    received_wall_ns=int(record.get("received_wall_ns", 0)),
+                    received_monotonic_ns=int(record.get("received_monotonic_ns", 0)),
+                )
+                snapshot = parse_full_depth_snapshot(response, expected_symbol=symbol)
+                sync.on_snapshot(snapshot)
+                snapshot_events += 1
+            except (ValueError, TypeError, KeyError, json.JSONDecodeError):
+                if "sync" in locals():
+                    sync.invalidate("replay_snapshot_invalid")
+        elif record_type in {"rest_snapshot_error", "snapshot_validation_error"}:
+            # Error events invalidate the current generation's in-flight book state.
+            candidates = [sync for (gen, _), sync in synchronizers.items() if gen == generation]
+            for sync in candidates:
+                sync.invalidate(record_type)
+        elif record_type == "derived_book_state":
+            try:
+                marker = json.loads(raw)
+            except json.JSONDecodeError:
+                marker_mismatches.append(f"line {index}: malformed derived state marker")
+                continue
+            if not isinstance(marker, dict):
+                marker_mismatches.append(f"line {index}: derived state marker is not an object")
+                continue
+            if marker.get("state") == "INVALID" and marker.get("reason") == "websocket_disconnect_or_generation_end":
+                for (gen, _), sync in synchronizers.items():
+                    if gen == generation:
+                        sync.on_disconnect()
+            if marker.get("state") == "LIVE_VALID":
+                symbol_candidates = [
+                    sync for (gen, _), sync in synchronizers.items()
+                    if gen == generation and sync.valid
+                ]
+                matched = any(
+                    sync.book is not None
+                    and sync.book.update_id == marker.get("update_id")
+                    and sync.book.cross_seq == marker.get("cross_seq")
+                    for sync in symbol_candidates
+                )
+                if matched:
+                    marker_matches += 1
+                else:
+                    marker_mismatches.append(f"line {index}: LIVE_VALID marker did not match replayed watermark")
+
+    final_books = {}
+    for (generation, symbol), sync in sorted(synchronizers.items()):
+        fingerprint = None
+        if sync.valid and sync.book is not None:
+            fingerprint = hashlib.sha256(
+                json.dumps(sync.book.fingerprint_view(), separators=(",", ":")).encode("utf-8")
+            ).hexdigest()
+        final_books[f"{generation}:{symbol}"] = {
+            "valid": sync.valid,
+            "update_id": sync.book.update_id if sync.valid and sync.book else None,
+            "cross_seq": sync.book.cross_seq if sync.valid and sync.book else None,
+            "fingerprint_sha256": fingerprint,
+            "last_invalidation_reason": sync.last_invalidation_reason,
+        }
+    return {
+        "delta_events": delta_events,
+        "snapshot_events": snapshot_events,
+        "valid_book_markers_matched": marker_matches,
+        "marker_mismatches": marker_mismatches,
+        "final_books": final_books,
+        "replay_matches_recorded_valid_markers": not marker_mismatches,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Verify and summarize a NEXUS raw market-data journal")
     parser.add_argument("journal", type=Path)
+    parser.add_argument("--replay-book", action="store_true", help="rebuild book state from WS deltas and REST snapshots")
     args = parser.parse_args()
-    print(json.dumps(summarize(args.journal), indent=2, sort_keys=True))
+    summary = summarize(args.journal)
+    if args.replay_book:
+        summary["book_replay"] = replay_book(args.journal)
+    print(json.dumps(summary, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
