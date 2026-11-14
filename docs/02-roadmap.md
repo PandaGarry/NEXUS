@@ -950,3 +950,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Prove writer-first and HEGC-first order on PostgreSQL 18.7 using multiple concurrent connections.
 - [ ] Test every invalidating writer, stale-snapshot retry, process pause/crash, ambiguous commit and multi-scope ordering.
 - [ ] Verify database privileges prevent any unguarded source mutation.
+
+## HEGC guard entrypoint enforcement
+
+- [x] Record that a guard function alone cannot enforce call ordering if callers can pre-read protected state.
+- [x] Require a single HEGC transaction entrypoint or a DB-enforced first-statement transaction API.
+- [x] Restrict all invalidating source writers to guarded procedures; revoke direct DML/advisory-lock bypass.
+- [ ] Test caller pre-read, direct DML bypass, search_path spoofing, overload/temp-object attacks and function privilege escalation.
+- [ ] Prove guard wait/retry and commit ordering on PostgreSQL 18.7.
