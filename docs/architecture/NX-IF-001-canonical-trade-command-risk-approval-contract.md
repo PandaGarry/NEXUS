@@ -167,6 +167,7 @@ Risk Engine receives:
 - immutable instrument specification version;
 - current policy bundle/version and policy evaluation mode;
 - exposure snapshot ID/version and reservation state reference;
+- immutable valuation_input_vector_id/version for mark/index/FX/fee/collateral inputs and its source-specific freshness evidence;
 - StateEvidence/FreshnessVector reference (WP-D);
 - current halt epoch and scoped halt state;
 - requested evaluation deadline;
@@ -192,6 +193,7 @@ Required fields:
 - policy_bundle_id/version;
 - instrument_spec_version;
 - exposure_snapshot_id/version;
+- valuation_input_vector_id/version;
 - state_evidence_ref/version;
 - halt_epoch;
 - reservation_id/version when applicable;
@@ -220,7 +222,8 @@ Warnings or confidence scores MUST NOT override DENY or REQUIRE_REVIEW. No defau
 | instrument_spec_version | Approved immutable spec version |
 | policy_bundle_id/version | Exact risk policy version |
 | exposure_snapshot_id/version | Exposure state used for approval |
-| reservation_id/version | Durable reservation binding when required |
+| valuation_input_vector_id/version | Exact immutable mark/index/FX/fee/collateral input vector used by the decision |
+| reservation_id/version | Durable reservation binding and persisted valuation-vector reference when required |
 | halt_epoch | Halt generation observed at approval |
 | issued_at / expires_at | Short-lived authorization interval |
 | nonce | Cryptographically strong unique value |
@@ -240,8 +243,9 @@ Immediately before dispatch, Execution MUST verify:
 6. approval is not expired and clock uncertainty is within configured bound;
 7. nonce/approval has not already been consumed;
 8. reservation is active and bound to this command;
-9. halt epoch matches current authoritative epoch and scope is not halted;
-10. command/outbox payload being dispatched is exactly the approved canonical payload.
+9. valuation_input_vector_id/version matches the signed capability and durable reservation; every referenced immutable input remains within its source-specific freshness, clock-uncertainty, quality, correction and policy-defined drift bounds;
+10. halt epoch matches current authoritative epoch and scope is not halted;
+11. command/outbox payload being dispatched is exactly the approved canonical payload.
 
 Any failed check rejects dispatch and records a stable reason code. A valid signature alone is insufficient.
 
@@ -411,7 +415,7 @@ No code, exchange connection, credentials, order placement, risk-limit change, P
 
 ## WP-D evidence binding
 
-RiskApprovalCapability MUST reference the immutable StateEvidenceVector ID/version and canonical digest defined by [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md), together with the EvidenceRequirementSet/FreshnessPolicy version used for evaluation. Execution performs the final compatibility check immediately before dispatch. A material source generation, watermark, quality, spec, policy, exposure, reservation or halt-epoch change invalidates the capability unless a contractually defined monotonic compatibility rule proves otherwise. Approval MUST NOT be rebound in place; Risk must re-evaluate and issue a new capability. This is a proposed cross-contract requirement, not an implemented behavior.
+RiskApprovalCapability MUST reference the immutable StateEvidenceVector ID/version and canonical digest defined by [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md), together with the EvidenceRequirementSet/FreshnessPolicy version used for evaluation. Execution performs the final compatibility check immediately before dispatch. A source-generation change, sequence gap/regression, correction/revocation, completeness or quality deterioration, incompatible spec/policy change, exposure/reservation change, halt-epoch advance or source-freshness/drift-policy failure invalidates the capability. A monotonic newer market-data watermark or tick alone does NOT automatically invalidate it when the exact bound immutable valuation-input vector remains within its approved source-specific freshness/uncertainty/drift window; a source policy may explicitly require the latest version. The signed valuation_input_vector_id/version is never silently rebound. Approval MUST NOT be rebound in place; Risk must re-evaluate and issue a new capability. This is a proposed cross-contract requirement, not an implemented behavior.
 
 
 ## WP-E emergency command authorization
