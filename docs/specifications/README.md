@@ -15,5 +15,5 @@
 - [ТЗ-NX-002 — Professional Order Flow](TZ-NX-002-professional-order-flow.md) — Proposed
 - [ТЗ-NX-003 — Quant & Strategy Engine](TZ-NX-003-quant-strategy-engine.md) — Proposed
 - [ТЗ-NX-004 — Autonomous Execution Engine](TZ-NX-004-autonomous-execution-engine.md) — Proposed
-- ТЗ-NX-005 — Independent Risk Engine
+- [ТЗ-NX-005 — Independent Risk Engine](TZ-NX-005-independent-risk-engine.md) — Proposed
 - ТЗ-NX-006 — Portfolio & Financial Ledger
