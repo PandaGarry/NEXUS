@@ -61,6 +61,8 @@ class ExactDecimalTests(unittest.TestCase):
             self.d("1").is_multiple_of(self.d("0"))
         with self.assertRaises(InvalidStep):
             self.d("1").is_multiple_of(self.d("-0.1"))
+        with self.assertRaises(TypeError):
+            self.d("1").is_multiple_of("0.1")  # type: ignore[arg-type]
 
     def test_large_values_and_scales(self):
         a = self.d("999999999999999999999999999999.99999999")
