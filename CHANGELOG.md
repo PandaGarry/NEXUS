@@ -157,3 +157,12 @@
 - Created Issue #15 and branch `engineering/rust-execution-domain-conformance-v0`, based on exact PR #14 head `ab6976933cb4de9b5320b73531034d02edc53907`.
 - Updated architecture index, project checklist, roadmap and project status.
 - No Rust source, Cargo workspace, production numeric limits, venue adapter, credentials, network egress or live-trading capability added. Python models remain test-only references; no Rust/Python conformance is claimed.
+
+
+### Updated — Execution ordering cross-contract harmonization (proposed; documentation only)
+
+- Corrected NX-ADR-002 so all required `PRE_DISPATCH_RESERVATION` scopes are durably committed before Risk issues a `RiskApprovalCapability`.
+- Made single-use approval consumption atomic with the durable canonical command/reservation-reference/outbox commit.
+- Clarified the pre-egress attempt marker and conservative `DISPATCH_OUTCOME_UNKNOWN` exposure semantics across crashes before/during/after network send.
+- Updated NX-ARCH-004, architecture index, project checklist, status and roadmap after cross-review against NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SEC-001.
+- No runtime, Rust source, database transaction, signer, network fence, venue adapter or live-trading capability was added; owner acceptance and G0D/G1 gates remain open.
