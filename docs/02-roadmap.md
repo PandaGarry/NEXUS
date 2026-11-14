@@ -1030,3 +1030,17 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Separate public release notes from internal engineering logs, checklists, security-sensitive implementation details and unverified roadmap claims.
 - [ ] Before launch, approve public product-status vocabulary, support/escalation ownership, moderation/privacy rules and publication permissions.
 - [ ] Launch Telegram/MAX, VK and other channels only after stable product availability and a sustainable support/release process.
+
+
+## HEGC privilege and RLS qualification follow-up — 2026-11-14
+
+- [x] Add runtime-role negative tests for role creation/attribute escalation, definer-role membership grants, PUBLIC EXECUTE attempts, SECURITY INVOKER alteration, default-privilege mutation against definer owner and trusted-schema function creation.
+- [x] Add restrictive RLS composition test and verify a negative source row is excluded from the HEGC SECURITY DEFINER snapshot.
+- [x] Pass 11 PostgreSQL 18.7 fixture tests on code/test SHA `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf`, [workflow #43629845855](https://github.com/PandaGarry/NEXUS/actions/runs/43629845855).
+- [x] Pass Python reference-model matrix: 264 tests per runtime on Python 3.11/3.12/3.13, [workflow #43629845861](https://github.com/PandaGarry/NEXUS/actions/runs/43629845861).
+- [x] Re-run both workflows on documentation-synchronized HEAD `e78f3b7c95939d13de18842567d56c4c314c3e6c`: PostgreSQL [#43629988964](https://github.com/PandaGarry/NEXUS/actions/runs/43629988964) 11/11; Python [#43629988969](https://github.com/PandaGarry/NEXUS/actions/runs/43629988969) 264 tests/runtime.
+- [ ] Build production DBA/migration catalog-manifest drift detection, emergency role-change reconciliation and existing-session termination.
+- [ ] Extend RLS matrix to owner/role inheritance edge cases, policy subqueries, function overloads and covert channels.
+- [ ] Qualify crash/restore, backup/PITR, failover, true uncertain-COMMIT recovery, image digest/provenance and independent security review.
+
+**Boundary:** all green results are disposable-fixture/reference-model evidence only. No production database schema, HEGC service, Egress transport fence or live trading capability is implemented or authorized.
