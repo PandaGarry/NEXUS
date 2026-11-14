@@ -209,7 +209,8 @@ class CommandGateway:
         if crash_after_commit:
             raise InjectedCrash("crash after durable commit, before dispatch")
 
-    def dispatch(self, command_id: str, *, crash_after_dispatch_marker: bool = False) -> str:
+    def dispatch(self, command_id: str, *, crash_after_dispatch_marker: bool = False,
+                 crash_after_venue_accept: bool = False) -> str:
         db = self.store.db
         db.execute("BEGIN IMMEDIATE")
         try:
@@ -244,6 +245,9 @@ class CommandGateway:
             db.execute("UPDATE commands SET state=?,outcome=? WHERE command_id=?",
                        (CommandState.OUTCOME_UNKNOWN.value, type(exc).__name__, command_id))
             return CommandState.OUTCOME_UNKNOWN.value
+        if crash_after_venue_accept:
+            # The venue may have accepted the command, but the ACK is not durable.
+            raise InjectedCrash("crash after venue acceptance, before ACK persistence")
         db.execute("UPDATE commands SET state=?,venue_reference=?,outcome=? WHERE command_id=?",
                    (CommandState.ACKNOWLEDGED.value, result, "ACCEPTED_NOT_FILLED", command_id))
         return CommandState.ACKNOWLEDGED.value
