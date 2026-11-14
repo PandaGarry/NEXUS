@@ -1515,3 +1515,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Re-run qualification on a future executable-source/test/workflow change; documentation-only commits must not inherit an exact-head CI claim without an explicit evidence note.
 
 **Disposition:** exact executable/test HEAD `49cb8ba73bfb9cf61fafba3108cf8ead6d16321b` is green on the disposable PostgreSQL fixture and Python reference matrix. Production DBA/migration catalog-manifest drift detection, emergency role-change reconciliation, existing-session termination, expanded RLS adversarial coverage, crash/restore/PITR, true uncertain-COMMIT recovery, signed image provenance/SBOM/vulnerability review and independent security review remain OPEN. No production implementation or live-trading authorization follows from this evidence.
+
+
+## 18.90 PostgreSQL catalog-manifest drift regression — 2026-11-14
+
+- [x] Add deterministic disposable-fixture catalog fingerprint for `nexus_*` role attributes/memberships, schema/relation owners and ACLs, RLS flags/policies, function identity/owner/SECURITY mode/configuration/ACLs and default privileges.
+- [x] Add deliberate mutation/restore tests for runtime CREATEROLE escalation, PUBLIC EXECUTE, SECURITY INVOKER alteration and unexpected trusted-schema function inventory.
+- [x] Verify exact code/test HEAD `f815c351a709ff169996e3f0e451da73651a142c`: PostgreSQL 18.7 workflow [#43631662692](https://github.com/PandaGarry/NEXUS/actions/runs/43631662692) passed **12/12**; Python workflow [#43631662864](https://github.com/PandaGarry/NEXUS/actions/runs/43631662864) passed **264 tests/runtime** on Python 3.11/3.12/3.13 (792 executions). All four jobs completed successfully.
+- [x] Record explicit boundary: fingerprint is a test-only regression oracle, not a signed/approved production manifest, continuous drift monitor or deployment gate.
+- [ ] Define production manifest canonicalization, signing/trust roots, approval/review, ownership and immutable audit retention.
+- [ ] Implement deployment-time fail-closed comparison against the approved manifest for the real production schema/migration set.
+- [ ] Qualify DBA/migration control plane, emergency-change reconciliation and termination/fencing of affected existing sessions/processes.
+
+**Disposition:** one narrow but material fixture-level catalog-drift detection gap is now covered. Production DBA/migration governance, production manifest lifecycle and operational fencing remain OPEN; no production deployment or live-trading authorization follows.
