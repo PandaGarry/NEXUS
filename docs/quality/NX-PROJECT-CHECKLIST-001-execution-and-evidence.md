@@ -780,7 +780,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** exact-head reference CI passed and direct action runtime pins are verified. G0D/G1 implementation, strict parser and crypto-provider qualification remain open.
 
-## 18.33 COSE pre-verification trust and key-material boundary — 2026-11-14
+## 18.34 COSE pre-verification trust and key-material boundary — 2026-11-14
 
 - [x] Clarify that protected `kid`, `alg` and token-supplied issuer/audience are untrusted until signature verification succeeds.
 - [x] Restrict candidate key lookup to a bounded local versioned registry; prohibit token-directed remote key retrieval.
@@ -803,3 +803,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove selected library preserves original protected bytes and does not silently accept or normalize profile violations.
 
 **Disposition:** exact wire profile is now specified in NX-ADR-008 / NX-RESEARCH-011. No library or cryptographic runtime approved; G0D/OD-08 remain open.
+
+## 18.35 Exact-head regression after COSE key-resolution hardening — 2026-11-14
+
+- [x] Verify branch HEAD `6fefd9a44ff2f272b6516265d10f41c46a13cf7a` with [workflow #43615911362](https://github.com/PandaGarry/NEXUS/actions/runs/43615911362).
+- [x] Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
+- [x] Inspect all job logs: no failures or Node.js 20 / `punycode` deprecation warnings.
+- [x] Confirm key-resolution design rejects remote token-directed key retrieval, binds lookup to local expected issuer/audience and requires signed claims to match after verification.
+- [ ] Add cross-language adversarial COSE vectors for issuer/audience substitution, malicious key URLs, ambiguous kid, stale/revoked registry, malformed key/signature and private-key exposure.
+
+**Disposition:** exact-head Python reference regression passed; it does not exercise the proposed COSE verifier or key registry. OD-08/G0D/G1 remain open for implementation and security review.
