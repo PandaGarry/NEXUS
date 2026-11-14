@@ -208,6 +208,16 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         self.assertNotEqual(incomplete.returncode, 0)
         self.assertIn("22023", incomplete.stderr)
 
+        noncanonical_scopes = [scopes[0], scopes[2], scopes[1]]
+        noncanonical = run_sql(
+            "BEGIN ISOLATION LEVEL SERIALIZABLE;"
+            f"SELECT nexus_hegc.issue_egress_grant({lit(account)}::uuid,{uuid_array(noncanonical)},"
+            f"{lit(str(uuid.uuid4()))}::uuid,'noncanonical-scope-test'); COMMIT;",
+            user="nexus_hegc", password="hegc-test-only",
+        )
+        self.assertNotEqual(noncanonical.returncode, 0)
+        self.assertIn("22023", noncanonical.stderr)
+
     def test_exact_retry_returns_same_grant_and_changed_binding_conflicts(self) -> None:
         account, scopes = self.seed()
         attempt = str(uuid.uuid4())
