@@ -53,7 +53,8 @@ The test suite currently covers 21 deterministic cases:
 - duplicate approval/command replay;
 - two gateway instances concurrently racing to consume the same approval/reservation;
 - two dispatcher instances racing to claim one persisted command while the winning adapter call is held open;
-- non-canonical decimal rejection;\n- stale worker resumes after recovery: venue send still occurs without an egress fence, while a conditional state transition rejects the late ACK and records it as a stale observation.
+- non-canonical decimal rejection;
+- stale worker resumes after recovery: venue send still occurs without an egress fence, while a conditional state transition rejects the late ACK and records it as a stale observation.
 
 ## 5. Verification record
 
