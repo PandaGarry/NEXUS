@@ -247,3 +247,12 @@
 ### Added — Persistence and trusted-egress option analysis (2026-11-14)
 
 Expanded NX-REF-EXEC-002 §4.5 with an evidence-oriented comparison of relational/service-owned transaction boundaries, separate databases and event-store coordination, plus DB lease, proxy/gateway, isolated workload and dedicated-host egress options. Recorded a candidate baseline without selecting a provider: separate Risk and Command local ACID commits; one account-scoped credential/socket-owning Egress Authority; positive independently enforced old-generation fencing before takeover; fail-closed CREATE halt when fence evidence is absent. OD-08/09/10/12 remain open. Documentation-only; no implementation or new CI evidence claimed.
+
+
+
+### Exact-head CI verification after persistence/egress analysis — 2026-11-14
+
+- Documentation analysis head verified: `3187a69e443157ac3e66b874b4dcbb29588ddc70`.
+- GitHub Actions run [#43606550889](https://github.com/PandaGarry/NEXUS/actions/runs/43606550889) completed successfully on that exact head.
+- Three jobs passed: Python 3.11, 3.12 and 3.13. Each executed 13 isolated reference-model suites with counts 11, 24, 13, 17, 12, 16, 18, 18, 32, 12, 15, 28 and 21 = 237 tests per runtime; 711 successful test executions total.
+- This CI run verifies the existing Python reference-model suites at the exact documentation-analysis head. It does not test the newly documented transaction alternatives, database isolation, production egress topology, external host/network fencing, Rust, venue behavior or live safety.
