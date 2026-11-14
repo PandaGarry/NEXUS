@@ -582,7 +582,7 @@ The crash-point matrix now covers both lock orders, paused process, unavailable 
 
 NX-IF-005 now has explicit adversarial cases 36–42 for both commit orders, pause-after-gate, control-store outage, positive sender fencing, delayed venue acceptance and actual socket-boundary evidence. Its acceptance criteria distinguish queued commands without final authorization from gate-committed in-flight attempts. The independent emergency Control Plane can commit a halt while Risk is unavailable if the authoritative halt store remains available; store uncertainty blocks Egress authorization and prevents a fully-enforced HALTED claim.
 
-The earlier matrix at SHA `73841573e4e02b34a0c0363bbbe21155828d0c08` passed 239 tests/runtime (717 executions). It was superseded when the 11-test HaltEgressGate reference oracle was added; the later 250-test / 750-execution result is recorded below. No Rust, CBOR/COSE runtime, PostgreSQL harness, halt store, Egress transport or external fence is implemented.
+The earlier matrix at SHA `73841573e4e02b34a0c0363bbbe21155828d0c08` passed 239 tests/runtime (717 executions). It was superseded by the expanded halt/Egress reference suite; the latest exact-head evidence is recorded below. No Rust, CBOR/COSE runtime, PostgreSQL harness, halt store, Egress transport or external fence is implemented.
 
 ## Risk signing versus venue signing authority separation — 2026-11-14
 
@@ -596,11 +596,11 @@ This is Python reference-model CI only. It does not implement or verify signing 
 
 ## Test-only halt / final Egress gate reference model
 
-Added `foundation/reference-model/egress-fencing/halt_egress_gate.py`; the model now has 12 tests. It models halt-first denial, gate-first in-flight attempts, pause-after-gate acknowledgement blocking, positive sender-fence handling, single-use attempt IDs, halt-store outage and reconciliation obligations after socket initiation. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing. The initial 11-test revision passed CI; the model has since been hardened to 12 tests to preserve OUTCOME_UNKNOWN and reservation state after sender fencing. The revised 12-test code/test revision awaits its own exact-head run.
+Added `foundation/reference-model/egress-fencing/halt_egress_gate.py`; the current model has 16 dedicated HaltEgressGate tests within a 24-test egress-fencing suite. It models both halt/gate commit orders, pause-after-gate acknowledgement blocking, positive sender-fence handling, single-use attempt IDs, halt-store outage/recovery, repeated halt idempotency and signed-64-bit epoch exhaustion. Sender fencing without trusted socket-initiation evidence preserves OUTCOME_UNKNOWN and reservation state. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing.
 
 ## Exact-head CI including HaltEgressGate reference model — 2026-11-14
 
-PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` passed [workflow #43618240612](https://github.com/PandaGarry/NEXUS/actions/runs/43618240612). Python 3.11, 3.12 and 3.13 each passed 13 isolated suites / **250 tests** (750 successful executions total). The egress-fencing suite now includes 11 HaltEgressGate tests (24 total in that suite); the numeric-wire 512/513-digit boundary remains included. All three logs show no failures or Node.js 20 / `punycode` warnings.
+At SHA `f1c0bd0576bd42058ca2482706533248bcf6069b`, [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545) passed on Python 3.11, 3.12 and 3.13. Each runtime passed 13 isolated suites / **255 tests** (765 successful executions total). The egress-fencing suite passed 24 tests, including 16 HaltEgressGate cases. All three job logs were inspected; no test failures or deprecation warnings were found.
 
 The new HaltEgressGate is a sequential test-only oracle. It does not prove real PostgreSQL lock ordering, concurrent linearizability, process pause/termination, network route fencing, socket behavior, venue acceptance or production halt safety. No live controls are implemented.
 
@@ -619,3 +619,14 @@ NX-SEC-001 now treats HEGC as a critical control-plane trust domain: it can issu
 The Halt/Egress Gate Coordinator (HEGC) is now the selected logical owner and sole writer of HaltState and EgressBoundaryAuthorization. It is separate from Risk and the credential-owning Egress process, has no venue credentials/socket or Risk signing key, and exposes a one-use attempt grant. Egress cannot write control records directly. G1 uses one active HEGC instance with PostgreSQL 18.7 control-owned schema/role; outage denies new final gates and cannot be reported as fully enforced HALTED.
 
 The test-only Python state-machine oracle now covers both commit orders, pause-after-gate, sender fencing, store outage/recovery with pre-existing in-flight attempts, repeated halt idempotency and signed-64-bit epoch exhaustion. It remains a sequential reference model: no real DB serialization, concurrent process, socket or network fencing has been implemented or proven.
+
+
+## Exact-head CI — sender-fence semantics and HEGC edge coverage — 2026-11-14
+
+- [x] Verify PR #16 code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` on [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545).
+- [x] Pass all 13 isolated reference-model suites on Python 3.11, 3.12 and 3.13: 255 tests per runtime, 765 successful executions total.
+- [x] Verify the egress-fencing suite's 24 tests, including all 16 HaltEgressGate cases; inspect all three job logs.
+- [x] Confirm no failures or deprecation warnings in the three completed jobs.
+- [ ] Keep real PostgreSQL serialization, HEGC service/roles, trusted socket-initiation observation, process/host/network fencing and venue reconciliation as independent G1 evidence gates.
+
+**Disposition:** exact code/test HEAD passed Python reference CI. This is not production concurrency, socket, network-fencing or live-trading evidence.
