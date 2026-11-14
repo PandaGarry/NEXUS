@@ -682,3 +682,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Risk signer alone holds Risk private key; Execution/Trusted Egress receive public verification material only.
 - Trusted Egress alone holds venue credentials and owns the venue socket; EgressBoundaryAuthorization remains a separate one-use attempt control.
 - No key, vault, signer or venue credential is implemented; key lifecycle and compromise tests remain open.
+
+### Exact PR #16 head CI passed after halt / signing authority updates — 2026-11-14
+
+- Branch head `dbfba513b86a79b8b6574a80c1beb136b28836c7` passed [workflow #43618114058](https://github.com/PandaGarry/NEXUS/actions/runs/43618114058).
+- Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 executions total).
+- All logs show no failures or Node.js 20 / `punycode` deprecation warnings.
+- This is Python reference-model CI only; no signing keys, halt store, Egress, PostgreSQL, Rust or venue path was exercised.
