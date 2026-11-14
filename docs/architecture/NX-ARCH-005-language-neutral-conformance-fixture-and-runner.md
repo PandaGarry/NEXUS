@@ -175,6 +175,23 @@ The runner comparison is semantic but deliberately strict:
 7. A rejection matches only when the normalized `error_class` matches. Human-readable messages are diagnostic only and are not conformance outputs.
 8. The runner must not normalize away unit, currency, instrument, spec-version, sign, denominator or scale information.
 
+## 4.1 Strict JSON ingestion and fixture identity
+
+A language-neutral fixture contract is not portable if runtimes silently parse ambiguous JSON differently. The future validator/runner MUST apply the same strict ingestion rules before schema validation or case execution:
+
+1. Decode bytes as UTF-8 strictly. Reject invalid UTF-8 and a UTF-8 BOM; do not fall back to a platform code page.
+2. Reject duplicate object member names at every nesting level. A parser's default "first wins" or "last wins" behavior is not acceptable.
+3. Reject non-standard numeric constants such as `NaN`, `Infinity` and `-Infinity`.
+4. Reject JSON floating-point number tokens throughout the fixture contract. Control/count fields use JSON integers; financial/domain quantities, coefficients, numerators, denominators, prices, quantities, scales when not control integers, and other exact values use canonical strings or typed objects. No implementation may parse a JSON float and convert it back to a string.
+5. JSON integer tokens are limited to the signed 64-bit range for cross-runtime control metadata. Larger exact integers MUST be decimal strings. Booleans remain booleans and MUST NOT be accepted as integers.
+6. Reject unpaired Unicode surrogate code points. Do not apply Unicode normalization to strings or object keys; compare their decoded scalar values exactly.
+7. Reject comments, trailing commas and other non-JSON extensions.
+8. Apply explicit runner limits for raw fixture byte length, nesting depth, number of cases, object members and string length before unbounded execution. These are runner safety limits, not hidden numeric semantics. A limit profile must be named and recorded in evidence; no default production profile is implied.
+
+The raw fixture SHA-256 is calculated over the exact original byte sequence before decoding. The runner report records both the raw-byte hash and the parsed contract/suite versions. It MUST NOT hash a reserialized JSON document, because whitespace, key order and serializer choices would change the evidence identity. Case array order is preserved; object member order is not semantically significant.
+
+A validator test suite must include duplicate keys at root/suite/case/input/expect levels, invalid UTF-8, BOM, floats, non-finite constants, booleans in integer fields, out-of-range integers, unpaired surrogates, excessive nesting and each configured resource limit. The same adversarial corpus must be executed by every language implementation before claiming cross-language fixture compatibility.
+
 ## 5. Runner protocol
 
 A language implementation exposes the same logical operation set through a thin test adapter. The adapter must not become a production API or import the other language's implementation.
