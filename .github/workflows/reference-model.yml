@@ -63,6 +63,3 @@ jobs:
       - name: Test venue eligibility egress fencing reference
         working-directory: foundation/reference-model
         run: python -m unittest -v test_venue_egress_fencing.py
-      - name: Test venue eligibility egress fencing reference
-        working-directory: foundation/reference-model
-        run: python -m unittest -v test_venue_egress_fencing.py
