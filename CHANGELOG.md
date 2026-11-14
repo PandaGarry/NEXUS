@@ -166,3 +166,12 @@
 - Clarified the pre-egress attempt marker and conservative `DISPATCH_OUTCOME_UNKNOWN` exposure semantics across crashes before/during/after network send.
 - Updated NX-ARCH-004, architecture index, project checklist, status and roadmap after cross-review against NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SEC-001.
 - No runtime, Rust source, database transaction, signer, network fence, venue adapter or live-trading capability was added; owner acceptance and G0D/G1 gates remain open.
+
+
+### Added — Language-neutral conformance fixture and runner contract (proposed; documentation only)
+
+- Added NX-ARCH-005 after auditing existing decimal, rational, numeric-wire, financial-math and instrument-spec fixture formats.
+- Defined a proposed common fixture envelope, tagged VALUE/REJECT outcomes, stable rejection classes, strict typed comparison rules, suite versioning and migration policy.
+- Defined deterministic runner responsibilities, normalized reports, CI provenance/evidence and layered differential/property/adversarial test strategy.
+- Confirmed the tracked repository has no Cargo workspace, Rust toolchain pin, Rust source tree or Rust runner; no Rust implementation is started before G0D/G1 approval.
+- Existing v1 fixture files and current Python unittest workflows remain unchanged. No schema validator, runner or cross-language conformance is claimed.
