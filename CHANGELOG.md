@@ -179,3 +179,5 @@
 - Added a per-family legacy fixture migration assessment to NX-ARCH-005, distinguishing structural conversion from rejection-class annotation and newly derived instrument-spec expectations; all existing v1 files remain untouched.
 
 - Expanded NX-ARCH-005 with an initial operation-ID/input/result registry and stable error mapping. Added catch-compatible typed numeric-wire error subclasses and tests for stable error classes; existing callers can continue catching `NumericWireError`. Updated the reference-model README and operation registry. No fixture migration or production parser qualification is claimed.
+
+- Added strict fixture-ingestion requirements to NX-ARCH-005: UTF-8 validation, duplicate-key/non-finite/float rejection, bounded control integers, raw-byte SHA-256 and explicit runner resource limits. No validator or runner implementation is claimed.
