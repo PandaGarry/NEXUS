@@ -134,10 +134,18 @@ class BoundedNumericContext:
         return self._check_decimal(value)
 
     def parse_decimal_wire(self, encoded: str) -> ExactDecimal:
+        if not isinstance(encoded, str):
+            raise TypeError("encoded value must be str")
+        if len(encoded) > self.limits.max_wire_chars:
+            raise NumericLimitExceeded("decimal wire input exceeds configured character budget")
         value = parse_decimal_wire(encoded, max_chars=self.limits.max_wire_chars)
         return self._check_decimal(value, "wire decimal")
 
     def parse_rational_wire(self, encoded: str) -> ExactRational:
+        if not isinstance(encoded, str):
+            raise TypeError("encoded value must be str")
+        if len(encoded) > self.limits.max_wire_chars:
+            raise NumericLimitExceeded("rational wire input exceeds configured character budget")
         value = parse_rational_wire(encoded, max_chars=self.limits.max_wire_chars)
         return self._check_rational(value)
 
