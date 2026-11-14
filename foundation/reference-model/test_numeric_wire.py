@@ -117,5 +117,28 @@ class NumericWireTests(unittest.TestCase):
                 self.assertEqual(caught.exception.error_class, expected_class)
 
 
+    def test_decimal_scale_obeys_explicit_resource_budget(self):
+        with self.assertRaises(NumericWireError) as caught:
+            parse_decimal("nxd1:1:129", max_chars=128)
+        self.assertEqual(caught.exception.error_class, "NUMERIC.RESOURCE_LIMIT")
+
+        with self.assertRaises(NumericWireError) as caught:
+            parse_decimal("nxd1:1:5", max_chars=128, max_scale=4)
+        self.assertEqual(caught.exception.error_class, "NUMERIC.RESOURCE_LIMIT")
+
+        with self.assertRaises(ValueError):
+            parse_decimal("nxd1:1:0", max_chars=128, max_scale=-1)
+
+    def test_integer_conversion_budget_failures_are_stable_resource_errors(self):
+        oversized_integer = "9" * 5000
+        with self.assertRaises(NumericWireError) as caught:
+            parse_decimal(f"nxd1:{oversized_integer}:0", max_chars=6000)
+        self.assertEqual(caught.exception.error_class, "NUMERIC.RESOURCE_LIMIT")
+
+        with self.assertRaises(NumericWireError) as caught:
+            parse_rational(f"nxr1:{oversized_integer}:1", max_chars=6000)
+        self.assertEqual(caught.exception.error_class, "NUMERIC.RESOURCE_LIMIT")
+
+
 if __name__ == "__main__":
     unittest.main()
