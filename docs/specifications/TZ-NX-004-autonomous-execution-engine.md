@@ -427,7 +427,7 @@ Official venue documentation consulted on 2026-11-14:
 
 Venue semantics change. Before implementation, each adapter must pin the exact current API version, endpoint documentation, account mode and product-specific rules. Search results and this specification are not a substitute for that implementation-time certification.
 
-## 21. Verification status
+## 20A. Execution-to-Ledger handoff contract (WP-C)\n\nNormalized fills and execution corrections MUST follow [NX-IF-003 — Execution Event & Ledger Posting Contract](../architecture/NX-IF-003-execution-event-ledger-posting-contract.md). Execution owns immutable normalized execution facts, native identity, source evidence and the durable Ledger outbox. It MUST commit the event and outbox atomically before delivery; delivery is at-least-once and Ledger posting acknowledgement is distinct from delivery acknowledgement. A fill remains in WP-B `FILL_PENDING_LEDGER` until Ledger confirms the linked journal posting, the relevant position projection watermark and required reconciliation quality. Execution MUST NOT claim accounting balances/positions as its authority or release Risk exposure based solely on an outbox send or Ledger transport acknowledgement. Corrections and busts are new linked events; original execution evidence is never mutated.\n\n## 21. Verification status
 
 This document is a requirements proposal. No private execution adapter, credential vault, signer, exchange account connection, order placement, reconciliation worker or runtime conformance suite has been implemented or tested in NEXUS. No live trading is authorized.
 
