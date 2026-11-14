@@ -45,12 +45,21 @@ class EligibilitySnapshot:
     expires_at_ms: Optional[int] = None
 
     def __post_init__(self):
-        if not self.record_id or not self.scope_digest:
-            raise ValueError("record_id and scope_digest are required")
-        if self.revision < 1 or self.epoch < 1:
-            raise ValueError("revision and epoch must be positive")
-        if self.expires_at_ms is not None and self.expires_at_ms < 0:
-            raise ValueError("expires_at_ms must be non-negative")
+        if not isinstance(self.record_id, str) or not self.record_id:
+            raise ValueError("record_id is required")
+        if not isinstance(self.scope_digest, str) or not self.scope_digest:
+            raise ValueError("scope_digest is required")
+        if not isinstance(self.mode, EgressMode):
+            raise TypeError("mode must be an EgressMode")
+        if any(isinstance(value, bool) or not isinstance(value, int) or value < 1
+               for value in (self.revision, self.epoch)):
+            raise ValueError("revision and epoch must be positive integers")
+        if self.expires_at_ms is not None and (
+            isinstance(self.expires_at_ms, bool)
+            or not isinstance(self.expires_at_ms, int)
+            or self.expires_at_ms < 0
+        ):
+            raise ValueError("expires_at_ms must be a non-negative integer")
 
 
 @dataclass(frozen=True)
@@ -64,10 +73,15 @@ class EgressCommand:
     payload_digest: str
 
     def __post_init__(self):
-        if not all((self.command_id, self.record_id, self.scope_digest, self.payload_digest)):
+        if not all(isinstance(value, str) and value for value in (
+            self.command_id, self.record_id, self.scope_digest, self.payload_digest
+        )):
             raise ValueError("command identity, scope and payload digest are required")
-        if self.revision < 1 or self.epoch < 1 or self.expires_at_ms < 0:
-            raise ValueError("revision/epoch must be positive and expiry non-negative")
+        if any(isinstance(value, bool) or not isinstance(value, int) or value < 1
+               for value in (self.revision, self.epoch)):
+            raise ValueError("revision and epoch must be positive integers")
+        if isinstance(self.expires_at_ms, bool) or not isinstance(self.expires_at_ms, int) or self.expires_at_ms < 0:
+            raise ValueError("command expiry must be a non-negative integer")
 
 
 @dataclass(frozen=True)
@@ -91,6 +105,8 @@ class EligibilityEgressAuthority:
             return self._snapshot
 
     def advance(self, new_snapshot: EligibilitySnapshot) -> EligibilitySnapshot:
+        if not isinstance(new_snapshot, EligibilitySnapshot):
+            raise TypeError("new_snapshot must be an EligibilitySnapshot")
         with self._lock:
             if new_snapshot.scope_digest != self._snapshot.scope_digest:
                 raise ValueError("scope identity cannot change within an authority")
@@ -117,6 +133,10 @@ class EligibilityEgressAuthority:
     ) -> DispatchResult:
         if isinstance(now_ms, bool) or not isinstance(now_ms, int) or now_ms < 0:
             raise ValueError("now_ms must be a non-negative integer")
+        if not isinstance(command, EgressCommand):
+            raise TypeError("command must be an EgressCommand")
+        if not callable(send):
+            raise TypeError("send must be callable")
         with self._lock:
             previous = self._outcomes.get(command.command_id)
             if previous is not None:
