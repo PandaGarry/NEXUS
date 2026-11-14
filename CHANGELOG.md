@@ -4,6 +4,93 @@
 
 ## Unreleased
 
+
+### Verified — Authorization-catalog manifest admission reference (2026-11-14)
+
+- Python reference workflow [#43633125568](https://github.com/PandaGarry/NEXUS/actions/runs/43633125568) passed exact code/test HEAD `c80d781ce7c9f2b4a015fa79f8e2c403709439d7`: 287 tests/runtime on Python 3.11, 3.12 and 3.13 (861 executions), including 23 manifest admission tests/runtime.
+- PostgreSQL HEGC workflow [#43633125536](https://github.com/PandaGarry/NEXUS/actions/runs/43633125536) passed 12/12.
+- Production CBOR/COSE, trust services, catalog observer and deployment gate remain unimplemented and unauthorized.
+
+
+### Added — Authorization-catalog manifest admission reference (2026-11-14)
+
+- Added a test-only Python logical manifest validator and admission-precondition model for exact schema, bounded scope, semantic object identity, deny rules, context binding, validity and anti-rollback sequencing.
+- Added adversarial tests for unknown/missing fields, wildcard/duplicate scope, unknown object kinds, duplicate identities/rules, invalid digests/intervals, signature/approval failure, unavailable revocation, context mismatch, sequence/predecessor mismatch and freshness failures.
+- Wired the isolated suite into the Python 3.11/3.12/3.13 reference-model workflow.
+- This is not a CBOR parser, COSE/Ed25519 verifier, trust service, PostgreSQL catalog observer or production deployment gate; CI evidence for the new HEAD is pending.
+
+
+### Added — Production authorization-catalog manifest lifecycle (NX-ARCH-REVIEW-009, 2026-11-14)
+
+- Added a design-level threat model and candidate schema for an independently approved/signed production PostgreSQL authorization-catalog manifest.
+- Defined semantic object identity, explicit deny/absence assertions, exact environment/database/migration binding, anti-rollback, deterministic-CBOR and COSE_Sign1/Ed25519 constraints.
+- Separated manifest author, approvers, release authority, signer/key custodian, deployment verifier and immutable audit custodian.
+- Specified fail-closed deployment comparison, startup TOCTOU limitation, post-startup drift detection, DBA/superuser emergency reconciliation and separate session/process/network fencing evidence.
+- Expanded required catalog coverage beyond the disposable fixture; implementation, trust roots, key custody, deployment gate and independent security acceptance remain OPEN.
+- Design only. No production schema, manifest, signer, verifier, drift monitor or live capability was introduced.
+
+
+### Hardened — PostgreSQL 18.7 CI image digest pin (2026-11-14)
+
+- Replaced the mutable `postgres:18.7` service tag with Docker Official Image multi-platform index digest `sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b`; recorded linux/amd64 child manifest `sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452`.
+- Pinned workflow commit `1844a9964fee667b7d29299a5b75f0f07df5076d` passed PostgreSQL [#43630438579](https://github.com/PandaGarry/NEXUS/actions/runs/43630438579) (11/11) and Python [#43630438570](https://github.com/PandaGarry/NEXUS/actions/runs/43630438570) (264 tests/runtime).
+- Signed publisher provenance, SBOM/vulnerability disposition and independent image review remain open; digest pinning is not represented as provenance.
+
+
+### Added — HEGC runtime privilege and restrictive RLS qualification (2026-11-14)
+
+- Expanded the disposable PostgreSQL 18.7 fixture to 11 tests with runtime-role privilege-escalation denials and restrictive RLS policy composition.
+- Exact code/test HEAD `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf` passed PostgreSQL workflow [#43629845855](https://github.com/PandaGarry/NEXUS/actions/runs/43629845855) (11/11) and Python workflow [#43629845861](https://github.com/PandaGarry/NEXUS/actions/runs/43629845861) (264 tests per Python 3.11/3.12/3.13 runtime; 792 executions).
+- Documentation-synchronized HEAD `e78f3b7c95939d13de18842567d56c4c314c3e6c` passed PostgreSQL [#43629988964](https://github.com/PandaGarry/NEXUS/actions/runs/43629988964) (11/11) and Python [#43629988969](https://github.com/PandaGarry/NEXUS/actions/runs/43629988969) (264 tests/runtime).
+- DBA/superuser authorization-catalog changes remain a separate unqualified control plane; production RLS, migration drift detection, crash/restore and Egress fencing are not implemented.
+
+
+### Added — PostgreSQL 18.7 HEGC guard qualification harness (test-only; CI verified)
+
+- Added a disposable SQL fixture with separate HEGC/writer logins, NOLOGIN SECURITY DEFINER owners, root-first common guard acquisition, complete scope-set validation and canonical child lock ordering.
+- Added real two-session writer-first and HEGC-first races. Both stale waiters receive SQLSTATE 40001 and require a whole-transaction retry. Added concurrent duplicate-attempt retry and lost post-COMMIT client-response recovery.
+- Added ACL, direct-DML, SET ROLE, temp/search_path spoofing, custom-GUC identity spoofing and exact grant retry/binding-conflict tests.
+- Exact code/test HEAD 7e60164346f25f8f2f58fa4da2a9282fea5a2217 passed PostgreSQL 18.7 workflow #43622108660 (7 tests) and Python reference workflow #43622108645. Fixture only; no production schema, role, service or Egress boundary is implemented.
+
+
+### Clarified — Execution preflight versus Trusted Egress final authorization (2026-11-14)
+
+- Reframed NX-IF-001 Execution checks as non-authorizing preflight and defense in depth.
+- Made Trusted Egress the sole final send-authorization boundary: it reloads persisted evidence, serializes the one-use gate with halt generation, and alone initiates the venue socket.
+- Explicitly tied the gate-first halt race to pending-attempt drain/fencing before HALTED acknowledgement.
+- No runtime, credential, signer, database schema or network fence was implemented.
+
+
+### Added — Capability authorization cross-review (2026-11-14)
+
+- Added NX-ARCH-REVIEW-003 reviewing the capability catalog, scope/data-classification model, entitlement separation and request-time authorization.
+- Constrained billing subscription management to intent submission; Billing alone validates provider state and writes entitlement lifecycle.
+- Added CAP-R-02..09 findings and CAP-19..26 adversarial scenarios covering canonicalization, projection leakage, forged payment claims, webhook replay, audit custody and outage independence.
+- Synchronized architecture index, checklist, status and roadmap. Design review only; no candidate capability or grant was approved or activated.
+
+### Added — Capability catalog and authorization contract model (2026-11-14)
+
+- Added NX-ARCH-009 defining platform-owned capability identities/versions, ownership and enforcement authority, typed scopes, data classifications and request-time decision semantics.
+- Proposed an initial first-party capability catalog and mapped module consumers to owner services, scope rules and negative tests.
+- Explicitly excluded protected financial mutation and Trusted Egress from optional-module grants; separated workload grants from commercial entitlements and user authorization.
+- Added revocation/cache/outage, audit/privacy requirements and 18 adversarial CAP scenarios.
+- Synchronized architecture index, checklist, status and roadmap. Design only; no executable schema, policy engine, grant, permission, module runtime or dependency created.
+
+### Added — Module governance cross-architecture review (2026-11-14)
+
+- Added NX-ARCH-REVIEW-002, reviewing NX-ARCH-001/006/007/008, NX-SEC-001, NX-IF-001..005 and NX-OWNER-DECISIONS-001.
+- Clarified gateway admission versus owning-service authorization and confirmed T4 is not a shared Risk/Command/Ledger/Egress identity or permission set.
+- Retained F-03..F-08 as open blockers covering executable permission mapping, revocation objectives, trust roots, actual DB/host/network isolation, first G1 module/resource budgets and operator/support governance.
+- Synchronized architecture index, checklist, status and roadmap. Design cross-review only; no gate, owner decision or implementation authorization is closed.
+
+### Final synchronized documentation-head verification — 2026-11-14
+
+The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` passed [GitHub Actions #43611122433](https://github.com/PandaGarry/NEXUS/actions/runs/43611122433): Python 3.11/3.12/3.13 all succeeded, 13 isolated reference-model suites / 237 tests per runtime (711 executions). This is reference regression only; no NX-ARCH-008 registry, identity, grants, module isolation, secrets, database permissions, egress, Rust, venue or live safety is tested. NX-ARCH-008 remains design-only; G0D/G1 remain open.
+
+### Verification — NX-ARCH-008 documentation head (2026-11-14)
+
+Exact branch HEAD `b1d3201a1fe1706909218943f5464eba43ea1041` passed [GitHub Actions #43611030968](https://github.com/PandaGarry/NEXUS/actions/runs/43611030968): Python 3.11/3.12/3.13 all succeeded, 13 isolated reference-model suites / 237 tests per runtime (711 executions). This verifies existing Python reference regression only; it does not test the proposed module registry, grants, identity, isolation, secrets, DB permissions, egress, Rust, venues or live safety. NX-ARCH-008 remains design-only; G0D/G1 remain open.
+
 ### Added — Bounded exact numeric context and canonical scalar wire (test-only; CI verified)
 - Added mandatory caller-supplied NumericLimits and BoundedNumericContext preflight for decimal input, scale alignment, multiplication, rational division, compare, step checks, exact conversion and quantization.
 - Added strict versioned scalar wire formats nxd1 (decimal) and nxr1 (reduced rational); parsers require explicit input character budgets and reject non-canonical forms.
@@ -150,3 +237,698 @@
 - Added NX-REF-VENUE-001 test-only evidence evaluator and 28 conformance tests.
 - Added NX-REF-VENUE-002 single-process egress fencing reference and 21 race/ordering tests; CI run 43599182263 passed 231 tests/runtime on Python 3.11/3.12/3.13 (693 executions).
 - Updated historical venue research, architecture index, roadmap, project status and checklist. No venue selected, no live capability or production code added.
+
+### Added — Rust execution and cross-language conformance architecture (proposed; documentation only)
+
+- Added NX-ARCH-004 defining candidate Rust domain/execution boundaries, NEXUS-owned command/Risk/trusted-egress authority, adapter evidence classes, exact numeric constraints, language-neutral conformance fixtures and adversarial failure scenarios.
+- Created Issue #15 and branch `engineering/rust-execution-domain-conformance-v0`, based on exact PR #14 head `ab6976933cb4de9b5320b73531034d02edc53907`.
+- Updated architecture index, project checklist, roadmap and project status.
+- No Rust source, Cargo workspace, production numeric limits, venue adapter, credentials, network egress or live-trading capability added. Python models remain test-only references; no Rust/Python conformance is claimed.
+
+
+### Updated — Execution ordering cross-contract harmonization (proposed; documentation only)
+
+- Corrected NX-ADR-002 so all required `PRE_DISPATCH_RESERVATION` scopes are durably committed before Risk issues a `RiskApprovalCapability`.
+- Made single-use approval consumption atomic with the durable canonical command/reservation-reference/outbox commit.
+- Clarified the pre-egress attempt marker and conservative `DISPATCH_OUTCOME_UNKNOWN` exposure semantics across crashes before/during/after network send.
+- Updated NX-ARCH-004, architecture index, project checklist, status and roadmap after cross-review against NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SEC-001.
+- No runtime, Rust source, database transaction, signer, network fence, venue adapter or live-trading capability was added; owner acceptance and G0D/G1 gates remain open.
+
+
+### Added — Language-neutral conformance fixture and runner contract (proposed; documentation only)
+
+- Added NX-ARCH-005 after auditing existing decimal, rational, numeric-wire, financial-math and instrument-spec fixture formats.
+- Defined a proposed common fixture envelope, tagged VALUE/REJECT outcomes, stable rejection classes, strict typed comparison rules, suite versioning and migration policy.
+- Defined deterministic runner responsibilities, normalized reports, CI provenance/evidence and layered differential/property/adversarial test strategy.
+- Confirmed the tracked repository has no Cargo workspace, Rust toolchain pin, Rust source tree or Rust runner; no Rust implementation is started before G0D/G1 approval.
+- Existing v1 fixture files and current Python unittest workflows remain unchanged. No schema validator, runner or cross-language conformance is claimed.
+
+- Added a per-family legacy fixture migration assessment to NX-ARCH-005, distinguishing structural conversion from rejection-class annotation and newly derived instrument-spec expectations; all existing v1 files remain untouched.
+
+- Expanded NX-ARCH-005 with an initial operation-ID/input/result registry and stable error mapping. Added catch-compatible typed numeric-wire error subclasses and tests for stable error classes; existing callers can continue catching `NumericWireError`. Updated the reference-model README and operation registry. No fixture migration or production parser qualification is claimed.
+
+- Added strict fixture-ingestion requirements to NX-ARCH-005: UTF-8 validation, duplicate-key/non-finite/float rejection, bounded control integers, raw-byte SHA-256 and explicit runner resource limits. No validator or runner implementation is claimed.
+
+### Corrected — NX-ARCH-005 contract-to-code cross-review (2026-11-14)
+
+- Fixed the illustrative fixture envelope so it is valid strict JSON.
+- Distinguished implemented decimal/rational and numeric-wire reference APIs from financial fixture operation labels that do not yet have callable reference implementations/adapters.
+- Kept instrument-spec operation migration deferred and clarified that non-numeric rejection classes require reviewed operation-aware mapping, never exception-message parsing.
+- Documentation and audit refinement only; no fixture migration, schema validator, runner, Rust source or production numeric profile added.
+
+### Audit correction — financial and numeric reference coverage (2026-11-14)
+
+- Corrected the earlier NX-ARCH-005 audit statement: spot, linear and inverse financial math paths have executable reference coverage through `domain_types.py` / `instrument_units.py` and the financial fixture suite.
+- Identified partial-fill weighted-average aggregation as tested but inline-only; extraction to a reusable pure oracle remains follow-up work.
+- Clarified arbitrary-precision oracle versus explicit bounded numeric wrapper, candidate resource-limit mapping, and malformed API input versus mathematical inexactness.
+- Documentation correction only; no production numeric profile or Rust implementation added.
+
+
+### Added — typed partial-fill aggregation reference operation (2026-11-14)
+
+- Extracted weighted-average partial-fill arithmetic into `financial_aggregation.aggregate_partial_fills`.
+- Returns typed base-asset quantity, quote notional and an exact rational weighted-average price; does not silently round non-terminating results.
+- Updated golden-vector and seeded permutation/partition tests to use the named callable; added empty-input, dimension-mismatch and non-terminating-average tests.
+- Updated NX-ARCH-005 audit, reference README, checklist, roadmap and project status. This is a test-only arithmetic oracle, not venue fill validation or production financial policy. Normalized fixture/schema/runner work remains owner-review gated.
+
+- Added a zero-total-quantity regression: the partial-fill helper preserves the typed `DivisionByZero` path, distinct from empty-input and malformed-argument failures.
+
+
+### Updated — operation-specific reference exception audit (2026-11-14)
+
+- Added a proposed operation-to-exception-to-rejection mapping audit in NX-ARCH-005 for decimal, rational, bounded numeric, dimensional, instrument-unit and partial-fill operations.
+- Explicitly separated mathematical failures from malformed API parameters/types and identified unresolved domain-invalid-value/identity cases.
+- Prohibited exception-message parsing and retained owner approval as a prerequisite for normalized schema/runner behavior.
+- Documentation/audit only; no stable wire mapping, validator, runner or production adapter is approved.
+
+
+### Fixed — exact divisibility API type boundary (2026-11-14)
+
+- `ExactDecimal.is_multiple_of` now validates that `step` is an `ExactDecimal` before accessing its fields and raises explicit `TypeError` for malformed operand types.
+- Added a regression test; non-positive exact-decimal steps continue to raise the existing typed `InvalidStep`.
+- This is a reference-model API-hardening change, not a new numeric policy or production implementation.
+
+
+### Clarified — pre-egress exposure transition (2026-11-14)
+
+### Corrected — stale reservation/dispatch review finding (2026-11-14)
+
+- Refreshed NX-ARCH-REVIEW-001 F-02: its original statement that reservation/command ordering was unspecified had become stale after NX-IF-001 / NX-IF-002 / NX-ADR-002 were harmonized.
+- Marked the finding partially resolved at design level only and enumerated the remaining owner, transaction/isolation, crash/concurrency, reservation-lifecycle and egress-fence proof requirements.
+- Updated the living checklist and project status. No implementation, transaction guarantee or live authorization added.
+
+
+- Reworded the NX-IF-002 lifecycle row to require the durable pre-egress attempt marker before any network side effect.
+- Explicitly separated the marker from proof of transmission and retained conservative exposure through outcome reconciliation.
+- Recorded the cross-contract clarification in NX-ARCH-REVIEW-001, checklist, project status and roadmap. No runtime behavior or production safety guarantee is implied.
+
+
+### Added — transaction decomposition and execution crash-point matrix (2026-11-14)
+
+- Expanded NX-REF-EXEC-002 with the recommended logical transaction split: Risk commits all required reservations before approval; Command atomically consumes the single-use capability with canonical command/reservation-reference/outbox persistence; dispatcher records the pre-egress attempt marker; trusted Egress owns credentials and the actual venue socket.
+- Explicitly avoided claiming a distributed ACID transaction across Risk and Command. Added ambiguous-commit recovery by stable idempotency identity and conservative reservation retention.
+- Added a crash-point matrix from reservation/capability through socket write, venue acceptance, fills/Ledger posting, halt takeover and RecoveryBarrier.
+- Kept database/isolation, capability signing, host/network fence, provider, availability and operator decisions open under OD-08/09/10/12. Design/test plan only; no production runtime, credentials or egress fence implemented.
+
+
+### Added — Persistence and trusted-egress option analysis (2026-11-14)
+
+Expanded NX-REF-EXEC-002 §4.5 with an evidence-oriented comparison of relational/service-owned transaction boundaries, separate databases and event-store coordination, plus DB lease, proxy/gateway, isolated workload and dedicated-host egress options. Recorded a candidate baseline without selecting a provider: separate Risk and Command local ACID commits; one account-scoped credential/socket-owning Egress Authority; positive independently enforced old-generation fencing before takeover; fail-closed CREATE halt when fence evidence is absent. OD-08/09/10/12 remain open. Documentation-only; no implementation or new CI evidence claimed.
+
+
+
+### Exact-head CI verification after persistence/egress analysis — 2026-11-14
+
+- Documentation analysis head verified: `3187a69e443157ac3e66b874b4dcbb29588ddc70`.
+- GitHub Actions run [#43606550889](https://github.com/PandaGarry/NEXUS/actions/runs/43606550889) completed successfully on that exact head.
+- Three jobs passed: Python 3.11, 3.12 and 3.13. Each executed 13 isolated reference-model suites with counts 11, 24, 13, 17, 12, 16, 18, 18, 32, 12, 15, 28 and 21 = 237 tests per runtime; 711 successful test executions total.
+- This CI run verifies the existing Python reference-model suites at the exact documentation-analysis head. It does not test the newly documented transaction alternatives, database isolation, production egress topology, external host/network fencing, Rust, venue behavior or live safety.
+
+
+### Added — Open-source component qualification shortlist (2026-11-14)
+
+Published NX-RESEARCH-010. PostgreSQL, OpenTelemetry Collector, OpenBao, NATS JetStream, Cilium and Temporal are qualified by potential role and gate; NautilusTrader's existing test-only disposition is retained. Established explicit authority exclusions and dependency qualification requirements. Research only: no dependency, package, runtime service, broker, database, vault or deployment topology added.
+
+
+### Added — Modular product boundaries and trust isolation proposal (2026-11-14)
+
+- Added NX-ARCH-006 defining a protected domain core and independently governed product modules behind versioned contracts and deny-by-default admission.
+- Specified workload identities, least-privilege capability grants, signed immutable artifact admission, module data ownership, failure containment, rollback and adversarial verification requirements.
+- Defined Identity & Access as security-critical but non-authoritative for Risk/Ledger/venue egress; proposed Demo and Learning/Wiki as separate bounded domains.
+- Required hard Demo/live separation through distinct account namespace and ledger, simulator-only execution, independent storage permissions and no route to production credentials/live egress.
+- Preferred an initial modular monolith / limited trust-domain split over premature microservices or arbitrary in-process plugin loading.
+- Updated architecture index, living checklist, project status and roadmap. Design only: no service, package, identity provider, plugin framework, database, deployment topology, public registration or live capability added; cross-review and owner/security approval remain open.
+
+
+### Exact-head reference CI for modular architecture documentation increment — 2026-11-14
+
+The then-current branch head `e15e47f9512bc07a1f6534a4f41b0d27d7d42578` passed GitHub Actions [#43608583358](https://github.com/PandaGarry/NEXUS/actions/runs/43608583358). Python 3.11, 3.12 and 3.13 jobs all succeeded; each ran 13 isolated reference suites / 237 tests (711 successful executions total). This verifies existing Python reference-model regression only. It does not test NX-ARCH-006 module isolation, identity/authentication, database boundaries, secret handling, runtime integration, egress fencing or live trading.
+
+
+### Added — Platform extensibility and entitlement foundation proposal (2026-11-14)
+
+- Added NX-ARCH-007 with a candidate long-term product-domain taxonomy and modular platform extension principles.
+- Separated product capability, commercial entitlement and security authorization; payment status, plans and feature flags cannot grant Risk/Ledger/venue/egress authority.
+- Specified stable feature identifiers, auditable entitlement grants, subscription lifecycle, replay-safe billing event processing, product quotas distinct from trading Risk limits, downgrade/data-retention behavior and compatibility rules.
+- Preserved multi-tenancy, public SaaS, paid plans, payment providers, registration and commercial launch as future gated decisions, not v1 commitments.
+- Updated architecture index, checklist, project status and roadmap. Design only; no payment integration, subscription service, tenant runtime, module or product feature implemented.
+
+
+### Added — Capability-to-interface contract traceability review (2026-11-14)
+
+- Added NX-ARCH-REVIEW-004 after locating and inspecting the actual canonical NX-IF-001..005, NX-SEC-001 and owner decision register paths.
+- Mapped every NX-ARCH-009 candidate capability to existing contract evidence or an explicit missing product-domain contract; no endpoints or permissions were invented.
+- Reaffirmed protected Risk/reservation, command/egress, Ledger, recovery/halt and credential boundaries; optional modules receive no direct authority over them.
+- Added a source-grounded data inventory, cross-cutting contract checklist, open findings and G0D/G1 gates.
+- Updated architecture index, project checklist, status and roadmap. Design traceability only; no executable schema, grant, policy engine, runtime, dependency or production integration added.
+
+
+### Exact-head regression evidence for NX-ARCH-REVIEW-004 — 2026-11-14
+
+Exact branch HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed GitHub Actions [#43613212116](https://github.com/PandaGarry/NEXUS/actions/runs/43613212116): Python 3.11/3.12/3.13, 13 isolated suites / 237 tests per runtime, 711 successful executions. This is Python reference-model regression only; it does not execute the new traceability artifact, capability policy, domain APIs, grants, module isolation, Rust or venue behavior. No capability or runtime was activated.
+
+
+### Added — Revocation, freshness and control-plane outage objective proposal (2026-11-14)
+
+- Added NX-ARCH-REVIEW-005 reconciling NX-ARCH-008/009 revocation, NX-IF-004 source freshness/recovery, NX-IF-005 halt propagation and NX-SEC-001 credential isolation.
+- Separated authorization freshness, data freshness, control propagation and RecoveryBarrier readiness; defined a control-plane outage matrix and in-flight side-effect semantics.
+- Proposed conservative numeric targets only for low-risk authorization cache and cancellation discussion. They are explicitly not accepted SLOs, production guarantees or defaults.
+- Kept venue/source freshness thresholds, halt deadline, RTO/RPO, OD-10 and OD-12 owner decisions open. No executable policy, cache, revocation service, dependency, secret manager, network fence or runtime added.
+- Updated architecture index, checklist, status, roadmap and changelog.
+
+
+### Exact-head regression evidence for NX-ARCH-REVIEW-005 — 2026-11-14
+
+Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actions [#43613493976](https://github.com/PandaGarry/NEXUS/actions/runs/43613493976): Python 3.11/3.12/3.13, 13 reference-model suites / 237 tests per runtime, 711 successful executions. This does not validate the proposed authorization cache/revocation targets, outage matrix, source freshness, halt propagation, cancellation or runtime isolation. No numeric objective was accepted and no runtime control was implemented.
+
+### CI action supply-chain hardening and exact-head verification — 2026-11-14
+
+- Updated `.github/workflows/reference-model.yml` from Node 20-era action releases to `actions/checkout` v7.0.1 and `actions/setup-python` v7.1.0.
+- Pinned the actions to verified upstream full commit SHAs: `3d3c42e5aac5ba805825da76410c181273ba90b1` and `6d4fd22b20465ccc0f7354476588e8df7c9ca0e0`.
+- Exact action-upgrade HEAD `e35d81cb34aeae1c13e25def0320e8a4a4b649bb` passed [workflow #43614458632](https://github.com/PandaGarry/NEXUS/actions/runs/43614458632): 13 isolated suites / 237 tests on each of Python 3.11, 3.12 and 3.13; 711 successful executions.
+- Verified the previous Node.js 20 and `punycode` deprecation warnings are absent from all three job logs.
+- Audited the stacked PR ancestry: #13 -> #14 -> #16; each child base SHA equals the parent head SHA. No base retarget, merge or stack rewrite performed.
+- This verifies existing Python reference models and CI action execution only. It does not establish Rust conformance, transitive dependency integrity, production persistence/egress safety, venue behavior or live readiness.
+
+
+### Numeric wire parser resource-boundary hardening — 2026-11-14
+
+- Added an explicit decimal max_scale option; absent an override, the reference parser bounds scale by the caller-supplied max_chars budget.
+- Normalized interpreter integer-string conversion budget failures into the stable NUMERIC.RESOURCE_LIMIT rejection for decimal coefficient/scale and rational numerator/denominator parsing.
+- Added adversarial tests for extreme scales and oversized integer strings.
+- Exact code/test HEAD b0fb99d4505ba5eb405788fee8ce447f28437479 passed [workflow #43614612130](https://github.com/PandaGarry/NEXUS/actions/runs/43614612130): 13 suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 successful executions).
+- Test-only reference hardening; no production numeric profile, normalized fixture runner or Rust implementation was introduced.
+
+### COSE signing profile corrected to fully specified Ed25519 — 2026-11-14
+
+- Standards review found RFC 9053's polymorphic COSE EdDSA identifier (-8) is superseded for fully specified algorithm selection by RFC 9864.
+- Updated NX-ADR-008 to use COSE Ed25519 algorithm identifier -19, with OKP / Ed25519 key constraints.
+- Added rejection requirements for deprecated -8, Ed448, algorithm/key mismatch and substitution.
+- Clarified that protected `kid` is a lookup hint, not a unique or security-authoritative identity; key resolution must bind issuer, algorithm, purpose, status and registry generation and fail closed on ambiguity.
+- No signer/verifier implementation, cryptographic dependency, key material or key custody provider was added.
+
+
+### Strict deterministic CBOR ingress profile clarified — 2026-11-14
+
+- Tightened NX-ADR-008 so deterministic CBOR is validated on ingress before object materialization, not merely emitted by the encoder.
+- Require preferred shortest forms, definite lengths, RFC 8949 core bytewise-lexicographic map ordering, schema-defined text keys, duplicate/unknown-key rejection and rejection of trailing bytes.
+- Explicitly reject legacy length-first ordering and parser behavior that silently normalizes malformed input.
+- No CBOR library or runtime dependency selected; cross-language adversarial byte vectors and decoder qualification remain open.
+
+
+### Full PR ancestry audit and exact-head CI — 2026-11-14
+
+- Verified the direct stacked ancestry #1 -> #2 -> #3 -> #4 -> #5 -> #6 -> #7 -> #9 -> #10 -> #11 -> #12 -> #13 -> #14 -> #16 by exact child-base / parent-head SHA equality; PR #8 is a parallel branch.
+- Confirmed all direct ancestors remain open/Draft/unmerged. PR #16's immediate base is correct (PR #14 head), but it is not independently mergeable until parent-first integration.
+- Current PR #16 diff: 248 commits beyond base, 32 files, 4,399 additions, 72 deletions.
+- Current exact branch HEAD `7914772358d2ee49c87374373bad5c589d0a2905` passed [workflow #43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349): 13 isolated suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 successful executions).
+- Direct GitHub Actions are full-SHA pinned; no Node.js 20 or punycode deprecation warning appears in the verified logs.
+- CI scope remains Python reference models only. No Rust, PostgreSQL, COSE, Trusted Egress, venue or live-execution evidence is implied. No PR was merged or retargeted.
+
+### Final synchronized G1 baseline exact-head CI — 2026-11-14
+
+- Exact branch HEAD `7914772358d2ee49c87374373bad5c589d0a2905` passed [workflow #43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349).
+- Python 3.11, 3.12 and 3.13 each passed all 13 isolated suites / 239 tests; 717 successful executions total.
+- All three logs show no test failures and no Node.js 20 / `punycode` deprecation warnings.
+- Verification is limited to existing Python reference models; no Rust, CBOR/COSE, PostgreSQL, Trusted Egress, venue or live-safety implementation was exercised.
+
+### Post-synchronization exact-head regression — 2026-11-14
+
+- Branch HEAD `928d5fd261553676c3fad6a8e88b984a862af338` passed [workflow #43615282210](https://github.com/PandaGarry/NEXUS/actions/runs/43615282210).
+- Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions).
+- No test failures or Node.js 20 / `punycode` deprecation warnings. Evidence remains limited to Python reference models.
+
+
+### Post-sync exact-head verification — 2026-11-14
+
+- Normalized the final G1 checklist section order and verified exact HEAD `9e9035033da77d958601cb6b69128e13e2551a0d` with [workflow #43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737).
+- All 13 isolated Python reference suites passed on Python 3.11/3.12/3.13: 239 tests per runtime, 717 executions total.
+- No Node.js 20 or punycode deprecation warnings remain in the job logs.
+- PR #16 remains a 265-commit / 32-file / 4,467-addition / 72-deletion Draft in the verified parent-first stack.
+- No Rust runtime, production DB, signer, Trusted Egress, venue connection or live order path was introduced.
+
+### Full stacked-PR ancestry and current exact-head CI — 2026-11-14
+
+- Verified direct PR chain #1 → #2 → #3 → #4 → #5 → #6 → #7 → #9 → #10 → #11 → #12 → #13 → #14 → #16 by exact parent-head / child-base SHA equality. PR #8 is parallel from #7, not an ancestor of #16.
+- All direct-chain PRs remain open/Draft/unmerged; #16 correctly targets #14's head.
+- Exact PR #16 head `9e9035033da77d958601cb6b69128e13e2551a0d` passed [workflow #43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737): Python 3.11/3.12/3.13, 13 suites / 239 tests each, 717 successful executions.
+- No failures or Node.js 20 / `punycode` deprecation warnings. This is Python reference-model CI only, not Rust, persistence, Trusted Egress, venue or live-safety evidence.
+
+### CBOR / COSE library qualification — NX-RESEARCH-011 — 2026-11-14
+
+- Added a standards- and source-grounded comparison of Rust `cbor2`, `cbor-core`, `coset`, `cose2` and Python `pycose`.
+- Identified `cbor2` as a deterministic encoder/raw-value candidate but not a strict NEXUS ingress decoder alone.
+- Rejected `cbor-core` as a drop-in codec due to draft profile, length-first ordering and unstable API.
+- Identified `coset` 0.4.2 as the leading test-only COSE structure candidate for RFC 9864 alg=-19, with original protected-header preservation and custom crypto closures.
+- Recorded that `cose2`'s bundled Ed25519 provider uses deprecated alg=-8; no signer, verifier or dependency was adopted.
+- No Cargo workspace, package, key, parser or runtime was introduced. G0D/G1 qualification remains open.
+
+### CBOR command-key profile refined — 2026-11-14
+
+- Restricted command map keys to schema-defined ASCII text field names; non-ASCII, unknown and duplicate keys are rejected.
+- Kept Unicode user text in values with strict UTF-8 handling and no implicit normalization.
+- Updated NX-ADR-008, OD-08 and the living checklist. No parser or dependency was implemented.
+
+### Exact-head CI after NX-RESEARCH-011 — 2026-11-14
+
+- Branch HEAD `1bb2192e6746e0f86659f006ef204990adc81188` passed [workflow #43615753905](https://github.com/PandaGarry/NEXUS/actions/runs/43615753905).
+- Python 3.11, 3.12 and 3.13 passed 13 isolated suites / 239 tests each (717 successful executions).
+- No test failures or Node.js 20 / `punycode` deprecation warnings. Verification is limited to Python reference models.
+
+### Final action-runtime and exact-head verification — 2026-11-14
+
+- Exact branch HEAD `69657a0808b859b17ab94a6d3e008a2ae9671cc7` passed [workflow #43615820603](https://github.com/PandaGarry/NEXUS/actions/runs/43615820603): 13 suites / 239 tests on Python 3.11/3.12/3.13 (717 executions).
+- No test failures or Node.js 20 / `punycode` deprecation warnings.
+- Verified the exact pinned checkout v7.0.1 and setup-python v7.1.0 action manifests both use Node 24.
+- Evidence remains limited to Python reference models and action runtime; no Rust, CBOR/COSE, PostgreSQL, Trusted Egress or live behavior was exercised.
+
+### COSE pre-verification trust boundary tightened — 2026-11-14
+
+- Token-supplied kid/alg/issuer/audience are explicitly untrusted until signature verification.
+- Key lookup is local, bounded and registry-backed; remote key discovery from token fields is forbidden.
+- Signed issuer/audience must match locally expected context after verification; ambiguity, stale generation and revocation fail closed.
+- Verification material is public OKP/Ed25519 only (32-byte public key, no private d outside Risk); signatures must be 64 bytes.
+- No signer/verifier or key provider was implemented or selected.
+
+### COSE_Sign1 wire representation made unambiguous — 2026-11-14
+
+- Pinned the envelope to untagged, embedded-payload COSE_Sign1 with exactly four array elements.
+- Protected header is restricted to alg=-19 and bounded byte-string kid; unprotected map is empty.
+- Capability payload is a single NEXUS deterministic-CBOR map; exact protected and payload bytes are preserved.
+- Sig_structure uses RFC 9052 §9 deterministic encoding and fixed non-caller-controlled external AAD.
+- No implementation or dependency approved; byte-exact vectors remain required.
+
+### COSE pre-verification key-resolution boundary tightened — 2026-11-14
+
+- Treat token-supplied kid, alg, issuer and audience as untrusted until signature verification.
+- Prohibit token-directed remote key retrieval; candidate lookup is bounded to a local versioned registry and local expected issuer/audience/algorithm/purpose.
+- Require signed claims to match local expected context after verification; require exactly one eligible key or fail closed.
+- Restrict Execution to public OKP/Ed25519 (32-byte public key); private key material remains within Risk; require 64-byte signature.
+- Added corresponding negative-test requirements. No verifier or key registry was implemented.
+
+### Exact-head CI after COSE key-resolution hardening — 2026-11-14
+
+- Exact branch HEAD `6fefd9a44ff2f272b6516265d10f41c46a13cf7a` passed [workflow #43615911362](https://github.com/PandaGarry/NEXUS/actions/runs/43615911362).
+- Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no failures or Node.js 20 / `punycode` warnings.
+- Evidence is Python reference-model regression only, not COSE/Rust/persistence/egress/venue/live proof.
+
+### Exact-head CI after COSE profile refinement — 2026-11-14
+
+- Branch HEAD `88fcb30068507d85fb35802ca5d2195fd528c000` passed [workflow #43616054657](https://github.com/PandaGarry/NEXUS/actions/runs/43616054657).
+- Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no test failures or Node.js 20 / `punycode` warnings.
+- This verifies only Python reference models, not COSE signing/verification, Rust, key registry, persistence, egress or live behavior.
+
+### Exact COSE profile and stacked-PR audit — 2026-11-14
+
+- Verified PR #16 exact-head workflow [#43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308): 13 Python reference suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 successful executions); all job logs free of failures and Node.js 20 / `punycode` warnings.
+- Re-verified direct PR ancestry #1→#2→#3→#4→#5→#6→#7→#9→#10→#11→#12→#13→#14→#16 by exact SHA equality; #8 is parallel. Direct-chain PRs remain open/Draft/unmerged.
+- PR #16 snapshot at verification: 33 changed files, 4,937 additions, 72 deletions and 322 commits including stacked history.
+- Synchronized exact COSE_Sign1 wire profile and key-resolution trust requirements across ADR, research, owner decisions, status, roadmap and checklist.
+- CI proves Python reference-model regression only; no Rust, CBOR/COSE runtime, PostgreSQL, Trusted Egress, venue or live behavior.
+
+### COSE_Sign1 wire-profile exact-head CI — 2026-11-14
+
+- Branch HEAD `8d2c2f404782b718f1a3a422bb0ce918bb6b922d` passed [workflow #43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308).
+- Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no test failures or Node.js 20 / `punycode` warnings.
+- This is reference-model regression only; no COSE parser, signer, verifier, key registry or cross-language vectors were executed.
+
+### Final exact-head CI after COSE wire-profile synchronization — 2026-11-14
+
+- Branch HEAD `71afa64c00affed017c1f072600f4f0e4aaeccc6` passed [workflow #43616247630](https://github.com/PandaGarry/NEXUS/actions/runs/43616247630).
+- Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no failures or Node.js 20 / `punycode` warnings.
+- Verification remains Python reference-model only; no COSE, Rust, PostgreSQL, Trusted Egress, venue or live path was exercised.
+
+### Final synchronized PR #16 exact-head CI — 2026-11-14
+
+- Exact branch HEAD `3af0453897545b77fee358b9902a6301f662232e` passed [workflow #43616348161](https://github.com/PandaGarry/NEXUS/actions/runs/43616348161).
+- Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions); no test failures or Node.js 20 / `punycode` warnings.
+- Evidence is limited to Python reference models. Rust, CBOR/COSE, PostgreSQL, Trusted Egress, venues and live execution remain untested.
+
+### Risk reservation concurrency protocol clarified — 2026-11-14
+
+- Added Risk-owned scope-state serialization point shared by capacity reservation and exposure-projection updates.
+- Preserved Ledger journal ownership and routed Ledger/venue/external exposure facts through Risk's idempotent projection inbox; no cross-service writes to Risk state.
+- Specified deterministic multi-scope processing, atomic reservation commit, stable idempotency, bounded whole-transaction retry for 40001/40P01 and fail-closed ambiguous commit behavior.
+- Synchronized NX-ADR-008, NX-IF-002 and OD-09; added adversarial concurrency/recovery evidence gates.
+- No database, schema, service or runtime was implemented.
+
+### Field-level data lineage and projection governance — NX-ARCH-REVIEW-006 — 2026-11-14
+
+- Added a source-grounded field inventory for NX-IF-001..005 and NX-SEC-001.
+- Proposed data classifications and accountable owners for trade intent/command/approval, Risk scope/exposure/reservations, execution events/Ledger, evidence/recovery, halt/emergency and security assets.
+- Defined future projection restrictions for Analytics, Portfolio, Notifications, Strategy, Demo, Learning and Billing.
+- Identified the missing complete Ledger journal-leg schema and explicitly avoided inventing fields.
+- Retention/legal basis and field classifications remain proposals; no projection API, database table, access policy or runtime was implemented.
+
+### Risk projection/reservation concurrency acceptance plan synchronized — 2026-11-14
+
+- Aligned NX-ADR-008 §5.3, NX-IF-002 §6.4/§11, NX-REF-EXEC-002 §4.5 and OD-09.
+- Risk owns derived exposure projection and scope-state serialization; Ledger remains journal owner and emits facts through idempotent inbox/outbox handoff.
+- Added all-scope deterministic ordering, atomic reservation, missing/stale evidence fail-closed and idempotency/ambiguous-commit rules.
+- Added adversarial acceptance cases for projection/reservation races, duplicate/reordered events, serialization/deadlock retry and recovery.
+- No PostgreSQL instance/schema/service implemented; G1 evaluation only.
+- Clarified that absence of a visible idempotency row does not prove rollback while the original Risk transaction may still be in flight; only same-identity/digest retry is permitted, otherwise halt.
+
+### Risk scope serialization and PostgreSQL concurrency — NX-ARCH-REVIEW-007 — 2026-11-14
+
+- Added a source-grounded concurrency review of the Risk-owned scope-state serialization point.
+- Required parent/account and child projection fan-out to update all affected scope rows atomically; added scope-config version serialization.
+- Defined logical scope-state version metadata without selecting a physical schema.
+- Clarified whole-transaction 40001/40P01 retry and non-generic 23505/23P01 handling.
+- Added a PostgreSQL 18 concurrency/fault-injection matrix and performance proof requirements.
+- Synchronized NX-ADR-008, NX-IF-002 and OD-09. No database, schema, migration or runtime was implemented.
+
+### Exact-head CI after NX-ARCH-REVIEW-007 — 2026-11-14
+
+- Exact branch HEAD `e7c5461ae7ccea4f29fc77461db91d44566aba36` passed [workflow #43616908979](https://github.com/PandaGarry/NEXUS/actions/runs/43616908979).
+- Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no failures or Node.js 20 / `punycode` warnings.
+- This is reference-model regression only; no PostgreSQL concurrency harness or production database was exercised.
+
+### Numeric-wire parser integer budget made runtime-independent — 2026-11-14
+
+- Added a fixed 512-decimal-digit budget for numeric-wire integer fields, independent of caller input-size budget and Python interpreter configuration.
+- Oversized coefficient, scale, numerator or denominator values now fail with NUMERIC.RESOURCE_LIMIT before integer conversion.
+- Replaced interpreter-threshold regression with explicit 512-digit acceptance and 513-digit rejection tests for decimal and rational values.
+- This is a Python reference-parser resource limit only; Rust parity and production numeric profile remain open.
+### Risk root-scope guard and immutable valuation inputs — 2026-11-14
+
+- Made the account/root scope-state record mandatory in every v1 reservation/projection transaction; recheck root scope_config_version after locking the full scope set.
+- Bound Risk reservations and capabilities to exact immutable market/index/FX/fee/collateral input versions and freshness evidence.
+- Kept market-data ticks out of the serialized scope-state write path; stale or policy-invalid valuation inputs block dispatch.
+- Synchronized NX-ADR-008, NX-IF-002, NX-ARCH-REVIEW-007 and OD-09. No runtime or schema was implemented.
+
+### Immutable valuation-input and dispatch race-control clarification — 2026-11-14
+
+- Clarified that Risk exposure scope-state and market/index/FX/fee/collateral source snapshots have separate ownership and transaction boundaries.
+- Risk binds reservations/approvals to exact immutable valuation-input version vectors and source evidence; no cross-domain distributed transaction is assumed.
+- Trusted Egress must revalidate the bound vector against source-specific freshness and configured drift/admissibility policy before send. Newer source values do not silently mutate an issued approval.
+- Inadmissible or unconfigured inputs fail closed and require a new Risk evaluation/reservation.
+- Interface schema, race tests and numeric thresholds remain open; no runtime was added.
+
+### PostgreSQL 18.7 G1 evaluation patch selected — 2026-11-14
+
+- Selected PostgreSQL 18.7 as the exact G1 evaluation target after reviewing the November 12, 2026 official release and supported-version status.
+- Recorded release caveats for index integrity/REINDEX, incremental backup chains, C-extension rebuilds, extension scripts and privilege-sensitive SQL paths.
+- Added G1 constraints: fresh full backup for PITR qualification, no unreviewed extensions/C extensions, no dblink or untrusted replication subscriptions, and base-table-only authoritative writes.
+- No PostgreSQL instance, schema, extension or production deployment was created or approved. Requalify the latest supported 18.x patch before any future deployment.
+
+### Persisted valuation-evidence manifest required at Trusted Egress — 2026-11-14
+
+- Defined immutable ValuationInputVector identity/version and binding across ExposureSnapshot, RiskReservation and RiskApprovalCapability.
+- Trusted Egress reads the authoritative persisted Risk evidence manifest and consumed source-watermark/correction status before send.
+- Prohibited source-service calls and replacement market/FX/fee/collateral fetches on the dispatch path.
+- Missing/stale/incomplete manifest, watermark gaps or inadmissible freshness/drift evidence fail closed; newer values never silently rebind an approval.
+- Ingestion/invalidation objectives and race tests remain open; no runtime implemented.
+
+### Trusted Egress send-authorization linearization defined — 2026-11-14
+
+- Added a short attempt-scoped final authorization transaction over persisted valuation manifest, reservation, halt, eligibility and dispatcher-fence versions.
+- Committed single-use EgressBoundaryAuthorization is the send-authorization linearization point; the single-writer Egress process immediately initiates socket write.
+- No source fetch/queue hop/unbounded async preparation is allowed after the final gate; no database transaction is held over network I/O.
+- Post-gate updates are causally later; the attempt remains potentially sent and requires reconciliation. Crash/race runtime tests remain open.
+
+### Risk approval and valuation-evidence contracts synchronized — 2026-11-14
+
+- Aligned NX-IF-001 RiskEvaluationRequest/RiskDecision/RiskApprovalCapability with immutable valuation_input_vector_id/version from NX-IF-002.
+- Aligned NX-IF-001 with exact COSE_Sign1 untagged embedded four-element profile, alg=-19, bounded kid and empty unprotected map.
+- Required local-only bounded key resolution, exact signed byte preservation and rejection of token-directed remote key discovery.
+- Required Trusted Egress to validate the signed valuation vector against the persisted Risk evidence manifest with no remote source fetch; missing/unverifiable evidence denies send.
+- Added negative conformance vectors; no cryptographic or Egress runtime implemented.
+
+### PostgreSQL 18.7 G1 evaluation qualification — NX-RESEARCH-012 — 2026-11-14
+
+- Selected PostgreSQL 18.7 as the exact G1 evaluation patch only; no production database or deployment was selected.
+- Recorded the official release's 52 security fixes, 140+ bug fixes, index/REINDEX caveats and warning not to trust pre-update incremental backup chains.
+- Added G1 controls for fresh full backup/PITR, extension/C-extension exclusion, dblink/subscription exclusion, base-table privileges, no runtime DDL and RLS/view defense-in-depth.
+- Updated the reference-model README's verified Python matrix to 13 suites / 239 tests per runtime (717 executions) at exact tested SHA c191cde.
+
+### Exact PR #16 head reference CI passed — 2026-11-14
+
+- Branch HEAD `7fb396df5f3e700adf0ad151c446e38930fdadb0` passed [workflow #43617605777](https://github.com/PandaGarry/NEXUS/actions/runs/43617605777).
+- Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 executions total).
+- Job logs contain no failures or Node.js 20 / `punycode` deprecation warnings.
+- This verifies Python reference models only; no Rust, CBOR/COSE, PostgreSQL 18.7, Trusted Egress, venue or live path was exercised.
+
+### CI evidence reference corrected — 2026-11-14
+
+- Corrected the exact-head workflow reference for SHA `7fb396df5f3e700adf0ad151c446e38930fdadb0` to [#43617626344](https://github.com/PandaGarry/NEXUS/actions/runs/43617626344).
+- Verified Python 3.11/3.12/3.13: 13 suites / 239 tests each (717 successful executions), no failures or Node.js 20 / `punycode` warnings.
+
+### NX-IF-004 G1 profile and Trusted Egress ownership aligned — 2026-11-14
+
+- RiskApprovalCapability now binds both StateEvidenceVector and ValuationInputVector.
+- Final compatibility checking is assigned to Trusted Egress at the attempt-scoped send-authorization gate, not generic Execution.
+- Canonical CBOR/SHA-256/COSE Ed25519 profile now references NX-ADR-008 / NX-IF-001; library, key custody and security acceptance remain open.
+- Documentation only; no signer, verifier, key or dispatch runtime implemented.
+
+### WP-D evidence-vector and Trusted Egress contract synchronized — 2026-11-14
+
+- Distinguished StateEvidenceVector (NX-IF-004) from ValuationInputVector (NX-IF-002); RiskApprovalCapability binds both.
+- Required Egress to validate the exact signed valuation vector against the persisted Risk evidence manifest and latest consumed watermark/correction state.
+- Prohibited remote source calls or replacement valuation fetches on the dispatch path; missing/stale/unverifiable evidence denies send.
+- Added cross-source coherence and RecoveryBarrier/approval separation acceptance cases. No implementation/runtime added.
+
+### Halt / final Trusted Egress race semantics — 2026-11-14
+
+- Reconciled halt-epoch propagation with the final EgressBoundaryAuthorization linearization point across NX-IF-005, NX-ADR-008, NX-ARCH-REVIEW-005 and NX-REF-EXEC-002.
+- Halt-first denies the final gate; gate-first creates an in-flight attempt that cannot be retroactively revoked and must be tracked until socket initiation or positive sender fencing.
+- Egress cannot acknowledge a new halt epoch while a paused pre-halt gate-authorized attempt could still resume and initiate a write.
+- Clarified that full HALTED acknowledgement prevents new stale/queued send initiation but does not recall requests already initiated or guarantee no bytes after the wall-clock halt-request time.
+- No runtime, transport fence or fault-injection test was implemented; evidence remains open.
+
+### Halt / final Trusted Egress gate race contract clarified — 2026-11-14
+
+- Required halt-epoch transition and final EgressBoundaryAuthorization to serialize on the same authoritative halt-state generation.
+- Defined halt-wins (deny) and gate-wins (in-flight, retain reservation, reconcile) outcomes.
+- Required Egress to track gate-committed attempts until socket initiation or positive sender fencing before acknowledging the newer halt epoch.
+- Clarified that no stale/queued attempt may newly initiate after boundary acknowledgement, but bytes already sent cannot be recalled.
+- Separated Risk Engine outage from halt-store outage: independent Control Plane can commit halt while store is available; uncertain store blocks Egress authorization and fully-enforced HALTED status.
+- No runtime, halt store or external fence implemented; race/fault proof remains open.
+
+### Halt / Egress race conformance cases expanded — 2026-11-14
+
+- Added NX-IF-005 cases 36–42 for both linearization orders, paused Egress, missing external fence, halt-store outage, late venue acceptance and actual socket-boundary proof.
+- No runtime tests or external fencing proof are claimed; these remain G1 implementation gates.
+
+### Halt / final Egress gate linearization specified — 2026-11-14
+
+- Serialized the halt-epoch transition and final EgressBoundaryAuthorization against the same authoritative halt-state generation.
+- Defined gate-first attempts as in-flight and non-revocable; Egress must drain or positively fence them before acknowledging the new halt epoch.
+- Clarified that HALTED acknowledgement prevents new stale/queued socket-write initiation after acknowledgement, not venue processing of bytes already sent.
+- Added halt race crash points and IF-005 conformance cases. Actual network/process fencing remains unimplemented and unproven.
+
+### Halt / Egress race acceptance matrix and CI evidence — 2026-11-14
+
+- Expanded NX-IF-005 with race cases 36–42: halt-before-gate, gate-before-halt, paused Egress, unavailable control store, failed sender fence, delayed venue acceptance and instrumented socket-boundary proof.
+- Aligned halt acceptance criteria with the final EgressBoundaryAuthorization linearization point.
+- Distinguished Risk application outage (independent Control Plane can still commit halt) from authoritative halt-store outage (Egress denies final gate; no fully-enforced HALTED claim).
+- Verified Python reference suites at SHA `73841573e4e02b34a0c0363bbbe21155828d0c08`, [workflow #43617906166](https://github.com/PandaGarry/NEXUS/actions/runs/43617906166): 13 suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 executions).
+- This is documentation and reference-model CI only; no halt store, Egress runtime, socket instrumentation or external fence was implemented.
+
+### Risk approval and venue signing authorities separated — 2026-11-14
+
+- NX-SEC-001 now requires separate non-reused keys, workload identities and policies for RiskApprovalCapability signing and venue request signing/credentials.
+- Risk signer alone holds Risk private key; Execution/Trusted Egress receive public verification material only.
+- Trusted Egress alone holds venue credentials and owns the venue socket; EgressBoundaryAuthorization remains a separate one-use attempt control.
+- No key, vault, signer or venue credential is implemented; key lifecycle and compromise tests remain open.
+
+### Exact PR #16 head CI passed after halt / signing authority updates — 2026-11-14
+
+- Branch head `dbfba513b86a79b8b6574a80c1beb136b28836c7` passed [workflow #43618114058](https://github.com/PandaGarry/NEXUS/actions/runs/43618114058).
+- Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 executions total).
+- All logs show no failures or Node.js 20 / `punycode` deprecation warnings.
+- This is Python reference-model CI only; no signing keys, halt store, Egress, PostgreSQL, Rust or venue path was exercised.
+
+### Test-only halt / final Egress gate reference oracle — 2026-11-14
+
+- Added `HaltEgressGate` sequential state-machine oracle and its initial 11-test revision covering both logical commit orders, paused sender acknowledgement blocking, positive sender fencing, single-use attempt IDs, control-store outage and reconciliation after socket initiation.
+- Linked the oracle to NX-IF-005 / NX-REF-EXEC-002 and documented its strict limitation: it does not prove database linearizability, durable state, real process/socket behavior or external network fencing.
+- Exact-head CI for the expanded test matrix remains pending.
+
+### Halt / final Egress gate oracle CI — 2026-11-14
+
+- The test-only `HaltEgressGate` oracle and 11 new tests passed at SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1`, [workflow #43618215618](https://github.com/PandaGarry/NEXUS/actions/runs/43618215618).
+- Python 3.11/3.12/3.13 each passed 250 tests (750 successful executions); the initial egress-fencing suite ran 24 tests/runtime.
+- All logs were clean of test failures and Node.js 20 / `punycode` deprecation warnings.
+- This is sequential reference-model evidence only; no durable halt store, database lock proof, socket, process fence or network enforcement was tested.
+
+### HEGC logical authority and idempotent Egress grant contract — 2026-11-14
+
+- Assigned sole logical write ownership of HaltState and EgressBoundaryAuthorization to the bounded Halt/Egress Gate Coordinator (HEGC), separate from Risk, Command Coordinator and venue-credential-owning Egress.
+- HEGC has no venue credentials/socket or Risk signing key; Egress has no direct write access to control records.
+- Defined least-privilege HEGC reads and control-schema-only writes.
+- Made grant issuance idempotent on stable attempt ID; exact retries return the same grant, changed bindings conflict, and ambiguous responses are resolved by the same ID.
+- No HEGC runtime, schema, role or database instance implemented.
+
+### HEGC / Risk approval independent verification boundary hardened — 2026-11-14
+
+- NX-SEC-001 classifies HEGC as a critical control-plane trust domain with no venue credentials/socket or Risk signing key.
+- Trusted Egress must independently verify the RiskApprovalCapability signature and exact command/reservation/evidence/audience/expiry/single-use bindings; the HEGC grant cannot replace Risk approval.
+- HEGC grant issuance is idempotent by attempt ID; changed bindings conflict and ambiguous responses resolve through the same ID.
+- No HEGC runtime or production security proof exists.
+
+### HEGC authority and halt-gate reference model hardened — 2026-11-14
+
+- Selected HEGC as sole logical writer of halt and final Egress authorization records; no venue credentials, socket or Risk signing key.
+- Restricted Egress to one-use attempt-scoped grants and removed direct control-state write authority.
+- Added test-only model cases for pending halt/store recovery, in-flight attempts, sender fencing, repeated halt idempotency and signed-64-bit epoch exhaustion.
+- Production HEGC, PostgreSQL schema/API, actual socket instrumentation and external fencing remain unimplemented.
+
+### Sender-fence outcome correction — 2026-11-14
+
+- Corrected a dangerous inference in the halt/Egress oracle: a positive process/host/network fence prevents future writes but does not prove that no earlier socket side effect occurred.
+- Replaced `FENCED_NOT_SENT` with `SENDER_FENCED_UNKNOWN`; a fenced attempt without trusted initiation evidence remains OUTCOME_UNKNOWN and reconciliation-required.
+- Added an explicit reservation-held assertion. Fencing alone cannot release exposure or authorize a blind resend.
+- The revised oracle now contains 12 tests; exact-head CI is pending.
+
+
+### Sender-fence semantic correction and expanded HaltEgressGate CI — 2026-11-14
+
+- Extended the sequential halt/Egress oracle to 16 dedicated HaltEgressGate cases, including pending-halt/store-recovery ordering, repeated halt idempotency and signed-64-bit epoch exhaustion; the package contained 29 tests at that historical SHA.
+- Preserved OUTCOME_UNKNOWN and reservation retention after a sender fence when trusted socket-initiation evidence is absent; a fence only blocks future writes.
+- Exact code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` passed [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 suites / 255 tests on each of Python 3.11, 3.12 and 3.13 (765 successful executions).
+- All three job logs were inspected; no test failures or deprecation warnings were found.
+- This remains sequential Python reference evidence only; no production HEGC, PostgreSQL linearizability, socket observer, process/host/network fence or venue reconciliation runtime was exercised.
+
+- Exact code HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` passed [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 suites / 255 tests per Python 3.11/3.12/3.13 runtime (765 executions). Halt/Egress state-machine oracle now has 18 tests; this remains sequential model evidence only.
+
+### Exact-head CI — 18-case HEGC halt-gate reference model — 2026-11-14
+
+- PR #16 HEAD `9b88eabb80e44510e29013fe02315c354c4b488b` passed [workflow #43618875958](https://github.com/PandaGarry/NEXUS/actions/runs/43618875958).
+- Python 3.11/3.12/3.13 each passed 257 tests (771 successful executions total); egress-fencing package passed 31 tests, including 18 HaltEgressGate cases.
+- All three job logs show no failures or Node.js 20 / `punycode` deprecation warnings.
+- The later signed-64-bit epoch-exhaustion grant-denial guard requires a fresh exact-head rerun. This remains sequential reference-model evidence, not HEGC/database/socket/network proof.
+
+### HaltEgressGate 18-case hardening and code/test CI — 2026-11-14
+
+- Fixed duplicate halt requests during store outage so they do not downgrade an already committed HALTING/HALTED epoch.
+- Added two regressions for duplicate requests during store outage and after HALTED.
+- Asserted sender-fenced attempts retain their reservation and remain OUTCOME_UNKNOWN until reconciliation; fencing alone is not DEFINITELY_NOT_SENT evidence.
+- HaltEgressGate now has 18 tests; the egress-fencing package has 31 tests.
+- Exact code/test HEAD `2e94edd73f8933f0d510eed940452316ec5b8832` passed workflow [#43618796109](https://github.com/PandaGarry/NEXUS/actions/runs/43618796109): 13 suites / 257 tests on each Python 3.11/3.12/3.13 runtime (771 executions).
+- The sequential oracle still does not prove real DB concurrency, HEGC persistence, socket behavior or external fencing.
+
+- Added durable one-use `ConsumeEgressGrant` transition before socket initiation; only a positive response permits one send. Lost/indeterminate response cannot be retried as a new attempt; reservation remains held pending fence/reconciliation. The Python oracle now covers 21 state-machine cases.
+
+
+### HEGC one-use grant consumption and exact-head CI — 2026-11-14
+
+- Added the separate GRANT_CONSUMED state before socket initiation; a positive durable HEGC consume response is required for one socket-write attempt.
+- Added regression coverage for repeated consumption, lost consume response, consume-store outage, consumed grant during halt/store recovery and sender-fenced attempts.
+- Fixed two stale test expectations exposed by workflow #43618969753; the corrected exact code/test HEAD 9d618131ac9951e23c589491b2fb1039f6dc1d86 passed [workflow #43619080626](https://github.com/PandaGarry/NEXUS/actions/runs/43619080626).
+- Python 3.11/3.12/3.13 each passed 13 suites / 260 tests (780 executions); egress-fencing passed 34 tests, including 21 HaltEgressGate cases.
+- This is test-only sequential reference evidence. No production HEGC, durable database grant, actual socket boundary or external process/network fence was exercised.
+
+### PostgreSQL SSI commit-order qualification — 2026-11-14
+
+- Clarified that PostgreSQL SERIALIZABLE guarantees equivalence to some serial order, not by itself the contract's wall-clock commit-order/linearization requirement for overlapping source writers.
+- Added an open G1 requirement for an enforced common per-scope generation/guard shared atomically by HEGC and every invalidating source writer, with direct-DML bypass prevention and PostgreSQL 18.7 concurrency proof.
+- No database guard or production transaction protocol is implemented or selected.
+
+
+### Duplicate-halt cause preservation and expanded HEGC CI — 2026-11-14
+
+- Made duplicate halt requests idempotent for the active halt episode: the original initiating reason is preserved; later causes belong in separate audit events.
+- Added regression cases for duplicate requests during HALTING and HALT_PENDING.
+- Exact code/test HEAD fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8 passed [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619194630).
+- Python 3.11/3.12/3.13 each passed 13 suites / 262 tests (786 executions); egress-fencing passed 36 tests, including 23 HaltEgressGate cases.
+- All three job logs were inspected; no test failures or deprecation warnings. This remains sequential Python reference evidence only.
+
+### Grant-consumption red-CI regression resolved — 2026-11-14
+
+- Investigated failures #43618969753 (`913ef9e`) and #43619038468 (`f9f385d`): stale tests did not model GRANT_CONSUMED before socket initiation and incorrectly expected a fenced sender to write later.
+- Updated tests to consume the committed grant before simulated store outage and to deny future socket initiation after sender fencing while retaining OUTCOME_UNKNOWN.
+- Corrected code/test HEAD `fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8` passed [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619194630): 262 tests/runtime on each Python 3.11/3.12/3.13 (786 executions), 36 egress-fencing tests / 23 halt-gate tests.
+
+### HEGC guard first-statement enforcement requirement clarified — 2026-11-14
+
+- Recorded that a standalone SECURITY DEFINER guard function cannot prevent callers from performing protected reads before invoking it.
+- G1 must use a reviewed HEGC transaction entrypoint or DB-enforced first-statement API; every invalidating writer must use guarded procedures with direct DML bypass revoked.
+- Added security requirements for NOLOGIN/non-superuser guard owner, guard-row-only writes, fixed search_path, pg_temp last, schema-qualified names, no dynamic SQL and PUBLIC EXECUTE revoked.
+- No function, schema, role or runtime implemented.
+
+
+### Idempotent HEGC grant issuance and binding-conflict coverage — 2026-11-14
+
+- Added a canonical authorization binding digest to the test-only attempt model.
+- Exact retries on the same attempt ID, observed halt epoch and digest return the original attempt; a changed digest or epoch conflicts and never mints a replacement grant.
+- Exact code/test HEAD c2350f7807587e0428b760890f6fdba09ba60f60 passed [workflow #43619636403](https://github.com/PandaGarry/NEXUS/actions/runs/43619636403).
+- Python 3.11/3.12/3.13 each passed 13 suites / 263 tests (789 executions); egress-fencing passed 37 tests, including 24 HaltEgressGate cases.
+- This is sequential reference-model evidence only. Canonical production digest construction, database uniqueness, concurrent idempotency, HEGC identity and PostgreSQL commit-order guard remain unimplemented.
+
+
+### HEGC idempotent grant retry and database-entrypoint security — 2026-11-14
+
+- Extended the HaltEgressGate reference oracle so a stable attempt ID plus identical authorization digest returns the original attempt record; a changed digest or halt epoch conflicts and never creates a replacement grant.
+- Exact code/test HEAD `c2350f7807587e0428b760890f6fdba09ba60f60` passed [workflow #43619636403](https://github.com/PandaGarry/NEXUS/actions/runs/43619636403): 263 tests on Python 3.11/3.12/3.13 (789 executions); egress-fencing 37 tests / 24 HaltEgressGate tests.
+- Refined the PostgreSQL G1 candidate: an internal guard helper is not directly exposed to app roles; HEGC uses a reviewed EXECUTE-only transaction entrypoint that acquires guards before protected reads and writes the grant in the same transaction. Domain mutations likewise use guarded procedures.
+- Added authenticated session_user identity, no shared login/SET ROLE impersonation, explicit scope authorization and complete affected-scope derivation as security proof obligations.
+- No PostgreSQL schema, function, procedure, integration harness or production HEGC has been implemented.
+
+### Exact branch-head CI after HEGC security-boundary review — 2026-11-14
+
+- Documentation-synchronized PR #16 HEAD `3d5181f1dc01441ebcd89145be2c0456608f501f` passed [workflow #43619941084](https://github.com/PandaGarry/NEXUS/actions/runs/43619941084).
+- Python 3.11/3.12/3.13 each passed 263 tests (789 successful executions); egress-fencing passed 37 tests including 24 HaltEgressGate cases.
+- All job logs show no test failures or Node.js 20 / `punycode` deprecation warnings.
+- No code/test source changed after verified code/test SHA `c2350f7`; this does not prove Rust, PostgreSQL multi-connection serialization, HEGC database functions or external fencing.
+
+### HEGC entrypoint and database privilege-boundary review — 2026-11-14
+
+- Added NX-ARCH-REVIEW-008 to cross-review the EXECUTE-only HEGC runtime, SECURITY DEFINER owners, session_user identity, per-generation Egress principal, common guard and one-use grant lifecycle.
+- Added PostgreSQL 18 adversarial qualification requirements for search_path/temp-object spoofing, PUBLIC EXECUTE, function overload, role membership, RLS, direct-DML bypass, identity collapse and process-fence semantics.
+- Design only; no schema, role, function, database connection or runtime added.
+
+### Logical venue-request send boundary and retry prohibition — 2026-11-14
+
+- Clarified that one consumed grant authorizes one logical venue-request transmission, potentially spanning multiple OS/TLS writes; SOCKET_INITIATED is the first transport write, not delivery or venue acceptance.
+- Disabled automatic retries, redirects, request replay, proxy/service-mesh retries and WebSocket reconnect replay for order mutations by default; venue-specific exceptions require proven endpoint idempotency and explicit approval.
+- Added a regression preventing a second logical request initiation from the same consumed grant.
+- Code/test HEAD `fbccb65e3c75cbaf7081f6d1f6e02095fd53d8ee` passed 264 tests/runtime (792 executions); exact documentation-synchronized branch HEAD `3a8099750dfb562af63901163a123b8849a8d425` passed workflow #43620613920.
+
+
+### Guarded scope-membership mutation and forced RLS fixture qualification — 2026-11-14
+
+- Added a dedicated membership-administration entrypoint that acquires the common root/child guards before scope activation or deactivation.
+- Added a real PostgreSQL 18.7 race: membership addition blocks a stale gate transaction, which receives SQLSTATE 40001 and must retry with the expanded complete scope set.
+- Enabled and forced RLS on the disposable source fixture; HEGC and writer policies bind to authenticated session_user and account metadata.
+- PostgreSQL workflow #43628329933 passed 8 tests. Python reference-model workflow #43628329956 passed 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions).
+- Scope-membership and fixture RLS qualification only; production schemas, authorization-map mutation protocol, RLS policies and services remain unimplemented.
+
+### Public release communication standard — 2026-11-14
+
+- Defined concise, user-oriented public release notes and publication gates.
+- Kept internal engineering records separate from public updates; Telegram/MAX, VK and other community channels remain a later-stage launch item.
+- No public channel or production availability is implied.
+
+
+### Guarded service-principal revocation race qualification — 2026-11-14
+
+- Added a membership-admin-only SECURITY DEFINER entrypoint to activate/revoke HEGC and writer service-principal mappings under the same root-first guard.
+- Proved a concurrent revocation blocks a stale gate; the stale transaction receives SQLSTATE 40001 and, after full retry, fails closed with 42501. Self-revocation is rejected.
+- PostgreSQL workflow #43628823064 passed 9 tests on PostgreSQL 18.7. Python workflow #43628823097 passed 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions).
+- Out-of-band role/ACL changes and production authorization-catalog mutation paths remain unqualified.
+
+
+### Exact latest PR #16 branch-head evidence refresh — 2026-11-14
+
+- Refreshed PR #16 to exact branch HEAD `49cb8ba73bfb9cf61fafba3108cf8ead6d16321b`.
+- PostgreSQL 18.7 disposable HEGC fixture workflow [#43630768858](https://github.com/PandaGarry/NEXUS/actions/runs/43630768858) passed 11/11 tests.
+- Python reference workflow [#43630768860](https://github.com/PandaGarry/NEXUS/actions/runs/43630768860) passed 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions).
+- Inspected all four job steps/logs. Permission-denied and serialization messages are expected from negative/adversarial assertions; all corresponding jobs completed successfully.
+- The latest branch delta after the pinned-image code/test commit is documentation-only. Production DBA/migration catalog-manifest drift detection, emergency role-change reconciliation, existing-session termination, expanded RLS tests, crash/restore/PITR, true uncertain-COMMIT recovery, signed image provenance/SBOM/vulnerability disposition and independent security review remain open.
+- PR #16 remains Draft and stacked on PR #14. No production deployment or live trading is authorized by these fixture/reference results.
+
+
+### PostgreSQL catalog-drift regression — 2026-11-14
+
+- Added a deterministic disposable PostgreSQL catalog fingerprint covering role attributes/memberships, schema/relation owners and ACLs, RLS flags/policies, function ownership/security mode/configuration/ACLs and default privileges.
+- Added mutation/restore regressions for CREATEROLE escalation, PUBLIC EXECUTE, SECURITY INVOKER and unexpected trusted-schema function inventory.
+- Exact code/test HEAD `f815c351a709ff169996e3f0e451da73651a142c` passed PostgreSQL 18.7 CI 12/12 and Python 3.11/3.12/3.13 matrix 264 tests/runtime (792 executions).
+- Explicitly retained production signed-manifest governance, fail-closed deployment drift enforcement, DBA/migration control plane, emergency reconciliation and session/process/network fencing as OPEN.
+
+
+### SHA-256 catalog fingerprint verification — 2026-11-14
+
+- Replaced the test-only catalog fingerprint's MD5 with Python `hashlib.sha256` over deterministic JSONB snapshot text.
+- Exact code/test HEAD `d9c7bf5fddf68792ed565fecbcef83b73dab11a7` passed PostgreSQL 18.7 12/12 and Python 3.11/3.12/3.13 264 tests/runtime (792 executions).
+- Production signed/approved manifest and deployment-time fail-closed drift enforcement remain OPEN.

@@ -91,5 +91,68 @@ class NumericWireTests(unittest.TestCase):
             parse_rational("nxr1:0:7", max_chars=128)
 
 
+    def test_numeric_wire_errors_expose_stable_classes_and_preserve_base_type(self):
+        cases = (
+            (lambda: parse_decimal("nxd2:1:0", max_chars=128),
+             "NUMERIC.UNSUPPORTED_WIRE_VERSION"),
+            (lambda: parse_decimal("nxd1:1", max_chars=128),
+             "NUMERIC.INVALID_WIRE"),
+            (lambda: parse_decimal("nxd1:01:0", max_chars=128),
+             "NUMERIC.NON_CANONICAL"),
+            (lambda: parse_decimal("nxd1:123456:0", max_chars=8),
+             "NUMERIC.RESOURCE_LIMIT"),
+            (lambda: parse_rational("nxr2:1:3", max_chars=128),
+             "NUMERIC.UNSUPPORTED_WIRE_VERSION"),
+            (lambda: parse_rational("nxr1:1", max_chars=128),
+             "NUMERIC.INVALID_WIRE"),
+            (lambda: parse_rational("nxr1:2:6", max_chars=128),
+             "NUMERIC.NON_CANONICAL"),
+            (lambda: parse_rational("nxr1:123456:1", max_chars=8),
+             "NUMERIC.RESOURCE_LIMIT"),
+        )
+        for operation, expected_class in cases:
+            with self.subTest(expected_class=expected_class, operation=operation):
+                with self.assertRaises(NumericWireError) as caught:
+                    operation()
+                self.assertEqual(caught.exception.error_class, expected_class)
+
+
+    def test_decimal_scale_obeys_explicit_resource_budget(self):
+        with self.assertRaises(NumericWireError) as caught:
+            parse_decimal("nxd1:1:129", max_chars=128)
+        self.assertEqual(caught.exception.error_class, "NUMERIC.RESOURCE_LIMIT")
+
+        with self.assertRaises(NumericWireError) as caught:
+            parse_decimal("nxd1:1:5", max_chars=128, max_scale=4)
+        self.assertEqual(caught.exception.error_class, "NUMERIC.RESOURCE_LIMIT")
+
+        with self.assertRaises(ValueError):
+            parse_decimal("nxd1:1:0", max_chars=128, max_scale=-1)
+
+    def test_wire_integer_digit_budget_is_runtime_independent(self):
+        # 512 digits are accepted on every supported interpreter; 513 are
+        # rejected by the protocol budget before Python's int parser is called.
+        boundary = "9" * 512
+        decimal_wire = f"nxd1:{boundary}:0"
+        rational_wire = f"nxr1:{boundary}:1"
+        self.assertEqual(
+            parse_decimal(decimal_wire, max_chars=520),
+            ExactDecimal(int(boundary), 0),
+        )
+        self.assertEqual(
+            parse_rational(rational_wire, max_chars=520),
+            ExactRational(int(boundary), 1),
+        )
+
+        oversized_integer = "9" * 513
+        with self.assertRaises(NumericWireError) as caught:
+            parse_decimal(f"nxd1:{oversized_integer}:0", max_chars=600)
+        self.assertEqual(caught.exception.error_class, "NUMERIC.RESOURCE_LIMIT")
+
+        with self.assertRaises(NumericWireError) as caught:
+            parse_rational(f"nxr1:{oversized_integer}:1", max_chars=600)
+        self.assertEqual(caught.exception.error_class, "NUMERIC.RESOURCE_LIMIT")
+
+
 if __name__ == "__main__":
     unittest.main()

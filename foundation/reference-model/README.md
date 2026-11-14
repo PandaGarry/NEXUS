@@ -65,10 +65,10 @@ Latest full reference workflow: [#43594275808](https://github.com/PandaGarry/NEX
 Run `python -m unittest -v test_bounded_numeric.py` for mandatory caller-supplied budgets, preflight checks and bounded operations. Run `python -m unittest -v test_numeric_wire.py` for versioned canonical scalar wire encoding. `NumericLimits` has no default profile; zero scale/zero power-of-ten are valid limits, while digit and input budgets must be positive. These modules are reference-only and do not establish production resource safety or a selected production profile.
 
 
-Latest verified PR matrix: [#43595449902](https://github.com/PandaGarry/NEXUS/actions/runs/43595199511) passed exact PR HEAD `6200bae99e9b7ce865487a40312d0074c0e2a276` on Python 3.11–3.13. Ten isolated suites, 172 tests per runtime / 516 matrix executions; bounded numeric 32 per runtime and numeric wire 11 per runtime. Shared numeric wire vectors are in `numeric-wire-golden-v1.json`.
+Latest exact code/test matrix: [workflow #43619636403](https://github.com/PandaGarry/NEXUS/actions/runs/43619636403) passed code/test HEAD `c2350f7807587e0428b760890f6fdba09ba60f60` on Python 3.11–3.13. Thirteen isolated suites, **263 tests per runtime / 789 successful executions**. The egress-fencing suite has 37 tests (13 authority-handover + 24 HaltEgressGate); the bounded numeric suite has 32 and canonical numeric-wire suite 14 tests. Shared numeric wire vectors are in `numeric-wire-golden-v1.json`. PR #16 HEAD contains documentation-only commits after this code/test SHA; the exact current documentation head is tracked in the PR verification section. This is reference-model CI only; it does not prove database linearizability, real process/network fencing, Rust, COSE or live trading.
 
 
-Canonical wire fixtures: `numeric-wire-golden-v1.json` (version 1.0.0) provides language-neutral valid/invalid decimal and rational cases, including integers beyond JavaScript's exact-number range. Run with `python -m unittest -v test_numeric_wire.py`.
+Canonical wire fixtures: `numeric-wire-golden-v1.json` (version 1.0.0) provides language-neutral valid/invalid decimal and rational cases, including integers beyond JavaScript's exact-number range. Run with `python -m unittest -v test_numeric_wire.py`. Parser failures expose stable `error_class` values through catch-compatible `NumericWireError` subclasses (`NUMERIC.INVALID_WIRE`, `NUMERIC.UNSUPPORTED_WIRE_VERSION`, `NUMERIC.NON_CANONICAL`, `NUMERIC.RESOURCE_LIMIT`); callers must not classify failures by parsing exception messages. This remains reference-only.
 
 
 The bounded context separates raw decimal literal input size (`max_input_chars`) from encoded scalar wire size (`max_wire_chars`). Both are mandatory independent budgets.
@@ -78,3 +78,49 @@ The bounded context separates raw decimal literal input size (`max_input_chars`)
 Run `python -m unittest -v test_financial_math_fixtures.py` for the synthetic, non-authorizing exact dimensional arithmetic vectors in `financial-math-golden-v1.json`. Coverage is limited to spot notional, explicitly mapped linear contract exposure/notional, explicitly mapped inverse contract rational exposure, and a pure weighted-average identity over a supplied partial-fill set. Selected results are independently checked with Python's `fractions.Fraction`. No venue formulas, fee/funding/P&L/margin/liquidation, accounting or production rounding policy is established. CI executes this suite on Python 3.11–3.13.
 
 The financial math fixture suite also runs 650 deterministic seeded property cases (250 spot notional vs. `Fraction`, 200 partial-fill permutation/partition invariance cases, and 200 inverse contract-value identity cases). Run [#43596851904](https://github.com/PandaGarry/NEXUS/actions/runs/43596851904) passed exact code/test commit `0f0b44e927aacf67d6f7a5678b160b3e3c6088e0` on Python 3.11–3.13: 182 tests per runtime / 546 matrix executions. These checks are bounded test-only evidence, not formal verification or production qualification.
+
+
+The financial fixture suite now delegates weighted-average arithmetic to `financial_aggregation.aggregate_partial_fills`. The test-only function accepts typed `(AssetAmount, Price)` pairs and returns total quantity, quote notional and an exact rational average. It rejects an empty fill set and relies on domain types to reject incompatible base/quote dimensions. It does not validate venue fill admissibility or calculate fees, funding, P&L, accounting or rounding. Non-terminating averages remain rational; no implicit decimal conversion is performed.
+
+A non-empty signed fill set whose aggregate quantity is zero raises the typed `DivisionByZero`; this is separate from empty input (`ValueError`) and malformed argument types (`TypeError`). Signed quantities remain accepted by the arithmetic helper and do not imply that signed venue fills are admissible.
+
+
+## Numeric wire parser resource-boundary hardening — 2026-11-14
+
+The decimal wire parser now accepts an optional max_scale budget; if omitted, it uses the explicit max_chars input budget as a conservative scale ceiling. Python integer-string conversion limit failures are normalized to the stable NUMERIC.RESOURCE_LIMIT class for decimal coefficients/scales and rational numerators/denominators. The numeric wire suite now contains 14 tests. This is a reference-parser guard, not a production numeric profile or a substitute for the future NX-ARCH-005 fixture runner's explicit resource profiles.
+
+## Numeric wire integer-digit budget — 2026-11-14
+
+The decimal/rational wire parser applies a fixed **512 decimal-digit maximum** to every encoded integer coefficient, scale, numerator and denominator, independently of the caller's max_chars input-size budget. This bound is explicit and identical across supported Python runtimes; values beyond it fail with NUMERIC.RESOURCE_LIMIT before integer conversion. The bound is a parser resource limit, not a financial magnitude, precision, Risk or production numeric policy. The test suite covers the 512-digit accepted boundary and 513-digit rejection for both decimal and rational encodings.
+
+## Halt / final Egress authorization race
+
+The `egress-fencing` package now includes `HaltEgressGate`, a test-only oracle for the final EgressBoundaryAuthorization / halt-epoch ordering. Its 24 tests cover halt-first denial, gate-first in-flight treatment, paused sender acknowledgement blocking, positive sender fencing, sender-fence uncertainty/reservation retention, store outage/recovery, idempotent attempt-grant issuance, binding conflicts, one-use grant consumption, lost consume response, duplicate halt idempotency and cause preservation, signed 64-bit epoch exhaustion and reconciliation obligations after socket initiation. Together with 13 authority-handover tests, the package has 37 tests.
+
+This is a sequential state-machine oracle only. It does not test real database serialization, process scheduling, sockets, network paths or production fencing. A positive sender-fence fixture only blocks future socket initiation; without a trusted initiation report it does not prove the attempt was never sent. The model keeps such attempts OUTCOME_UNKNOWN and reconciliation-required.
+
+
+## HEGC one-use grant and halt-cause hardening — 2026-11-14
+
+The latest exact code/test matrix is workflow #43619636403 at SHA c2350f7807587e0428b760890f6fdba09ba60f60: 13 suites / 263 tests on Python 3.11, 3.12 and 3.13 (789 successful executions). The egress-fencing package contains 37 tests, including 24 HaltEgressGate tests. The model now requires positive durable grant consumption before a socket attempt, preserves the initiating halt cause across duplicate requests, returns the original grant on exact attempt retries and rejects changed authorization bindings.
+
+This remains a sequential reference oracle. It does not prove PostgreSQL 18.7 commit-order guard behavior, HEGC role/identity enforcement, real socket initiation, process/host/network fencing or venue reconciliation. The preferred per-scope SECURITY DEFINER guard function remains a G1 candidate only.
+
+
+## Authorization-catalog manifest admission reference
+
+The isolated `auth-catalog` directory contains a test-only logical manifest schema and admission-precondition model. Run it with:
+
+```bash
+cd auth-catalog
+python -m unittest -v
+```
+
+The suite rejects schema drift, wildcard or duplicate scope, unknown object classes, duplicate semantic identities/rules, invalid digests and validity intervals, deployment-context mismatch, sequence/predecessor gaps, stale/not-yet-valid manifests, unverified signature/approval results and unavailable revocation state.
+
+This is not deterministic-CBOR ingress validation, COSE/Ed25519 verification, trust-root/key custody, a monotonic external ledger, PostgreSQL catalog extraction or production authorization. Signature/approval/revocation booleans are explicit test seams only. The selected wire profile and cryptographic implementation remain subject to NX-ADR-008/NX-RESEARCH-011 and independent conformance review.
+
+
+## Authorization-catalog manifest admission reference — CI evidence
+
+The isolated auth-catalog suite passed 23 tests on each Python runtime in workflow [#43633125568](https://github.com/PandaGarry/NEXUS/actions/runs/43633125568), exact code/test HEAD `c80d781ce7c9f2b4a015fa79f8e2c403709439d7`. The full reference matrix passed 287 tests per runtime (861 executions). PostgreSQL HEGC workflow [#43633125536](https://github.com/PandaGarry/NEXUS/actions/runs/43633125536) passed 12/12. This does not qualify production serialization, cryptography, database deployment or live execution.

@@ -26,13 +26,15 @@ Every order intent receives:
 - strategy/run correlation, risk decision ID and policy version;
 - creation time, expiry/deadline and idempotency scope.
 
-Persist the intent, risk approval reference and outbox command atomically before any network dispatch. A command is never sent directly from an uncommitted in-memory request.
+Persist the intent, durable RiskReservation reference and command/outbox record before any network dispatch. Reservation and approval are separate ordered commits: the Risk Engine must first commit capacity reservation across every affected scope; only then may it issue a short-lived RiskApprovalCapability. The Command Coordinator must durably consume that single-use capability atomically with the transition that makes the exact canonical command eligible and commits its outbox record. A command is never sent directly from an uncommitted in-memory request.
 
 ### 2. Order lifecycle
 
 The canonical lifecycle is:
 
-`CREATED → VALIDATED → RISK_APPROVED → PERSISTED → DISPATCHED → ACKNOWLEDGED`
+`CREATED → VALIDATED → RESERVED → RISK_APPROVED → PERSISTED → DISPATCH_ATTEMPT_COMMITTED → ACKNOWLEDGED`
+
+`DISPATCH_ATTEMPT_COMMITTED` is the durable pre-egress marker, not proof that bytes reached the venue. It places the command in the conservative `DISPATCH_OUTCOME_UNKNOWN` exposure bucket because a crash can make the send boundary unknowable. A definitive `DEFINITELY_NOT_SENT` result may resolve that state only with authoritative transport evidence and a fenced attempt record.
 
 Possible subsequent states:
 - `PARTIALLY_FILLED`
@@ -63,14 +65,16 @@ Rules:
 
 ### 4. Transactional outbox and dispatch
 
-1. Validate the order against the current Instrument Specification Registry.
-2. Obtain a signed, scoped approval from the Risk Engine.
-3. In one database transaction persist the order intent, approval reference and outbox command.
-4. Dispatcher claims the outbox record with a lease and durable attempt metadata.
-5. Before sending, confirm the approval remains valid and the account/venue circuit is not halted.
-6. Dispatch exactly the persisted command payload; record request hash, attempt, timestamps and transport result.
-7. Convert ambiguous transport outcomes to `OUTCOME_UNKNOWN`; never convert absence of response to rejection.
-8. Consume private events and REST reconciliation into the canonical state machine.
+The command path has two ordered durability boundaries; they MUST NOT be collapsed into an approval-first shortcut:
+
+1. Validate the immutable CanonicalTradeCommand against the current Instrument Specification Registry, canonicalize it and compute its payload digest.
+2. Risk evaluates the command against a consistent ExposureSnapshot and current policy/spec/state evidence. In one serializable/linearizable logical transaction it commits the `PRE_DISPATCH_RESERVATION` across every affected risk scope, including the command digest, reservation ID/version, scope fencing versions and idempotency result.
+3. Only after the reservation commit is durable may Risk issue a short-lived signed `RiskApprovalCapability` bound to the exact command digest, reservation ID/version, account/scope, policy and exposure versions, instrument-spec version, halt epoch and expiry. A crash after reservation commit but before capability delivery is recovered by reading the original reservation request/result; it MUST NOT reserve capacity again.
+4. The Command Coordinator independently validates the capability and atomically consumes its single-use authorization while durably committing the canonical command, reservation reference and outbox record. This is the durable transition that makes the command eligible for dispatch. A duplicate/replayed capability cannot create a second command or attempt.
+5. The dispatcher claims the committed outbox record under a monotonic fencing token and durably records an attempt marker before the external side effect. The marker transitions the conservative exposure bucket from `PRE_DISPATCH_RESERVATION` to `DISPATCH_OUTCOME_UNKNOWN`. From this point, a crash before, during or after the socket write is treated as potentially sent until authoritative evidence proves otherwise; this deliberate conservative over-approximation prevents a crash window from releasing exposure.
+6. Immediately before the network side effect, the trusted egress boundary independently revalidates the exact persisted payload/digest, approval consumption, active reservation, account/venue/product eligibility revision and epoch, current halt epoch, command/attempt identity and dispatcher fence. A stale or unverifiable authority fails closed.
+7. Only the trusted egress boundary can transmit the persisted canonical payload. It records transport evidence and classifies the result as definitely not sent, venue rejected, venue accepted or outcome unknown. Unknown outcomes remain reserved and require reconciliation; no blind retry is permitted.
+8. Consume private events and REST reconciliation into the canonical state machine and transfer exposure between exclusive IF-002 buckets without a gap or double count.
 
 The outbox provides durable at-least-once dispatch attempts, not magical exactly-once exchange execution. Exactly-once effects cannot be assumed across an external exchange boundary.
 

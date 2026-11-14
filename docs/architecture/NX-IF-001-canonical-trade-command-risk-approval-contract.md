@@ -148,13 +148,13 @@ Before hashing:
 7. Include schema ID and version in the canonical bytes.
 8. Exclude transport headers, signatures, mutable delivery attempts and non-semantic tracing metadata only if the schema explicitly identifies them as outside the command payload. All execution-affecting fields remain included.
 
-The selected canonical serialization standard/library is an implementation decision. It MUST be pinned by version and backed by cross-language test vectors before implementation. Do not assume ordinary JSON serialization is canonical.
+G1 canonical-byte baseline is selected in NX-ADR-008: RFC 8949 core deterministic CBOR under the strict NEXUS profile. The exact encoder/decoder library and version remain an implementation qualification item and MUST be pinned and backed by cross-language golden vectors. Ordinary JSON serialization is not canonical.
 
 ### 5.2 Digest
 
 `command_digest = HASH(domain_separator || canonical_command_bytes)`
 
-The domain separator MUST be unique to NEXUS canonical trade commands and include the major schema version. The hash algorithm is an owner/security architecture decision; it must be collision-resistant and pinned before production.
+The domain separator MUST be unique to NEXUS canonical trade commands and include the major schema version. G1 digest baseline is SHA-256 with a fixed NEXUS command-domain separator. The exact versioned digest envelope and cross-language vectors remain mandatory before implementation; production security review remains open.
 
 The digest is calculated over the complete immutable CanonicalTradeCommand payload. Approval metadata is not embedded into the command digest, avoiding a circular dependency.
 
@@ -167,6 +167,7 @@ Risk Engine receives:
 - immutable instrument specification version;
 - current policy bundle/version and policy evaluation mode;
 - exposure snapshot ID/version and reservation state reference;
+- immutable valuation_input_vector_id/version for mark/index/FX/fee/collateral inputs and its source-specific freshness evidence;
 - StateEvidence/FreshnessVector reference (WP-D);
 - current halt epoch and scoped halt state;
 - requested evaluation deadline;
@@ -192,6 +193,7 @@ Required fields:
 - policy_bundle_id/version;
 - instrument_spec_version;
 - exposure_snapshot_id/version;
+- valuation_input_vector_id/version;
 - state_evidence_ref/version;
 - halt_epoch;
 - reservation_id/version when applicable;
@@ -220,7 +222,8 @@ Warnings or confidence scores MUST NOT override DENY or REQUIRE_REVIEW. No defau
 | instrument_spec_version | Approved immutable spec version |
 | policy_bundle_id/version | Exact risk policy version |
 | exposure_snapshot_id/version | Exposure state used for approval |
-| reservation_id/version | Durable reservation binding when required |
+| valuation_input_vector_id/version | Exact immutable mark/index/FX/fee/collateral input vector used by the decision |
+| reservation_id/version | Durable reservation binding and persisted valuation-vector reference when required |
 | halt_epoch | Halt generation observed at approval |
 | issued_at / expires_at | Short-lived authorization interval |
 | nonce | Cryptographically strong unique value |
@@ -229,21 +232,37 @@ Warnings or confidence scores MUST NOT override DENY or REQUIRE_REVIEW. No defau
 
 A capability MUST NOT contain exchange API keys, reusable venue signatures or broad permissions such as “trade any instrument on this account”.
 
-### 8.2 Validation by Execution
+### 8.2 Execution-side preflight validation (non-authorizing)
 
-Immediately before dispatch, Execution MUST verify:
-1. signature and trusted issuer/key status;
-2. audience matches this service;
+Before handing a persisted command/attempt reference to Trusted Egress, Execution MUST independently verify:
+1. signature and trusted issuer/key status using public verification material only;
+2. audience matches the configured Execution service;
 3. command ID and recomputed digest match byte-for-byte;
 4. command type, environment, account, venue, market and instrument match;
 5. instrument spec and policy versions remain permitted;
-6. approval is not expired and clock uncertainty is within configured bound;
+6. approval is not expired and clock uncertainty is within the configured bound;
 7. nonce/approval has not already been consumed;
 8. reservation is active and bound to this command;
-9. halt epoch matches current authoritative epoch and scope is not halted;
-10. command/outbox payload being dispatched is exactly the approved canonical payload.
+9. valuation_input_vector_id/version matches the signed capability and durable reservation;
+10. the exact StateEvidenceVector/FreshnessPolicy and RecoveryBarrier references are present and compatible with the requested operation class;
+11. the observed halt epoch is current at preflight time and the scope is not reported halted;
+12. command/outbox payload being handed to Egress is exactly the approved canonical payload.
 
-Any failed check rejects dispatch and records a stable reason code. A valid signature alone is insufficient.
+Any failed check rejects the attempt and records a stable reason code. A valid signature alone is insufficient.
+
+These checks are preflight and defense in depth. They do not authorize a venue-side effect and cannot guarantee that state remains unchanged after the check. Execution MUST NOT hold venue credentials or a direct venue network route. It submits an immutable command/attempt reference to Trusted Egress; it does not open the venue socket.
+
+### 8.2.1 Trusted Egress final send-authorization gate
+
+Immediately before socket initiation, Trusted Egress MUST independently reload and validate the persisted command, consumed Risk approval, active reservation, bound StateEvidenceVector and ValuationInputVector, source-watermark/correction manifest, venue eligibility revision, current halt generation, dispatcher/egress fence generation and exact attempt identity. It MUST NOT trust Execution's earlier preflight result as the final authorization.
+
+The final validation and one-use EgressBoundaryAuthorization commit occur in a short attempt-scoped transaction. This commit is the sole send-authorization linearization point and MUST serialize against the same authoritative halt-state generation as a halt transition. Only Trusted Egress may initiate the venue socket write; no queue hop, remote source fetch or unbounded asynchronous preparation may occur between the final gate and socket initiation.
+
+If the halt transition commits first, Egress denies the attempt. If the final gate commits first, the attempt is in-flight and remains potentially sent; the reservation is retained and the attempt is reconciled. The Egress boundary MUST NOT acknowledge the newer HALTED epoch while that pre-halt authorized attempt could still resume and initiate a socket write, unless its sender is positively fenced. See NX-IF-005 and NX-REF-EXEC-002.
+
+The logical owner and sole writer of `EgressBoundaryAuthorization` is the Halt/Egress Gate Coordinator (HEGC) defined by NX-IF-005 §5.2.2. Trusted Egress requests a one-use attempt-scoped grant from HEGC and MUST NOT write or mutate halt-state / gate-authorization records directly. Before transmission it must durably consume the grant through HEGC's `ConsumeEgressGrant` transition; only a positive consume response permits one logical venue-request transmission attempt. A logical request may span multiple OS/TLS writes; SOCKET_INITIATED means the first transport write began, not full delivery or venue acceptance. Automatic retries, redirects, request replay and proxy/service-mesh retries for order mutations are disabled by default; any venue-specific exception requires documented endpoint idempotency semantics and explicit approval. Partial/uncertain writes remain OUTCOME_UNKNOWN and require reconciliation. An indeterminate consume response is not retried as a new attempt and cannot authorize a send. HEGC serializes the final gate with the authoritative halt epoch. If HEGC or its authoritative store is unavailable, Egress denies the send. The grant binds command digest, reservation, attempt, halt epoch, eligibility revision, StateEvidenceVector, ValuationInputVector, dispatcher generation and Egress workload identity; that identity includes a distinct authenticated database principal for the active process generation, immutable artifact digest and environment; a shared server-side pooler identity is disallowed. It is not a replacement RiskApprovalCapability.
+
+HEGC grant issuance is idempotent on the stable `attempt_id`: retrying the exact same request returns the same persisted grant/reference, never a second authorization. Reusing the attempt ID with a different command digest, reservation, evidence version, halt epoch, eligibility revision or Egress identity MUST conflict. If the HEGC response is ambiguous after commit, Egress resolves the result by the same attempt ID against the authoritative store; it MUST NOT create a new attempt or release/reacquire the reservation to work around uncertainty. A gate-committed attempt remains in-flight until socket initiation is observed or its sender is positively fenced. HEGC performs grant issuance on the authoritative primary in the same logical PostgreSQL database as gate-critical source records at SERIALIZABLE isolation. The HEGC runtime principal is EXECUTE-only and has no direct source SELECT or control-table DML. One reviewed SECURITY DEFINER AuthorizeEgressAttempt entrypoint performs the complete validation read set and grant write after acquiring the common guard first. Its NOLOGIN definer owner has SELECT only on the exact source records and write only to HEGC control state; caller authorization uses a distinct authenticated session_user per workload. All writers that can invalidate those records must participate in the same SERIALIZABLE protocol or a proven shared version/CAS guard; stale replicas and weaker bypass writers are prohibited. HEGC retries the entire transaction on 40001/40P01 within a finite budget and resolves unknown commit by the same attempt ID. Egress consumes the grant through a one-use HEGC operation and never writes the grant record directly. The persisted attempt moves GATE_COMMITTED → GRANT_CONSUMED → SOCKET_INITIATED, or to SENDER_FENCED_UNKNOWN when isolated without a trusted initiation report. Egress MUST NOT invoke the socket before positive grant-consumption acknowledgement. An ambiguous consume result is read by the same attempt ID; it cannot be retried as a second permit or replacement send. PostgreSQL SERIALIZABLE alone does not establish wall-clock commit ordering for overlapping source writers; the final gate also requires an enforced common per-scope generation/guard updated atomically by HEGC and every invalidating source writer before their respective reads/mutations. If that guard or its bypass prevention cannot be proven, HEGC denies the grant (NX-RESEARCH-012 §4.2). The HEGC gate-validation guard is distinct from the Risk-owned scope-state guard used for exposure/reservation aggregation; sharing rows is permitted only if the full HEGC validation read set and every invalidating writer are proven to participate atomically, with database-boundary bypass prevention. The G1 SECURITY DEFINER candidate must authorize a dedicated authenticated service principal (session_user), not current_user inside the definer context or a caller-supplied identity; shared database logins, SET ROLE impersonation and untrusted custom-GUC identity are disqualifying unless a separately reviewed identity-preserving design is proven. The guard API must prove complete affected-scope membership under the root/account guard, not trust a caller-supplied scope list. The guard is acquired as the first data statement after BEGIN and transaction-isolation/session settings, before any protected read/write; the account/root guard is first and child scope guards follow canonical UUID-byte order. If a lock wait leaves the transaction snapshot stale, abort and restart the whole transaction. Scope membership completeness is checked against the authoritative scope-config version after the root guard is held. Direct DML/advisory-lock bypass is prohibited.
 
 ### 8.3 Single-use consumption and crash handling
 
@@ -268,6 +287,7 @@ Approval is invalid if any of the following occurs before dispatch:
 - instrument spec version changes incompatibly;
 - policy version changes in a material way;
 - exposure snapshot/reservation becomes stale, released, consumed by another command or invalidated;
+- the bound valuation input vector is corrected/revoked, falls outside source-specific freshness/uncertainty/drift bounds or fails a policy that requires a newer/latest snapshot; a newer monotonic tick alone does not invalidate a still-valid bound vector;
 - halt epoch advances or scope is halted;
 - approval expires or issuer key is revoked/disabled;
 - required account/market/reconciliation evidence falls outside policy freshness bounds;
@@ -306,7 +326,7 @@ Reason codes are machine-stable; human-readable explanations may evolve independ
 - AI and Strategy have no permission to issue or consume approval capabilities.
 - Operator-originated commands require authenticated actor identity, role and audit context; privileged scopes may require dual control per owner policy.
 
-Cryptographic algorithm, signature envelope standard, key custody provider and rotation policy remain explicit owner/security decisions. No custom cryptography.
+G1 capability-signature baseline is COSE_Sign1 with the fully specified COSE Ed25519 algorithm identifier -19 (RFC 9864), selected in NX-ADR-008. The deprecated polymorphic EdDSA identifier -8 is rejected. Exact vetted library/version, non-exportable key custody provider, key ceremony, rotation/revocation operations and jurisdictional/security approval remain open. No custom cryptography.
 
 ## 12. Contract state transitions
 
@@ -355,6 +375,11 @@ Required test vectors before implementation approval:
 15. Unsupported venue capability and ambiguous reduce/close semantics reject.
 16. AI/Strategy caller cannot mint, mutate or consume approval.
 17. Risk timeout, signer outage, partial response or unknown decision enum never becomes APPROVE.
+18. COSE_Sign1 accepts only the untagged embedded-payload four-element profile with protected alg=-19 and bounded kid; tag 18, detached payload, extra headers, non-empty unprotected map and duplicate/colliding labels reject.
+19. Token-supplied kid/alg/issuer/audience cannot authorize or trigger remote key discovery before signature verification; ambiguous local key resolution fails closed.
+20. Execution never receives private Ed25519 key material; wrong COSE key type/curve, key/signature length or algorithm mismatch rejects.
+21. Missing/stale/incomplete Risk valuation evidence manifest, source watermark gap, correction/revocation or unconfigured freshness/drift policy denies dispatch; Egress makes no remote source-service call and never rebinds the signed vector.
+22. A newer market-data tick alone does not invalidate an admissible immutable valuation vector unless the configured policy explicitly requires latest; the signed valuation_input_vector_id/version remains unchanged.
 
 Golden vectors MUST include canonical input, expected canonical bytes, digest algorithm/version and expected digest. Vectors are not considered verified until executed in the selected implementation runtimes.
 
@@ -374,8 +399,8 @@ Golden vectors MUST include canonical input, expected canonical bytes, digest al
 ## 16. Open owner decisions
 
 1. Initial venue/account mode and supported command types for v1.
-2. Cryptographic signature envelope and algorithm, key custody and rotation.
-3. Canonical serialization standard/library and digest algorithm.
+2. Exact COSE/Ed25519 implementation library, non-exportable key custody provider, key ceremony and rotation/revocation operations.
+3. Exact deterministic-CBOR implementation/library version and cross-language golden vectors for the selected SHA-256 domain-separated digest.
 4. Maximum approval lifetime and clock-skew tolerance.
 5. Internal account-reference and operator identity model.
 6. Whether v1 supports only one venue/account per command (recommended) or multi-leg atomic intents (defer unless required).
@@ -411,9 +436,20 @@ No code, exchange connection, credentials, order placement, risk-limit change, P
 
 ## WP-D evidence binding
 
-RiskApprovalCapability MUST reference the immutable StateEvidenceVector ID/version and canonical digest defined by [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md), together with the EvidenceRequirementSet/FreshnessPolicy version used for evaluation. Execution performs the final compatibility check immediately before dispatch. A material source generation, watermark, quality, spec, policy, exposure, reservation or halt-epoch change invalidates the capability unless a contractually defined monotonic compatibility rule proves otherwise. Approval MUST NOT be rebound in place; Risk must re-evaluate and issue a new capability. This is a proposed cross-contract requirement, not an implemented behavior.
+RiskApprovalCapability MUST reference the immutable StateEvidenceVector ID/version and canonical digest defined by [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md), together with the EvidenceRequirementSet/FreshnessPolicy version used for evaluation. It MUST also bind the exact immutable `valuation_input_vector_id/version` defined by NX-IF-002. Trusted Egress performs the final compatibility check at its attempt-scoped send-authorization gate immediately before initiating the venue socket write. A source-generation change, sequence gap/regression, correction/revocation, completeness or quality deterioration, incompatible spec/policy change, exposure/reservation change, halt-epoch advance or source-freshness/drift-policy failure invalidates the capability. A monotonic newer market-data watermark or tick alone does NOT automatically invalidate it when the exact bound immutable valuation-input vector remains within its approved source-specific freshness/uncertainty/drift window; a source policy may explicitly require the latest version. The signed valuation_input_vector_id/version is never silently rebound. Trusted Egress validates the exact bound vector against the authoritative persisted Risk evidence manifest and latest consumed source-watermark/correction status; it MUST NOT call market/FX/fee/collateral source services or fetch replacement values on the dispatch path. Missing, stale, incomplete or unverifiable manifest denies send. Approval MUST NOT be rebound in place; Risk must re-evaluate and issue a new capability. This is a proposed cross-contract requirement, not an implemented behavior.
 
 
 ## WP-E emergency command authorization
 
 The command types already enumerated by this contract MUST use the operation-class policy and emergency authorization rules in [NX-IF-005](NX-IF-005-emergency-operations-halt-risk-reduction-contract.md). CANCEL, CLOSE, REDUCE_ONLY and CANCEL_ALL are not implicit bypasses and are not presumed risk-reducing. Every emergency command remains a separate immutable CanonicalTradeCommand bound to its exact payload digest, account/scope, current halt epoch, target-set digest where applicable, instrument-spec version, StateEvidenceVector, RecoveryBarrier and policy. A halt activation is a control-plane action and does not mint an order approval. Resume requires privileged authorization and cannot be represented as a trade command.
+
+
+## G1 technical baseline alignment — NX-ADR-008
+
+The delegated G1 baseline is RFC 8949 restricted deterministic CBOR for canonical command bytes, SHA-256 with a fixed NEXUS command-domain separator for the digest, and COSE_Sign1 with fully specified COSE Ed25519 algorithm identifier -19 (RFC 9864) for RiskApprovalCapability. This is a technical design selection only. It does not select a key custody provider, authorize a signer/runtime, or close production Security/jurisdictional review. See [NX-ADR-008](NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md).
+
+The exact COSE application wire profile is the untagged, embedded-payload four-element COSE_Sign1 array; protected header contains only alg=-19 and a 1–64-byte kid; unprotected map is empty; payload is one NEXUS restricted deterministic-CBOR capability map. Preserve the exact received protected-header and payload bytes and use RFC 9052 §9 deterministic Sig_structure encoding. Token-supplied kid/alg/issuer/audience are untrusted until signature verification; candidate key lookup is bounded to the local versioned registry and MUST NOT dereference token-supplied URLs. Execution receives public OKP/Ed25519 verification material only; private signing material remains inside the Risk signer boundary.
+
+
+
+COSE verification MUST reject the deprecated polymorphic algorithm identifier -8, Ed448, non-OKP keys, non-Ed25519 curves, algorithm/key mismatch and algorithm substitution. A protected kid is only a lookup hint; resolve the signing key against signed issuer, algorithm, purpose, validity/revocation state and registry generation, requiring exactly one eligible key. See NX-ADR-008 and RFC 9864.

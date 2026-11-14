@@ -89,12 +89,43 @@ An immutable `ExposureSnapshot` is a coherent risk view for a specific scope and
 - health/quality state and explicit completeness coverage;
 - per-bucket totals and item references;
 - unknowns, discrepancies, quarantined identities and their conservative bounds;
-- valuation inputs, currency/unit dimensions and calculation version;
+- valuation_input_vector_id/version for immutable mark/index/FX/fee/collateral inputs, source freshness evidence, currency/unit dimensions and calculation version;
 - previous snapshot reference and transition/event range.
 
 A snapshot MUST distinguish at least COMPLETE, DEGRADED, STALE, INCOMPLETE, UNSYNCHRONIZED and INVALID. A numerically populated snapshot is not automatically complete. The risk policy determines which quality states are acceptable for a particular command class. Missing components remain UNKNOWN and must be surfaced, not silently omitted.
 
 A snapshot is immutable once published. Corrections create a new version with lineage to the prior snapshot and the correction evidence. Versions MUST be monotonic within a risk scope; stale writers MUST be fenced out.
+
+### 3.4 ValuationInputVector — immutable valuation evidence
+
+A Risk evaluation MUST reference an immutable ValuationInputVector whenever the selected policy requires mark, index, FX, fee, collateral or other external valuation inputs. The vector is a versioned evidence object, not a mutable "latest price" pointer and not an exposure bucket.
+
+Minimum logical identity and provenance:
+
+- valuation_input_vector_id and monotonic version;
+- risk_scope_id, instrument identity and immutable instrument_spec_version where applicable;
+- calculation/model version and policy_bundle_id/version;
+- creation/as-of time and vector completeness/quality status;
+- source-entry set, each bound to source owner/domain and source snapshot ID/version/digest;
+- exact source value with explicit currency/unit and exact decimal/rational representation; binary floating point is forbidden for financial values;
+- source event time, receive time, source sequence/cursor/watermark and clock-quality/uncertainty evidence;
+- source-specific FreshnessPolicy ID/version and correction/revocation lineage;
+- opaque evidence references/digests, not copied raw venue payloads or credentials.
+
+Source entries cover only the dimensions required by the applicable policy, such as mark price, index price, FX conversion, fee schedule and collateral valuation. Missing, contradictory, incomplete, stale, corrected/revoked or unbounded inputs remain UNKNOWN/INVALID; they MUST NOT be replaced with zero or an assumed default.
+
+The vector is immutable after publication. A new market/index/FX/fee/collateral observation creates a new vector version; it does not mutate the vector already referenced by a reservation or approval. A correction/revocation marks the prior vector invalid through an auditable source-owner event and requires Risk re-evaluation. A newer monotonic tick alone does not invalidate an older vector while that vector remains within its source-specific freshness, clock-uncertainty, quality and policy-defined drift bounds; a policy may explicitly require the latest version.
+
+ExposureSnapshot, RiskReservation and RiskApprovalCapability MUST bind to the same valuation_input_vector_id/version. The capability also binds to the StateEvidenceVector/FreshnessPolicy evidence used to assess its sources. Trusted Egress reads the exact immutable vector and its latest consumed source-watermark/correction status from the authoritative persisted Risk evidence manifest, then validates it against the signed references and current versioned policy immediately before send. Egress MUST NOT call market/FX/fee/collateral source services or fetch replacement values on the dispatch path; it MUST NOT substitute a newer vector or rebind an approval. The persisted manifest must prove source-watermark continuity and bounded ingestion lag; if that cannot be established, the bound vector is UNKNOWN and dispatch is denied. If the bound vector is no longer valid, Egress refuses the send and Risk must establish a safe new evaluation/reservation/approval path.
+
+The Halt/Egress Gate Coordinator (HEGC), not the credential-owning Egress process, performs the final attempt-scoped authorization transaction against the authoritative store. HEGC reads/locks the persisted valuation-evidence manifest generation together with the active reservation, halt epoch, venue-eligibility revision and dispatcher/Egress fence; it then commits the single-use EgressBoundaryAuthorization bound to the exact attempt ID, Egress workload identity and all observed versions. HEGC is the sole writer of this record and serializes the grant commit with halt-epoch changes on the same authoritative generation. This grant commit is the send-authorization linearization point.
+
+Egress has no direct write access to HaltState or EgressBoundaryAuthorization. It requests the opaque persisted grant from HEGC, verifies that the grant is bound to its workload identity and exact immutable attempt, then initiates exactly one socket-write attempt from its single-writer process. It MUST NOT perform another source fetch, queue hop or unbounded asynchronous preparation between grant receipt and socket initiation. Egress reports the observed socket-write initiation to HEGC; a local flag set before the syscall is not proof. If the response/report is ambiguous, the attempt remains in-flight until socket initiation is independently observed or the sender is positively fenced; the same attempt identity is used to resolve ambiguity and a new attempt is not minted to work around it.
+
+The database transaction MUST NOT remain open across network I/O. State/source updates committed before the HEGC grant are visible and must be enforced; updates committed after it are causally later than the authorized attempt. The attempt is therefore treated as potentially sent and must be reconciled, not silently cancelled or retried. If HEGC or its authoritative store is unavailable, the final grant is denied. Source-owner ingestion lag/correction semantics must be bounded by policy; if not, the affected operation remains blocked.
+
+
+This is a semantic contract only. The physical schema, storage owner, wire encoding and exact source adapters remain unselected; no distributed transaction with external market-data or valuation sources is implied.
 
 ## 4. Exposure bucket ownership
 
@@ -145,7 +176,7 @@ If the source event arrives before the destination projection is ready, the item
 | Event / condition | From | To | Release / transfer rule |
 |---|---|---|---|
 | Risk request accepted and capacity reserved | none | PRE_DISPATCH_RESERVATION | Reserve worst-case bounded exposure before approval |
-| Dispatcher durably marks command as dispatching / sends it | PRE_DISPATCH_RESERVATION | DISPATCH_OUTCOME_UNKNOWN | Keep full conservative reservation until venue outcome is known |
+| Dispatcher commits the durable pre-egress attempt marker before any network side effect | PRE_DISPATCH_RESERVATION | DISPATCH_OUTCOME_UNKNOWN | Move the full conservative reservation before the send boundary; the marker is not proof that bytes were sent, and exposure remains held until authoritative venue outcome/reconciliation |
 | Venue confirms order is working | DISPATCH_OUTCOME_UNKNOWN | WORKING_ORDER_REMAINDER | Transfer to remaining open-order exposure; do not count both |
 | Venue definitively rejects before any fill | reservation / unknown | released | Release only with authoritative rejection and no-fill evidence |
 | Fill confirmed, Ledger not yet posted | working order / unknown | FILL_PENDING_LEDGER for filled portion; remainder stays WORKING_ORDER_REMAINDER | Atomically split filled and remaining quantities |
@@ -170,7 +201,7 @@ A durable `RiskReservation` contains:
 - account, venue, market type, instrument ID and immutable spec version;
 - policy version and exposure snapshot ID/version;
 - exact reserved dimensions (quantity, notional, margin, fee/cost buffer, collateral impact or other policy-defined dimensions), each with units/currency;
-- conservative valuation assumptions and their evidence/version;
+- conservative valuation assumptions plus valuation_input_vector_id/version referencing the exact immutable market/index/FX/fee/collateral input-version vector and source freshness evidence used for the decision;
 - lifecycle state, state version and fencing token;
 - created/updated/expiry timestamps and expiry policy;
 - actor/service, reason codes, correlation lineage and audit evidence;
@@ -242,10 +273,25 @@ For multiple scopes, either one atomic transaction covers all affected scopes or
 
 - Repeated identical reservation request IDs return the original committed result; they do not create additional capacity consumption.
 - Reuse of a request ID with a different command digest or scope is rejected as an idempotency conflict.
-- A crash after reservation commit but before approval response is recovered by reading the durable request/result; it MUST NOT reserve again.
+- A crash after reservation commit but before approval response is recovered by reading the durable request/result; it MUST NOT reserve again. If no committed row is visible while the original transaction may still be in flight, absence is not proof of rollback; any retry uses the same request ID/digest so the unique constraint arbitrates, otherwise the scope remains halted until outcome is known.
 - A crash after approval issuance but before dispatch leaves the reservation active until dispatch state is proven or expiry is safely established.
 - A stale writer, duplicate event or lower fencing token cannot overwrite a newer reservation/snapshot state.
 - Reservation and approval IDs are never reused.
+
+### 6.4 G1 PostgreSQL evaluation reference
+
+For the G1 evaluation target, [NX-ADR-008 §5.3](NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md) defines the preferred serialization protocol:
+
+- Risk owns its exposure projection, source watermarks, scope-state version and reservation aggregates. Ledger remains authoritative for journal posting but MUST NOT write Risk-owned scope state directly.
+- Risk applies Ledger/venue/external exposure events through an idempotent Risk inbox. Projection updates and reservation commits update the same Risk-owned scope-state record in local Risk transactions; this is the common serialization point.
+- A multi-scope reservation always includes the pre-provisioned account/root scope-state row as the scope-configuration guard, then locks/updates every required pre-provisioned scope-state record in deterministic canonical scope-ID byte order and commits all reservations/capacity totals/idempotency state atomically. After locks are acquired, it rechecks the root scope_config_version and recomputes the complete scope set if it changed.
+- Missing/ambiguous scope state or stale/incomplete source watermarks fail closed. Scope records are provisioned before the reservation hot path.
+- PostgreSQL SERIALIZABLE is the G1 default evaluation level, combined with state-version/CAS and unique constraints. SQLSTATE 40001/40P01 requires whole-transaction retry from a fresh snapshot within a finite budget. Ambiguous commit is resolved by the same stable request identity and digest.
+- A discrete economic exposure projection event MUST update every affected pre-provisioned scope-state row in one Risk transaction, including parent/account aggregates and any child scopes whose projection changes. Child-only projection updates that leave parent totals stale are forbidden. Market-data mark/index/FX ticks remain immutable versioned valuation inputs and MUST NOT rewrite every scope-state row per tick. These snapshots remain owned by their source domains and are not assumed to share the Risk PostgreSQL transaction or database. A source must provide stable snapshot identity, value/digest, completeness/watermark and freshness evidence; otherwise dependent risk-increasing authorization fails closed. Reservations/capabilities bind to the exact version vector. At dispatch, Trusted Egress reads the bound vector and latest consumed source-watermark/correction status from the authoritative persisted Risk evidence manifest, then rechecks source-specific freshness, clock uncertainty, quality and drift policy. It MUST NOT call source services or fetch replacement values on the dispatch path. The manifest must prove watermark continuity and bounded ingestion lag; otherwise dispatch is denied. A newer source version never silently rewrites an existing approval. If the bound snapshot is no longer admissible, Egress MUST NOT send and Risk must re-evaluate/reserve.
+- Scope hierarchy/configuration changes use a separate privileged transaction that includes the account/root guard, locks the complete old/new scope set in canonical order and advances root/descendant scope_config_version atomically. Stale scope-set calculations abort/recompute; missing or unbounded membership fails closed.
+- The logical scope-state record carries scope_config_version, monotonic scope_state_version, exposure_projection_version, reservation_aggregate_version, source-watermark-vector reference/version, fencing_generation and last_transition_id. This is not an approved physical schema.
+- SQLSTATE 23505 is not a generic retry: only the expected idempotency constraint may be resolved in a new authoritative-primary transaction by comparing the durable request digest; unrelated uniqueness/exclusion errors fail closed.
+- The Risk-owned scope-state serialization point remains distinct from the HEGC common commit-order guard defined in NX-IF-005/NX-RESEARCH-012. When a transaction needs both, acquire the HEGC common guard first, then Risk-owned root/child scope-state locks in canonical order. The common guard does not replace Risk exposure/reservation serialization, and the Risk scope-state row does not prove real-time ordering across HEGC's cross-domain validation read set. This is a proposed implementation reference, not a selected schema or verified concurrency guarantee. Exact PostgreSQL patch, queries, role grants and test evidence remain open.
 
 ## 7. Event handling and edge cases
 
@@ -313,11 +359,12 @@ An approval/reservation binds to immutable versions of:
 - instrument specification;
 - risk policy and scope configuration;
 - exposure snapshot and reservation state;
+- exact immutable valuation_input_vector_id/version for mark/index/FX/fee/collateral inputs;
 - account/position mode;
 - halt epoch;
 - source freshness/reconciliation watermarks required by policy.
 
-A material change to any bound version invalidates the approval for dispatch. The reservation does not automatically vanish: it remains held or enters `INVALIDATED` / `RECONCILIATION_REQUIRED` until a safe transition is committed. A fresh evaluation may atomically replace or resize it only after proving that the old command cannot dispatch and that no venue-side exposure was created.
+A material change to the bound command, instrument spec, policy/scope config, exposure projection, reservation state, halt epoch, source generation, sequence continuity, correction status, completeness/quality or the source-specific freshness/uncertainty/drift policy invalidates the approval for dispatch. A newer monotonic market-data tick or watermark alone does not automatically invalidate an older bound valuation vector if that immutable vector remains within its accepted source-specific freshness and drift window; a policy may explicitly require the latest version. The signed valuation_input_vector_id/version is never rebound in place. The reservation does not automatically vanish: it remains held or enters `INVALIDATED` / `RECONCILIATION_REQUIRED` until a safe transition is committed. A fresh evaluation may atomically replace or resize it only after proving that the old command cannot dispatch and that no venue-side exposure was created.
 
 Snapshot age thresholds, allowed source lag and policy behavior are owner-configurable and venue/account-mode-specific. No universal TTL is assumed here.
 
@@ -382,6 +429,12 @@ The design is ready for implementation only when the following are testable agai
 20. Snapshot versions are monotonic and stale writers are fenced across process/replica boundaries.
 21. Audit data can reconstruct each exposure item from originating command/order/fill/ledger/external evidence.
 22. Risk Engine outage or loss of reservation authority prevents new risk-increasing approval.
+23. A Risk exposure-projection update racing a reservation serializes through the same Risk-owned scope-state record; neither can commit against a stale competing view.
+24. Duplicate, delayed or reordered Ledger/venue projection events are idempotent; source watermarks advance monotonically and an event cannot apply exposure twice.
+25. SQLSTATE 40001 / 40P01 causes a bounded whole-transaction retry from a fresh snapshot; no calculation from an aborted transaction is reused.
+26. A lost commit response is resolved using the same durable request identity and digest; unresolved primary/commit authority keeps the scope HALTED.
+27. Missing/ambiguous pre-provisioned scope-state rows or stale/incomplete mandatory source watermarks fail closed and cannot be interpreted as zero exposure.
+28. Multi-scope rows are processed in deterministic canonical scope-ID order; every required account/child reservation commits atomically or none does.
 
 These are acceptance requirements, not tests already executed.
 

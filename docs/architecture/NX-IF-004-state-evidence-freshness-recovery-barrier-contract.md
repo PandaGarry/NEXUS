@@ -165,9 +165,9 @@ Derived state records the exact source vector/version from which it was computed
 - Footprint/Delta/CVD/DOM derived values → source trades/book evidence and instrument-spec version;
 - Strategy DecisionContext → indicator/data versions, data-quality coverage and strategy artifact version;
 - ExposureSnapshot → Execution order/fill watermarks, Ledger journal/projection watermarks, venue reconciliation, reservation fencing, instrument specs and valuation evidence;
-- RiskApprovalCapability → canonical command digest, exposure snapshot/reservation versions, policy/spec versions, halt epoch and the exact StateEvidenceVector digest;
+- RiskApprovalCapability → canonical command digest, exposure snapshot/reservation versions, policy/spec versions, halt epoch, exact StateEvidenceVector digest and the immutable valuation_input_vector_id/version defined by NX-IF-002;
 - Ledger position/account projections → journal watermark, posting-rule and instrument-spec versions, venue reconciliation evidence;
-- execution dispatch eligibility → unexpired, unconsumed approval plus unchanged mandatory evidence/version compatibility at dispatch.
+- Trusted Egress dispatch eligibility → unexpired, unconsumed approval plus unchanged mandatory evidence/version compatibility at the final attempt-scoped send-authorization gate.
 
 A material upstream change MUST mark dependent state as INVALIDATED or REEVALUATION_REQUIRED before it can authorize a new risk-increasing command. A new vector is published; historical vectors remain immutable.
 
@@ -177,12 +177,14 @@ NX-IF-001 remains authoritative for approval identity, digest binding, expiry an
 
 - approval references `state_evidence_vector_id`, `vector_version` and canonical vector digest;
 - approval records the exact mandatory source entries/watermarks and requirement-policy version used;
-- Execution performs a final compatibility check immediately before dispatch;
+- approval additionally binds the exact immutable `valuation_input_vector_id/version` defined by NX-IF-002; this is distinct from, and does not replace, the broader StateEvidenceVector;
+- Trusted Egress performs the final compatibility check at the attempt-scoped send-authorization gate immediately before initiating the venue socket write, validating the exact signed valuation vector against the authoritative persisted Risk evidence manifest and latest consumed source-watermark/correction status;
+- Egress MUST NOT call remote market/FX/fee/collateral source services or fetch replacement valuation values on the dispatch path; missing, stale, incomplete or unverifiable manifest denies send;
 - any required source generation, watermark, quality, exposure, reservation, spec, policy or halt-epoch change invalidates the approval unless the relevant contract explicitly defines a safe monotonic advancement rule;
 - a newer vector is not automatically compatible merely because its timestamp is later;
 - an incompatible approval cannot be refreshed or rebound in place; Risk must evaluate a new request and issue a new capability.
 
-The canonical serialization/digest algorithm and cryptographic envelope remain owner/security decisions under NX-IF-001. This document does not choose them.
+The G1 canonical serialization/digest/signature profile is selected in NX-ADR-008 and specified in NX-IF-001: restricted RFC 8949 deterministic CBOR, domain-separated SHA-256 and COSE_Sign1 with fully specified Ed25519 alg=-19 (RFC 9864). Exact libraries, non-exportable key custody, key ceremony/rotation, security review and jurisdictional acceptance remain open; this document does not authorize a signer or production key use.
 
 ## 5. RecoveryCase and quarantine
 
@@ -358,6 +360,11 @@ At minimum, the conformance suite must cover:
 23. Deterministic fixtures cover at least one sequenced public book, one sequence-limited public feed and private account/order reconciliation for each initially selected venue.
 24. Fault-injection tests cover crash points between every durable handoff and projection watermark.
 25. No implementation, CI, runtime or production-readiness pass is claimed until corresponding evidence is recorded.
+26. RiskApprovalCapability binds the exact immutable valuation_input_vector_id/version from NX-IF-002 separately from the broader StateEvidenceVector.
+27. Trusted Egress rejects a missing, stale, incomplete, corrected/revoked or unverifiable persisted Risk valuation-evidence manifest and makes no remote source-service call or valuation substitution on the dispatch path.
+28. A newer market-data tick alone does not invalidate a still-admissible immutable valuation vector unless the versioned source/operation policy explicitly requires latest; the signed vector is never silently rebound.
+29. Cross-source valuation vectors preserve source identity, source-native watermark/sequence, clock quality, correction lineage and exact numeric representation; incoherent or incomplete source combinations fail closed.
+30. RecoveryBarrier readiness and Egress approval compatibility are checked independently; a READY barrier does not itself authorize a command or bypass RiskApprovalCapability validation.
 
 ## 11. Open owner decisions
 

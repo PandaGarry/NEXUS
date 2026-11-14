@@ -1,0 +1,215 @@
+"""Test-only reference model for halt / final-egress authorization ordering.
+
+This models a logical commit order and at-most-one logical venue-request initiation only. SOCKET_INITIATED represents the first transport write, not one OS syscall, full delivery or venue acceptance. It does NOT implement database locks, transport retries, a durable halt store, a socket, a network fence, or a production kill switch.
+A GATE_COMMITTED attempt is in-flight even before socket initiation. Positive
+sender fencing prevents a future write but does not prove that no earlier
+socket side effect occurred; the outcome therefore remains unknown.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from enum import Enum
+
+
+class GateDenied(RuntimeError):
+    """Raised when a final egress authorization is not admissible."""
+
+
+class HaltPhase(str, Enum):
+    ACTIVE = "ACTIVE"
+    HALT_PENDING = "HALT_PENDING"
+    HALTING = "HALTING"
+    HALTED = "HALTED"
+
+
+MAX_HALT_EPOCH = (1 << 63) - 1
+
+
+class AttemptPhase(str, Enum):
+    GATE_COMMITTED = "GATE_COMMITTED"
+    GRANT_CONSUMED = "GRANT_CONSUMED"
+    SOCKET_INITIATED = "SOCKET_INITIATED"
+    SENDER_FENCED_UNKNOWN = "SENDER_FENCED_UNKNOWN"
+
+
+@dataclass
+class Attempt:
+    attempt_id: str
+    authorized_epoch: int
+    binding_digest: str
+    phase: AttemptPhase = AttemptPhase.GATE_COMMITTED
+    reservation_held: bool = True
+
+
+@dataclass
+class HaltEgressGate:
+    """Single-process oracle for the two legal halt/gate commit orders."""
+
+    epoch: int = 1
+    phase: HaltPhase = HaltPhase.ACTIVE
+    store_available: bool = True
+    halt_reason: str | None = None
+    attempts: dict[str, Attempt] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if (
+            not isinstance(self.epoch, int)
+            or isinstance(self.epoch, bool)
+            or not 1 <= self.epoch <= MAX_HALT_EPOCH
+        ):
+            raise ValueError("epoch must be a positive signed 64-bit integer")
+        if not isinstance(self.store_available, bool):
+            raise ValueError("store_available must be boolean")
+        if not isinstance(self.phase, HaltPhase):
+            raise ValueError("phase must be a HaltPhase")
+
+    def request_halt(self, *, reason: str) -> int | None:
+        """Commit halt epoch, or leave a pending request if the store is unavailable."""
+        self._require_text(reason, "halt reason")
+        # One active halt episode keeps its original cause. Repeated requests
+        # are idempotent; additional causes belong in separate audit events.
+        if self.phase is not HaltPhase.ACTIVE:
+            if self.phase is HaltPhase.HALT_PENDING:
+                return None
+            return self.epoch
+        self.halt_reason = reason
+        if not self.store_available:
+            self.phase = HaltPhase.HALT_PENDING
+            return None
+        if self.epoch >= MAX_HALT_EPOCH:
+            self.phase = HaltPhase.HALT_PENDING
+            return None
+        self.epoch += 1
+        self.phase = HaltPhase.HALTING
+        return self.epoch
+
+    def commit_pending_halt(self) -> int:
+        if self.phase is not HaltPhase.HALT_PENDING:
+            raise GateDenied("there is no pending halt request")
+        if not self.store_available:
+            raise GateDenied("authoritative halt store is unavailable")
+        if self.epoch >= MAX_HALT_EPOCH:
+            raise GateDenied("halt epoch exhausted; fail closed")
+        self.epoch += 1
+        self.phase = HaltPhase.HALTING
+        return self.epoch
+
+    def authorize_attempt(
+        self, *, attempt_id: str, observed_epoch: int, binding_digest: str
+    ) -> Attempt:
+        """Model idempotent final-gate commit on a stable attempt ID.
+
+        Exact retries return the original persisted attempt even if the halt
+        epoch has since advanced. Changed bindings conflict; they never mint a
+        replacement grant. Store unavailability prevents status resolution.
+        """
+        self._require_text(attempt_id, "attempt_id")
+        self._require_text(binding_digest, "binding_digest")
+        if not isinstance(observed_epoch, int) or isinstance(observed_epoch, bool):
+            raise GateDenied("observed_epoch must be an integer")
+        if not self.store_available:
+            raise GateDenied("authoritative halt store is unavailable")
+
+        existing = self.attempts.get(attempt_id)
+        if existing is not None:
+            if (
+                existing.authorized_epoch == observed_epoch
+                and existing.binding_digest == binding_digest
+            ):
+                return existing
+            raise GateDenied("attempt ID conflicts with changed authorization binding")
+
+        if self.phase is not HaltPhase.ACTIVE:
+            raise GateDenied("halt is pending, propagating or enforced")
+        if self.epoch >= MAX_HALT_EPOCH:
+            raise GateDenied("halt epoch exhausted; fail closed")
+        if observed_epoch != self.epoch:
+            raise GateDenied("stale halt epoch")
+        attempt = Attempt(attempt_id, self.epoch, binding_digest)
+        self.attempts[attempt_id] = attempt
+        return attempt
+
+    def consume_grant(self, *, attempt_id: str) -> None:
+        """Durably consume the one-use grant before the socket side effect."""
+        attempt = self._attempt(attempt_id)
+        if not self.store_available:
+            raise GateDenied("authoritative halt store is unavailable")
+        if self.phase is HaltPhase.HALTED:
+            raise GateDenied("halt was acknowledged; grant consumption denied")
+        if attempt.phase is not AttemptPhase.GATE_COMMITTED:
+            raise GateDenied("Egress grant is single-use and cannot be consumed again")
+        # A gate committed before halt is already in-flight; it may consume once
+        # while HALT_PENDING/HALTING, but blocks halt acknowledgement until resolved.
+        attempt.phase = AttemptPhase.GRANT_CONSUMED
+
+    def initiate_socket_write(self, *, attempt_id: str) -> None:
+        """An earlier gate-committed attempt may start while halt is propagating.
+
+        It cannot start after HALTED acknowledgement. The halt acknowledgement
+        is blocked until this attempt is initiated or its sender is positively
+        fenced. Fencing does not establish that no earlier side effect occurred.
+        """
+        attempt = self._attempt(attempt_id)
+        if attempt.phase is not AttemptPhase.GRANT_CONSUMED:
+            raise GateDenied("attempt grant must be consumed exactly once before socket initiation")
+        if self.phase is HaltPhase.HALTED:
+            raise GateDenied("halt was acknowledged; stale socket initiation denied")
+        attempt.phase = AttemptPhase.SOCKET_INITIATED
+
+    def fence_sender(self, *, attempt_id: str, receipt: str) -> None:
+        """Record test-fixture evidence that the sender can no longer initiate.
+
+        The absence of an initiation report is not proof that the socket call
+        never happened. The attempt therefore remains OUTCOME_UNKNOWN and
+        reconciliation-required after the halt is acknowledged.
+        """
+        attempt = self._attempt(attempt_id)
+        self._require_text(receipt, "fence receipt")
+        if attempt.phase not in (AttemptPhase.GATE_COMMITTED, AttemptPhase.GRANT_CONSUMED):
+            raise GateDenied("only a gate-committed or grant-consumed attempt without an initiation report can be fenced here")
+        if self.phase not in (HaltPhase.HALT_PENDING, HaltPhase.HALTING):
+            raise GateDenied("sender fencing is only part of halt containment")
+        # Opaque test fixture only; this is not a verified production attestation.
+        attempt.phase = AttemptPhase.SENDER_FENCED_UNKNOWN
+
+    def acknowledge_halt(self) -> None:
+        if self.phase is not HaltPhase.HALTING:
+            raise GateDenied("a durable halt epoch must be committed before acknowledgement")
+        if not self.store_available:
+            raise GateDenied("authoritative halt store is unavailable")
+        pending = [
+            item.attempt_id
+            for item in self.attempts.values()
+            if item.phase in (AttemptPhase.GATE_COMMITTED, AttemptPhase.GRANT_CONSUMED)
+        ]
+        if pending:
+            raise GateDenied(
+                "pre-halt gate-committed attempts may still initiate: "
+                + ",".join(sorted(pending))
+            )
+        self.phase = HaltPhase.HALTED
+
+    def reconciliation_required(self) -> tuple[str, ...]:
+        """Initiated or fenced-without-report attempts remain externally uncertain."""
+        return tuple(
+            sorted(
+                item.attempt_id
+                for item in self.attempts.values()
+                if item.phase in (
+                    AttemptPhase.GRANT_CONSUMED,
+                    AttemptPhase.SOCKET_INITIATED,
+                    AttemptPhase.SENDER_FENCED_UNKNOWN,
+                )
+            )
+        )
+
+    def _attempt(self, attempt_id: str) -> Attempt:
+        try:
+            return self.attempts[attempt_id]
+        except KeyError as exc:
+            raise GateDenied("unknown attempt") from exc
+
+    @staticmethod
+    def _require_text(value: str, label: str) -> None:
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{label} must be non-empty text")

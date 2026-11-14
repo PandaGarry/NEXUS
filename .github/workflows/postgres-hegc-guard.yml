@@ -1,0 +1,50 @@
+name: PostgreSQL HEGC guard qualification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/postgres-hegc-guard.yml"
+      - "tests/postgres-hegc-guard/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  postgres-hegc-guard:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        # Docker Official Image multi-platform index digest, verified 2026-11-14.
+        # linux/amd64 child manifest: sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452.
+        image: postgres:18.7@sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nexus_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d nexus_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Run isolated PostgreSQL 18.7 multi-connection and privilege tests
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: "5432"
+          PGDATABASE: nexus_test
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: python tests/postgres-hegc-guard/test_harness.py

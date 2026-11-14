@@ -153,6 +153,8 @@ class ExactDecimal:
         return ExactDecimal(self.coefficient // divisor, target_scale)
 
     def is_multiple_of(self, step: "ExactDecimal") -> bool:
+        if not isinstance(step, ExactDecimal):
+            raise TypeError("step must be ExactDecimal")
         if step.coefficient <= 0:
             raise InvalidStep("step must be positive")
         left, right, _ = self._aligned(step)
