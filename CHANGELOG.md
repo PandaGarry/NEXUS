@@ -271,3 +271,8 @@ Published NX-RESEARCH-010. PostgreSQL, OpenTelemetry Collector, OpenBao, NATS Je
 - Required hard Demo/live separation through distinct account namespace and ledger, simulator-only execution, independent storage permissions and no route to production credentials/live egress.
 - Preferred an initial modular monolith / limited trust-domain split over premature microservices or arbitrary in-process plugin loading.
 - Updated architecture index, living checklist, project status and roadmap. Design only: no service, package, identity provider, plugin framework, database, deployment topology, public registration or live capability added; cross-review and owner/security approval remain open.
+
+
+### Exact-head reference CI for modular architecture documentation increment — 2026-11-14
+
+The then-current branch head `e15e47f9512bc07a1f6534a4f41b0d27d7d42578` passed GitHub Actions [#43608583358](https://github.com/PandaGarry/NEXUS/actions/runs/43608583358). Python 3.11, 3.12 and 3.13 jobs all succeeded; each ran 13 isolated reference suites / 237 tests (711 successful executions total). This verifies existing Python reference-model regression only. It does not test NX-ARCH-006 module isolation, identity/authentication, database boundaries, secret handling, runtime integration, egress fencing or live trading.
