@@ -121,3 +121,8 @@ See [NX-ARCH-REVIEW-007](NX-ARCH-REVIEW-007-risk-scope-serialization-and-postgre
 ### HEGC entrypoint and database privilege boundary — NX-ARCH-REVIEW-008
 
 See [NX-ARCH-REVIEW-008](NX-ARCH-REVIEW-008-hegc-entrypoint-and-database-privilege-boundary.md). Reviews the EXECUTE-only HEGC runtime, NOLOGIN SECURITY DEFINER owners, session_user/workload identity, per-instance Egress principal, common guard and one-use grant lifecycle. Defines adversarial SQL privilege/search_path/RLS/role tests and PostgreSQL 18.7 multi-connection proof gates. Design review complete; acceptance and implementation evidence remain open.
+
+
+### Production authorization-catalog manifest lifecycle — NX-ARCH-REVIEW-009
+
+See [NX-ARCH-REVIEW-009](NX-ARCH-REVIEW-009-production-authorization-catalog-manifest-lifecycle.md). Defines the candidate production manifest schema, semantic catalog identity, deterministic-CBOR/SHA-256/COSE signing profile constraints, independent author/approver/signer/verifier/audit roles, fail-closed deployment gate, post-startup drift response and required catalog coverage. Design review draft only; no production manifest, signer, trust root, verifier or deployment gate is implemented.
