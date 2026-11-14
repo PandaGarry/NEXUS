@@ -870,3 +870,19 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep CI claims limited to Python reference models; this run does not exercise Rust, CBOR/COSE, PostgreSQL, egress, venues or live safety.
 
 **Disposition:** final synchronized branch-head reference regression passed. PR #16 remains Draft/open/unmerged and parent-first integration is required.
+
+## 18.42 Risk-owned reservation serialization and PostgreSQL concurrency proof plan — 2026-11-14
+
+- [x] Define a Risk-owned scope-state record as the common serialization point for reservation commits and Risk exposure-projection updates.
+- [x] Preserve Ledger journal ownership; Ledger MUST NOT write Risk-owned projection/scope-state records directly.
+- [x] Require Risk to consume Ledger/venue/external exposure events through an idempotent inbox and update projection, source watermark and scope-state in one Risk-owned local transaction.
+- [x] Require multi-scope account/child reservation to update every pre-provisioned scope-state record in deterministic canonical scope-ID order and commit all reservations/totals/idempotency state atomically.
+- [x] Specify fail-closed behavior for missing scope rows, stale/incomplete source watermarks and unresolved primary/commit authority.
+- [x] Specify same request identity + same digest replay behavior and different digest conflict behavior.
+- [x] Specify whole-transaction bounded retry for PostgreSQL SQLSTATE 40001 / 40P01; no statement-only retry or stale snapshot reuse.
+- [x] Cross-check PostgreSQL 18 SERIALIZABLE, application-level consistency, explicit locking, serialization failure and ON CONFLICT semantics against official documentation.
+- [ ] Build adversarial concurrency tests: simultaneous capacity race; projection update racing reservation; overlapping parent/child scopes; duplicate/reordered projection event; missing scope row; idempotency collision; 40001/40P01 retry; lost commit response; stale/incomplete watermark.
+- [ ] Run on exact PostgreSQL 18 patch with role separation, query plan, lock wait, retry-budget and crash/failover instrumentation.
+- [ ] Prove the Risk projection's source lineage and freshness requirements cover every exposure-affecting venue/Ledger/manual event before G1 acceptance.
+
+**Disposition:** design protocol clarified in NX-ADR-008 §5.3, NX-IF-002 §6.4 and OD-09. No PostgreSQL instance/schema, reservation service or concurrency runtime was implemented. G1 remains gated on exact-version evidence.
