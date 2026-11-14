@@ -215,4 +215,4 @@ This is a bounded consistency pass over the relevant authority, command, state, 
 - [x] Test-only conformance scenarios for missing, stale, expired, mismatched, suspended and revoked records; 28 tests passed on Python 3.11/3.12/3.13 at exact PR head `acfa421d79b3e7c71d2a5f49d8a622b8e98b0879` (run 43598284579).
 - [ ] Production identity/evidence storage, signing, authorization and operator role design.
 
-**Disposition:** PROPOSED. Cross-document consistency review completed with no blocking contradiction; owner/legal review and conformance evidence remain open. No implementation, API key, order or live capability is authorized. G0/G1 remain blocked.
+**Disposition:** PROPOSED. Cross-document consistency review and test-only reference conformance completed with no blocking contradiction in the reviewed scope. Owner/legal review, production identity/evidence storage, signatures, distributed revocation and egress enforcement remain open. No implementation, API key, order or live capability is authorized. G0/G1 remain blocked.
