@@ -60,9 +60,10 @@ The NEXUS command schema restricts map keys to fixed ASCII text field names. For
 The selected profile is RFC 9052 COSE_Sign1 with RFC 9864 fully specified COSE Ed25519 alg=-19.
 
 - Protected header contains exactly the required algorithm and key identifier parameters; no algorithm or kid may be moved to the unprotected bucket.
-- `kid` is an integrity-protected lookup hint, not an authentication factor or uniqueness guarantee.
-- Key resolution is issuer-, audience-, algorithm-, purpose-, validity-, revocation- and registry-generation-bound; exactly one eligible key must resolve or verification fails closed.
-- COSE key must be OKP / Ed25519 and must be bound to alg=-19; reject -8, -53, key/algorithm mismatch and algorithm substitution.
+- `kid`, protected algorithm and all token-supplied payload claims are untrusted until signature verification succeeds. `kid` is an integrity-protected lookup hint, not an authentication factor or uniqueness guarantee.
+- Candidate key lookup is bounded to a local versioned registry; never dereference token-supplied key URLs. Token-supplied issuer/audience may narrow candidate lookup only; they do not establish expected identity. Bind candidate selection to locally configured expected issuer/audience and key purpose, then verify the signature and require signed claims to match that local context and registry entry.
+- Exactly one eligible key must resolve or verification fails closed on ambiguity, stale registry generation, revocation or mismatch.
+- COSE key must be public OKP / Ed25519, with a 32-byte public x parameter and no private d parameter outside the Risk signer boundary; require a 64-byte Ed25519 signature. Bind the key to alg=-19; reject -8, -53, key/algorithm mismatch and algorithm substitution.
 - External AAD is a fixed, versioned NEXUS domain separator; no caller-controlled or empty-context fallback.
 - Verify the signature over the received protected-header bstr as received. Never reconstruct different protected-header bytes before signature verification.
 - No unprotected header parameters are permitted in the initial NEXUS profile; reject protected/unprotected collisions and unknown critical parameters.
