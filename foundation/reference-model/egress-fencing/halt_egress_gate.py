@@ -28,6 +28,7 @@ MAX_HALT_EPOCH = (1 << 63) - 1
 
 class AttemptPhase(str, Enum):
     GATE_COMMITTED = "GATE_COMMITTED"
+    GRANT_CONSUMED = "GRANT_CONSUMED"
     SOCKET_INITIATED = "SOCKET_INITIATED"
     SENDER_FENCED_UNKNOWN = "SENDER_FENCED_UNKNOWN"
 
@@ -105,6 +106,19 @@ class HaltEgressGate:
             raise GateDenied("attempt authorization is single-use")
         self.attempts[attempt_id] = Attempt(attempt_id, self.epoch)
 
+    def consume_grant(self, *, attempt_id: str) -> None:
+        """Durably consume the one-use grant before the socket side effect."""
+        attempt = self._attempt(attempt_id)
+        if not self.store_available:
+            raise GateDenied("authoritative halt store is unavailable")
+        if self.phase is HaltPhase.HALTED:
+            raise GateDenied("halt was acknowledged; grant consumption denied")
+        if attempt.phase is not AttemptPhase.GATE_COMMITTED:
+            raise GateDenied("Egress grant is single-use and cannot be consumed again")
+        # A gate committed before halt is already in-flight; it may consume once
+        # while HALT_PENDING/HALTING, but blocks halt acknowledgement until resolved.
+        attempt.phase = AttemptPhase.GRANT_CONSUMED
+
     def initiate_socket_write(self, *, attempt_id: str) -> None:
         """An earlier gate-committed attempt may start while halt is propagating.
 
@@ -113,8 +127,8 @@ class HaltEgressGate:
         fenced. Fencing does not establish that no earlier side effect occurred.
         """
         attempt = self._attempt(attempt_id)
-        if attempt.phase is not AttemptPhase.GATE_COMMITTED:
-            raise GateDenied("attempt is not awaiting socket initiation")
+        if attempt.phase is not AttemptPhase.GRANT_CONSUMED:
+            raise GateDenied("attempt grant must be consumed exactly once before socket initiation")
         if self.phase is HaltPhase.HALTED:
             raise GateDenied("halt was acknowledged; stale socket initiation denied")
         attempt.phase = AttemptPhase.SOCKET_INITIATED
@@ -128,8 +142,8 @@ class HaltEgressGate:
         """
         attempt = self._attempt(attempt_id)
         self._require_text(receipt, "fence receipt")
-        if attempt.phase is not AttemptPhase.GATE_COMMITTED:
-            raise GateDenied("only a gate-committed attempt without an initiation report can be fenced here")
+        if attempt.phase not in (AttemptPhase.GATE_COMMITTED, AttemptPhase.GRANT_CONSUMED):
+            raise GateDenied("only a gate-committed or grant-consumed attempt without an initiation report can be fenced here")
         if self.phase not in (HaltPhase.HALT_PENDING, HaltPhase.HALTING):
             raise GateDenied("sender fencing is only part of halt containment")
         # Opaque test fixture only; this is not a verified production attestation.
@@ -143,7 +157,7 @@ class HaltEgressGate:
         pending = [
             item.attempt_id
             for item in self.attempts.values()
-            if item.phase is AttemptPhase.GATE_COMMITTED
+            if item.phase in (AttemptPhase.GATE_COMMITTED, AttemptPhase.GRANT_CONSUMED)
         ]
         if pending:
             raise GateDenied(
@@ -159,6 +173,7 @@ class HaltEgressGate:
                 item.attempt_id
                 for item in self.attempts.values()
                 if item.phase in (
+                    AttemptPhase.GRANT_CONSUMED,
                     AttemptPhase.SOCKET_INITIATED,
                     AttemptPhase.SENDER_FENCED_UNKNOWN,
                 )
