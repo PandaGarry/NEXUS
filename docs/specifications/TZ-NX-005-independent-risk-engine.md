@@ -467,6 +467,10 @@ Official venue documentation consulted on 2026-11-14; semantics must be revalida
 
 These sources demonstrate that account mode, position mode, margin mode, leverage and risk constraints are venue- and product-specific. They do not provide a universal cross-exchange risk formula. NEXUS must normalize capabilities while retaining native semantics and UNKNOWN states.
 
+## 22A. Execution-to-Ledger exposure handoff (WP-C)
+
+Risk consumes the proposed [NX-IF-003 — Execution Event & Ledger Posting Contract](../architecture/NX-IF-003-execution-event-ledger-posting-contract.md) together with [NX-IF-002](../architecture/NX-IF-002-exposure-snapshot-risk-reservation-contract.md). A confirmed Execution fill remains `FILL_PENDING_LEDGER` until the matching Ledger journal transaction, position projection watermark and required reconciliation evidence are visible. Risk MUST transfer the filled quantity to `CONFIRMED_POSITION` atomically within a new ExposureSnapshot version; it MUST NOT infer posting from event delivery, order acknowledgement or journal commit alone when the required projection is still pending. Corrections/busts require a compensating exposure transition and re-evaluation of affected reservations/approvals.
+
 ## 23. Verification status
 
 This is a requirements proposal only. No Risk Engine, policy registry, exposure calculator, approval signer, risk reservation, kill-switch controller or risk conformance suite has been implemented or tested in NEXUS. No account limits have been configured. No live trading is authorized.
