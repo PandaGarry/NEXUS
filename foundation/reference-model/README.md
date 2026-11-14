@@ -55,3 +55,6 @@ The GitHub Actions workflow runs both reference suites on Python 3.11, 3.12 and 
 ## Exact rational division extension
 
 Run `python -m unittest -v test_exact_division.py` from this directory. The dedicated suite contains 18 tests, including language-neutral vectors and 1,000 deterministic rational quantization property cases. GitHub Actions PR run [#43594118145](https://github.com/PandaGarry/NEXUS/actions/runs/43594118145) passed exact PR HEAD `a46b49a2cbb7a5960ce483f93a736a3fbc945554` on Python 3.11, 3.12 and 3.13: eight isolated suites, 127 tests per runtime / 381 matrix executions. This remains a test-only oracle.
+
+
+Latest full reference workflow: [#43594275808](https://github.com/PandaGarry/NEXUS/actions/runs/43594275808) passed current PR HEAD `a47085efd19826d9fea6edcaf2245dd689a288e8` on Python 3.11–3.13: 129 tests per runtime / 387 matrix executions across eight isolated suites.
