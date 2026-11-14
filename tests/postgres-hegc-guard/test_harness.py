@@ -174,6 +174,11 @@ class PostgreSQLGuardHarness(unittest.TestCase):
             user="nexus_membership_admin", password="membership-test-only",
         )
         self.assertNotEqual(admin_direct.returncode, 0)
+        admin_principals = run_sql(
+            "SELECT * FROM nexus_control.service_principal;",
+            user="nexus_membership_admin", password="membership-test-only",
+        )
+        self.assertNotEqual(admin_principals.returncode, 0)
         admin_helper = run_sql(
             "SELECT nexus_control.acquire_scope_guards(NULL, NULL);",
             user="nexus_membership_admin", password="membership-test-only",
@@ -298,6 +303,65 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         )
         self.assertNotEqual(stale_set.returncode, 0)
         self.assertIn("22023", stale_set.stderr)
+
+    def test_service_principal_revocation_serializes_with_gate(self) -> None:
+        account, scopes = self.seed()
+        revoke = start_sql(
+            "BEGIN ISOLATION LEVEL SERIALIZABLE;"
+            f"SELECT nexus_control.set_service_principal({lit(account)}::uuid,{uuid_array(scopes)},"
+            "'nexus_hegc'::name,'hegc',false);"
+            "SELECT pg_sleep(3); COMMIT;",
+            "nexus_membership_admin", "membership-test-only", "principal-revoke-holder",
+        )
+        wait_for_activity("principal-revoke-holder", waiting_on_lock=False)
+        stale_attempt = str(uuid.uuid4())
+        stale_gate = start_sql(
+            self.gate_sql(account, scopes, stale_attempt, "principal-revoke-race"),
+            "nexus_hegc", "hegc-test-only", "principal-revoke-stale-gate",
+        )
+        try:
+            wait_for_activity("principal-revoke-stale-gate", waiting_on_lock=True)
+            holder_code, _, holder_err = finish(revoke)
+            self.assertEqual(holder_code, 0, holder_err)
+            stale_code, _, stale_err = finish(stale_gate)
+        finally:
+            if revoke.poll() is None:
+                revoke.terminate()
+                finish(revoke)
+            if stale_gate.poll() is None:
+                stale_gate.terminate()
+                finish(stale_gate)
+        self.assertNotEqual(stale_code, 0, stale_err)
+        self.assertIn("40001", stale_err)
+
+        denied_retry = run_sql(
+            self.gate_sql(account, scopes, stale_attempt, "principal-revoke-race"),
+            user="nexus_hegc", password="hegc-test-only",
+        )
+        self.assertNotEqual(denied_retry.returncode, 0)
+        self.assertIn("42501", denied_retry.stderr)
+
+        self_revoke = run_sql(
+            "SELECT nexus_control.set_service_principal("
+            + lit(account) + "::uuid," + uuid_array(scopes)
+            + ",'nexus_membership_admin'::name,'membership_admin',false);",
+            user="nexus_membership_admin", password="membership-test-only",
+        )
+        self.assertNotEqual(self_revoke.returncode, 0)
+        self.assertIn("22023", self_revoke.stderr)
+
+        restore = run_sql(
+            "SELECT nexus_control.set_service_principal("
+            + lit(account) + "::uuid," + uuid_array(scopes)
+            + ",'nexus_hegc'::name,'hegc',true);",
+            user="nexus_membership_admin", password="membership-test-only",
+        )
+        self.assertEqual(restore.returncode, 0, restore.stderr)
+        recovered = run_sql(
+            self.gate_sql(account, scopes, str(uuid.uuid4()), "principal-restored"),
+            user="nexus_hegc", password="hegc-test-only",
+        )
+        self.assertEqual(recovered.returncode, 0, recovered.stderr)
 
     def test_exact_retry_returns_same_grant_and_changed_binding_conflicts(self) -> None:
         account, scopes = self.seed()
