@@ -28,7 +28,7 @@ This primary configuration remains unchanged. A change to venue, product family,
 | Bybit V5 | Spot | BTCUSDT, ETHUSDT | Exploratory spot-vs-derivative comparison | Not yet captured or qualified; do not pool with linear contracts |
 | Kraken Spot WS v2 | Spot | XBT/USD, ETH/USD | Cross-venue exploratory replication candidate | Full Spot Time & Sales archive documented through 2026-09-30; WS docs reviewed; historical side semantics and data-use terms remain open; no historical L2 evidence |
 | Coinbase Advanced Trade | Spot | BTC-USD, ETH-USD | Alternative cross-venue exploratory replication candidate | Protocol qualification not complete |
-| OKX | Spot / USDT perpetual | BTC-USDT, ETH-USDT; BTC-USDT-SWAP, ETH-USDT-SWAP | Discovery backlog | Not qualified; exact API/product evidence required |
+| OKX V5 | Spot / USDT perpetual | BTC-USDT, ETH-USDT; BTC-USDT-SWAP, ETH-USDT-SWAP | Leading historical-L2 research candidate; implementation deferred until Bybit M2 | Official portal lists tick trades since 2021-09 and high-resolution L2 since 2023-03; protocol sequence semantics reviewed; terms are personal/non-commercial and restrictive |
 | Binance | Spot / USDⓈ-M perpetual | BTCUSDT, ETHUSDT | Discovery backlog | Not qualified; exact API/product evidence required |
 
 These are candidates, not assertions that the feeds, archives, account access or products are available to the owner. Candidate inclusion does not imply recommendation, eligibility or permission to redistribute data.
@@ -39,6 +39,26 @@ Kraken publishes complete Spot Time & Sales data for each pair from its first tr
 
 Official source: https://support.kraken.com/in/articles/360047543791-downloadable-historical-market-data-time-and-sales-
 
+
+### OKX historical data and protocol note (checked 2026-11-15)
+
+OKX's official historical-data portal lists tick-level trade history from September 2021, high-resolution L2 from March 2023, perpetual funding rates from March 2022 and candlesticks from July 2023. This makes OKX the strongest currently documented candidate for historical L2 replication of HYP-001, subject to archive inspection and terms.
+
+Current V5 order-book protocol:
+- `books`: initial full snapshot of 400 levels, then incremental updates every 100 ms.
+- `books-l2-tbt`: 400 levels / 10 ms; `books50-l2-tbt`: 50 levels / 10 ms. Both are restricted to VIP4+ trading-fee tiers; do not assume access.
+- Use `prevSeqId` + `seqId` for continuity. Initial snapshot has `prevSeqId=-1`; a normal update's `prevSeqId` matches the prior `seqId`. After maintenance, `seqId` may reset lower than `prevSeqId`, after which normal sequencing resumes.
+- JSON book-channel checksum was deprecated in production from 2026-06-23; the field remains but is always zero. Do not use it as integrity evidence.
+- For personal historical-data access, OKX's historical-data terms explicitly allow personal retention and development of one's own trading strategy, but prohibit redistribution and disclaim completeness/accuracy. The API Agreement further restricts Market Data to personal, non-commercial use and prohibits redistribution, competing data/analytics products and commercialized AI model training without written consent.
+
+Sources:
+- Historical market data: https://www.okx.com/historical-data
+- V5 API and book channel: https://www.okx.com/docs-v5/en/
+- Checksum deprecation notice: https://www.okx.com/en-sg/help/okx-order-book-channels-checksum-field-deprecation
+- API Agreement: https://www.okx.com/help/okx-api-agreement
+- Historical data terms: https://www.okx.com/help/historicaldata-terms-and-conditions
+
+OKX is a research candidate, not a venue recommendation or authorization. Archive completeness, instrument coverage, actual downloadable schemas, personal account eligibility and local product eligibility remain to be verified.
 
 ## 3. Comparability and statistical rules
 
