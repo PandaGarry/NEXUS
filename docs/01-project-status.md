@@ -461,3 +461,7 @@ The exact branch HEAD `6fefd9a44ff2f272b6516265d10f41c46a13cf7a` passed [workflo
 ## Exact-head CI after COSE protected-header and key-resolution refinement — 2026-11-14
 
 Branch HEAD `88fcb30068507d85fb35802ca5d2195fd528c000` passed [workflow #43616054657](https://github.com/PandaGarry/NEXUS/actions/runs/43616054657): Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions). No test failures or Node.js 20 / `punycode` warnings. This remains Python reference-model CI only; it does not validate the proposed COSE protected-header parser, signer/verifier, key registry, Rust, PostgreSQL, egress fencing, venue behavior or live safety.
+
+## Exact-head CI after COSE_Sign1 wire-profile specification — 2026-11-14
+
+Branch HEAD `8d2c2f404782b718f1a3a422bb0ce918bb6b922d` passed [workflow #43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308): Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions total). No failures or Node.js 20 / `punycode` deprecation warnings. This is Python reference-model CI only; no COSE wire parser, signer, verifier, key registry or cross-language signature vector was executed.
