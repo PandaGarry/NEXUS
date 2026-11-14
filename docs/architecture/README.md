@@ -45,3 +45,5 @@ ADR, подготовленные в обсуждении, не считаютс
 - [NX-REF-DOMAIN-004 — Instrument Quantity Unit Semantics](NX-REF-DOMAIN-004-instrument-quantity-unit-semantics.md) — explicit version-pinned unit mapping for spot, linear and inverse contracts; QUANTO and inverse base exposure remain blocked.
 
 - [NX-REF-DOMAIN-005 — Exact Rational Division & Explicit Quantization](NX-REF-DOMAIN-005-exact-rational-division-and-quantization.md) — reduced rational intermediate results and explicit rounding modes; test-only.
+
+- [NX-REF-DOMAIN-006 — Inverse Contract Rational Exposure](NX-REF-DOMAIN-006-inverse-contract-rational-exposure.md) — inverse quote notional divided by price yields an exact rational base exposure; no implicit rounding.
