@@ -82,3 +82,15 @@ The reference CI workflow runs this suite on Python 3.11, 3.12 and 3.13. CI evid
 Production implementation requires a separate design for canonical scope, authenticated evidence, signature and key management, trusted time, durable revision store, atomic epoch changes, reviewer/owner roles, revocation propagation and final egress enforcement. The egress boundary must remain the sole holder of live venue credentials.
 
 **Disposition:** reference-only. It cannot be used to enable DATA_ONLY, PAPER_ONLY or live trading.
+
+## Exact-head CI evidence
+
+- PR #14 head at verification: `acfa421d79b3e7c71d2a5f49d8a622b8e98b0879`.
+- GitHub Actions run: [43598284579](https://github.com/PandaGarry/NEXUS/actions/runs/43598284579).
+- Python 3.11: 210 tests, SUCCESS.
+- Python 3.12: 210 tests, SUCCESS.
+- Python 3.13: 210 tests, SUCCESS.
+- Total: 630 test executions across the three-runtime matrix.
+- The venue eligibility suite contributed 28 passing tests per runtime (84 executions).
+
+This evidence applies to the exact SHA above. Any subsequent source or workflow change requires a new CI run before the package is reported as verified.
