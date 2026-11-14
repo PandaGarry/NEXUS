@@ -619,3 +619,19 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - Python 3.11, 3.12 and 3.13 jobs all completed successfully. Each runtime executed 13 isolated reference-model suites and 237 tests; 711 successful test executions total.
 - This verifies the existing Python reference-model regression workflow only. It does not execute NX-ARCH-REVIEW-005's proposed cache/revocation targets, outage matrix, source freshness policy, halt propagation, cancellation, process/DB/secret/network fencing, Rust or venue integration.
 - NX-ARCH-REVIEW-005 remains a proposal; all numeric objectives are unaccepted candidates. OD-10/12, domain-owner/security approval and G1/G3 boundary evidence remain open.
+
+## 18.21 CI supply-chain hardening and stacked-PR integration audit — 2026-11-14
+
+- [x] Confirm the PR integration graph from live GitHub metadata: PR #13 `foundation/financial-math-fixtures-v0` -> PR #14 `research/russia-venue-eligibility-v0` -> PR #16 `engineering/rust-execution-domain-conformance-v0`.
+- [x] Verify each child PR base SHA equals the parent PR head SHA: #14 base `bb6400502640818fd5eba8a93eb3ae8dc54581d2` = #13 head; #16 base `ab6976933cb4de9b5320b73531034d02edc53907` = #14 head. This is an intentional stacked-PR chain, not an incorrect base.
+- [x] Upgrade CI actions to current verified releases and pin immutable upstream commit SHAs: `actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1` (v7.0.1), `actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0` (v7.1.0).
+- [x] Verify the action-upgrade commit exact HEAD `e35d81cb34aeae1c13e25def0320e8a4a4b649bb` with GitHub Actions [#43614458632](https://github.com/PandaGarry/NEXUS/actions/runs/43614458632).
+- [x] Confirm all 3 runtime jobs passed; each ran 13 isolated suites with counts 11, 24, 13, 17, 12, 16, 18, 18, 32, 12, 15, 28 and 21 = 237 tests; total 711 successful executions.
+- [x] Inspect all three job logs: the prior Node.js 20 deprecation and Node `punycode` deprecation warnings are absent after the action upgrade.
+- [ ] Add a repeatable workflow dependency lock/SBOM or equivalent transitive action dependency inventory; current full-SHA pins lock the two direct actions only.
+- [ ] Review every transitive action dependency and establish automated update/security-advisory monitoring.
+- [ ] Complete exact-head CI after the documentation synchronization commits recorded below; the run above is exact for `e35d81c` only.
+
+**PR disposition:** PR #13, #14 and #16 remain open/Draft/unmerged. Preserve stack order; review and integrate parent PRs before their dependants. PR #16's 205 commits are measured from the PR #14 head and do not include PR #14's 82 commits. The 28-file / 3,730-addition scope remains a reviewability concern; split only if a dependency-aware review proves independent packages can be separated without duplicating or destabilizing the stack.
+
+**Verification boundary:** this CI validates existing Python reference models only. It does not execute Rust, NX-ARCH-005's proposed normalized fixture schema/runner, production database transactions, process/host/network fencing, Trusted Egress, venue adapters, or live trading.
