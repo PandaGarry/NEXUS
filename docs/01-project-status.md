@@ -341,3 +341,8 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - Confirmed the IF contracts are protected execution, Risk, Ledger, recovery and emergency-control boundaries, not general module APIs or direct data-store grants.
 - Recorded v1 account/subaccount scope constraints, missing product-domain contracts, cross-cutting contract requirements and a source-grounded but incomplete data inventory.
 - Field-level classification/retention, domain-owner acceptance, revocation objectives and boundary-observed G1 evidence remain open. No runtime, permission, dependency or integration was added.
+
+
+### NX-ARCH-REVIEW-004 exact-head regression evidence — 2026-11-14
+
+Exact branch HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed GitHub Actions [#43613212116](https://github.com/PandaGarry/NEXUS/actions/runs/43613212116). Python 3.11, 3.12 and 3.13 all succeeded: 13 isolated reference-model suites / 237 tests per runtime, 711 successful executions total. This is regression evidence for the existing Python reference models only; it does not execute the capability traceability review, product-domain APIs, authorization grants, module isolation, field-level data controls, Rust or venue integration. NX-ARCH-REVIEW-004 remains design-only; G0D/G1 and owner/security acceptance remain open.
