@@ -159,6 +159,22 @@ class VenueEligibilityReferenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             decision(record(), now=-1)
 
+    def test_boolean_timestamp_is_not_accepted_as_integer(self):
+        with self.assertRaises(ValueError):
+            evidence("bad", observed=True)
+
+    def test_string_status_cannot_be_treated_as_confirmed(self):
+        with self.assertRaises(TypeError):
+            EvidenceItem("jurisdiction", "CONFIRMED", SCOPE, NOW - 1)
+
+    def test_string_mode_cannot_bypass_mode_check(self):
+        with self.assertRaises(TypeError):
+            record(mode="LIVE_ELIGIBLE")
+
+    def test_evidence_expiry_must_follow_observation(self):
+        with self.assertRaisesRegex(ValueError, "follow observation"):
+            evidence("bad", observed=NOW, expires=NOW)
+
 
 if __name__ == "__main__":
     unittest.main()
