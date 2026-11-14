@@ -22,7 +22,7 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 | Item | Current state | Evidence / limitation |
 |---|---|---|
 | Product scope | DONE for bounded v1 scope | OD-01 and OD-04 accepted; OD-15 partially accepted. See NX-OWNER-DECISIONS-001 |
-| PR #10 | OPEN / Draft / unmerged | Current branch contains reference models and docs; not a production implementation |
+| PR stack #13 → #14 → #16 | OPEN / Draft / unmerged | PR #13 venue-neutral financial fixtures; PR #14 venue/jurisdiction research based on #13; PR #16 execution/trust/G1 foundation based on #14. Current PR #16 documentation HEAD is recorded in §18.89; no production implementation is implied |
 | Instrument specification validator | DONE as test-only reference slice | NX-REF-DOMAIN-001; 17 tests passed in run #43593302985 on Python 3.11–3.13; synthetic fixture only, no production authority |
 | Dimensional financial types | IN PROGRESS as test-only reference slice | NX-REF-DOMAIN-003; 16 tests passed in run #43593302985 on Python 3.11–3.13 (93 tests per runtime across six isolated suites); reference-only, no production bounds, FX, derivatives, margin or ledger policy |
 | Instrument registry | DONE as test-only reference slice | NX-REF-DOMAIN-002; 12 tests passed in run #43593302985 on Python 3.11–3.13; in-memory only, no persistence or distributed writer protocol |
