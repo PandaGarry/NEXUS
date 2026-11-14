@@ -4,6 +4,13 @@
 
 ## Unreleased
 
+### Added — Module governance cross-architecture review (2026-11-14)
+
+- Added NX-ARCH-REVIEW-002, reviewing NX-ARCH-001/006/007/008, NX-SEC-001, NX-IF-001..005 and NX-OWNER-DECISIONS-001.
+- Clarified gateway admission versus owning-service authorization and confirmed T4 is not a shared Risk/Command/Ledger/Egress identity or permission set.
+- Retained F-03..F-08 as open blockers covering executable permission mapping, revocation objectives, trust roots, actual DB/host/network isolation, first G1 module/resource budgets and operator/support governance.
+- Synchronized architecture index, checklist, status and roadmap. Design cross-review only; no gate, owner decision or implementation authorization is closed.
+
 ### Final synchronized documentation-head verification — 2026-11-14
 
 The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` passed [GitHub Actions #43611122433](https://github.com/PandaGarry/NEXUS/actions/runs/43611122433): Python 3.11/3.12/3.13 all succeeded, 13 isolated reference-model suites / 237 tests per runtime (711 executions). This is reference regression only; no NX-ARCH-008 registry, identity, grants, module isolation, secrets, database permissions, egress, Rust, venue or live safety is tested. NX-ARCH-008 remains design-only; G0D/G1 remain open.
