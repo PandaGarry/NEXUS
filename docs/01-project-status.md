@@ -394,3 +394,7 @@ A standards cross-check of NX-ADR-008 found that RFC 9053's polymorphic COSE EdD
 
 
 A standards cross-check corrected the G1 COSE profile: RFC 9053's polymorphic EdDSA identifier (-8) is deprecated by RFC 9864. NEXUS now specifies fully specified COSE Ed25519 algorithm **-19**, COSE key type OKP / Ed25519 only, and fail-closed rejection of -8, Ed448, algorithm/key mismatch and substitution. Protected kid is only a lookup hint; issuer, algorithm, purpose, key status and registry generation must resolve to exactly one eligible key. No signer or key custody provider is implemented or selected.
+
+## Canonical CBOR ingress hardening requirement — 2026-11-14
+
+NX-ADR-008 now explicitly requires strict deterministic-profile validation on received command bytes before object materialization: shortest-form arguments/lengths, definite lengths, RFC 8949 core bytewise-lexicographic map ordering, schema-defined text keys, duplicate/unknown-key rejection and no trailing bytes. This closes a protocol-specification ambiguity; it does not mean a parser exists. Library suitability must be demonstrated against raw-byte adversarial vectors before dependency selection.
