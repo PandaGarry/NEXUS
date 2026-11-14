@@ -1070,3 +1070,10 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Qualify DBA/migration control plane, emergency change reconciliation and termination/fencing of affected existing sessions/processes.
 
 **Boundary:** fixture fingerprint is regression evidence only; no production drift monitor or deployment gate is implemented.
+
+
+## SHA-256 catalog fingerprint verification — 2026-11-14
+
+- [x] Use Python `hashlib.sha256` over deterministic JSONB catalog snapshot text instead of MD5.
+- [x] Verify exact code/test HEAD `d9c7bf5fddf68792ed565fecbcef83b73dab11a7`: PostgreSQL #43631854964 passed 12/12; Python #43631854995 passed 264/runtime on 3.11/3.12/3.13 (792 executions).
+- [ ] Continue production manifest signing, approval, immutable audit and deployment fail-closed design; fixture SHA-256 is not a production attestation.
