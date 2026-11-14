@@ -30,6 +30,20 @@ The files are deliberately not rewritten by this proposal. Their envelopes diffe
 
 The complete tracked repository tree at the audited branch head contains no `Cargo.toml`, `Cargo.lock`, `rust-toolchain.toml`, Rust source tree or Rust runner. Therefore Rust execution and Rust/Python differential conformance are not presently available. This is an observed repository-state blocker, not a reason to create an unreviewed workspace.
 
+## 2.1 Legacy fixture migration assessment
+
+The first migration pass must preserve the original v1 bytes and derive each new expected outcome from the existing reference implementation/tests, not from a mechanical guess.
+
+| Legacy file | Proposed mapping | Migration class | Required review before conversion |
+|---|---|---|---|
+| `golden-vectors-v1.json` | Root `version` -> suite version; `representation` -> suite description/provenance; each `id/op` -> `id/operation`; operands -> `input`; `expected` -> VALUE outcome. | Mostly structural | Define stable operation names and preserve integer compare outputs as integers; add no inferred error cases. |
+| `division-golden-vectors-v1.json` | Same case mapping; numerator/denominator and rounding fields remain exact strings/enums in `input`; expected rational or decimal is a typed VALUE. | Mostly structural | Confirm each operation's denominator/sign/rounding semantics and stable operation identifiers. |
+| `numeric-wire-golden-v1.json` | `kind` selects decimal/rational parser operation; expected coefficient/scale or numerator/denominator becomes typed VALUE; invalid kinds become REJECT. | Semantic annotation required | Existing invalid cases do not declare stable rejection classes. Run the Python oracle, inspect its parser contract, then assign and review each class; do not infer from case ID or kind alone. |
+| `financial-math-golden-v1.json` | Existing `schema_version/suite/authority/rounding/provenance` map directly to suite metadata; `operation/inputs/expected` map directly to case fields. | Near-direct | Preserve all units, instrument identities, rational fields and non-authorizing authority marker. Do not widen scope into fees, funding or venue formulas. |
+| `instrument-spec-fixture-v1.json` | Treat `instrument` as an input object to a future explicit `instrument_spec.validate` case. | New expected behavior required | The file is a snapshot, not a test case: expected accept/reject outcome, validation operation and rejection classes must be derived from the current instrument-spec contract/tests. No automatic expected result is assumed. |
+
+Migration order should begin with the scalar decimal and rational suites, then numeric-wire rejection annotation, then financial-math typed-value preservation. Instrument-spec conversion is last because it requires an explicit operation and expected outcome. Existing direct Python unit tests remain the baseline during migration; a converter must be one-way, deterministic and covered by its own tests.
+
 ## 3. Proposed fixture envelope v1
 
 New cross-language suites SHOULD use a common top-level envelope. The canonical fixture contract identifier is `nexus.conformance.fixture`; the contract version is independent from the suite's semantic version.
