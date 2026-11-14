@@ -6,13 +6,13 @@
 
 ## Interim gate — first real bytes
 
-**PASS — 2026-11-14; accounting follow-up OPEN**
+**PASS — 2026-11-14; record accounting independently reconciled 2026-11-15**
 
 - Hosted GitHub Actions run #10 connected to the public Bybit linear WebSocket and captured approximately 10 minutes.
-- 11,177 raw journal records total. The published topic counts are 8,149 `publicTrade.BTCUSDT` + 2,998 `orderbook.full.BTCUSDT` = 11,147. **30 records remain unclassified in the published breakdown.** Do not assume these are pong or subscription frames; classify them from the raw artifact and reconcile all mutually exclusive categories to 11,177.
+- 11,177 raw journal records total, exactly reconciled from the raw artifact: 8,149 `publicTrade.BTCUSDT`, 2,998 `orderbook.full.BTCUSDT`, 29 pong replies (`op=ping`, `ret_msg=pong`), and 1 subscription acknowledgement. Sum = 11,177; no unclassified records remain.
 - One connection generation; both expected topics present; replay and the workflow acceptance check passed.
-- The previously downloaded artifact inspection reported 11,177 valid JSONL lines, no malformed records, no missing SHA-256 values and no digest mismatches. The classification discrepancy is separate from this integrity check.
-- [Raw artifact](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666/artifacts/14131465205), expires 2026-11-28. Preserve a private local copy before expiry. Do not publish raw exchange frames in the repository until data terms and redistribution rights have been reviewed.
+- Independent reinspection on 2026-11-15 verified all 11,177 JSONL lines, zero malformed records, zero missing SHA-256 values, zero digest mismatches, and exact category reconciliation. The artifact ZIP was downloaded into the current working session for inspection; it has not been committed to the public repository.
+- [Raw artifact](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666/artifacts/14131465205), expires 2026-11-28. Preserve a user-controlled private copy before expiry. Do not publish raw exchange frames in the repository until data terms and redistribution rights have been reviewed.
 - The first order-book messages were deltas. This is expected for the full-depth stream contract and reinforces that REST snapshot + buffered delta bridge is required before a book can be considered synchronized.
 - This gate proves public-feed reachability and raw capture/replay plumbing only. It does not prove snapshot synchronization, reconnect recovery, feed completeness, long-run reliability or trading eligibility.
 - Hosted runner region is not a latency benchmark; do not derive production latency claims from this capture.
