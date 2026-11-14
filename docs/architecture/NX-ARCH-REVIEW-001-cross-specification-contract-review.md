@@ -39,9 +39,11 @@ NX-ARCH-001 and ТЗ-NX-005 require approval bound to an exact payload digest; �
 
 ### F-02 — Risk reservation and durable dispatch need a crash-safe lifecycle
 
-ТЗ-NX-005 requires concurrent approvals to reserve exposure. ТЗ-NX-004 requires command + approval reference + outbox to persist before dispatch. The documents do not yet specify how a reservation is atomically associated with a durable command, how it survives crashes, or how it is released/consumed after rejection, expiry, cancellation, partial fill, fill or OUTCOME_UNKNOWN.
+**Original finding (at the time of the initial review):** ТЗ-NX-005 required concurrent approvals to reserve exposure and ТЗ-NX-004 required command + approval reference + outbox to persist before dispatch, but the cross-document lifecycle was not explicit.
 
-**Required resolution:** specify reservation states and transitions, durable reservation IDs, fencing/version checks, lease/expiry behavior, and reconciliation rules. A reservation must remain conservatively active while an exchange outcome is ambiguous. No approval may be issued against a stale aggregate exposure version.
+**Updated disposition (2026-11-14): PARTIALLY RESOLVED AT DESIGN LEVEL; NOT IMPLEMENTED OR PROVEN.** Subsequent NX-IF-001 §8.3, NX-IF-002 and NX-ADR-002 now specify the required ordering: Risk durably commits all affected `PRE_DISPATCH_RESERVATION` scopes before issuing `RiskApprovalCapability`; the Command Coordinator atomically consumes the single-use capability with the canonical command/reservation-reference/outbox commit; the reservation remains active through ambiguous dispatch until authoritative outcome and reconciliation. The durable pre-egress marker moves exposure to `DISPATCH_OUTCOME_UNKNOWN` before the network side effect.
+
+**Remaining acceptance/evidence:** owner approval of the interface and rejection semantics; selection and proof of the Risk reservation transaction/isolation model; proof of the coordinator's single-use consume + outbox atomicity; crash/replay/concurrency fault injection; evidence-based reservation release/transfer across rejection, expiry, cancellation, partial fill, fill and `OUTCOME_UNKNOWN`; and proof that stale dispatcher authority cannot reach trusted egress. The design documents define ordering, not a distributed transaction or runtime guarantee.
 
 ### F-03 — Pending exposure ownership can double-count or omit risk
 
