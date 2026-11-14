@@ -9,13 +9,15 @@
 
 The Risk-owned scope-state serialization design is sound as a G1 evaluation baseline **provided that every operation changing the same exposure/capacity invariant participates in one Risk-owned local transaction and updates every affected scope row**.
 
-The design is strengthened with five explicit rules:
+The design is strengthened with seven explicit rules:
 
 1. A projection event affecting a child scope and any parent/account aggregate must update all affected pre-provisioned scope-state rows in the same transaction, in canonical scope-ID byte order.
 2. Scope membership/configuration changes must advance a version and serialize against both projection updates and reservations; stale scope-set calculations fail closed.
-3. A Risk scope-state row is a serialization/version record, not a second source of accounting truth. It points to the current Risk projection and reservation aggregate versions/watermarks.
-4. SQLSTATE **23505** is not a generic retry signal. Only a known idempotency-key collision may be resolved by a new transaction reading the durable request identity and digest; unrelated uniqueness violations fail closed.
-5. The per-scope serialization point deliberately trades write concurrency for correctness. G1 must benchmark contention and tail latency at the actual v1 scope fan-out; do not weaken atomicity to improve throughput.
+3. The account/root scope-state record is mandatory in every v1 reservation/projection transaction and acts as the scope-configuration guard. After the complete lock set is acquired, the root `scope_config_version` is rechecked; a changed version forces full scope-set recomputation.
+4. A Risk scope-state row is a serialization/version record, not a second source of accounting truth. It points to the current Risk projection and reservation aggregate versions/watermarks.
+5. SQLSTATE **23505** is not a generic retry signal. Only a known idempotency-key collision may be resolved by a new transaction reading the durable request identity and digest; unrelated uniqueness violations fail closed.
+6. Market/index/FX/fee/collateral inputs remain immutable, versioned valuation snapshots bound to the reservation and capability. Market-data ticks MUST NOT rewrite every Risk scope-state row; stale or policy-invalid valuation inputs block dispatch.
+7. The shared scope-state serialization point deliberately trades write concurrency for correctness. G1 must benchmark contention and tail latency at the actual v1 scope fan-out; do not weaken atomicity to improve throughput.
 
 This review does not approve PostgreSQL for production, a schema, automatic failover, or any runtime. PostgreSQL 18 remains the exact-version evaluation target only.
 
