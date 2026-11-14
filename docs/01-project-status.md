@@ -596,11 +596,11 @@ This is Python reference-model CI only. It does not implement or verify signing 
 
 ## Test-only halt / final Egress gate reference model
 
-Added `foundation/reference-model/egress-fencing/halt_egress_gate.py`; the current model has 16 dedicated HaltEgressGate tests within a 24-test egress-fencing suite. It models both halt/gate commit orders, pause-after-gate acknowledgement blocking, positive sender-fence handling, single-use attempt IDs, halt-store outage/recovery, repeated halt idempotency and signed-64-bit epoch exhaustion. Sender fencing without trusted socket-initiation evidence preserves OUTCOME_UNKNOWN and reservation state. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing.
+Added `foundation/reference-model/egress-fencing/halt_egress_gate.py`; the current model has 16 dedicated HaltEgressGate tests within a 31-test egress-fencing suite. It models both halt/gate commit orders, pause-after-gate acknowledgement blocking, positive sender-fence handling, single-use attempt IDs, halt-store outage/recovery, repeated halt idempotency and signed-64-bit epoch exhaustion. Sender fencing without trusted socket-initiation evidence preserves OUTCOME_UNKNOWN and reservation state. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing.
 
 ## Exact-head CI including HaltEgressGate reference model — 2026-11-14
 
-At SHA `f1c0bd0576bd42058ca2482706533248bcf6069b`, [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545) passed on Python 3.11, 3.12 and 3.13. Each runtime passed 13 isolated suites / **255 tests** (765 successful executions total). The egress-fencing suite passed 24 tests, including 16 HaltEgressGate cases. All three job logs were inspected; no test failures or deprecation warnings were found.
+At SHA `f1c0bd0576bd42058ca2482706533248bcf6069b`, [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545) passed on Python 3.11, 3.12 and 3.13. Each runtime passed 13 isolated suites / **255 tests** (765 successful executions total). The egress-fencing suite passed 29 tests, including 16 HaltEgressGate cases. All three job logs were inspected; no test failures or deprecation warnings were found.
 
 The new HaltEgressGate is a sequential test-only oracle. It does not prove real PostgreSQL lock ordering, concurrent linearizability, process pause/termination, network route fencing, socket behavior, venue acceptance or production halt safety. No live controls are implemented.
 
@@ -632,3 +632,9 @@ The test-only Python state-machine oracle now covers both commit orders, pause-a
 **Disposition:** exact code/test HEAD passed Python reference CI. This is not production concurrency, socket, network-fencing or live-trading evidence.
 
 The current test-only halt/Egress oracle has 18 state-machine tests, including pending-halt/store-recovery races, duplicate halt requests during outage and after HALTED, sender fencing, repeated halt idempotency and signed-64-bit epoch exhaustion. Exact code HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` passed workflow [#43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 suites / 255 tests per Python 3.11/3.12/3.13 runtime (765 successful executions). The tests are sequential reference-model checks, not proof of concurrent PostgreSQL linearizability, HEGC implementation, socket behavior or external fencing.
+
+## Exact-head CI — 18-case halt-gate oracle and HEGC review — 2026-11-14
+
+PR #16 HEAD `9b88eabb80e44510e29013fe02315c354c4b488b` passed [workflow #43618875958](https://github.com/PandaGarry/NEXUS/actions/runs/43618875958): Python 3.11/3.12/3.13 each passed 13 isolated suites / 257 tests (771 successful executions total). The egress-fencing package ran 31 tests, including 18 HaltEgressGate cases. All logs were inspected; no failures or Node.js 20 / `punycode` warnings.
+
+After this tested SHA, the model was hardened to deny grants when the signed-64-bit halt epoch is already exhausted, before a halt request arrives. The current branch-head rerun is pending. This remains sequential reference-model evidence only; no PostgreSQL HEGC runtime, concurrent transaction, actual socket or external fence was tested.
