@@ -10,6 +10,9 @@ on:
   push:
     branches: ["prototype/bybit-public-data-recorder-python-v0"]
 
+permissions:
+  contents: read
+
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -24,3 +27,41 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -e .
       - run: python -m unittest discover -s tests -v
+
+  live-public-smoke:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/prototype/bybit-public-data-recorder-python-v0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install optional live transport
+        run: python -m pip install -e ".[live]"
+      - name: Capture ten minutes from public Bybit WebSocket
+        run: |
+          mkdir -p evidence
+          nexus-bybit-record --symbol BTCUSDT --output evidence/bybit-public-10m.jsonl --duration 600
+      - name: Verify journal and require both live topics
+        run: |
+          nexus-bybit-replay evidence/bybit-public-10m.jsonl | tee evidence/replay-summary.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          summary = json.loads(Path("evidence/replay-summary.json").read_text())
+          topics = summary.get("topics", {})
+          required = ("publicTrade.BTCUSDT", "orderbook.full.BTCUSDT")
+          missing = [topic for topic in required if topics.get(topic, 0) <= 0]
+          if summary.get("frames", 0) <= 0 or missing:
+              raise SystemExit(f"capture is not accepted; missing topics={missing}; summary={summary}")
+          print(json.dumps(summary, indent=2, sort_keys=True))
+          PY
+      - name: Upload raw public capture and replay summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bybit-public-10m-${{ github.run_id }}
+          path: evidence/
+          if-no-files-found: warn
+          retention-days: 14
