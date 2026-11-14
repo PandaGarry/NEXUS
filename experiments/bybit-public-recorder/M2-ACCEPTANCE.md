@@ -91,6 +91,26 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 
 M2 is accepted only when all required sections above are complete, unit tests pass on Python 3.11/3.12/3.13, live evidence is archived with a reproducible replay, and the evidence register links the exact commit and CI run. Any uncompleted item remains explicitly open; target dates are not silently moved.
 
+## 6A. Independent protocol cross-check and live comparison gate
+
+**Protocol review checked 2026-11-15 against the official Bybit V5 documentation:**
+
+- The `orderbook.full.{symbol}` stream is delta-only; there is no initial WS snapshot.
+- `u` is consecutive within a session; a gap invalidates the local book, and `u=1` is a reinitialization signal.
+- `seq` is monotonically increasing but explicitly **not guaranteed to be consecutive**. Never require `seq + 1`.
+- During snapshot bridging, discard deltas with `seq` below the snapshot; if `seq` matches but `u` differs, retry the snapshot; initialize only when both values match. Apply remaining deltas in original receive order.
+- Therefore exact equality of both snapshot/delta `seq` and `u` at the bridge point is the documented rule; the concern is not equality itself, but incorrectly treating `seq` as a consecutive counter or accepting a later unmatched event.
+
+Official source: [Bybit full-depth orderbook synchronization procedure](https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob).
+
+**Additional acceptance evidence required before M2 can be accepted:**
+
+- [ ] Independent reviewer verifies the implementation line-by-line against the official procedure above, including `u` continuity, non-consecutive `seq`, reset handling, stale-event discard and exact bridge pair. Record reviewer, commit and findings.
+- [ ] Add/confirm protocol-derived fixtures that explicitly demonstrate non-consecutive increasing `seq` is accepted, `u` gap is rejected, same `seq` with different `u` causes snapshot retry, and a `seq` decrease is discarded.
+- [ ] On a real permitted session, perform a fresh REST snapshot comparison using a second buffered WS window: buffer deltas, fetch and journal the exact REST response, locate the matching `seq/u` watermark, reconstruct the local book at that exact watermark, and compare top-N bid/ask price-size levels. Do not compare snapshots taken at different watermarks as if they were simultaneous.
+- [ ] Record the compared watermark, top-N depth, exact decimal comparison method, missing/extra levels and any differences. Explain expected race/window effects; unexplained mismatch fails acceptance and forces investigation/resync.
+- [ ] Preserve the raw evidence privately if terms permit, otherwise preserve a legally permitted redacted/synthetic reproduction and a reproducible report. Do not publish raw frames without rights review.
+
 ## Official protocol references checked 2026-11-15
 
 - Bybit full-depth WebSocket and synchronization procedure: https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob
