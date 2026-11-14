@@ -530,3 +530,4 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Added all-scope deterministic ordering, atomic reservation, missing/stale evidence fail-closed and idempotency/ambiguous-commit rules.
 - Added adversarial acceptance cases for projection/reservation races, duplicate/reordered events, serialization/deadlock retry and recovery.
 - No PostgreSQL instance/schema/service implemented; G1 evaluation only.
+- Clarified that absence of a visible idempotency row does not prove rollback while the original Risk transaction may still be in flight; only same-identity/digest retry is permitted, otherwise halt.
