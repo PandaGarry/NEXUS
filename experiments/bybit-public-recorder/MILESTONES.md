@@ -51,8 +51,9 @@
 
 - Python is a disposable evidence-gathering spike. No Rust port until measured throughput, correctness and maintenance requirements justify it.
 - No UI, AI orchestration, multi-venue layer, database server, ClickHouse, private API, order entry or live trading.
-- Kraken Spot protocol research may continue, but no second recorder implementation until Bybit M2 is accepted.
+- Kraken Spot and OKX protocol/data-terms research may continue, but no second recorder implementation until Bybit M2 is accepted. OKX currently has the stronger documented historical L2 dataset; Kraken remains a useful Spot checksum contrast.
 - Bybit API terms gate: no further automated live capture unless public market-data-only use, API-key applicability, retention and non-redistribution conditions are reviewed and the repository variable `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true` is deliberately set.
+- OKX historical data is documented as personal-use-only; its API Agreement restricts redistribution, competing data/analytics products and commercialized AI model training. No OKX raw data may be committed or redistributed without written permission.
 - Dates are reviewed explicitly if an external blocker occurs; they are not silently moved.
 
 ## Evidence references checked 2026-11-15
