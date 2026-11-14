@@ -61,9 +61,9 @@ cd foundation/reference-model/execution-gateway
 python -m unittest -v
 ```
 
-Result on 2026-11-14: **17 tests passed**.
+GitHub Actions run [#43588259035](https://github.com/PandaGarry/NEXUS/actions/runs/43588259035) completed with **success** on exact HEAD `fdfd54f093fbe0b3613738e02c823815c6b243d1`. Both suites passed on Python 3.11, 3.12 and 3.13: 10 exact-decimal tests and 17 gateway tests in each runtime.
 
-This is a local reference-model result only. It is not GitHub Actions, production, multi-process, database durability, security or exchange-adapter verification.
+This is CI verification of the checked-in reference model only. It is not production, multi-process, database durability, security or exchange-adapter verification.
 
 ## 6. Deliberate exclusions and unresolved risks
 
