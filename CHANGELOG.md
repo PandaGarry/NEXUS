@@ -899,3 +899,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Added mutation/restore regressions for CREATEROLE escalation, PUBLIC EXECUTE, SECURITY INVOKER and unexpected trusted-schema function inventory.
 - Exact code/test HEAD `f815c351a709ff169996e3f0e451da73651a142c` passed PostgreSQL 18.7 CI 12/12 and Python 3.11/3.12/3.13 matrix 264 tests/runtime (792 executions).
 - Explicitly retained production signed-manifest governance, fail-closed deployment drift enforcement, DBA/migration control plane, emergency reconciliation and session/process/network fencing as OPEN.
+
+
+### SHA-256 catalog fingerprint verification — 2026-11-14
+
+- Replaced the test-only catalog fingerprint's MD5 with Python `hashlib.sha256` over deterministic JSONB snapshot text.
+- Exact code/test HEAD `d9c7bf5fddf68792ed565fecbcef83b73dab11a7` passed PostgreSQL 18.7 12/12 and Python 3.11/3.12/3.13 264 tests/runtime (792 executions).
+- Production signed/approved manifest and deployment-time fail-closed drift enforcement remain OPEN.
