@@ -390,3 +390,8 @@ Fills, fees/rebates and later fee adjustments are separately identifiable and li
 This is a requirements proposal only. No NEXUS journal, posting engine, portfolio ledger, reconciliation projector, accounting report or restore test has been implemented or tested. No exchange account has been connected. No live trading or asset movement is authorized.
 
 **Prototype Readiness remains BLOCKED.**
+
+
+## WP-D — Ledger evidence and recovery barrier
+
+Ledger MUST publish journal, inbox, projection and venue-reconciliation watermarks as distinct evidence entries for [NX-IF-004](../architecture/NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md). A durable journal posting does not imply that the position projection has applied it; a projection watermark does not by itself prove venue reconciliation. Restart/restore validates snapshot integrity and journal continuity, drains pending Execution events idempotently, rebuilds projections and reconciles balances/positions before the affected scope can pass its RecoveryBarrier. Incomplete history coverage, retention gaps or unresolved discrepancies remain explicit and propagate to Risk.
