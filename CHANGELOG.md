@@ -647,3 +647,8 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Clarified that no stale/queued attempt may newly initiate after boundary acknowledgement, but bytes already sent cannot be recalled.
 - Separated Risk Engine outage from halt-store outage: independent Control Plane can commit halt while store is available; uncertain store blocks Egress authorization and fully-enforced HALTED status.
 - No runtime, halt store or external fence implemented; race/fault proof remains open.
+
+### Halt / Egress race conformance cases expanded — 2026-11-14
+
+- Added NX-IF-005 cases 36–42 for both linearization orders, paused Egress, missing external fence, halt-store outage, late venue acceptance and actual socket-boundary proof.
+- No runtime tests or external fencing proof are claimed; these remain G1 implementation gates.
