@@ -10,9 +10,11 @@
 - [Current status and evidence register](docs/PROJECT_STATUS.md)
 - [Venue qualification matrix](docs/VENUE_QUALIFICATION_MATRIX.md)
 - [Product stages and commercial activation triggers](docs/PRODUCT_EVOLUTION.md)
+- [External engineering / AI review guide](docs/EXTERNAL_REVIEW_GUIDE.md)
 - [All open pull requests](https://github.com/PandaGarry/NEXUS/pulls)
 - [Current recorder prototype — PR #19](https://github.com/PandaGarry/NEXUS/pull/19)
 - [Recorder milestones — Issue #18](https://github.com/PandaGarry/NEXUS/issues/18)
+- [Second adapter qualification — Issue #21](https://github.com/PandaGarry/NEXUS/issues/21)
 
 ## Non-negotiable principles
 
