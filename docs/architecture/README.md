@@ -117,3 +117,7 @@ See [NX-ARCH-REVIEW-006](NX-ARCH-REVIEW-006-field-level-data-lineage-and-project
 ### Risk scope serialization and PostgreSQL concurrency — NX-ARCH-REVIEW-007
 
 See [NX-ARCH-REVIEW-007](NX-ARCH-REVIEW-007-risk-scope-serialization-and-postgresql-concurrency.md). Refines the G1 Risk-owned scope-state serialization protocol with parent/child projection fan-out, mandatory account/root configuration guard, scope-config versioning, idempotency 23505 handling, bounded scope fan-out, immutable versioned valuation inputs (no per-tick scope writes), and a PostgreSQL 18 concurrency/fault-injection matrix. Design only; no schema or runtime is implemented.
+
+### HEGC entrypoint and database privilege boundary — NX-ARCH-REVIEW-008
+
+See [NX-ARCH-REVIEW-008](NX-ARCH-REVIEW-008-hegc-entrypoint-and-database-privilege-boundary.md). Reviews the EXECUTE-only HEGC runtime, NOLOGIN SECURITY DEFINER owners, session_user/workload identity, per-instance Egress principal, common guard and one-use grant lifecycle. Defines adversarial SQL privilege/search_path/RLS/role tests and PostgreSQL 18.7 multi-connection proof gates. Design review complete; acceptance and implementation evidence remain open.
