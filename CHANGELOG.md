@@ -667,3 +667,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Distinguished Risk application outage (independent Control Plane can still commit halt) from authoritative halt-store outage (Egress denies final gate; no fully-enforced HALTED claim).
 - Verified Python reference suites at SHA `73841573e4e02b34a0c0363bbbe21155828d0c08`, [workflow #43617906166](https://github.com/PandaGarry/NEXUS/actions/runs/43617906166): 13 suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 executions).
 - This is documentation and reference-model CI only; no halt store, Egress runtime, socket instrumentation or external fence was implemented.
+
+### Risk approval and venue signing authorities separated — 2026-11-14
+
+- NX-SEC-001 now requires separate non-reused keys, workload identities and policies for RiskApprovalCapability signing and venue request signing/credentials.
+- Risk signer alone holds Risk private key; Execution/Trusted Egress receive public verification material only.
+- Trusted Egress alone holds venue credentials and owns the venue socket; EgressBoundaryAuthorization remains a separate one-use attempt control.
+- No key, vault, signer or venue credential is implemented; key lifecycle and compromise tests remain open.
