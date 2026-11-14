@@ -80,6 +80,21 @@ The nexus_control.acquire_scope_guards(scope_ids uuid[]) SECURITY DEFINER helper
 
 The GRANT_CONSUMED database transition is necessary but not sufficient to prove one external request. Trusted Egress must enforce one logical venue-request transmission attempt per grant, own the only venue credential/socket route and emit SOCKET_INITIATED from the instrumented transport boundary. A logical request may span multiple OS/TLS writes; the event marks the first transport write, not delivery or venue acceptance. Automatic HTTP/SDK/proxy/service-mesh retries, redirects, pipelining of order mutations and WebSocket reconnect replay are disabled by default. HTTP method idempotency does not by itself prove venue endpoint semantics. RFC 9110 §9.2.2 says clients should not automatically retry non-idempotent requests without proof that the operation is idempotent or that the original was never applied. Partial write, timeout, reset or lost response after possible bytes remains OUTCOME_UNKNOWN and requires reconciliation.
 
+### 5.2 Role/ACL changes are a separate control-plane boundary
+
+The row-level scope guard does not serialize PostgreSQL cluster authorization changes. CREATE/ALTER ROLE, GRANT/REVOKE role membership, ALTER DEFAULT PRIVILEGES, function ownership changes and function/schema ACL changes are catalog/DDL control-plane operations; they do not automatically acquire the application scope guard. They must not be described as protected by the HEGC row-guard protocol.
+
+Required governance for any production deployment:
+
+- Runtime logins must have no SUPERUSER, CREATEROLE, CREATEDB, REPLICATION or BYPASSRLS attributes, no privileged role memberships, and no CREATE privilege in trusted application schemas.
+- Runtime roles must not own protected schemas, tables, functions, policies or migration objects. They must not be members of NOLOGIN definer-owner or migration roles.
+- Role membership, role attributes, object ownership, function ACLs, schema ACLs, default privileges, policy definitions and extension inventory are changed only by a separately authenticated, reviewed migration/DBA control plane.
+- Every such change must be version-controlled, reviewed, applied atomically where PostgreSQL permits, audited, and followed by a catalog-state diff against an approved manifest. Emergency changes require an incident record and post-change reconciliation.
+- The deployment process must fail closed if catalog drift is detected; a runtime request cannot repair or silently accept privilege drift.
+- Revoking LOGIN or changing a role attribute does not terminate existing sessions. The control plane must also identify and terminate affected backends and independently fence the old process/network path where relevant.
+
+The disposable fixture includes negative tests that attempt role creation/escalation, definer-role membership grants, PUBLIC EXECUTE grants, SECURITY INVOKER alteration, default-privilege changes against the definer owner and function creation in the trusted schema from each runtime principal. These tests establish only that the fixture's runtime roles lack those specific powers. They do not test superuser/DBA mutation races, catalog drift detection, migration governance or live-session termination.
+
 ## 6. Attempt and halt semantics
 
 The durable attempt lifecycle is:
