@@ -154,6 +154,13 @@ class SQLiteOutbox:
             venue_reference TEXT NOT NULL,
             authority_epoch INTEGER NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS dispatch_observations (
+            observation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            command_id TEXT NOT NULL,
+            observation_type TEXT NOT NULL,
+            detail TEXT NOT NULL,
+            authority_epoch INTEGER NOT NULL
+        );
         """)
 
     def add_reservation(self, reservation_id: str, command_id: str) -> None:
@@ -243,14 +250,31 @@ class CommandGateway:
             raise InjectedCrash("crash after durable DISPATCHING marker")
         # This second check narrows, but cannot eliminate, the external-send race.
         if self._clock() >= approval_expires_at or self._halt_epoch_for_command(command_id) != halt_epoch:
-            db.execute("UPDATE commands SET state=?,outcome=? WHERE command_id=?",
-                       (CommandState.REJECTED.value, "APPROVAL_EXPIRED_OR_HALT_EPOCH_CHANGED", command_id))
+            cursor = db.execute(
+                "UPDATE commands SET state=?,outcome=? "
+                "WHERE command_id=? AND state=? AND halt_epoch=?",
+                (CommandState.REJECTED.value, "APPROVAL_EXPIRED_OR_HALT_EPOCH_CHANGED",
+                 command_id, CommandState.DISPATCHING.value, halt_epoch))
+            if cursor.rowcount != 1:
+                self._record_stale_dispatch_observation(
+                    command_id, "STALE_PRE_SEND_GUARD",
+                    "approval expired or halt epoch changed after authority was superseded",
+                    halt_epoch)
+                return "STALE_STATE_PRESERVED"
             raise Denied("APPROVAL_EXPIRED_OR_HALT_EPOCH_CHANGED")
         try:
             result = self._adapter.send(payload)
         except Exception as exc:
-            db.execute("UPDATE commands SET state=?,outcome=? WHERE command_id=?",
-                       (CommandState.OUTCOME_UNKNOWN.value, type(exc).__name__, command_id))
+            cursor = db.execute(
+                "UPDATE commands SET state=?,outcome=? "
+                "WHERE command_id=? AND state=? AND halt_epoch=?",
+                (CommandState.OUTCOME_UNKNOWN.value, type(exc).__name__,
+                 command_id, CommandState.DISPATCHING.value, halt_epoch))
+            if cursor.rowcount != 1:
+                self._record_stale_dispatch_observation(
+                    command_id, "STALE_SEND_ERROR",
+                    type(exc).__name__, halt_epoch)
+                return "STALE_RESPONSE_RECORDED"
             return CommandState.OUTCOME_UNKNOWN.value
         if crash_after_venue_accept:
             # The venue may have accepted the command, but the ACK is not durable.
@@ -277,6 +301,14 @@ class CommandGateway:
             db.execute("UPDATE commands SET state=?,outcome=? WHERE command_id=?",
                        (CommandState.OUTCOME_UNKNOWN.value, "PROCESS_RESTART_DURING_DISPATCH", command_id))
         return [r[0] for r in rows]
+
+    def _record_stale_dispatch_observation(
+        self, command_id: str, observation_type: str, detail: str, authority_epoch: int
+    ) -> None:
+        self.store.db.execute(
+            "INSERT INTO dispatch_observations(command_id,observation_type,detail,authority_epoch) "
+            "VALUES(?,?,?,?)",
+            (command_id, observation_type, detail, authority_epoch))
 
     def _halt_epoch_for_command(self, command_id: str) -> int:
         row = self.store.db.execute("SELECT payload FROM commands WHERE command_id=?", (command_id,)).fetchone()
