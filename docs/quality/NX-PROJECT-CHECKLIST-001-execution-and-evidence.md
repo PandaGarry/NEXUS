@@ -1501,6 +1501,6 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Record linux/amd64 child manifest digest `sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452` and official Docker Hub image-page reference.
 - [x] Verify exact workflow code commit `1844a9964fee667b7d29299a5b75f0f07df5076d`: PostgreSQL [#43630438579](https://github.com/PandaGarry/NEXUS/actions/runs/43630438579) passed 11/11; Python [#43630438570](https://github.com/PandaGarry/NEXUS/actions/runs/43630438570) passed 264 tests per runtime.
 - [ ] Verify signed publisher build provenance, SBOM completeness, vulnerability disposition and independent image review.
-- [ ] Re-run both workflows on the final documentation-synchronized branch head after the README, research, status, roadmap, changelog and checklist updates.
+- [x] Re-run both workflows on documentation-synchronized HEAD `645dd9d18a61de48216bc1d5330cd24888f9dc19`: PostgreSQL [#43630650544](https://github.com/PandaGarry/NEXUS/actions/runs/43630650544) passed 11/11; Python [#43630650528](https://github.com/PandaGarry/NEXUS/actions/runs/43630650528) passed 264 tests/runtime. All four logs inspected; no failures or warning matches.
 
 **Disposition:** CI image content is digest-pinned and verified against the disposable fixture. Build provenance and production image qualification remain open.
