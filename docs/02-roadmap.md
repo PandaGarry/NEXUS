@@ -826,8 +826,8 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 
 - [x] Add explicit race matrix cases 36–42 to NX-IF-005.
 - [x] Align acceptance criteria with the final egress authorization linearization point and distinguish Risk outage from halt-store outage.
-- [x] Verify Python reference suites at SHA `73841573e4e02b34a0c0363bbbe21155828d0c08` (run #43617906166): 239 tests/runtime, 717 executions.
-- [ ] Re-run CI on the final documentation-synchronized branch HEAD.
+- [x] Verify exact PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` on workflow #43618215618: 250 tests/runtime, 750 executions, including the 11-test HaltEgressGate oracle.
+- [ ] Re-run CI after any further final documentation/code synchronization.
 - [ ] Implement only after G0D/G1 gates: instrumented halt/Egress race tests, actual socket boundary, external process/host/network fencing and recovery evidence.
 
 ## Signing authority separation
@@ -849,14 +849,7 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 
 - [x] Add test-only sequential state-machine model for halt/gate commit ordering.
 - [x] Cover halt-first, gate-first, paused process, positive sender fence, control-store outage and post-send reconciliation.
-- [ ] Verify 11 new tests on Python 3.11/3.12/3.13 at exact branch HEAD.
+- [x] Verify 11 new tests on Python 3.11/3.12/3.13 at exact PR HEAD (250 tests/runtime, 750 total; workflow #43618215618).
 - [ ] Replace model assumptions with actual PostgreSQL shared-row/conditional-update proof and instrumented socket-boundary fault injection.
 - [ ] Prove external process/host/network fencing independently of the old Egress workload.
 
-## Halt / final Egress gate reference verification
-
-- [x] Add 11 test-only halt/gate ordering tests.
-- [x] Verify code/test SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1` on workflow #43618215618.
-- [x] Pass Python 3.11/3.12/3.13: 250 tests/runtime, 750 executions; egress-fencing package 24 tests/runtime.
-- [ ] Re-run exact-head CI after documentation synchronization.
-- [ ] Implement and verify actual DB lock ordering, durable halt store and instrumented network boundary only after G1 readiness.
