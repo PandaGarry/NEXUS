@@ -1039,7 +1039,7 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Pass 11 PostgreSQL 18.7 fixture tests on code/test SHA `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf`, [workflow #43629845855](https://github.com/PandaGarry/NEXUS/actions/runs/43629845855).
 - [x] Pass Python reference-model matrix: 264 tests per runtime on Python 3.11/3.12/3.13, [workflow #43629845861](https://github.com/PandaGarry/NEXUS/actions/runs/43629845861).
 - [x] Re-run both workflows on documentation-synchronized HEAD `e78f3b7c95939d13de18842567d56c4c314c3e6c`: PostgreSQL [#43629988964](https://github.com/PandaGarry/NEXUS/actions/runs/43629988964) 11/11; Python [#43629988969](https://github.com/PandaGarry/NEXUS/actions/runs/43629988969) 264 tests/runtime.
-- [ ] Build production DBA/migration catalog-manifest drift detection, emergency role-change reconciliation and existing-session termination.
+- [x] Pin the disposable CI service to Docker Official Image multi-platform index digest `sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b`; exact pinned workflow passed 11/11 tests, [#43630438579](https://github.com/PandaGarry/NEXUS/actions/runs/43630438579).\n- [ ] Verify signed publisher provenance, SBOM/vulnerability disposition and independent image review.\n- [ ] Build production DBA/migration catalog-manifest drift detection, emergency role-change reconciliation and existing-session termination.
 - [ ] Extend RLS matrix to owner/role inheritance edge cases, policy subqueries, function overloads and covert channels.
 - [ ] Qualify crash/restore, backup/PITR, failover, true uncertain-COMMIT recovery, image digest/provenance and independent security review.
 
