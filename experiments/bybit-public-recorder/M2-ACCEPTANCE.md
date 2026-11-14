@@ -33,8 +33,9 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 
 ## 0. Evidence and accounting
 
-- [ ] Re-open the original 10-minute artifact before its 2026-11-28 expiry; preserve a private local copy.
-- [ ] Reconcile exactly 11,177 journal records. Report mutually exclusive counts for `publicTrade` topic frames, `orderbook.full` topic frames, subscription/control acknowledgements, pong/ping frames, malformed/non-JSON frames and any other records. Counts must sum exactly to total records; do not infer the unexplained 30.
+- [x] Re-opened and independently classified the original 10-minute artifact on 2026-11-15: 8,149 trade-topic, 2,998 orderbook-topic, 29 pong replies and 1 subscription acknowledgement; all 11,177 records reconcile and all raw SHA-256 checks passed.
+- [ ] Preserve a user-controlled private copy of the artifact before its 2026-11-28 expiry; the inspection copy in the current working session is not a durable user-controlled archive.
+- [x] Reconcile exactly 11,177 journal records with mutually exclusive categories: 8,149 `publicTrade`, 2,998 `orderbook.full`, 29 pong replies (`op=ping`, `ret_msg=pong`), 1 subscription acknowledgement, 0 malformed/non-JSON and 0 other. Categories sum exactly to 11,177.
 - [ ] Keep the original artifact private until Bybit data terms and redistribution rights have been reviewed. Do not commit raw exchange data to the public repository by default.
 - [ ] Add synthetic/minimal protocol fixtures to the repository only where licensing and terms permit; fixtures must be clearly labelled synthetic if synthetic.
 - [ ] Record the Actions runner region as an environment fact only. Do not use hosted-runner wall/monotonic timing as a production latency benchmark.
