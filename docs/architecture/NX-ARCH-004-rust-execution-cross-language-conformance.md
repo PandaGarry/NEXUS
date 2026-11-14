@@ -83,10 +83,10 @@ The ordering is normative and follows NX-IF-001/002:
 2. Risk evaluates current evidence and atomically commits the required `PRE_DISPATCH_RESERVATION` across all affected scopes.
 3. Only after that durable reservation commit may Risk issue a short-lived `RiskApprovalCapability` bound to the exact command digest, reservation, scope and versions.
 4. The command coordinator validates the capability and atomically consumes its single-use authorization while committing the command and outbox record. The reservation remains held in `PRE_DISPATCH_RESERVATION`; it is not released or counted twice.
-5. The dispatcher durably claims the outbox attempt and records the transition to `DISPATCH_OUTCOME_UNKNOWN` before the external side effect. Immediately before send, trusted egress revalidates the approval-consumption evidence, active reservation, payload, current halt epoch, eligibility revision/epoch and dispatcher fence.
-6. Only the trusted egress boundary can transmit the persisted canonical payload.
+5. The dispatcher durably claims the outbox attempt under a monotonic fencing token and commits a pre-egress attempt marker. That marker moves the conservative exposure bucket from `PRE_DISPATCH_RESERVATION` to `DISPATCH_OUTCOME_UNKNOWN` before the external side effect. It is not evidence that bytes were sent: a crash between marker and socket write is deliberately treated as potentially sent until reconciled, preventing premature release of exposure.
+6. Immediately before the network side effect, trusted egress revalidates the approval-consumption evidence, active reservation, exact persisted payload/digest, current halt epoch, eligibility record/revision/epoch, command/attempt identity and dispatcher fence. Only the trusted egress boundary can transmit the persisted canonical payload and record transport evidence.
 
-NX-IF-002 requires the reservation commit to precede approval issuance; NX-IF-001 requires single-use approval consumption to be durable and atomic with dispatch eligibility. NX-ADR-002's concise sequence (approval then order/outbox persistence) must be reconciled with these explicit WP-A/WP-B requirements before acceptance by making the reservation-before-approval stage explicit. The production store and transaction semantics have not been selected.
+Cross-contract review is now harmonized: NX-IF-002 requires the reservation commit to precede approval issuance; NX-IF-001 requires single-use approval consumption to be durable and atomic with dispatch eligibility; NX-ADR-002 now states both boundaries explicitly. The production store and transaction semantics remain unselected and require a separate implementation design proof.
 
 ### 4.3 Trusted egress
 
@@ -203,7 +203,7 @@ No production workspace is created by this documentation-only change. If the cur
 
 ## 11. Bounded cross-contract review note
 
-A targeted readback of NX-IF-001..005, NX-ADR-002/007 and NX-SEC-001 found that the proposed trust/authority boundaries are directionally consistent. One integration detail requires explicit harmonization: NX-IF-002 mandates durable reservation before RiskApprovalCapability issuance, while the short sequence in NX-ADR-002 begins with obtaining approval and then persisting the outbox. NX-ARCH-004 adopts the more explicit IF-001/IF-002 ordering and records ADR-002 reconciliation as an acceptance item. This is a documentation sequencing gap, not evidence of a runtime defect; no implementation exists to test.
+A targeted readback of NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SEC-001 found no remaining blocking authority-order contradiction in the reviewed path. The prior ADR-002 sequencing gap is closed in documentation: reservation is durably committed before approval issuance; single-use approval consumption is atomic with durable command/outbox commit; and the pre-egress attempt marker moves exposure conservatively into `DISPATCH_OUTCOME_UNKNOWN`. This is a documentation consistency result only, not runtime or distributed-fencing evidence; no production implementation exists to test.
 
 ## 12. Current disposition
 
