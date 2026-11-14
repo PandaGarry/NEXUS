@@ -92,7 +92,7 @@ class BookSynchronizer:
             return SyncOutcome("SYNCING", True, self.last_invalidation_reason)
         except (ResyncRequired, ValueError, KeyError, TypeError) as exc:
             self.invalidate(f"snapshot_bridge_failed:{exc}")
-            return SyncOutcome("SYNCING", True, self.last_invalidation_reason)
+            return SyncOutcome("SYNCING", False, self.last_invalidation_reason)
         self.book = book
         self._buffer.clear()
         self.last_invalidation_reason = None
