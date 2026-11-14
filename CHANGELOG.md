@@ -559,3 +559,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Bound Risk reservations and capabilities to exact immutable market/index/FX/fee/collateral input versions and freshness evidence.
 - Kept market-data ticks out of the serialized scope-state write path; stale or policy-invalid valuation inputs block dispatch.
 - Synchronized NX-ADR-008, NX-IF-002, NX-ARCH-REVIEW-007 and OD-09. No runtime or schema was implemented.
+
+### Immutable valuation-input and dispatch race-control clarification — 2026-11-14
+
+- Clarified that Risk exposure scope-state and market/index/FX/fee/collateral source snapshots have separate ownership and transaction boundaries.
+- Risk binds reservations/approvals to exact immutable valuation-input version vectors and source evidence; no cross-domain distributed transaction is assumed.
+- Trusted Egress must revalidate the bound vector against source-specific freshness and configured drift/admissibility policy before send. Newer source values do not silently mutate an issued approval.
+- Inadmissible or unconfigured inputs fail closed and require a new Risk evaluation/reservation.
+- Interface schema, race tests and numeric thresholds remain open; no runtime was added.
