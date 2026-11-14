@@ -13,6 +13,10 @@
 - TradingView Lightweight Charts — charting benchmark.
 - HFTBacktest / QuantConnect LEAN / ABIDES — simulation и research systems; требуется углублённый аудит.
 
+## Research records
+
+- [NX-RESEARCH-001 — Simulation systems landscape](NX-RESEARCH-001-simulation-landscape.md)
+
 ## Evidence labels
 - CONFIRMED — непосредственно подтверждено исходником или тестом.
 - OBSERVED — обнаружено в просмотренной части, область проверки ограничена.
