@@ -106,6 +106,7 @@ class VenueEligibilityEgressTests(unittest.TestCase):
     def test_suspension_serializes_after_in_progress_send(self):
         entered = threading.Event()
         release = threading.Event()
+        suspend_started = threading.Event()
         suspended = threading.Event()
         results = []
 
@@ -124,11 +125,13 @@ class VenueEligibilityEgressTests(unittest.TestCase):
         self.assertTrue(entered.wait(1))
 
         def suspend():
+            suspend_started.set()
             self.authority.suspend()
             suspended.set()
 
         suspend_thread = threading.Thread(target=suspend)
         suspend_thread.start()
+        self.assertTrue(suspend_started.wait(1))
         self.assertFalse(suspended.wait(0.05))
         release.set()
         dispatch_thread.join(2)
@@ -161,6 +164,20 @@ class VenueEligibilityEgressTests(unittest.TestCase):
     def test_invalid_clock_is_rejected(self):
         with self.assertRaises(ValueError):
             self.authority.dispatch(command(), now_ms=True, send=lambda value: True)
+
+    def test_boolean_revision_is_not_accepted(self):
+        with self.assertRaises(ValueError):
+            snapshot(revision=True)
+
+    def test_string_mode_is_not_accepted(self):
+        with self.assertRaises(TypeError):
+            snapshot(mode="LIVE_ELIGIBLE")
+
+    def test_non_command_and_non_callable_adapter_are_rejected(self):
+        with self.assertRaises(TypeError):
+            self.authority.dispatch("not-a-command", now_ms=NOW, send=lambda value: True)
+        with self.assertRaises(TypeError):
+            self.authority.dispatch(command(), now_ms=NOW, send=None)
 
 
 if __name__ == "__main__":
