@@ -228,3 +228,7 @@ First-venue selection remains BLOCKED; no live trading is authorized.
 ## Conformance contract review refinement — 2026-11-14
 
 Before implementing a machine-readable fixture schema or runner, close the NX-ARCH-005 owner-review gate with an operation-by-operation executable-surface map. Decimal/rational and numeric-wire mappings are grounded in current reference APIs; financial fixture operations without callable oracles and instrument-spec validation remain deferred. Review stable rejection mappings for bounded numeric and dimensional-domain exceptions explicitly. The example envelope is now strict-JSON valid. Schema/runner and Rust work remain gated; no production readiness is implied.
+
+## Reference operation coverage correction — 2026-11-14
+
+The financial operation audit has been corrected: spot, linear and inverse paths have executable reference coverage; inverse exposure remains rational. Extract the currently inline partial-fill weighted-average algorithm into a named pure reference operation before registering it as a reusable normalized operation. Separately map the arbitrary-precision oracle and explicit bounded numeric wrapper; do not treat synthetic `NumericLimits` as a production profile. Invalid operation parameters must not be misclassified as mathematical rejection outcomes.
