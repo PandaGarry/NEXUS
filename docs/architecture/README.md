@@ -126,3 +126,8 @@ See [NX-ARCH-REVIEW-008](NX-ARCH-REVIEW-008-hegc-entrypoint-and-database-privile
 ### Production authorization-catalog manifest lifecycle — NX-ARCH-REVIEW-009
 
 See [NX-ARCH-REVIEW-009](NX-ARCH-REVIEW-009-production-authorization-catalog-manifest-lifecycle.md). Defines the candidate production manifest schema, semantic catalog identity, deterministic-CBOR/SHA-256/COSE signing profile constraints, independent author/approver/signer/verifier/audit roles, fail-closed deployment gate, post-startup drift response and required catalog coverage. Design review draft only; no production manifest, signer, trust root, verifier or deployment gate is implemented.
+
+
+### Authorization-catalog manifest admission reference — NX-ARCH-REVIEW-009
+
+See [auth-catalog reference model](../../foundation/reference-model/auth-catalog/README.md). Adds test-only logical schema validation and fail-closed admission-precondition checks for exact context binding, explicit scope, semantic identity uniqueness, deny-rule identifiers, validity interval, external approval/signature result flags, revocation availability and monotonic predecessor/sequence state. It does not implement CBOR, COSE, cryptography, catalog extraction or production authorization.
