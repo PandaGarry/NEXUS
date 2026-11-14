@@ -116,7 +116,7 @@ The following remain UNKNOWN until exact jurisdiction, account type, product fam
 | API key permission separation / no-withdrawal scope | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | IP allowlisting | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Fees / funding / settlement specification | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
-| Market-data license / redistribution restrictions | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| Market-data license / redistribution restrictions | UNKNOWN — API terms restrict benchmarking, resale and commercial exploitation; public-endpoint/API-key applicability needs clarification | UNKNOWN | UNKNOWN — prior permission for certain non-personal commercial public-data uses; redistribution scope needs confirmation | NO for redistribution/commercial analytics without written consent; personal non-commercial use only | UNKNOWN |
 | Specification change / deprecation policy | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 
 ## 4. Evidence record required for each cell
