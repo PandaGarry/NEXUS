@@ -382,7 +382,7 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 ## G1 technical baseline selected — 2026-11-14
 
 - Published [NX-ADR-008](architecture/NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md) under the owner's expanded delegation to select the safest technical baseline for G1 design/qualification.
-- Canonical command bytes: restricted RFC 8949 deterministic CBOR; SHA-256 domain-separated digest; COSE_Sign1 EdDSA/Ed25519 for RiskApprovalCapability. Exact libraries, key custody and security/jurisdictional review remain gated.
+- Canonical command bytes: restricted RFC 8949 deterministic CBOR; SHA-256 domain-separated digest; COSE_Sign1 fully specified COSE Ed25519 algorithm (-19, RFC 9864) for RiskApprovalCapability. Exact libraries, key custody and security/jurisdictional review remain gated.
 - Persistence: PostgreSQL 18 is the G1 evaluation target only. Initial topology is one primary, service-owned schemas/roles and separate Risk/Command/Ledger local ACID transactions. No distributed transaction, broker-as-source-of-truth or automatic failover.
 - Freshness/recovery: source-specific EvidenceRequirementSet/FreshnessPolicy, watermarks/completeness, monotonic elapsed-time and fail-closed UNKNOWN; no global TTL. Numeric thresholds and RTO/RPO remain owner/source decisions.
 - Emergency operations: single Owner, step-up resume after READY RecoveryBarrier, no automatic cancel-all/flatten or offline emergency order plan; break-glass containment only.
@@ -391,3 +391,6 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 ## COSE signing-profile standards correction — 2026-11-14
 
 A standards cross-check of NX-ADR-008 found that RFC 9053's polymorphic COSE EdDSA identifier (-8) was superseded for fully specified algorithm use by RFC 9864 (October 2025). The G1 profile now specifies COSE Ed25519 algorithm identifier **-19**, with COSE key type OKP and Ed25519 curve. The deprecated polymorphic identifier (-8), Ed448, algorithm/key mismatch and substitution are rejected. Protected `kid` is only an integrity-protected lookup hint: it is not assumed unique or independently authoritative; key resolution is issuer/algorithm/purpose/status/generation-bound and fails closed on ambiguity. No cryptographic implementation or key custody provider is selected. Cross-language signature vectors and provider qualification remain open.
+
+
+A standards cross-check corrected the G1 COSE profile: RFC 9053's polymorphic EdDSA identifier (-8) is deprecated by RFC 9864. NEXUS now specifies fully specified COSE Ed25519 algorithm **-19**, COSE key type OKP / Ed25519 only, and fail-closed rejection of -8, Ed448, algorithm/key mismatch and substitution. Protected kid is only a lookup hint; issuer, algorithm, purpose, key status and registry generation must resolve to exactly one eligible key. No signer or key custody provider is implemented or selected.
