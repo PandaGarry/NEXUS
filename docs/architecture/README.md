@@ -58,4 +58,5 @@ ADR, подготовленные в обсуждении, не считаютс
 
 - [NX-REF-DOMAIN-010 — Venue-Neutral Financial Math Golden Fixtures](NX-REF-DOMAIN-010-venue-neutral-financial-math-golden-fixtures.md) — Test-only hand-derived dimensional identities for spot, explicitly mapped linear/inverse contract arithmetic and partial-fill weighted-average math; non-authorizing and not venue/account qualification.
 
-- [NX-ARCH-004 — Rust Execution & Cross-Language Conformance Boundary](NX-ARCH-004-rust-execution-cross-language-conformance.md) — Proposed; defines candidate Rust domain/execution boundaries, language-neutral fixtures, adapter trust limits and egress requirements. Documentation only; no Rust workspace or production implementation.
+- [NX-ARCH-004 — Rust Execution & Cross-Language Conformance Boundary](NX-ARCH-004-rust-execution-cross-language-conformance.md) — Proposed; defines candidate Rust domain/execution boundaries, adapter trust limits and egress requirements. Documentation only; no Rust workspace or production implementation.
+- [NX-ARCH-005 — Language-Neutral Conformance Fixture & Runner Contract](NX-ARCH-005-language-neutral-conformance-fixture-and-runner.md) — Proposed; defines a common fixture envelope, stable rejection classes, deterministic runner protocol, versioning and CI evidence. No runner or Rust implementation added.
