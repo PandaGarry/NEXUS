@@ -794,3 +794,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Fault-inject halt-first, gate-first, process pause after gate, crash, partition, sender fence and halt acknowledgement.
 - [ ] Verify no stale sender can initiate a socket write after full halt acknowledgement at the instrumented transport boundary.
 - [ ] Confirm whether the stronger no-socket-initiation-after-halt-commit requirement is required; do not claim it from DB ordering alone.
+
+## Halt / final Egress gate ordering
+
+- [x] Serialize halt epoch transition and final EgressBoundaryAuthorization on the same authoritative halt-state generation.
+- [x] Define halt-wins and gate-wins outcomes, including retained reservation and reconciliation.
+- [x] Require drain or positive sender fencing before acknowledging a newer halt epoch.
+- [x] Distinguish Risk application outage from authoritative halt-store outage; Egress denies if final gate cannot commit.
+- [ ] Fault-inject paused Egress, halt/gate races, crash after gate commit, control-store loss and host/network fencing failure.
+- [ ] Prove the guarantee at the instrumented socket boundary; do not overclaim wall-clock no-bytes-after-halt.
