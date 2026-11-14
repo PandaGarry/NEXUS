@@ -23,6 +23,9 @@ class HaltPhase(str, Enum):
     HALTED = "HALTED"
 
 
+MAX_HALT_EPOCH = (1 << 63) - 1
+
+
 class AttemptPhase(str, Enum):
     GATE_COMMITTED = "GATE_COMMITTED"
     SOCKET_INITIATED = "SOCKET_INITIATED"
@@ -47,8 +50,12 @@ class HaltEgressGate:
     attempts: dict[str, Attempt] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        if not isinstance(self.epoch, int) or isinstance(self.epoch, bool) or self.epoch < 1:
-            raise ValueError("epoch must be a positive integer")
+        if not isinstance(self.epoch, int) or isinstance(self.epoch, bool) or not 1 <= self.epoch <= MAX_HALT_EPOCH:
+            raise ValueError("epoch must be a positive signed 64-bit integer")
+        if not isinstance(self.store_available, bool):
+            raise ValueError("store_available must be boolean")
+        if not isinstance(self.phase, HaltPhase):
+            raise ValueError("phase must be a HaltPhase")
 
     def request_halt(self, *, reason: str) -> int | None:
         """Commit halt epoch, or leave a pending request if the store is unavailable."""
@@ -58,6 +65,9 @@ class HaltEgressGate:
             self.phase = HaltPhase.HALT_PENDING
             return None
         if self.phase is HaltPhase.ACTIVE:
+            if self.epoch >= MAX_HALT_EPOCH:
+                self.phase = HaltPhase.HALT_PENDING
+                return None
             self.epoch += 1
             self.phase = HaltPhase.HALTING
         return self.epoch
@@ -67,6 +77,8 @@ class HaltEgressGate:
             raise GateDenied("there is no pending halt request")
         if not self.store_available:
             raise GateDenied("authoritative halt store is unavailable")
+        if self.epoch >= MAX_HALT_EPOCH:
+            raise GateDenied("halt epoch exhausted; fail closed")
         self.epoch += 1
         self.phase = HaltPhase.HALTING
         return self.epoch
