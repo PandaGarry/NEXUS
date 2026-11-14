@@ -326,7 +326,7 @@ A direct pass over the current callable surface distinguishes mathematical/domai
 |---|---|---|---|
 | `ExactDecimal.parse` | `InvalidDecimal` | `NUMERIC.INVALID_SYNTAX` | Non-string input is an API/contract failure, not a numeric parse outcome. |
 | `ExactDecimal.quantize_exact` | `InexactQuantization` | `NUMERIC.INEXACT_RESULT` | Negative, boolean or non-integer target scale is malformed input (`ValueError`/type validation), not inexactness. |
-| `ExactDecimal.is_multiple_of` | `InvalidStep` | `NUMERIC.INVALID_STEP` | Adapter must type-check the step before invocation; the current method does not explicitly type-check it. |
+| `ExactDecimal.is_multiple_of` | `InvalidStep` | `NUMERIC.INVALID_STEP` | The reference method now explicitly type-checks the step and raises `TypeError` for malformed operand types; non-positive exact-decimal steps raise `InvalidStep`. |
 | `ExactDecimal.divide_exact` / `ExactRational` construction | `DivisionByZero` | `NUMERIC.DIVISION_BY_ZERO` | Wrong operand types are API failures. |
 | `ExactRational.to_decimal_exact` | `InexactDivision` | `NUMERIC.INEXACT_RESULT` | A repeating base-10 rational is mathematically valid; only the requested exact decimal conversion is impossible. |
 | `ExactRational.quantize` | `InexactDivision` with `UNNECESSARY` | `NUMERIC.INEXACT_RESULT` | Invalid/missing scale or rounding enum is malformed operation input, not an inexact result. |
@@ -338,3 +338,8 @@ A direct pass over the current callable surface distinguishes mathematical/domai
 The following failures remain deliberately unmapped pending a broader reviewed taxonomy: `InvalidUnitCode`, `DomainTypeError` for invalid domain values such as non-positive prices, `UnitModelError` variants not reducible to the operation's declared scope, and raw `TypeError`/`ValueError` caused by invalid API parameters. The initial proposed rejection catalogue may need a separately reviewed domain-invalid-value class; do not silently force these failures into `UNIT_MISMATCH` or `UNSUPPORTED_OPERATION`.
 
 **Disposition:** this is a code-surface audit to inform owner review. It does not approve new stable classes, executable schema behavior or production adapter mappings. The fixture/runner implementation gate remains closed until the operation registry and error taxonomy are accepted.
+
+
+#### Divisibility API type-boundary hardening — 2026-11-14
+
+The exception audit found that `ExactDecimal.is_multiple_of` accessed `step.coefficient` before checking the operand type, allowing an accidental `AttributeError` instead of a deliberate API-contract failure. The reference method now checks `isinstance(step, ExactDecimal)` and raises `TypeError` for malformed operand types; non-positive valid decimal steps continue to raise `InvalidStep`. A dedicated regression test covers the malformed-type path. This does not change the mathematical operation or its candidate `NUMERIC.INVALID_STEP` mapping.
