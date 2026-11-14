@@ -597,3 +597,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Required local-only bounded key resolution, exact signed byte preservation and rejection of token-directed remote key discovery.
 - Required Trusted Egress to validate the signed valuation vector against the persisted Risk evidence manifest with no remote source fetch; missing/unverifiable evidence denies send.
 - Added negative conformance vectors; no cryptographic or Egress runtime implemented.
+
+### PostgreSQL 18.7 G1 evaluation qualification — NX-RESEARCH-012 — 2026-11-14
+
+- Selected PostgreSQL 18.7 as the exact G1 evaluation patch only; no production database or deployment was selected.
+- Recorded the official release's 52 security fixes, 140+ bug fixes, index/REINDEX caveats and warning not to trust pre-update incremental backup chains.
+- Added G1 controls for fresh full backup/PITR, extension/C-extension exclusion, dblink/subscription exclusion, base-table privileges, no runtime DDL and RLS/view defense-in-depth.
+- Updated the reference-model README's verified Python matrix to 13 suites / 239 tests per runtime (717 executions) at exact tested SHA c191cde.
