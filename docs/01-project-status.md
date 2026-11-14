@@ -79,3 +79,12 @@
 - NX-RESEARCH-008 inspects the exact RC9 execution/risk paths. RC9 documentation and source confirm asynchronous best-effort persistence before dispatch, submit/modify/cancel/query route branches that do not enforce a single universal RiskEngine gate, and process-local dispatched-order state absent after restart.
 - NautilusTrader may remain a test-only candidate for replay and selected capabilities, but it is not approved as NEXUS execution authority. NEXUS must own durable outbox, non-bypassable Risk gateway, ledger and recovery barrier.
 - 10 reference-model tests and 10,000 randomized arithmetic comparisons were run against exact fetched files in an isolated local directory. PR #10 has no returned GitHub Actions runs; no CI PASS or production runtime verification is claimed.
+
+
+## Command gateway reference slice (2026-11-14)
+
+- NX-REF-EXEC-001 and `foundation/reference-model/execution-gateway/` add a test-only Python/SQLite model for CREATE command authorization, payload-bound approval, active reservation consumption, durable local outbox persistence, dispatch marker, and conservative ambiguous-outcome recovery.
+- The suite contains 17 deterministic tests. A GitHub Actions workflow now runs both exact-decimal and execution-gateway reference suites on Python 3.11, 3.12 and 3.13. Workflow execution for the current branch HEAD is pending; no CI pass is claimed until the run completes.
+- Scope is intentionally narrow: fake adapter only; no production signer, production database, multi-process fencing, complete Risk calculation, ledger posting, venue reconciliation, or real exchange integration.
+- A local container clone attempt failed because the environment could not resolve github.com. Therefore this update does not claim a fresh local rerun of the checked-in gateway suite.
+- Prototype Readiness remains BLOCKED. The reference model grants no live permission and does not change any owner risk limits.
