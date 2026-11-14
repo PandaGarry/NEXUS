@@ -1402,3 +1402,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Implement and test the HEGC SECURITY DEFINER entrypoints, shared guard function, role grants and true multi-connection commit-order races only after G1 readiness.
 
 **Disposition:** exact current PR branch HEAD passed the existing Python reference-model CI. No Rust, database schema, HEGC runtime, socket instrumentation or network fencing is implemented.
+
+## 18.84 HEGC entrypoint and database privilege-boundary cross-review — 2026-11-14
+
+- [x] Add NX-ARCH-REVIEW-008 covering HEGC runtime, SECURITY DEFINER owner roles, guard owner, Egress principal and reviewed database entrypoints.
+- [x] Cross-check SECURITY DEFINER search_path, PUBLIC EXECUTE, session_user/current_user, role attributes, role membership and untrusted function-language guidance against PostgreSQL 18 official documentation.
+- [x] Require EXECUTE-only HEGC runtime; no direct source SELECT or control-table DML.
+- [x] Require a NOLOGIN/non-superuser/NOBYPASSRLS definer owner, fixed trusted search_path, schema-qualified SQL, no dynamic SQL, selective EXECUTE grants and no privileged role memberships.
+- [x] Bind Egress database identity to a unique process generation; role revocation alone is not process/network fencing.
+- [x] Define adversarial test matrix for search_path/temp-object spoofing, function overload, PUBLIC EXECUTE, role membership, session identity, RLS, DML bypass, grant replay and recovery.
+- [ ] Implement/qualify the actual database functions and roles only after G1 gates.
+- [ ] Run the full PostgreSQL 18.7 multi-connection, privilege and crash matrix; independent security review remains required.
+
+**Disposition:** design review complete; no database schema, role, function, connection or runtime implemented.
