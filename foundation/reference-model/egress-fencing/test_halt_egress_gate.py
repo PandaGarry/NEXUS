@@ -182,6 +182,19 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.epoch, 8)
         self.assertEqual(self.gate.phase, HaltPhase.HALTING)
 
+    def test_duplicate_halt_request_does_not_overwrite_original_reason(self):
+        self.assertEqual(self.gate.request_halt(reason="first cause"), 8)
+        self.assertEqual(self.gate.request_halt(reason="later duplicate cause"), 8)
+        self.assertEqual(self.gate.halt_reason, "first cause")
+
+    def test_duplicate_pending_halt_request_does_not_overwrite_original_reason(self):
+        self.gate.store_available = False
+        self.assertIsNone(self.gate.request_halt(reason="first pending cause"))
+        self.assertIsNone(self.gate.request_halt(reason="later pending cause"))
+        self.assertEqual(self.gate.halt_reason, "first pending cause")
+        self.gate.store_available = True
+        self.assertEqual(self.gate.commit_pending_halt(), 8)
+
 
     def test_duplicate_halt_request_during_store_outage_does_not_downgrade_committed_epoch(self):
         self.assertEqual(self.gate.request_halt(reason="operator halt"), 8)
