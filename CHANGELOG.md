@@ -702,3 +702,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Python 3.11/3.12/3.13 each passed 250 tests (750 successful executions); the egress-fencing package ran 24 tests/runtime.
 - All logs were clean of test failures and Node.js 20 / `punycode` deprecation warnings.
 - This is sequential reference-model evidence only; no durable halt store, database lock proof, socket, process fence or network enforcement was tested.
+
+### HEGC logical authority and idempotent Egress grant contract — 2026-11-14
+
+- Assigned sole logical write ownership of HaltState and EgressBoundaryAuthorization to the bounded Halt/Egress Gate Coordinator (HEGC), separate from Risk, Command Coordinator and venue-credential-owning Egress.
+- HEGC has no venue credentials/socket or Risk signing key; Egress has no direct write access to control records.
+- Defined least-privilege HEGC reads and control-schema-only writes.
+- Made grant issuance idempotent on stable attempt ID; exact retries return the same grant, changed bindings conflict, and ambiguous responses are resolved by the same ID.
+- No HEGC runtime, schema, role or database instance implemented.
