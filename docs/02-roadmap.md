@@ -192,3 +192,15 @@ First-venue selection remains BLOCKED; no live trading is authorized.
 
 - [x] Add test-only eligibility egress fencing reference and 21 concurrency/ordering tests; CI passed 231 tests/runtime on Python 3.11/3.12/3.13 (693 executions) at SHA `a7a369ca9e5683208fbcd43a3fd1de0a8f8c47f1`, run 43599182263.
 - [ ] Design and verify production cross-process egress fencing, durable dispatch state, bounded network timeouts and crash recovery.
+
+## Phase 1/4 engineering increment — Rust and conformance boundary
+
+- [x] Publish NX-ARCH-004 as a proposed design for Rust domain/execution boundaries and cross-language conformance.
+- [x] Create dedicated engineering branch `engineering/rust-execution-domain-conformance-v0` from the reviewed PR #14 head `ab6976933cb4de9b5320b73531034d02edc53907`.
+- [x] Define adapter trust boundaries, NEXUS-owned authorization/egress, OUTCOME_UNKNOWN handling and the Rust/Python golden-fixture contract.
+- [ ] Owner/architecture review of RUST-01..06 and cross-review against NX-IF-001..005 / NX-SEC-001.
+- [ ] Approve toolchain and implementation workspace under G0D/G1 before production-language implementation.
+- [ ] Implement Rust domain slice and differential conformance harness.
+- [ ] Prove distributed/host-level egress fencing; single-process reference tests are insufficient.
+
+**Current status:** design draft only. No Rust runtime or production implementation has been added. Prototype readiness remains BLOCKED and live trading remains NOT AUTHORIZED.
