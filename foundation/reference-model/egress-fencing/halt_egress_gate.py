@@ -37,6 +37,7 @@ class Attempt:
     attempt_id: str
     authorized_epoch: int
     phase: AttemptPhase = AttemptPhase.GATE_COMMITTED
+    reservation_held: bool = True
 
 
 @dataclass
