@@ -722,7 +722,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 **Disposition:** exact tested SHA passed. This evidence is regression-only; G0D/G1 implementation gates remain open.
 
 
-## 18.26 Post-sync exact-head verification — 2026-11-14
+## 18.30 Post-sync exact-head verification — 2026-11-14
 
 - [x] Verify post-normalization branch HEAD `9e9035033da77d958601cb6b69128e13e2551a0d` with GitHub Actions [#43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737).
 - [x] All 3 Python runtime jobs passed; 13 isolated suites / 239 tests per Python 3.11, 3.12 and 3.13 (717 successful executions).
@@ -744,3 +744,17 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Split broad PR scope only if a clean dependency-aware decomposition can be created without corrupting the stacked ancestry.
 
 **Disposition:** PR ancestry is correct and intentionally stacked. PR #16 remains Draft/open/unmerged. CI is Python reference-only and does not close G0D/G1 or establish Rust, persistence, egress or live readiness.
+
+## 18.31 CBOR / COSE implementation library qualification — 2026-11-14
+
+- [x] Audit current Rust CBOR candidates against RFC 8949 §4.2.1 deterministic encoding and the strict NEXUS ingress profile.
+- [x] Distinguish canonical encoder support from strict decoder acceptance; confirm Rust `cbor2` RawValue/validate_slice preserve/check well-formed bytes but do not establish deterministic-profile acceptance.
+- [x] Reject `cbor-core` as a drop-in protocol codec: it targets a draft profile, uses length-first ordering, and documents an unstable API.
+- [x] Qualify `coset` 0.4.2 as a test-only COSE structure candidate with alg=-19, original protected-header byte preservation and custom signing/verifying closures; record its maturity and underlying-CBOR caveats.
+- [x] Record that `cose2` built-in Ed25519 provider uses deprecated alg=-8 and is not acceptable without a custom alg=-19 signer/verifier.
+- [x] Reject `pycose` 1.1.0 as the conformance oracle because of stale release/provenance evidence and no demonstrated RFC 9864 support.
+- [ ] Build bounded cross-language positive/negative byte vectors and a strict raw-byte validator before selecting any parser.
+- [ ] Verify exact crate release provenance, full transitive SBOM, licenses, advisories, reproducible builds, panic surface and fuzz behavior under G0D.
+- [ ] Keep all libraries uninstalled/unselected until G0D and OD-08 security review.
+
+**Disposition:** NX-RESEARCH-011 published. No dependency, Rust workspace, CBOR parser, COSE signer/verifier, key or runtime was added. G0D/G1 remain open.
