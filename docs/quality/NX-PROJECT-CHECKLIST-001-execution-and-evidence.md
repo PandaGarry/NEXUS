@@ -233,3 +233,10 @@ This checklist does not authorize:
 ### 14.1 Cross-document review result
 
 Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branch blob SHAs recorded in NX-REF-DOMAIN-009. Their authority boundaries align: Instrument Specification owns immutable product semantics; Risk consumes qualified valuation/exposure; Ledger owns authoritative accounting; Execution supplies immutable fill/account evidence. No blocking contradiction was found. Owner accounting decisions, venue qualification and production formulas remain OPEN/BLOCKED.
+
+
+### 14.2 Exact-head regression evidence
+
+- GitHub Actions run [#43596156300](https://github.com/PandaGarry/NEXUS/actions/runs/43596156300) passed exact PR HEAD `546a0e74fa055acba2c2de6694c1ba43f65debf5` on Python 3.11, 3.12 and 3.13.
+- Ten existing reference suites passed on each runtime: 11 exact-decimal, 24 execution-gateway, 13 egress-handover, 17 instrument-specification, 12 instrument-registry, 16 dimensional-types, 18 instrument-units, 18 exact-division, 32 bounded-numeric and 11 numeric-wire tests (172 per runtime / 516 executions).
+- This is regression evidence for pre-existing test-only reference models. It does not test or validate the proposed financial-operation policies, and it is not production/runtime/venue conformance evidence.
