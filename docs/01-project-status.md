@@ -183,3 +183,11 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 - Clarified the pre-egress dispatch-attempt marker and conservative move to `DISPATCH_OUTCOME_UNKNOWN`. A crash after the marker but before the socket write remains potentially sent until authoritative reconciliation; this intentionally over-approximates uncertainty to prevent reservation release.
 - Cross-reviewed NX-ARCH-004 against NX-IF-001..005, NX-ARCH-003, NX-ADR-002/005/007 and NX-SEC-001. No remaining blocking authority-order contradiction was found in the reviewed documentation path.
 - This closes a documentation sequencing gap only. No production transaction, dispatcher, trusted egress fence, Rust source, venue adapter or runtime test was added. Prototype readiness remains BLOCKED; live trading NOT AUTHORIZED.
+
+
+## Language-neutral conformance infrastructure update (2026-11-14)
+
+- Audited existing fixture families: exact decimal, rational division, numeric wire, financial math and instrument specification. Their top-level envelopes and invalid-case representations differ; the current CI runs Python unittest modules directly rather than a common cross-language runner.
+- Published NX-ARCH-005 as PROPOSED, defining a common fixture envelope, VALUE/REJECT outcome union, stable rejection-class families, strict type/unit comparison, versioning, migration and evidence requirements.
+- Verified the complete tracked branch tree contains no Cargo manifest/lockfile, Rust toolchain pin, Rust source tree or Rust runner. Rust implementation remains blocked pending G0D/G1 and owner-approved toolchain/dependency policy.
+- Existing v1 fixtures were not changed; no normalized schema, validator, Python runner, Rust runner or cross-language conformance was implemented.
