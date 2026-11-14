@@ -330,6 +330,7 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [x] Identify the current numeric-wire exception granularity gap; do not infer stable rejection classes from message strings.
 - [x] Add catch-compatible typed numeric-wire exception subclasses with stable machine-readable classes and dedicated tests; retain the `NumericWireError` base contract.
 - [x] Update NX-ARCH-005 operation registry and reference-model README to enumerate all stable numeric-wire rejection classes.
+- [x] Specify strict JSON ingestion, duplicate-key/non-finite/float rejection, UTF-8 handling, raw-byte fixture hashing and explicit runner resource limits.
 - [ ] Review and accept operation registry and error mapping before writing the executable schema.
 - [ ] Owner/architecture review of NX-ARCH-005 and stable rejection taxonomy.
 - [ ] Map all existing v1 fixtures to the normalized envelope without changing legacy files.
