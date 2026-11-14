@@ -59,3 +59,9 @@ The documentation-only synchronization HEAD 806832a2a15ea25376408c7d27cde4094384
 ## Additional privilege and RLS regression scope
 
 The new runtime tests deliberately attempt PostgreSQL role/ACL operations from each fixture login. Expected denial is limited to those runtime identities and exact statements. PostgreSQL superuser/DBA changes remain outside the application row-guard protocol and require a separate reviewed migration/control-plane process, catalog-manifest drift detection, audit and session termination/reconciliation. The restrictive-policy test checks one composition case only; owner bypass, role inheritance combinations, policy subqueries and covert channels remain open.
+
+## Latest exact code/test verification
+
+Code/test HEAD `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf` passed [PostgreSQL workflow #43629845855](https://github.com/PandaGarry/NEXUS/actions/runs/43629845855): **11/11 tests** on PostgreSQL 18.7. New coverage includes runtime-role privilege-escalation denial and restrictive RLS composition. Python reference-model workflow [#43629845861](https://github.com/PandaGarry/NEXUS/actions/runs/43629845861) passed 13 suites / **264 tests per runtime** on Python 3.11, 3.12 and 3.13 (792 executions). All four job logs were inspected; no failures or ResourceWarning/DeprecationWarning matches were found.
+
+The initial test iteration exposed a harness assertion issue, not a database privilege escalation: PostgreSQL can treat a non-owner GRANT attempt as a warning/no-op when the role can resolve the schema, while a role without schema USAGE receives 42501. The corrected regression checks both the role's schema visibility and the effective function ACL after the attempt; the PUBLIC grant must not appear in effective privileges.
