@@ -203,3 +203,8 @@ References:
 ## Status note
 
 PROPOSED. No security control described here should be interpreted as implemented. No penetration test, secret scan, vault integration, MFA integration, signer isolation, cloud IAM review or incident drill has been performed by this document.
+
+
+## WP-E — Emergency operations security boundary
+
+Emergency halt activation and resume MUST use authenticated, resource-scoped control-plane permissions with step-up authentication for privileged actions and dual control for owner-configured high-impact scopes. Halt activation must remain possible when Risk Engine is unavailable, but this does not authorize emergency order placement. Any offline emergency action requires a pre-approved, immutable, narrowly scoped policy verified independently by Execution; absent that policy, order dispatch remains blocked. Break-glass is time-limited, alerted, audited and cannot grant withdrawal rights, direct venue access or unrestricted signer access. AI/Strategy may submit a halt request with evidence but cannot mutate HaltState, activate arbitrary emergency plans, sign commands or resume. See [NX-IF-005](../architecture/NX-IF-005-emergency-operations-halt-risk-reduction-contract.md). No such controls are implemented or verified.
