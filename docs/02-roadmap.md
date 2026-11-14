@@ -24,7 +24,7 @@
   - [x] WP-A design draft: NX-IF-001 published and readback verified.
   - [ ] WP-A acceptance: owner/security decisions, canonicalization/digest selection, cross-language golden vectors and conformance tests.
   - [x] WP-B design draft: NX-IF-002 published; exclusive buckets, reservation lifecycle, atomic concurrency and failure matrix specified.
-  - [ ] WP-B acceptance: owner decisions, persistence/transaction design, schema conformance, concurrency and fault-injection evidence.
+  - [ ] WP-B acceptance: owner decisions, persistence/transaction design, schema conformance, concurrency and fault-injection evidence.\n  - [x] WP-C design draft: NX-IF-003 published; execution ownership, canonical fill identity, durable outbox/inbox, atomic Ledger posting, corrections and projection watermark handoff specified.\n  - [ ] WP-C acceptance: owner accounting decisions, transaction/store selection, schema conformance, golden accounting fixtures, replay and fault-injection evidence.
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
 - [ ] Выполнить end-to-end contract review и зафиксировать owner decisions до выбора реализации.
 
