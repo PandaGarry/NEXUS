@@ -436,3 +436,10 @@ Traceability completion is not capability approval or implementation readiness.
 - [ ] Prove cancellation, revocation and external fencing under process pause, partition and stale-worker fault injection.
 
 Review publication does not establish implementation readiness or production guarantees.
+
+
+### NX-ARCH-REVIEW-005 exact-head regression evidence
+
+- Exact review HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed [workflow #43613493976](https://github.com/PandaGarry/NEXUS/actions/runs/43613493976): 13 Python reference-model suites / 237 tests each on 3.11, 3.12 and 3.13 (711 executions).
+- This is regression-only evidence; it does not validate proposed cache/revocation SLOs, outage semantics, source freshness thresholds, halt propagation, process/DB/secret/network fencing, Rust or venues.
+- Numeric objectives remain unaccepted proposals; OD-10/12 remain open.
