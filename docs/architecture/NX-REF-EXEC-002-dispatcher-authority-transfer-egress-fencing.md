@@ -106,6 +106,30 @@ The following decomposition is the recommended starting point for G1 design. It 
 | Egress Authority crashes after send | Recover as OUTCOME_UNKNOWN; reconcile before any retry |
 | Two egress authorities appear active | Security incident; revoke both paths, HALT and reconcile |
 
+### 5.1 Crash-point matrix for implementation and fault injection
+
+The matrix below is a minimum G1 test plan. It defines expected recovery behavior; it does not claim these guarantees are implemented.
+
+| Crash / ambiguity point | Durable facts that may exist | Required recovery behavior | Forbidden shortcut |
+|---|---|---|---|
+| Before Risk reservation commit | No committed reservation result | Retry same request idempotently; reevaluate current exposure | Issue approval from in-memory calculation |
+| After Risk reservation commit, before capability response | Reservation and request/result record committed | Read and return the original reservation/capability result under the same request identity; keep capacity held | Reserve again or release on timeout |
+| After capability issued, before Command consume | Reservation committed; capability may be held by caller | Capability remains single-use and bounded by expiry/version; retry is idempotent or rejected as already consumed | Treat lost response as proof no capability exists |
+| During Command consume + command/outbox transaction, commit result unknown | Transaction may have committed or rolled back | Query by stable command/request identity; if committed, return existing command; if absent, retry same idempotency identity | Create a second command or consume another approval |
+| After outbox claim, before attempt marker commit | Claim may be leased; no send is permitted yet | Reclaim only after claim/fence validation; create a new attempt only when no marker/send could have occurred | Send based on an uncommitted in-memory claim |
+| After attempt marker commit, before socket operation | DISPATCH_OUTCOME_UNKNOWN is durable; venue may not have seen bytes | Preserve full reservation; reconcile; a definitely-not-sent conclusion requires authoritative transport evidence and fenced attempt | Release because socket write was not observed locally |
+| During socket write / connection reset | Partial or complete request may have reached venue | OUTCOME_UNKNOWN; reconcile by qualified identifiers/history/stream and account snapshots | Blind retry |
+| After venue acceptance, before response reaches Egress | Venue-side order may exist; local result absent | Reconcile venue state; preserve reservation | Assume rejection from timeout |
+| After response received, before result persistence | Venue response existed only in process memory | Treat recovered state as unknown unless durable evidence exists; reconcile | Trust volatile memory after restart |
+| Fill event persisted, before Ledger posting | Execution fact durable; journal not yet posted | Retry idempotent Ledger inbox/posting; keep fill-pending exposure | Transfer Risk exposure to confirmed position prematurely |
+| Ledger journal committed, before acknowledgement/projection watermark | Posting may exist; consumer may replay | Read by stable posting/event identity; idempotently acknowledge and advance watermark only with evidence | Post a duplicate journal entry |
+| After Ledger watermark, before Risk exposure transfer | Ledger projection is ahead of Risk transfer | Reconcile matching fill, journal and watermark; then perform one version-checked transfer | Drop fill-pending reserve before transfer commit |
+| Halt epoch advanced, before old egress fence acknowledgement | New halt is durable; old egress may still possess a route/socket | Block new CREATE; fence old path and retain uncertain attempts | Grant new egress because epoch changed |
+| Old host/process status unknown during takeover | Old egress may still transmit | Remain HALTED until external fence evidence is positive | Treat lease expiry or heartbeat loss as fencing |
+| RecoveryBarrier evidence missing, stale or contradictory | Some sources/projections may be incomplete | Keep affected scope quarantined; no risk-increasing resume | Resume on process restart or reconnect alone |
+
+Fault-injection assertions must inspect both authoritative durable state and an instrumented external-send boundary. A mock adapter result or a database-only state assertion is insufficient for the stale-egress race. Tests must inject process kill, delayed scheduling, network partition, lost commit response, duplicate delivery, reordered ACK/fill, clock skew and concurrent takeover; each run records the exact code, schema, configuration and fault schedule.
+
 ## 6. Reference conformance scenarios
 
 The gateway reference now also conditionally guards stale pre-send and adapter-error state updates after recovery; two adversarial tests cover those races. Recovery now uses a serialized transaction and conditional update; a third concurrency test verifies two recovery workers claim one DISPATCHING command exactly once. The 24-test gateway suite and 13-test handover state machine passed run #43591524490 on Python 3.11–3.13 at exact PR HEAD `4f836d0f9d1a43161927331c05e6cc19bb12072b`. This still does not fence network egress. A test-only Python control-plane state machine now exists at `foundation/reference-model/egress-fencing/`. Its 13 unit tests cover transition ordering (HALTING → FENCING → FENCED → RECONCILING → READY_TO_GRANT), stale epoch rejection and fail-closed behavior. GitHub Actions run [#43590804814](https://github.com/PandaGarry/NEXUS/actions/runs/43590804814) passed the suite on Python 3.11–3.13 at exact branch HEAD `a7ee5426077005a6135e9f1b6f1c4044cc41d459`. It does not revoke a network route, terminate a host, validate trusted fence attestations or prove actual egress isolation. A passing state-machine test is not a production fence.
