@@ -10,13 +10,13 @@ class HaltEgressGateTests(unittest.TestCase):
     def test_halt_commits_before_gate_and_denies_socket_initiation(self):
         self.assertEqual(self.gate.request_halt(reason="operator halt"), 8)
         with self.assertRaises(GateDenied):
-            self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7)
+            self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7, binding_digest="digest-attempt-1")
         self.gate.acknowledge_halt()
         self.assertEqual(self.gate.phase, HaltPhase.HALTED)
         self.assertEqual(self.gate.attempts, {})
 
     def test_gate_commits_before_halt_and_becomes_in_flight(self):
-        self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7, binding_digest="digest-attempt-1")
         self.assertEqual(self.gate.request_halt(reason="operator halt"), 8)
         with self.assertRaises(GateDenied):
             self.gate.acknowledge_halt()
@@ -27,14 +27,14 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.reconciliation_required(), ("attempt-1",))
 
     def test_paused_process_after_gate_commit_blocks_halt_ack(self):
-        self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7, binding_digest="digest-paused")
         self.gate.request_halt(reason="operator halt")
         with self.assertRaisesRegex(GateDenied, "may still initiate"):
             self.gate.acknowledge_halt()
         self.assertEqual(self.gate.attempts["paused"].phase, AttemptPhase.GATE_COMMITTED)
 
     def test_positive_sender_fence_allows_ack_but_retains_unknown_outcome(self):
-        self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7, binding_digest="digest-paused")
         self.gate.request_halt(reason="operator halt")
         self.gate.fence_sender(attempt_id="paused", receipt="test-fence-receipt")
         self.gate.acknowledge_halt()
@@ -48,7 +48,7 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.reconciliation_required(), ("paused",))
 
     def test_sender_fence_does_not_prove_no_prior_socket_side_effect(self):
-        self.gate.authorize_attempt(attempt_id="possibly-sent", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="possibly-sent", observed_epoch=7, binding_digest="digest-possibly-sent")
         self.gate.request_halt(reason="operator halt")
         self.gate.fence_sender(attempt_id="possibly-sent", receipt="host-fence-receipt")
         self.gate.acknowledge_halt()
@@ -57,26 +57,48 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertTrue(self.gate.attempts["possibly-sent"].reservation_held)
 
     def test_halt_blocks_new_gate_commits_while_existing_gate_commit_remains_in_flight(self):
-        self.gate.authorize_attempt(attempt_id="old", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="old", observed_epoch=7, binding_digest="digest-old")
         self.gate.request_halt(reason="operator halt")
         with self.assertRaises(GateDenied):
-            self.gate.authorize_attempt(attempt_id="new", observed_epoch=8)
+            self.gate.authorize_attempt(attempt_id="new", observed_epoch=8, binding_digest="digest-new")
         self.gate.consume_grant(attempt_id="old")
         self.gate.initiate_socket_write(attempt_id="old")
         self.gate.acknowledge_halt()
         self.assertEqual(set(self.gate.attempts), {"old"})
 
-    def test_attempt_authorization_is_single_use(self):
-        self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7)
-        with self.assertRaisesRegex(GateDenied, "single-use"):
-            self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7)
+    def test_exact_attempt_authorization_retry_returns_original_grant(self):
+        first = self.gate.authorize_attempt(
+            attempt_id="attempt-1", observed_epoch=7, binding_digest="digest-attempt-1"
+        )
+        self.gate.request_halt(reason="operator halt")
+        retry = self.gate.authorize_attempt(
+            attempt_id="attempt-1", observed_epoch=7, binding_digest="digest-attempt-1"
+        )
+        self.assertIs(retry, first)
+        self.assertEqual(len(self.gate.attempts), 1)
+        self.assertEqual(retry.authorized_epoch, 7)
+        self.assertEqual(self.gate.epoch, 8)
+
+    def test_attempt_id_conflicts_when_authorization_binding_changes(self):
+        self.gate.authorize_attempt(
+            attempt_id="attempt-1", observed_epoch=7, binding_digest="digest-attempt-1"
+        )
+        with self.assertRaisesRegex(GateDenied, "changed authorization binding"):
+            self.gate.authorize_attempt(
+                attempt_id="attempt-1", observed_epoch=7, binding_digest="different-digest"
+            )
+        with self.assertRaisesRegex(GateDenied, "changed authorization binding"):
+            self.gate.authorize_attempt(
+                attempt_id="attempt-1", observed_epoch=8, binding_digest="digest-attempt-1"
+            )
+        self.assertEqual(len(self.gate.attempts), 1)
 
     def test_unavailable_halt_store_blocks_gate_and_does_not_claim_halted(self):
         self.gate.store_available = False
         self.assertIsNone(self.gate.request_halt(reason="store unavailable"))
         self.assertEqual(self.gate.phase, HaltPhase.HALT_PENDING)
         with self.assertRaisesRegex(GateDenied, "store is unavailable"):
-            self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7)
+            self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7, binding_digest="digest-attempt-1")
         with self.assertRaises(GateDenied):
             self.gate.acknowledge_halt()
         self.assertEqual(self.gate.phase, HaltPhase.HALT_PENDING)
@@ -92,7 +114,7 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.phase, HaltPhase.HALTED)
 
     def test_gate_committed_attempt_is_still_reconciled_after_halt_ack(self):
-        self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="attempt-1", observed_epoch=7, binding_digest="digest-attempt-1")
         self.gate.request_halt(reason="operator halt")
         self.gate.consume_grant(attempt_id="attempt-1")
         self.gate.initiate_socket_write(attempt_id="attempt-1")
@@ -101,9 +123,9 @@ class HaltEgressGateTests(unittest.TestCase):
 
     def test_stale_epoch_and_boolean_epoch_are_rejected(self):
         with self.assertRaises(GateDenied):
-            self.gate.authorize_attempt(attempt_id="stale", observed_epoch=6)
+            self.gate.authorize_attempt(attempt_id="stale", observed_epoch=6, binding_digest="digest-stale")
         with self.assertRaises(GateDenied):
-            self.gate.authorize_attempt(attempt_id="bool", observed_epoch=True)
+            self.gate.authorize_attempt(attempt_id="bool", observed_epoch=True, binding_digest="digest-bool")
         self.assertEqual(self.gate.attempts, {})
 
     def test_invalid_halt_reason_is_rejected(self):
@@ -111,7 +133,7 @@ class HaltEgressGateTests(unittest.TestCase):
             self.gate.request_halt(reason=" ")
 
     def test_grant_consumption_is_single_use_and_precedes_socket_write(self):
-        self.gate.authorize_attempt(attempt_id="one-use", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="one-use", observed_epoch=7, binding_digest="digest-one-use")
         self.gate.consume_grant(attempt_id="one-use")
         with self.assertRaisesRegex(GateDenied, "single-use"):
             self.gate.consume_grant(attempt_id="one-use")
@@ -123,7 +145,7 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.reconciliation_required(), ("one-use",))
 
     def test_lost_grant_consumption_response_never_allows_second_send(self):
-        self.gate.authorize_attempt(attempt_id="lost-consume", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="lost-consume", observed_epoch=7, binding_digest="digest-lost-consume")
         self.gate.consume_grant(attempt_id="lost-consume")
         # Simulate a lost response: the durable grant is consumed, so retry cannot mint a new send.
         with self.assertRaisesRegex(GateDenied, "single-use"):
@@ -136,7 +158,7 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.reconciliation_required(), ("lost-consume",))
 
     def test_store_outage_prevents_grant_consumption(self):
-        self.gate.authorize_attempt(attempt_id="store-outage", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="store-outage", observed_epoch=7, binding_digest="digest-store-outage")
         self.gate.store_available = False
         with self.assertRaisesRegex(GateDenied, "store is unavailable"):
             self.gate.consume_grant(attempt_id="store-outage")
@@ -146,7 +168,7 @@ class HaltEgressGateTests(unittest.TestCase):
             self.gate.initiate_socket_write(attempt_id="store-outage")
 
     def test_gate_committed_attempt_survives_pending_halt_store_outage(self):
-        self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7, binding_digest="digest-paused")
         self.gate.consume_grant(attempt_id="paused")
         self.gate.store_available = False
         self.assertIsNone(self.gate.request_halt(reason="store outage"))
@@ -163,7 +185,7 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.reconciliation_required(), ("paused",))
 
     def test_pending_halt_can_fence_gate_committed_attempt_before_store_recovers(self):
-        self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7)
+        self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7, binding_digest="digest-paused")
         self.gate.store_available = False
         self.assertIsNone(self.gate.request_halt(reason="store outage"))
         self.gate.fence_sender(attempt_id="paused", receipt="independent-fence-receipt")
@@ -220,13 +242,13 @@ class HaltEgressGateTests(unittest.TestCase):
 
         gate = HaltEgressGate(epoch=MAX_HALT_EPOCH)
         with self.assertRaisesRegex(GateDenied, "epoch exhausted"):
-            gate.authorize_attempt(attempt_id="before-halt", observed_epoch=MAX_HALT_EPOCH)
+            gate.authorize_attempt(attempt_id="before-halt", observed_epoch=MAX_HALT_EPOCH, binding_digest="digest-before-halt")
         self.assertIsNone(gate.request_halt(reason="epoch exhausted"))
         self.assertEqual(gate.phase, HaltPhase.HALT_PENDING)
         with self.assertRaisesRegex(GateDenied, "epoch exhausted"):
             gate.commit_pending_halt()
         with self.assertRaises(GateDenied):
-            gate.authorize_attempt(attempt_id="blocked", observed_epoch=MAX_HALT_EPOCH)
+            gate.authorize_attempt(attempt_id="blocked", observed_epoch=MAX_HALT_EPOCH, binding_digest="digest-blocked")
 
 
 if __name__ == "__main__":
