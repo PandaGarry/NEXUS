@@ -196,3 +196,12 @@ This checklist does not authorize:
 - Added 1,000 deterministic rational quantization property cases and language-neutral division golden vectors.
 - Dedicated 18-test suite added. GitHub Actions run [#43594118145](https://github.com/PandaGarry/NEXUS/actions/runs/43594118145) passed exact PR HEAD `a46b49a2cbb7a5960ce483f93a736a3fbc945554` on Python 3.11–3.13: 127 tests per runtime / 381 matrix executions across eight isolated suites.
 - No operation-specific trading/accounting rounding policy is approved.
+
+
+## 12. Inverse contract rational exposure increment
+
+- Added `RationalAssetAmount`, preserving inverse base exposure as a reduced rational rather than rounding to a finite decimal.
+- Inverse exposure uses quote notional / quote-per-base price and requires settlement in the base asset for this reference model.
+- Exact finite-decimal conversion is conditional; quantization requires explicit scale and rounding mode.
+- Synthetic tests cover terminating and non-terminating outcomes, explicit quantization and settlement mismatch.
+- Dedicated suite is part of the Python 3.11–3.13 CI workflow; current-head evidence pending.
