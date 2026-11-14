@@ -95,6 +95,13 @@ The decimal/rational wire parser applies a fixed **512 decimal-digit maximum** t
 
 ## Halt / final Egress authorization race
 
-The `egress-fencing` package now includes `HaltEgressGate`, a test-only oracle for the final EgressBoundaryAuthorization / halt-epoch ordering. Its 18 tests cover halt-first denial, gate-first in-flight treatment, paused sender acknowledgement blocking, positive sender fencing, sender-fence uncertainty/reservation retention, store outage, duplicate halt idempotency, signed 64-bit epoch exhaustion, single-use attempt IDs and reconciliation obligations after socket initiation. Together with 13 authority-handover tests, the package has 31 tests.
+The `egress-fencing` package now includes `HaltEgressGate`, a test-only oracle for the final EgressBoundaryAuthorization / halt-epoch ordering. Its 23 tests cover halt-first denial, gate-first in-flight treatment, paused sender acknowledgement blocking, positive sender fencing, sender-fence uncertainty/reservation retention, store outage/recovery, one-use grant consumption, lost consume response, duplicate halt idempotency and cause preservation, signed 64-bit epoch exhaustion and reconciliation obligations after socket initiation. Together with 13 authority-handover tests, the package has 36 tests.
 
 This is a sequential state-machine oracle only. It does not test real database serialization, process scheduling, sockets, network paths or production fencing. A positive sender-fence fixture only blocks future socket initiation; without a trusted initiation report it does not prove the attempt was never sent. The model keeps such attempts OUTCOME_UNKNOWN and reconciliation-required.
+
+
+## HEGC one-use grant and halt-cause hardening — 2026-11-14
+
+The latest exact code/test matrix is workflow #43619194630 at SHA fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8: 13 suites / 262 tests on Python 3.11, 3.12 and 3.13 (786 successful executions). The egress-fencing package contains 36 tests, including 23 HaltEgressGate tests. The model now requires positive durable grant consumption before a socket attempt and preserves the initiating halt cause across duplicate requests.
+
+This remains a sequential reference oracle. It does not prove PostgreSQL 18.7 commit-order guard behavior, HEGC role/identity enforcement, real socket initiation, process/host/network fencing or venue reconciliation. The preferred per-scope SECURITY DEFINER guard function remains a G1 candidate only.
