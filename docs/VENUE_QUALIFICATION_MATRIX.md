@@ -11,11 +11,11 @@
 | Bybit | Concrete V5 full-depth public stream and linear derivatives market; first live raw capture succeeded | Reference adapter experiment #1; M2 is the active implementation priority | Not selected for trading |
 | Kraken Spot WebSocket v2 | Spot L2 stream sends a WS snapshot and updates with CRC32 checksum; materially contrasts with Bybit full-depth delta-only + REST snapshot model | Protocol/terms research candidate #2; no recorder implementation until Bybit M2 passes | Not selected for trading |
 | Coinbase Advanced Trade | Distinct API/product family and useful comparator; do not conflate with Coinbase Exchange API | Alternative technical adapter candidate | Not selected |
-| OKX | Potentially useful distinct market-data and derivatives model | Discovery backlog; no qualification claim here | Unknown |
+| OKX | Tick-level trades + historical high-resolution L2 since 2023-03; snapshot + seqId/prevSeqId live book model | Leading HYP-001 historical-L2 research candidate; no recorder until Bybit M2 | Not selected; terms restrictive |
 | Binance | Potentially useful large-scale spot/derivatives API comparator | Discovery backlog; no qualification claim here | Unknown |
 | Domestic brokers / listed derivatives venues | May offer a materially different legal, clearing and instrument model | Separate broker/venue adapter research | Not selected |
 
-**Sequencing decision (2026-11-15):** finish and accept Bybit M2 before writing a second recorder. Kraken Spot remains the leading protocol-research candidate, not a committed implementation. This avoids two incomplete adapters and gives one working synchronization path before comparing implementations.
+**Sequencing decision (2026-11-15):** finish and accept Bybit M2 before writing a second recorder. OKX is now the leading historical-L2 research candidate for HYP-001; Kraken remains a strong Spot protocol/checksum contrast and full historical Time & Sales source. Neither is a committed implementation. This avoids two incomplete adapters and lets the second adapter be selected on both protocol contrast and research-data coverage.
 
 ## 2. Evidence-backed public-data snapshot (checked 2026-11-15)
 
@@ -24,11 +24,11 @@
 | Public trades channel documented | YES | YES | UNKNOWN in this snapshot |
 | Trade ID documented | YES — execution ID i | YES — trade_id, unique per book | UNKNOWN |
 | Trade event timestamp documented | YES | YES — RFC3339 | UNKNOWN |
-| L2 book documented | YES — full depth | YES — aggregated L2 | UNKNOWN in this snapshot |
-| WS initial book snapshot | NO — full-depth stream is delta-only | YES — snapshot sent by default; can be controlled by subscription | UNKNOWN |
-| WS incremental updates | YES — delta-only | YES — update messages | UNKNOWN |
-| Continuity evidence documented | YES — update ID u and cross sequence seq | YES — CRC32 checksum over top 10 bids/asks | UNKNOWN |
-| REST snapshot required for initial book | YES | NO for documented WS snapshot flow | UNKNOWN |
+| L2 book documented | YES — full depth | YES — aggregated L2 | UNKNOWN in this snapshot | YES — 400 levels standard books channel |
+| WS initial book snapshot | NO — full-depth stream is delta-only | YES — snapshot sent by default; can be controlled by subscription | UNKNOWN | YES — full snapshot |
+| WS incremental updates | YES — delta-only | YES — update messages | UNKNOWN | YES — every 100 ms on `books` |
+| Continuity evidence documented | YES — update ID u and cross sequence seq | YES — CRC32 checksum over top 10 bids/asks | UNKNOWN | YES — `prevSeqId` + `seqId`; checksum deprecated |
+| REST snapshot required for initial book | YES | NO for documented WS snapshot flow | UNKNOWN | NO for documented WS snapshot flow |
 | Public L3 / order-level feed entitlement | UNKNOWN | UNKNOWN for Spot; separate FIX examples show Futures L3 | UNKNOWN |
 | Live public smoke evidence in NEXUS | YES — 10-minute capture/replay | NO | NO |
 
@@ -82,8 +82,8 @@ The following remain UNKNOWN until exact jurisdiction, account type, product fam
 | Spot eligibility | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Perpetual swap eligibility | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Dated futures / expiry semantics | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
-| Historical trade archive coverage / start date | UNKNOWN | UNKNOWN | YES — downloadable Spot Time & Sales from each pair's first trade through 2026-09-30 | UNKNOWN | UNKNOWN |
-| Historical L2 archive coverage | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| Historical trade archive coverage / start date | UNKNOWN | UNKNOWN | YES — Spot Time & Sales from each pair's first trade through 2026-09-30 | YES — tick-level trades from 2021-09 | UNKNOWN | UNKNOWN |
+| Historical L2 archive coverage | UNKNOWN | UNKNOWN | UNKNOWN — no L2 shown in Time & Sales archive | YES — high-resolution L2 from 2023-03 | UNKNOWN | UNKNOWN |
 | Private order/fill/account streams | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | REST reconciliation for unknown order outcome | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Client order ID constraints / idempotency semantics | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
