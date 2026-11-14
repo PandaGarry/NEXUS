@@ -4,6 +4,10 @@
 
 ## Unreleased
 
+### Verification — NX-ARCH-008 documentation head (2026-11-14)
+
+Exact branch HEAD `b1d3201a1fe1706909218943f5464eba43ea1041` passed [GitHub Actions #43611030968](https://github.com/PandaGarry/NEXUS/actions/runs/43611030968): Python 3.11/3.12/3.13 all succeeded, 13 isolated reference-model suites / 237 tests per runtime (711 executions). This verifies existing Python reference regression only; it does not test the proposed module registry, grants, identity, isolation, secrets, DB permissions, egress, Rust, venues or live safety. NX-ARCH-008 remains design-only; G0D/G1 remain open.
+
 ### Added — Bounded exact numeric context and canonical scalar wire (test-only; CI verified)
 - Added mandatory caller-supplied NumericLimits and BoundedNumericContext preflight for decimal input, scale alignment, multiplication, rational division, compare, step checks, exact conversion and quantization.
 - Added strict versioned scalar wire formats nxd1 (decimal) and nxr1 (reduced rational); parsers require explicit input character budgets and reject non-canonical forms.
