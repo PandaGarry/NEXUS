@@ -423,3 +423,16 @@ Traceability completion is not capability approval or implementation readiness.
 - NX-ARCH-REVIEW-004 exact review HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed [workflow #43613212116](https://github.com/PandaGarry/NEXUS/actions/runs/43613212116): Python 3.11/3.12/3.13, 13 reference-model suites / 237 tests per runtime (711 successful executions).
 - Evidence is limited to existing Python reference models; it does not validate capability grants, new domain contracts, module isolation, data-classification controls, Rust or venue integration.
 - Evidence is recorded for the tested SHA only; subsequent documentation synchronization commits are not represented as an exact-head CI pass.
+
+
+## Revocation, freshness and control-plane outage objectives
+
+- [x] Publish NX-ARCH-REVIEW-005 with candidate authorization cache/revocation profiles, in-flight cancellation and outage matrix.
+- [x] Separate authorization freshness from source evidence freshness, halt propagation and RecoveryBarrier readiness.
+- [x] Preserve source-specific freshness and explicit fail-closed behavior; no global TTL or venue threshold inferred.
+- [ ] Obtain owner/security approval of cache and revocation objectives; candidate numbers are not accepted SLOs.
+- [ ] Obtain source-owner/OD-10 approval for data freshness, completeness, retention, clock uncertainty, retry budgets and RTO/RPO.
+- [ ] Obtain OD-12 approval for halt deadline, operator roles, dual control and stale-egress containment.
+- [ ] Prove cancellation, revocation and external fencing under process pause, partition and stale-worker fault injection.
+
+Review publication does not establish implementation readiness or production guarantees.
