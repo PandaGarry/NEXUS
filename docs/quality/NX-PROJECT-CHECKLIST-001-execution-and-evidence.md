@@ -1189,3 +1189,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Replace sequential model assumptions with actual database/transport race proof at G1.
 
 **Disposition:** 11 new halt/gate reference tests pass across all three Python versions. Production halt/Egress implementation remains absent.
+
+## 18.36 Exact-head CI with HaltEgressGate reference tests — 2026-11-14
+
+- [x] Verify PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` on [workflow #43618215618](https://github.com/PandaGarry/NEXUS/actions/runs/43618215618).
+- [x] Pass 13 isolated suites / 250 tests on Python 3.11, 3.12 and 3.13 (750 successful executions).
+- [x] Confirm egress-fencing suite contains 24 tests, including 11 HaltEgressGate cases for halt/gate ordering, paused senders, fencing and store outage.
+- [x] Inspect all logs: no test failures or deprecated Node.js runtime warnings.
+- [ ] Prove the same semantics with real PostgreSQL transactions, concurrent processes, instrumented sockets and independent host/network fencing.
+
+**Disposition:** sequential reference state-machine tests pass; no production linearizability or fencing guarantee is established.
