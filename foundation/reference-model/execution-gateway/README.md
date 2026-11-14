@@ -40,7 +40,7 @@ The current model supports only one command class: `CREATE` in a test fixture. I
 - HMAC is used only to make approval verification executable in tests. It is not the selected production signature scheme or key custody design.
 - The fake adapter has no network or exchange behavior.
 - The model does not implement exposure calculation, reservation capacity accounting, Risk policy evaluation, real signer isolation, venue reconciliation, fill/ledger posting, private streams, rate limits, cancel/replace, emergency actions or multi-process fencing.
-- The model narrows but does not eliminate the halt/dispatch race between a final local check and an external network side effect. Production requires an authoritative fenced dispatch boundary and venue-specific recovery semantics.
+- The suite includes two independent SQLite connections racing to consume one approval and to claim one command; this verifies only local SQLite transaction serialization, not distributed leases or cross-host fencing. The model narrows but does not eliminate the halt/dispatch race between a final local check and an external network side effect. Production requires an authoritative fenced dispatch boundary and venue-specific recovery semantics.
 - Python object encapsulation is not a security boundary. Strategies/AI must not be co-located with or granted access to production adapter credentials.
 - No production, Rust/WASM, distributed, performance, fuzz or live-exchange conformance is claimed.
 
