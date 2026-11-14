@@ -1415,3 +1415,17 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Run the full PostgreSQL 18.7 multi-connection, privilege and crash matrix; independent security review remains required.
 
 **Disposition:** design review complete; no database schema, role, function, connection or runtime implemented.
+
+## 18.85 Logical venue-request boundary and automatic-retry prohibition — 2026-11-14
+
+- [x] Define SOCKET_INITIATED as the first transport write for one logical venue request, not one OS syscall, full delivery or venue acceptance.
+- [x] Require one logical request transmission attempt per consumed grant.
+- [x] Disable automatic retries, redirects, request replay, proxy/service-mesh retries and WebSocket reconnect replay for order mutations by default.
+- [x] Require venue-specific endpoint idempotency proof and explicit approval before any retry exception; HTTP method labels alone are insufficient.
+- [x] Preserve OUTCOME_UNKNOWN and reservation after partial write, timeout, connection reset or lost response following possible bytes.
+- [x] Add a reference-model regression proving one consumed grant cannot initiate two logical requests.
+- [x] Cross-check retry policy against RFC 9110 §9.2.2.
+- [ ] Qualify the eventual HTTP/WebSocket transport stack for hidden retries, redirects, retries after partial write and connection-reconnect replay.
+- [ ] Prove socket initiation through the actual Egress-owning boundary, not a pre-send application flag or mock adapter.
+
+**Disposition:** protocol and reference model now prohibit duplicate logical sends. No venue transport library or adapter is selected; actual transport enforcement remains G1-gated.
