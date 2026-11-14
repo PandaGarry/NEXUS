@@ -958,3 +958,14 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Restrict all invalidating source writers to guarded procedures; revoke direct DML/advisory-lock bypass.
 - [ ] Test caller pre-read, direct DML bypass, search_path spoofing, overload/temp-object attacks and function privilege escalation.
 - [ ] Prove guard wait/retry and commit ordering on PostgreSQL 18.7.
+
+
+## Idempotent HEGC grant issuance and binding-conflict conformance
+
+- [x] Add a stable binding digest to each test-only attempt grant.
+- [x] Exact same attempt ID + epoch + digest returns the original persisted attempt object, including after the halt epoch advances; no new grant is minted.
+- [x] Changed digest or changed epoch for the same attempt ID is a hard conflict.
+- [x] Pass exact code/test HEAD c2350f7807587e0428b760890f6fdba09ba60f60 on workflow #43619636403: 13 suites / 263 tests on Python 3.11–3.13 (789 executions); egress-fencing 37 tests / 24 HaltEgressGate cases.
+- [ ] Prove canonical digest construction includes every authorization binding and authenticated Egress workload/process identity.
+- [ ] Prove durable database uniqueness, ambiguous commit lookup and same-attempt retry under concurrent HEGC requests.
+- [ ] Prove first-statement guard entrypoint and per-scope commit-order semantics against PostgreSQL 18.7.
