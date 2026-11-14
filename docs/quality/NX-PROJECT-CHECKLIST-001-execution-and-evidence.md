@@ -325,6 +325,7 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [x] Verify current repository has no Cargo manifest, Rust toolchain file, Rust source tree or Rust runner; Rust implementation remains gated.
 - [x] Define a proposed common envelope, tagged VALUE/REJECT outcomes, stable error-class families and strict typed comparison rules.
 - [x] Define fixture/suite versioning, migration rules, deterministic runner responsibilities and CI evidence fields.
+- [x] Classify each existing v1 fixture family as structural, semantic-annotation-required or new-expected-behavior-required; preserve legacy files unchanged.
 - [ ] Owner/architecture review of NX-ARCH-005 and stable rejection taxonomy.
 - [ ] Map all existing v1 fixtures to the normalized envelope without changing legacy files.
 - [ ] Publish and validate a machine-readable schema after dependency-policy review.
