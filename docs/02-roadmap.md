@@ -605,3 +605,9 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Verify `88fcb30068507d85fb35802ca5d2195fd528c000` on [workflow #43616054657](https://github.com/PandaGarry/NEXUS/actions/runs/43616054657).
 - [x] Pass 13 suites / 239 tests on each Python 3.11/3.12/3.13 runtime (717 executions).
 - [ ] Add and execute the actual cross-language COSE profile tests; current Python CI does not validate signature or key-registry behavior.
+
+## COSE wire-profile exact-head regression
+
+- [x] Verify `8d2c2f404782b718f1a3a422bb0ce918bb6b922d` on [workflow #43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308).
+- [x] Pass 13 suites / 239 tests on each Python 3.11/3.12/3.13 runtime (717 executions).
+- [ ] Keep COSE wire conformance, signer/verifier and key-registry tests as separate G0D/OD-08 implementation gates.
