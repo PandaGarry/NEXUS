@@ -91,6 +91,24 @@ The HEGC final-gate transaction writes only its control-owned schema but reads t
 
 These requirements are design/qualification constraints, not evidence that the HEGC transaction, role grants or database schema exists.
 
+### 4.2 SERIALIZABLE is not a commit-order barrier
+
+PostgreSQL SERIALIZABLE guarantees that successfully committed participating transactions are equivalent to some serial execution order. It does not promise that this serial order is identical to wall-clock commit order for overlapping transactions. PostgreSQL takes a transaction snapshot at its first non-transaction-control statement and uses Serializable Snapshot Isolation (SSI) to detect dangerous read/write dependency structures; SSI is not a strict-serializability or linearizability primitive. Consequently, participation by HEGC and every source writer is necessary but may still be insufficient for the stronger contract that every source mutation committed before the HEGC grant commit must be visible to that grant.
+
+For the required real-time ordering, G1 MUST additionally prove an enforced common per-scope serialization barrier. Candidate design for evaluation:
+
+- A gate-critical scope-generation/guard record is shared by HEGC and every writer capable of invalidating the validation read set.
+- Each source writer atomically advances/locks the relevant guard in the same transaction as its source mutation. HEGC atomically advances/locks the same guard before its validation reads and commits the grant in that transaction. A writer holding the guard first must commit before HEGC can validate; HEGC holding it first prevents the source mutation from committing until after the grant.
+- The guard must be acquired before validation reads, use a protocol that guarantees a fresh post-wait view (or forces a whole-transaction retry when the snapshot predates a concurrent guard update), and remain held through commit. Multi-scope operations acquire guards in deterministic sorted order.
+- Enforce participation at the database boundary: revoke direct source DML paths that bypass the guard and route writes through reviewed procedures/roles. An application convention or advisory lock that any writer can omit is not proof. Preserve least privilege; HEGC must not receive broad UPDATE access to Risk/Command source tables just to acquire locks.
+- Keep SERIALIZABLE as defense in depth and retain bounded whole-transaction retry for 40001/40P01. A generation string read without an atomic shared guard is not proof of a common commit order.
+
+This guard is a design candidate, not a selected/implemented mechanism. Before G1, run PostgreSQL 18.7 multi-connection tests proving both source-writer-first and HEGC-first order, pause/crash points, stale-snapshot retry, guard bypass denial, deterministic multi-scope locking and ambiguous commit recovery. Until the commit-order property is demonstrated, HEGC MUST deny a final grant whenever it cannot prove the bound validation state is current under the common guard.
+
+**Why this matters:** the existing contract says updates committed before the final gate are visible and updates committed after it are causally later. That is a real-time ordering requirement; ordinary SSI serializability alone must not be represented as proof.
+
+
+
 
 ## 5. G1 qualification checklist
 
