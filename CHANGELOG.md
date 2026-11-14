@@ -147,5 +147,6 @@
 - Added NX-RESEARCH-009 with Federal Law No. 282-FZ, CBR guidance, Directive 7441-U, domestic regulated crypto products and foreign venue eligibility.
 - Recorded the 2026-11-17 effective date of Directive 7441-U, RUB 300,000 annual cumulative broker-acquisition cap for non-qualified residents, and BTC/ETH/USDT eligible-admission list; scope for crypto-exchange organizations remains subject to legal interpretation.
 - Added proposed NX-ADR-007 for a scope-bound VenueEligibilityRecord, fail-closed adapter states, separate Risk authorization and trusted-egress eligibility fencing.
-- Added NX-REF-VENUE-001 test-only evidence evaluator and 28 conformance tests; final exact-head CI passed 210 tests/runtime on Python 3.11/3.12/3.13 (630 executions).
+- Added NX-REF-VENUE-001 test-only evidence evaluator and 28 conformance tests.
+- Added NX-REF-VENUE-002 single-process egress fencing reference and 19 race/ordering tests; CI run 43598800464 passed 229 tests/runtime on Python 3.11/3.12/3.13 (687 executions).
 - Updated historical venue research, architecture index, roadmap, project status and checklist. No venue selected, no live capability or production code added.
