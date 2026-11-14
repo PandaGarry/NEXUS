@@ -145,6 +145,8 @@ This guard is a design candidate, not a selected/implemented mechanism. Before G
 - PostgreSQL 18.7 transaction serialization failure handling: https://www.postgresql.org/docs/18/mvcc-serialization-failure-handling.html
 - PostgreSQL 18.7 transaction isolation: https://www.postgresql.org/docs/18/transaction-iso.html
 - PostgreSQL 18 privileges: `SELECT FOR SHARE/UPDATE` requires UPDATE privilege on at least one column: https://www.postgresql.org/docs/18/ddl-priv.html
+- PostgreSQL 18 SECURITY DEFINER function safety: fixed trusted search_path, `pg_temp` last and explicit PUBLIC EXECUTE revocation: https://www.postgresql.org/docs/18/sql-createfunction.html
+- PostgreSQL 18 function security / trusted object ownership: https://www.postgresql.org/docs/18/perm-functions.html
 - PostgreSQL 18 explicit/advisory locking: advisory locks are application-defined and not enforced for all writers: https://www.postgresql.org/docs/18/explicit-locking.html
 - PostgreSQL 18 application-level consistency / SERIALIZABLE caveats: https://www.postgresql.org/docs/18/applevel-consistency.html
 
