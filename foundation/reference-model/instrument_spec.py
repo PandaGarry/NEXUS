@@ -145,8 +145,13 @@ class InstrumentSpec:
         if self.contract_type in (ContractType.LINEAR, ContractType.INVERSE, ContractType.QUANTO):
             if self.contract_multiplier is None:
                 raise SpecError("contract multiplier is required for derivative contracts")
-        elif self.contract_type is ContractType.SPOT and self.contract_multiplier is not None:
-            raise SpecError("spot instrument must not carry a contract multiplier")
+            if self.market_type is MarketType.SPOT:
+                raise SpecError("derivative contract type cannot use SPOT market type")
+        elif self.contract_type is ContractType.SPOT:
+            if self.market_type is not MarketType.SPOT:
+                raise SpecError("SPOT contract type requires SPOT market type")
+            if self.contract_multiplier is not None:
+                raise SpecError("spot instrument must not carry a contract multiplier")
 
     @property
     def tradability_blockers(self) -> tuple[str, ...]:
@@ -157,8 +162,10 @@ class InstrumentSpec:
             blockers.append("contract_type_unknown")
         if self.min_notional_applicability is Applicability.UNKNOWN:
             blockers.append("min_notional_applicability_unknown")
-        if self.contract_type in (ContractType.INVERSE, ContractType.QUANTO):
-            blockers.append("contract_model_not_supported_by_reference_validator")
+        if self.contract_type in (ContractType.LINEAR, ContractType.INVERSE, ContractType.QUANTO):
+            blockers.append("derivative_contract_formula_not_supported_by_reference_validator")
+        if self.contract_type is ContractType.SPOT and self.quantity_unit != self.base_asset:
+            blockers.append("spot_quantity_unit_not_base_asset")
         return tuple(blockers)
 
     def validate_limit_order(self, price: ExactDecimal, quantity: ExactDecimal) -> None:
