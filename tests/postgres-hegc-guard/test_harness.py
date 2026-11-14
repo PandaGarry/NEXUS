@@ -118,8 +118,8 @@ SELECT md5(jsonb_build_object(
   'policies', (SELECT COALESCE(jsonb_agg(jsonb_build_array(
       n.nspname, c.relname, p.polname, p.polcmd, p.polpermissive,
       (SELECT COALESCE(jsonb_agg(r.rolname ORDER BY r.rolname), '[]'::jsonb)
-       FROM unnest(p.polroles) AS role_oid
-       JOIN pg_roles r ON r.oid = role_oid),
+       FROM unnest(p.polroles) AS roles(role_oid)
+       JOIN pg_roles r ON r.oid = roles.role_oid),
       COALESCE(pg_get_expr(p.polqual, p.polrelid), ''),
       COALESCE(pg_get_expr(p.polwithcheck, p.polrelid), '')
     ) ORDER BY n.nspname, c.relname, p.polname), '[]'::jsonb)
