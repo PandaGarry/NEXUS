@@ -507,3 +507,11 @@ Selection establishes a G1 design direction only. It does not authorize dependen
 - [ ] Reassess PR #16's 32-file scope and 248-commit history; split only demonstrably independent review units.
 
 No PR merge, base retarget, force-push or branch rewrite is authorized by this checklist update. PR #16 remains Draft until the dependency stack is reviewable and the required owner approval is obtained.
+
+## Final synchronized G1 baseline exact-head CI
+
+- [x] Exact branch HEAD `7914772358d2ee49c87374373bad5c589d0a2905` passed workflow [#43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349).
+- [x] Python 3.11/3.12/3.13 each passed 13 suites / 239 tests; 717 successful executions total.
+- [x] Confirm no test failures or Node.js 20 / `punycode` deprecation warnings.
+- [ ] Build and run the proposed CBOR/COSE cross-language conformance suite only after exact libraries and schemas are reviewed; current CI is Python reference-only.
+- [ ] Prove database, crash/recovery, external egress fencing and venue behavior independently; no production readiness is implied.
