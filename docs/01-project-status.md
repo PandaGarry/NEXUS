@@ -164,3 +164,13 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 - Exact-head CI completed for venue eligibility reference model at PR #14 SHA `8c7eed6ac781a40c81652da08ff3207f4d46bc6d`, run 43598444584: 210 tests passed on each of Python 3.11, 3.12 and 3.13 (630 executions total). The 28 venue eligibility tests passed on all three runtimes. This verifies only the test reference model; production eligibility enforcement remains unimplemented.
 
 - Added NX-REF-VENUE-002, a test-only single-process eligibility egress-fencing model. It serializes dispatch with suspension, binds command to exact record/revision/scope/epoch/expiry, consumes command IDs, and preserves OUTCOME_UNKNOWN without blind retry. 21 tests cover stale epoch, scope/revision mismatch, expiry, ambiguous send, concurrent dispatch/suspend ordering and revision-bound reactivation. CI run 43599182263 at SHA `a7a369ca9e5683208fbcd43a3fd1de0a8f8c47f1`: 231 tests passed on each Python 3.11/3.12/3.13 (693 executions). This remains a single-process reference, not production fencing.
+
+## Rust execution and cross-language conformance update (2026-11-14)
+
+- Created engineering branch `engineering/rust-execution-domain-conformance-v0` from exact PR #14 head `ab6976933cb4de9b5320b73531034d02edc53907`.
+- Published [NX-ARCH-004](architecture/NX-ARCH-004-rust-execution-cross-language-conformance.md) as PROPOSED. It defines candidate Rust domain/execution boundaries, NEXUS-owned command/Risk/egress authority, adapter outcome classes, numeric constraints, language-neutral fixture rules and adversarial failure scenarios.
+- Created GitHub Issue #15 to track implementation and acceptance evidence.
+- No Rust source, Cargo workspace, production numeric profile, signer, persistent execution service, trusted egress or venue adapter was added.
+- Python reference models remain test-only oracles. No cross-language conformance is claimed.
+- NautilusTrader remains unselected; any reuse requires exact-version authority-boundary and adapter conformance review.
+- Prototype readiness remains BLOCKED. No venue/account selected, no credentials connected and live trading NOT AUTHORIZED.
