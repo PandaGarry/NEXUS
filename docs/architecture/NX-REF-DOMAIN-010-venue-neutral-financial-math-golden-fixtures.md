@@ -91,3 +91,7 @@ The suite includes positive vectors and negative dimensional/instrument-identity
 - **DEFERRED:** production implementation, cross-language Rust/WASM conformance, bounded resource profile and any live execution integration.
 
 These fixtures are not financial-operation conformance evidence and do not pass G0/G1. Existing readiness gates remain unchanged.
+
+## 6. First CI evidence (intermediate exact head)
+
+GitHub Actions push run [#43596630780](https://github.com/PandaGarry/NEXUS/actions/runs/43596630780) passed exact commit `af7949f183389c25fa6ce5c4ac3648c1dd4ae851` on Python 3.11, 3.12 and 3.13. Each runtime executed 11 isolated suites with 179 tests: the ten existing suites (172 tests) plus this package's 7 tests. All three jobs completed successfully. This proves the Python reference suite behavior on that exact source tree only; it is not production or venue conformance evidence. A fresh run is required for the final PR head after documentation close-out.
