@@ -371,13 +371,6 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - No signer/verifier implementation, cryptographic dependency, key material or key custody provider was added.
 
 
-### COSE Ed25519 algorithm identifier correction — 2026-11-14
-
-- Replaced the polymorphic COSE EdDSA identifier (-8), deprecated by RFC 9864, with fully specified COSE Ed25519 identifier -19.
-- Constrained the COSE key to OKP / Ed25519 and required rejection of -8, Ed448, key/algorithm mismatch and substitution.
-- Protected kid is treated only as a lookup hint; key resolution is issuer/algorithm/purpose/status/generation-bound and fails closed on ambiguity.
-- Exact library/provider support and cross-language COSE_Sign1 vectors remain open; no signer/key was implemented.
-
 ### Strict deterministic CBOR ingress profile clarified — 2026-11-14
 
 - Tightened NX-ADR-008 so deterministic CBOR is validated on ingress before object materialization, not merely emitted by the encoder.
