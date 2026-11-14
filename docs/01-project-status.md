@@ -596,7 +596,7 @@ This is Python reference-model CI only. It does not implement or verify signing 
 
 ## Test-only halt / final Egress gate reference model
 
-Added `foundation/reference-model/egress-fencing/halt_egress_gate.py`; the current model has 23 dedicated HaltEgressGate tests within a 36-test egress-fencing suite. It now covers one-use HEGC grant consumption, lost consume response, store outage, both halt/gate commit orders, pause-after-gate acknowledgement blocking, positive sender fencing, retained OUTCOME_UNKNOWN/reservation, duplicate halt requests and signed-64-bit epoch exhaustion. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing.
+Added `foundation/reference-model/egress-fencing/halt_egress_gate.py`; the current model has 24 dedicated HaltEgressGate tests within a 37-test egress-fencing suite. It now covers one-use HEGC grant consumption, lost consume response, store outage, both halt/gate commit orders, pause-after-gate acknowledgement blocking, positive sender fencing, retained OUTCOME_UNKNOWN/reservation, duplicate halt requests and signed-64-bit epoch exhaustion. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing.
 
 ## Exact-head CI including HaltEgressGate reference model — 2026-11-14
 
@@ -682,3 +682,16 @@ Two red runs (#43618969753 at `913ef9e`, #43619038468 at `f9f385d`) exposed two 
 ## HEGC guard entrypoint enforcement — 2026-11-14
 
 NX-RESEARCH-012 and NX-SEC-001 now explicitly note that a standalone SECURITY DEFINER guard function does not prevent callers from reading protected state before invoking it. G1 must either route HEGC validation/grant issuance through one reviewed transaction entrypoint that acquires the guard first, or enforce a transaction API with guard as the first SQL statement and every invalidating writer restricted to guarded procedures. Direct DML/advisory-lock bypass is prohibited. Function owner must be NOLOGIN/non-superuser, write guard rows only, use fixed trusted search_path (pg_temp last), schema-qualified names, no dynamic SQL and revoked PUBLIC execution. All remain qualification candidates, not implementation.
+
+
+## Exact code/test-head CI — idempotent HEGC grant issuance — 2026-11-14
+
+- [x] Make final-gate authorization idempotent on stable attempt ID and immutable binding digest.
+- [x] Exact retry returns the original persisted attempt even after halt epoch advances; changed digest or epoch conflicts without creating a second grant.
+- [x] Verify code/test HEAD c2350f7807587e0428b760890f6fdba09ba60f60 on [workflow #43619636403](https://github.com/PandaGarry/NEXUS/actions/runs/43619636403).
+- [x] Pass 13 isolated suites / **263 tests** on Python 3.11, 3.12 and 3.13 (789 successful executions total).
+- [x] Confirm egress-fencing passes 37 tests, including 24 HaltEgressGate cases; inspect all three job logs.
+- [ ] Bind the real persisted grant to canonical command/reservation/evidence/eligibility/halt/dispatcher/workload identity fields and prove database uniqueness/transactional idempotency.
+- [ ] Prove HEGC per-scope commit-order guard, first-statement entrypoint enforcement and actual PostgreSQL 18.7 concurrency behavior.
+
+**Disposition:** exact code/test HEAD passed reference CI. Idempotent grant behavior is test-only; no HEGC database, guard function or production Egress exists.
