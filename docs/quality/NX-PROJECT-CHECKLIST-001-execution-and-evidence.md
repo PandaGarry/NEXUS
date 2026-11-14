@@ -1132,3 +1132,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Execute the halt/Egress race matrix at an instrumented socket boundary; the Python reference CI does not test this architecture contract.
 
 **Disposition:** latest verified CI is exact for `7384157`; subsequent commits are documentation-only. No halt store, Egress runtime or external fence exists.
+
+## 18.34 Risk approval signing versus venue signing authority separation — 2026-11-14
+
+- [x] Separate RiskApprovalCapability private signing authority from venue API credentials and venue request-signing authority.
+- [x] Require distinct keys, workload identities and policies; key reuse is prohibited.
+- [x] Keep Risk approval private key only in the Risk signing authority; Execution/Trusted Egress receive public verification material only.
+- [x] Keep venue credentials and venue request-signing capability only in Trusted Egress, which owns the actual venue socket.
+- [x] Define EgressBoundaryAuthorization as a separate one-use attempt-scoped control record, not a substitute for Risk approval or venue credentials.
+- [ ] Test that Strategy/AI/API/Execution cannot forge approvals or obtain venue secrets; Egress cannot mint Risk approvals; Risk signer cannot access venue credentials/socket.
+- [ ] Qualify KMS/HSM/vault policies, key ceremony, rotation, revocation, backup and recovery before any key implementation.
+
+**Disposition:** authority separation recorded in NX-SEC-001 and aligned with NX-IF-001 / NX-ADR-008. No keys, vault, signer or venue credentials are implemented.
