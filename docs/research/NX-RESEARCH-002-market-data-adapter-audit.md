@@ -206,3 +206,69 @@ Next bounded package:
 - produce a normalized per-venue capability matrix with evidence and explicit UNKNOWN cells.
 
 **Not performed:** local tests, CI, live exchange connectivity tests, packet capture, benchmark, security review, private API certification, or legal/license review.
+
+
+## 10. Bounded follow-up — funding and private execution capability (2026-11-14)
+
+**Scope:** Four priority derivatives venues (Binance USDⓈ-M, Bybit linear/inverse, OKX SWAP, Hyperliquid perps); Tradoor source paths reviewed at HEAD `6ab38775f8f95a2b0237d8663a15405fa00465c6`. This is a source/documentation capability audit only. No credentials, live account, signed request, order, sandbox session, packet capture, or runtime test was used.
+
+### 10.1 Tradoor revision check
+
+The new Tradoor HEAD `6ab3877` changes only `web/src/components/IndicatorPicker.tsx` (adds a Community showcase link). It does not change the previously audited market-data or execution-related files. The audit baseline for this follow-up is therefore `6ab38775f8f95a2b0237d8663a15405fa00465c6`; prior market-data observations remain pinned to `39a1826` unless re-read at this HEAD.
+
+### 10.2 Funding capability — venue API vs Tradoor integration
+
+| Venue | Public current/next funding capability | Historical capability | Tradoor application integration |
+|---|---|---|---|
+| Binance USDⓈ-M | `GET /fapi/v1/premiumIndex`: latest funding rate, next funding time, mark/index price and response time. `GET /fapi/v1/fundingInfo` supplies adjusted interval/cap/floor for affected symbols. | `GET /fapi/v1/fundingRate`: funding rate/time, mark price, rate type; up to 1000 rows; request-weight/rate constraints apply. | NOT OBSERVED in inspected server collectors / venue registry. |
+| Bybit linear/inverse | `GET /v5/market/tickers`: fundingRate, nextFundingTime, fundingIntervalHour, mark/index, OI. | `GET /v5/market/funding/history`: rate and funding timestamp; linear/inverse; max 200 rows/request; instrument endpoint supplies interval. | NOT OBSERVED in inspected server collectors / venue registry. |
+| OKX SWAP | Official API catalogue exposes public funding-rate endpoints; exact live-field/interval mapping and current endpoint behavior remain to be independently captured in a fixture before implementation. | Funding history endpoint exists in public API surface; exact pagination/retention contract remains OPEN for this pass. | NOT OBSERVED in inspected server collectors / venue registry. |
+| Hyperliquid perps | `POST /info` type `metaAndAssetCtxs` returns per-asset funding, markPx, oraclePx and openInterest alongside perp universe metadata. | Separate historical funding retrieval and retention contract not yet verified in this bounded pass. | NOT OBSERVED in inspected server collectors / venue registry. |
+
+**Interpretation constraints:**
+- These are venue API capabilities, not proof that Tradoor ingests, persists, normalizes, or reconciles funding.
+- Funding rate is a dimensionless rate whose application to cash flow depends on venue contract model, settlement currency, position sign/notional convention, and the actual settlement timestamp. Never multiply a rate by a generic display notional without an instrument-specific formula.
+- Current/indicative rate, predicted rate, and settled historical rate are distinct event types. Store source kind, observation time, settlement time, interval, raw value, and instrument-spec version separately.
+- Do not assume a fixed 8-hour interval. Binance exposes interval adjustments; Bybit exposes interval per instrument; other venues require their own metadata semantics.
+- Funding settlement must ultimately reconcile to private account ledger events, not be inferred solely from public funding-rate observations.
+
+### 10.3 Private account and execution capability — inspected Tradoor paths
+
+| Capability | Tradoor source evidence | Status |
+|---|---|---|
+| Exchange private REST signing / secret handling | `crates/venues/src/lib.rs` explicitly describes the crate as public API URLs/parsers. No private signed trading client was observed in the inspected venue crate. | NOT OBSERVED |
+| Place/amend/cancel exchange orders | `bins/server/src/relay.rs` allow-lists public market-data routes only; tests explicitly reject Binance `/fapi/v1/order`, OKX `/api/v5/trade/order`, and Deribit private trading routes. | NOT OBSERVED; relay is explicitly not an execution proxy |
+| Private account/order WebSockets | Inspected server and browser stream registries expose public market-data paths; no private account/order adapter was observed in those paths. | NOT OBSERVED |
+| Fills / partial fills / order lifecycle | No exchange-private fill/order event adapter observed in inspected paths. Paper simulator is separate and does not establish live exchange execution. | UNKNOWN / NOT OBSERVED |
+| Account balances / positions | `bins/server/src/account.rs` and `session.rs` implement Telegram-linked application identity and browser sessions, not exchange account authentication or positions. | NOT OBSERVED |
+| Reconciliation / restart recovery | No exchange order/fill reconciliation path observed in inspected execution-related paths. | NOT OBSERVED |
+| Secret vault / scoped key permissions | No exchange API-key vault or key-permission management observed in inspected paths. | NOT OBSERVED |
+
+This does **not** claim mathematical proof that no private-execution code exists anywhere in every branch or historical revision. It records the result of the bounded source paths reviewed and the explicit public-only design of the venue crate and relay.
+
+### 10.4 Official private API capability baseline (not Tradoor implementation)
+
+- **Binance USDⓈ-M:** signed TRADE/USER_DATA endpoints use API key + HMAC SHA-256 signature and timestamp/recvWindow. The order endpoint is asynchronous; private user-data streams include `ORDER_TRADE_UPDATE` and `ACCOUNT_UPDATE`. User-data listen keys require keepalive; the stream has a 24-hour connection lifecycle. The user stream is important for fills/account changes but must be reconciled against REST snapshots after reconnect.
+- **Bybit V5:** `POST /v5/order/create` accepts a user-defined `orderLinkId`; acknowledgement is explicitly asynchronous and the docs direct clients to WebSocket for order status. The private execution topic reports executions including partial fills; private topics require authentication. A successful create response is not a final fill.
+- **OKX V5:** private REST signing requires API key, secret, passphrase, timestamp and HMAC-SHA256/Base64 signature. Private WebSocket has explicit login and private account/order/position channels. `clOrdId` is user-defined and can be used for query/cancel/amend while pending, but uniqueness is not enforced historically; NEXUS must keep its own globally unique immutable command ID and cannot rely on venue client IDs as the only idempotency mechanism.
+- **Hyperliquid:** public `/info` supports read-only account queries such as open orders and user fills (up to 2000 recent fills per response; by-time query also has documented result/history caps). Trading is a separate signed exchange-action path; public `/info` queries are not evidence of a private order stream or of an idempotent create-order API. Exact order submission/cancel/signing/reconnect contract remains for a dedicated follow-up before adapter design.
+
+### 10.5 NEXUS implications / required controls
+
+1. Keep public market data, private account state, and order command transport as separate adapter interfaces and security domains.
+2. Treat REST order acknowledgements as command acceptance only where the venue says so; order state and fills arrive asynchronously.
+3. Persist an immutable NEXUS command ID and client order ID before dispatch. On timeout or connection loss, mark outcome UNKNOWN and query/reconcile before any retry; never blindly resend.
+4. Deduplicate executions using venue execution/trade IDs, preserve raw events, and model partial fills, corrections, busts and out-of-order updates.
+5. On startup/reconnect, reconcile open orders, recent fills, positions, balances and ledger events against venue snapshots with explicit watermarks; do not declare account state healthy until differences are resolved or quarantined.
+6. API keys must be least-privilege (trade/read only, no withdrawal), IP-restricted where supported, encrypted in a vault, redacted from logs, and unavailable to the AI Orchestrator.
+7. Funding accounting belongs in the financial ledger and must be tied to actual exchange settlement/account events; public rates are forecasts/market observations, not cash ledger entries.
+
+### 10.6 Exit criteria and remaining UNKNOWN
+
+This bounded pass closes the initial four-venue capability survey, not production adapter certification. Before an adapter implementation is specified, capture versioned official fixtures for:
+- OKX funding current/history response, interval semantics and pagination;
+- Hyperliquid historical funding and complete signed order/cancel/update lifecycle;
+- exact private order/execution/account stream schemas and reconnect/replay limits for all selected venues;
+- exchange-specific order query retention, client-ID constraints, duplicate behavior, rate limits and error ambiguity.
+
+No live trading capability is approved by this memo. The venue shortlist itself remains a proposed research priority, not an owner-approved launch scope.
