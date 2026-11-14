@@ -3,7 +3,16 @@
 Заметные изменения проекта фиксируются в обратном хронологическом порядке. Release notes пишутся понятным языком; инженерные детали остаются в ADR/PR.
 
 ## Unreleased
-undefined
+
+### Added — Production authorization-catalog manifest lifecycle (NX-ARCH-REVIEW-009, 2026-11-14)
+
+- Added a design-level threat model and candidate schema for an independently approved/signed production PostgreSQL authorization-catalog manifest.
+- Defined semantic object identity, explicit deny/absence assertions, exact environment/database/migration binding, anti-rollback, deterministic-CBOR and COSE_Sign1/Ed25519 constraints.
+- Separated manifest author, approvers, release authority, signer/key custodian, deployment verifier and immutable audit custodian.
+- Specified fail-closed deployment comparison, startup TOCTOU limitation, post-startup drift detection, DBA/superuser emergency reconciliation and separate session/process/network fencing evidence.
+- Expanded required catalog coverage beyond the disposable fixture; implementation, trust roots, key custody, deployment gate and independent security acceptance remain OPEN.
+- Design only. No production schema, manifest, signer, verifier, drift monitor or live capability was introduced.
+
 
 ### Hardened — PostgreSQL 18.7 CI image digest pin (2026-11-14)
 
