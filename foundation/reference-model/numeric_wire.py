@@ -18,7 +18,29 @@ _POSITIVE_INTEGER = re.compile(r"^[1-9][0-9]*$")
 
 
 class NumericWireError(ValueError):
-    """Malformed, unsupported or non-canonical numeric wire value."""
+    """Base class for malformed, unsupported or non-canonical numeric wire values.
+
+    Subclasses expose stable machine-readable classes. The base class remains
+    catch-compatible with the previous reference API.
+    """
+
+    error_class = "NUMERIC.INVALID_WIRE"
+
+
+class NumericWireMalformedShape(NumericWireError):
+    error_class = "NUMERIC.INVALID_WIRE"
+
+
+class NumericWireUnsupportedVersion(NumericWireError):
+    error_class = "NUMERIC.UNSUPPORTED_WIRE_VERSION"
+
+
+class NumericWireNonCanonical(NumericWireError):
+    error_class = "NUMERIC.NON_CANONICAL"
+
+
+class NumericWireResourceLimit(NumericWireError):
+    error_class = "NUMERIC.RESOURCE_LIMIT"
 
 
 def serialize_decimal(value: ExactDecimal) -> str:
@@ -33,17 +55,19 @@ def parse_decimal(encoded: str, *, max_chars: int) -> ExactDecimal:
     if not isinstance(max_chars, int) or isinstance(max_chars, bool) or max_chars <= 0:
         raise ValueError("max_chars must be a positive integer")
     if len(encoded) > max_chars:
-        raise NumericWireError("decimal wire value exceeds input character budget")
+        raise NumericWireResourceLimit("decimal wire value exceeds input character budget")
     parts = encoded.split(":")
-    if len(parts) != 3 or parts[0] != _DECIMAL_PREFIX:
-        raise NumericWireError("unsupported decimal wire version or shape")
+    if len(parts) != 3:
+        raise NumericWireMalformedShape("unsupported decimal wire version or shape")
+    if parts[0] != _DECIMAL_PREFIX:
+        raise NumericWireUnsupportedVersion("unsupported decimal wire version or shape")
     if not _SIGNED_INTEGER.fullmatch(parts[1]):
-        raise NumericWireError("decimal coefficient is not a canonical integer")
+        raise NumericWireNonCanonical("decimal coefficient is not a canonical integer")
     if not _UNSIGNED_INTEGER.fullmatch(parts[2]):
-        raise NumericWireError("decimal scale is not a canonical non-negative integer")
+        raise NumericWireNonCanonical("decimal scale is not a canonical non-negative integer")
     value = ExactDecimal(int(parts[1]), int(parts[2]))
     if serialize_decimal(value) != encoded:
-        raise NumericWireError("decimal wire value is not normalized")
+        raise NumericWireNonCanonical("decimal wire value is not normalized")
     return value
 
 
@@ -59,15 +83,17 @@ def parse_rational(encoded: str, *, max_chars: int) -> ExactRational:
     if not isinstance(max_chars, int) or isinstance(max_chars, bool) or max_chars <= 0:
         raise ValueError("max_chars must be a positive integer")
     if len(encoded) > max_chars:
-        raise NumericWireError("rational wire value exceeds input character budget")
+        raise NumericWireResourceLimit("rational wire value exceeds input character budget")
     parts = encoded.split(":")
-    if len(parts) != 3 or parts[0] != _RATIONAL_PREFIX:
-        raise NumericWireError("unsupported rational wire version or shape")
+    if len(parts) != 3:
+        raise NumericWireMalformedShape("unsupported rational wire version or shape")
+    if parts[0] != _RATIONAL_PREFIX:
+        raise NumericWireUnsupportedVersion("unsupported rational wire version or shape")
     if not _SIGNED_INTEGER.fullmatch(parts[1]):
-        raise NumericWireError("rational numerator is not a canonical integer")
+        raise NumericWireNonCanonical("rational numerator is not a canonical integer")
     if not _POSITIVE_INTEGER.fullmatch(parts[2]):
-        raise NumericWireError("rational denominator is not a canonical positive integer")
+        raise NumericWireNonCanonical("rational denominator is not a canonical positive integer")
     value = ExactRational(int(parts[1]), int(parts[2]))
     if serialize_rational(value) != encoded:
-        raise NumericWireError("rational wire value is not reduced/canonical")
+        raise NumericWireNonCanonical("rational wire value is not reduced/canonical")
     return value
