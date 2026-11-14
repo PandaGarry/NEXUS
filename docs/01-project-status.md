@@ -193,3 +193,5 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 - Existing v1 fixtures were not changed; no normalized schema, validator, Python runner, Rust runner or cross-language conformance was implemented.
 
 - Added a per-file migration assessment to NX-ARCH-005: decimal/rational suites are mostly structural; numeric-wire invalid cases require reference-derived stable rejection classes; financial-math values require strict unit preservation; instrument-spec fixture needs a separately specified validation operation and expected outcome. No legacy file was modified.
+
+- NX-ARCH-005 now includes an initial operation registry for decimal, rational, numeric-wire and dimensional-math suites. It also records that `numeric_wire.py` currently exposes a catch-all `NumericWireError`, so rejection subclasses cannot be safely inferred from exception messages. The proposed stable mapping remains design-only pending review; no parser behavior was changed.
