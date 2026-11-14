@@ -652,7 +652,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 
 
 
-## 18.23 Delegated G1 technical baseline selection — 2026-11-14
+## 18.22 Delegated G1 technical baseline selection — 2026-11-14
 
 - [x] Publish NX-ADR-008 selecting the G1 design baseline for canonical command encoding, capability signing, persistence, transaction ownership, freshness/recovery and emergency operations.
 - [x] Select RFC 8949 restricted deterministic CBOR, SHA-256 domain-separated command digest and COSE_Sign1 fully specified COSE Ed25519 algorithm (-19, RFC 9864) for G1 qualification; keep exact libraries and non-exportable key custody provider gated.
@@ -668,20 +668,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 
 **Disposition:** technical direction selected for G1 evaluation under delegated authority. No database, key, secret manager, cloud, venue, credentials, production deployment or live capability is installed/selected/authorized. Owner-only risk, accounting, venue, legal and production decisions remain open.
 
-## 18.22 COSE algorithm identifier standards correction — 2026-11-14
-
-- [x] Cross-check NX-ADR-008 signing profile against current IETF COSE algorithm registry and RFC 9864 (published October 2025).
-- [x] Replace polymorphic COSE EdDSA identifier (-8) with fully specified COSE Ed25519 identifier (-19).
-- [x] Specify COSE key constraints (OKP / Ed25519) and reject Ed448, deprecated polymorphic -8, algorithm substitution and key/algorithm mismatch.
-- [x] Clarify that protected `kid` is an integrity-protected lookup hint, not an authentication factor or uniqueness guarantee.
-- [x] Require issuer/algorithm/purpose/status/generation-bound key resolution and fail-closed rejection of ambiguous eligible key matches.
-- [ ] Add Python/Rust COSE vectors for alg=-19 and negative vectors for -8, wrong curve, key mismatch, issuer/audience mismatch, revoked/retired key and ambiguous kid.
-- [ ] Qualify exact COSE implementations and verify RFC 9864 interoperability before any signer/verifier implementation or key custody decision.
-
-**Disposition:** standards correction applied to the G1 design baseline. No COSE library, key, signer, verifier or runtime has been added. Key custody and production signing remain gated.
-
-
-## 18.24 COSE algorithm identifier standards correction — 2026-11-14
+## 18.23 COSE algorithm identifier standards correction — 2026-11-14
 
 - [x] Cross-check the signing profile against RFC 9864, published October 2025.
 - [x] Replace polymorphic COSE EdDSA (-8) with fully specified COSE Ed25519 (-19).
@@ -689,7 +676,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [x] Treat protected kid as a lookup hint only; issuer/algorithm/purpose/validity/revocation/generation-bound lookup must yield exactly one eligible key.
 - [ ] Qualify exact COSE libraries and provider interoperability; add rejection vectors before implementation.
 
-## 18.23 Canonical CBOR decoder acceptance boundary — 2026-11-14
+## 18.24 Canonical CBOR decoder acceptance boundary — 2026-11-14
 
 - [x] Verify RFC 8949 §4.2.1 core deterministic map ordering is bytewise lexicographic over deterministic key encodings (not legacy length-first ordering).
 - [x] Clarify that canonicality is an ingress requirement, not merely an encoder preference.
