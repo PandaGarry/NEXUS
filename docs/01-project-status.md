@@ -596,7 +596,7 @@ This is Python reference-model CI only. It does not implement or verify signing 
 
 ## Test-only halt / final Egress gate reference model
 
-Added `foundation/reference-model/egress-fencing/halt_egress_gate.py` with 11 tests. It models halt-first denial, gate-first in-flight attempts, pause-after-gate acknowledgement blocking, positive sender-fence handling, single-use attempt IDs, halt-store outage and reconciliation obligations after socket initiation. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing. The expanded suite's exact PR-head CI passed below; later documentation synchronization requires a fresh final branch-head run.
+Added `foundation/reference-model/egress-fencing/halt_egress_gate.py` with 12 tests. It models halt-first denial, gate-first in-flight attempts, pause-after-gate acknowledgement blocking, positive sender-fence handling, single-use attempt IDs, halt-store outage and reconciliation obligations after socket initiation. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing. The expanded suite's exact PR-head CI passed below; later documentation synchronization requires a fresh final branch-head run.
 
 ## Exact-head CI including HaltEgressGate reference model — 2026-11-14
 
