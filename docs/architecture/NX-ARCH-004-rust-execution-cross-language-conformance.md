@@ -33,7 +33,7 @@ No decision in this table is owner-accepted by publication alone.
 
 The target command path is:
 
-`Strategy / AI -> TradeIntent -> Risk authorization -> durable reservation + command/outbox -> trusted egress gate -> venue adapter -> venue`
+`Strategy / AI -> TradeIntent -> Risk evaluation + atomic durable reservation -> signed RiskApprovalCapability -> command coordinator atomically consumes approval and durably commits command/outbox -> dispatcher durably records attempt -> trusted egress gate -> venue adapter -> venue`
 
 The response path is:
 
