@@ -431,3 +431,9 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Restricted command map keys to schema-defined ASCII text field names; non-ASCII, unknown and duplicate keys are rejected.
 - Kept Unicode user text in values with strict UTF-8 handling and no implicit normalization.
 - Updated NX-ADR-008, OD-08 and the living checklist. No parser or dependency was implemented.
+
+### Exact-head CI after NX-RESEARCH-011 — 2026-11-14
+
+- Branch HEAD `1bb2192e6746e0f86659f006ef204990adc81188` passed [workflow #43615753905](https://github.com/PandaGarry/NEXUS/actions/runs/43615753905).
+- Python 3.11, 3.12 and 3.13 passed 13 isolated suites / 239 tests each (717 successful executions).
+- No test failures or Node.js 20 / `punycode` deprecation warnings. Verification is limited to Python reference models.
