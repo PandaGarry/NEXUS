@@ -109,3 +109,7 @@ See [NX-ARCH-008](NX-ARCH-008-module-registry-admission-capability-governance.md
 ### G1 CBOR / COSE implementation qualification — NX-RESEARCH-011
 
 See [NX-RESEARCH-011](../research/NX-RESEARCH-011-cbor-cose-library-qualification.md). Rust `cbor2` is a candidate deterministic encoder/raw-value library but is not a strict ingress decoder by itself; `cbor-core` has profile/API caveats; `coset` is a candidate COSE structure layer with custom crypto; `cose2`'s bundled Ed25519 provider uses deprecated alg=-8. No crate is approved or installed; exact byte-level and cross-language qualification remains a G0D/G1 gate.
+
+### Field-level data lineage and projection governance — NX-ARCH-REVIEW-006
+
+See [NX-ARCH-REVIEW-006](NX-ARCH-REVIEW-006-field-level-data-lineage-and-projection-governance.md). Maps exact fields from NX-IF-001..005 and NX-SEC-001 to proposed data classifications, source owners, projection restrictions and retention gaps. Field classifications remain proposed; no projection API or data-access runtime is approved.
