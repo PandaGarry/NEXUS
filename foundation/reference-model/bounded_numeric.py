@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from nexus_decimal import ExactDecimal, ExactRational, RoundingMode
+from nexus_decimal import ExactDecimal, ExactRational, InvalidStep, RoundingMode
 from numeric_wire import parse_decimal as parse_decimal_wire, parse_rational as parse_rational_wire
 
 
@@ -146,9 +146,9 @@ class BoundedNumericContext:
         self._check_power10(scale - left.scale, _decimal_digit_count(left.coefficient), "addition alignment")
         self._check_power10(scale - right.scale, _decimal_digit_count(right.coefficient), "addition alignment")
         self._check_intermediate(max(left_digits, right_digits), "addition operands")
-        left_scaled, right_scaled, _ = left._aligned(right)
+        left_scaled, right_scaled, aligned_scale = left._aligned(right)
         self._preflight_signed_sum(left_scaled, right_scaled, "addition")
-        return self._check_decimal(left + right, "addition result")
+        return self._check_decimal(ExactDecimal(left_scaled + right_scaled, aligned_scale), "addition result")
 
     def subtract(self, left: ExactDecimal, right: ExactDecimal) -> ExactDecimal:
         self._check_decimal(left, "left")
@@ -159,9 +159,9 @@ class BoundedNumericContext:
         self._check_power10(scale - left.scale, _decimal_digit_count(left.coefficient), "subtraction alignment")
         self._check_power10(scale - right.scale, _decimal_digit_count(right.coefficient), "subtraction alignment")
         self._check_intermediate(max(left_digits, right_digits), "subtraction operands")
-        left_scaled, right_scaled, _ = left._aligned(right)
+        left_scaled, right_scaled, aligned_scale = left._aligned(right)
         self._preflight_signed_sum(left_scaled, -right_scaled, "subtraction")
-        return self._check_decimal(left - right, "subtraction result")
+        return self._check_decimal(ExactDecimal(left_scaled - right_scaled, aligned_scale), "subtraction result")
 
     def multiply(self, left: ExactDecimal, right: ExactDecimal) -> ExactDecimal:
         self._check_decimal(left, "left")
@@ -195,7 +195,8 @@ class BoundedNumericContext:
         scale = max(left.scale, right.scale)
         self._check_power10(scale - left.scale, _decimal_digit_count(left.coefficient), "comparison alignment")
         self._check_power10(scale - right.scale, _decimal_digit_count(right.coefficient), "comparison alignment")
-        return left.compare(right)
+        left_scaled, right_scaled, _ = left._aligned(right)
+        return (left_scaled > right_scaled) - (left_scaled < right_scaled)
 
     def is_multiple_of(self, value: ExactDecimal, step: ExactDecimal) -> bool:
         self._check_decimal(value, "value")
@@ -203,7 +204,10 @@ class BoundedNumericContext:
         scale = max(value.scale, step.scale)
         self._check_power10(scale - value.scale, _decimal_digit_count(value.coefficient), "step alignment")
         self._check_power10(scale - step.scale, _decimal_digit_count(step.coefficient), "step alignment")
-        return value.is_multiple_of(step)
+        value_scaled, step_scaled, _ = value._aligned(step)
+        if step_scaled <= 0:
+            raise InvalidStep("step must be positive")
+        return value_scaled % step_scaled == 0
 
     def to_decimal_exact(self, value: ExactRational) -> ExactDecimal:
         self._check_rational(value)
