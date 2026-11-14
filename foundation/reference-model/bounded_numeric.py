@@ -15,8 +15,8 @@ class NumericLimitExceeded(ValueError):
     """An operation would exceed the explicitly configured numeric budget."""
 
 
-def _digits_upper_bound(value: int) -> int:
-    """Conservative decimal digit upper bound without converting a huge int to str."""
+def _decimal_digit_count(value: int) -> int:
+    """Exact decimal digit count without converting a huge int to str."""
     magnitude = abs(value)
     if magnitude == 0:
         return 1
@@ -74,16 +74,16 @@ class BoundedNumericContext:
             raise TypeError(f"{label} must be ExactDecimal")
         if value.scale > self.limits.max_scale:
             raise NumericLimitExceeded(f"{label} scale exceeds configured maximum")
-        if _digits_upper_bound(value.coefficient) > self.limits.max_coefficient_digits:
+        if _decimal_digit_count(value.coefficient) > self.limits.max_coefficient_digits:
             raise NumericLimitExceeded(f"{label} coefficient exceeds configured digit budget")
         return value
 
     def _check_rational(self, value: ExactRational) -> ExactRational:
         if not isinstance(value, ExactRational):
             raise TypeError("value must be ExactRational")
-        if _digits_upper_bound(value.numerator) > self.limits.max_rational_numerator_digits:
+        if _decimal_digit_count(value.numerator) > self.limits.max_rational_numerator_digits:
             raise NumericLimitExceeded("rational numerator exceeds configured digit budget")
-        if _digits_upper_bound(value.denominator) > self.limits.max_rational_denominator_digits:
+        if _decimal_digit_count(value.denominator) > self.limits.max_rational_denominator_digits:
             raise NumericLimitExceeded("rational denominator exceeds configured digit budget")
         return value
 
@@ -125,10 +125,10 @@ class BoundedNumericContext:
         self._check_decimal(left, "left")
         self._check_decimal(right, "right")
         scale = max(left.scale, right.scale)
-        left_digits = _digits_upper_bound(left.coefficient) + scale - left.scale
-        right_digits = _digits_upper_bound(right.coefficient) + scale - right.scale
-        self._check_power10(scale - left.scale, _digits_upper_bound(left.coefficient), "addition alignment")
-        self._check_power10(scale - right.scale, _digits_upper_bound(right.coefficient), "addition alignment")
+        left_digits = _decimal_digit_count(left.coefficient) + scale - left.scale
+        right_digits = _decimal_digit_count(right.coefficient) + scale - right.scale
+        self._check_power10(scale - left.scale, _decimal_digit_count(left.coefficient), "addition alignment")
+        self._check_power10(scale - right.scale, _decimal_digit_count(right.coefficient), "addition alignment")
         self._check_intermediate(max(left_digits, right_digits) + 1, "addition")
         return self._check_decimal(left + right, "addition result")
 
@@ -136,10 +136,10 @@ class BoundedNumericContext:
         self._check_decimal(left, "left")
         self._check_decimal(right, "right")
         scale = max(left.scale, right.scale)
-        left_digits = _digits_upper_bound(left.coefficient) + scale - left.scale
-        right_digits = _digits_upper_bound(right.coefficient) + scale - right.scale
-        self._check_power10(scale - left.scale, _digits_upper_bound(left.coefficient), "subtraction alignment")
-        self._check_power10(scale - right.scale, _digits_upper_bound(right.coefficient), "subtraction alignment")
+        left_digits = _decimal_digit_count(left.coefficient) + scale - left.scale
+        right_digits = _decimal_digit_count(right.coefficient) + scale - right.scale
+        self._check_power10(scale - left.scale, _decimal_digit_count(left.coefficient), "subtraction alignment")
+        self._check_power10(scale - right.scale, _decimal_digit_count(right.coefficient), "subtraction alignment")
         self._check_intermediate(max(left_digits, right_digits) + 1, "subtraction")
         return self._check_decimal(left - right, "subtraction result")
 
@@ -150,7 +150,7 @@ class BoundedNumericContext:
         if scale > self.limits.max_scale:
             raise NumericLimitExceeded("multiplication result scale exceeds configured maximum")
         self._check_intermediate(
-            _digits_upper_bound(left.coefficient) + _digits_upper_bound(right.coefficient),
+            _decimal_digit_count(left.coefficient) + _decimal_digit_count(right.coefficient),
             "multiplication",
         )
         return self._check_decimal(left * right, "multiplication result")
@@ -161,10 +161,10 @@ class BoundedNumericContext:
         if denominator.coefficient == 0:
             # Preserve the oracle's typed division-by-zero error.
             return numerator.divide_exact(denominator)
-        num_digits = _digits_upper_bound(numerator.coefficient) + denominator.scale
-        den_digits = _digits_upper_bound(denominator.coefficient) + numerator.scale
-        self._check_power10(denominator.scale, _digits_upper_bound(numerator.coefficient), "division numerator")
-        self._check_power10(numerator.scale, _digits_upper_bound(denominator.coefficient), "division denominator")
+        num_digits = _decimal_digit_count(numerator.coefficient) + denominator.scale
+        den_digits = _decimal_digit_count(denominator.coefficient) + numerator.scale
+        self._check_power10(denominator.scale, _decimal_digit_count(numerator.coefficient), "division numerator")
+        self._check_power10(numerator.scale, _decimal_digit_count(denominator.coefficient), "division denominator")
         self._check_intermediate(max(num_digits, den_digits), "division")
         if num_digits > self.limits.max_rational_numerator_digits:
             raise NumericLimitExceeded("division numerator pre-reduction exceeds rational digit budget")
@@ -176,16 +176,16 @@ class BoundedNumericContext:
         self._check_decimal(left, "left")
         self._check_decimal(right, "right")
         scale = max(left.scale, right.scale)
-        self._check_power10(scale - left.scale, _digits_upper_bound(left.coefficient), "comparison alignment")
-        self._check_power10(scale - right.scale, _digits_upper_bound(right.coefficient), "comparison alignment")
+        self._check_power10(scale - left.scale, _decimal_digit_count(left.coefficient), "comparison alignment")
+        self._check_power10(scale - right.scale, _decimal_digit_count(right.coefficient), "comparison alignment")
         return left.compare(right)
 
     def is_multiple_of(self, value: ExactDecimal, step: ExactDecimal) -> bool:
         self._check_decimal(value, "value")
         self._check_decimal(step, "step")
         scale = max(value.scale, step.scale)
-        self._check_power10(scale - value.scale, _digits_upper_bound(value.coefficient), "step alignment")
-        self._check_power10(scale - step.scale, _digits_upper_bound(step.coefficient), "step alignment")
+        self._check_power10(scale - value.scale, _decimal_digit_count(value.coefficient), "step alignment")
+        self._check_power10(scale - step.scale, _decimal_digit_count(step.coefficient), "step alignment")
         return value.is_multiple_of(step)
 
     def to_decimal_exact(self, value: ExactRational) -> ExactDecimal:
@@ -205,7 +205,7 @@ class BoundedNumericContext:
         if scale > self.limits.max_scale:
             raise NumericLimitExceeded("exact decimal conversion scale exceeds configured maximum")
         growth = max(scale - twos, scale - fives)
-        self._check_intermediate(_digits_upper_bound(value.numerator) + growth, "exact decimal conversion")
+        self._check_intermediate(_decimal_digit_count(value.numerator) + growth, "exact decimal conversion")
         return self._check_decimal(value.to_decimal_exact(), "exact decimal conversion result")
 
     def quantize_rational(
@@ -217,6 +217,6 @@ class BoundedNumericContext:
         if target_scale > self.limits.max_scale:
             raise NumericLimitExceeded("quantization target scale exceeds configured maximum")
         self._check_power10(
-            target_scale, _digits_upper_bound(value.numerator), "rational quantization"
+            target_scale, _decimal_digit_count(value.numerator), "rational quantization"
         )
         return self._check_decimal(value.quantize(target_scale, rounding), "quantization result")
