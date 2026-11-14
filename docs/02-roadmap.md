@@ -167,12 +167,13 @@ This package validates mathematical identities only; it does not pass financial 
 
 - [x] Cross-review NX-REF-DOMAIN-009 against NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006; no blocking contradiction found, with owner/venue gaps retained.
 - [x] Add venue-neutral exact dimensional math fixtures for spot, explicitly mapped linear/inverse contracts and partial-fill weighted-average arithmetic; initial Python 3.11–3.13 CI passed.
-- [ ] Verify final exact PR head and freeze the bounded mathematical fixture package.
+- [x] Verify final exact PR head and freeze the bounded mathematical fixture package (182 tests per runtime; see NX-REF-DOMAIN-010).
 - [ ] Obtain owner decisions and venue qualification before authoring fee/funding/P&L/margin/liquidation/FX/accounting golden vectors.
 
 ### Russia jurisdiction and first-venue qualification gate
 
 - [x] Publish NX-RESEARCH-009 with current Law 282-FZ, Bank of Russia guidance, domestic crypto-exchange registry, MOEX/SPB product eligibility and foreign-venue screening.
+- [x] Pin Bank of Russia Directive 7441-U: effective 2026-11-17; non-qualified broker acquisition cap RUB 300,000/year; BTC, ETH and USDT may be admitted to organized trading subject to criteria. This does not establish that a specific product/API is live.
 - [x] Mark earlier Coinbase/Kraken and Russian-citizenship shortlist memos as historical/superseded for live venue selection.
 - [ ] Confirm owner qualified-investor status directly with the actual broker.
 - [ ] Verify T-Invest API instrument access flags and streaming/order/fill support for exact crypto-index futures/neoassets; no orders.
