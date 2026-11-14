@@ -1039,3 +1039,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep Rust, strict CBOR/COSE, PostgreSQL 18.7 concurrency/restore, Trusted Egress, host/network fencing and venue evidence as separate G1 gates.
 
 **Disposition:** exact branch-head Python reference CI passed. No production implementation or live authority is implied.
+
+## 18.31 NX-IF-004 alignment with selected G1 profile and Trusted Egress ownership — 2026-11-14
+
+- [x] Bind RiskApprovalCapability to both StateEvidenceVector and the exact immutable ValuationInputVector ID/version.
+- [x] Move the final compatibility-check authority from generic Execution wording to Trusted Egress at the attempt-scoped send-authorization gate.
+- [x] Align the evidence contract's canonical serialization/digest/signature reference with NX-ADR-008 and NX-IF-001: restricted deterministic CBOR, domain-separated SHA-256, COSE Ed25519 alg=-19.
+- [x] Keep library selection, non-exportable key custody, key ceremony/rotation, security review and jurisdictional acceptance open.
+- [ ] Add cross-contract conformance tests for StateEvidenceVector + ValuationInputVector invalidation and final egress gate ordering.
+
+**Disposition:** documentation consistency correction only; no signer, verifier, key or dispatch runtime implemented.
