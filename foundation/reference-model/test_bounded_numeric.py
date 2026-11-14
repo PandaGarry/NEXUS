@@ -8,6 +8,7 @@ from bounded_numeric import BoundedNumericContext, NumericLimitExceeded, Numeric
 def context(**overrides):
     values = dict(
         max_input_chars=64,
+        max_wire_chars=64,
         max_coefficient_digits=12,
         max_scale=8,
         max_rational_numerator_digits=16,
@@ -26,11 +27,17 @@ def d(value):
 class BoundedNumericTests(unittest.TestCase):
     def test_limits_are_mandatory_positive_and_consistent(self):
         with self.assertRaises(ValueError):
-            NumericLimits(0, 4, 4, 8, 8, 8, 4)
+            NumericLimits(max_input_chars=0, max_coefficient_digits=4, max_scale=4,
+                          max_rational_numerator_digits=8, max_rational_denominator_digits=8,
+                          max_intermediate_digits=8, max_power10_exponent=4, max_wire_chars=8)
         with self.assertRaises(ValueError):
-            NumericLimits(8, 4, 4, 8, 8, 7, 4)
+            NumericLimits(max_input_chars=8, max_coefficient_digits=4, max_scale=4,
+                          max_rational_numerator_digits=8, max_rational_denominator_digits=8,
+                          max_intermediate_digits=7, max_power10_exponent=4, max_wire_chars=8)
         with self.assertRaises(ValueError):
-            NumericLimits(8, 4, 4, 8, 8, 8, 9)
+            NumericLimits(max_input_chars=8, max_coefficient_digits=4, max_scale=4,
+                          max_rational_numerator_digits=8, max_rational_denominator_digits=8,
+                          max_intermediate_digits=8, max_power10_exponent=9, max_wire_chars=8)
 
     def test_context_has_no_implicit_global_profile(self):
         with self.assertRaises(TypeError):
@@ -87,9 +94,11 @@ class BoundedNumericTests(unittest.TestCase):
         ctx = context(max_input_chars=32)
         encoded = ctx.serialize_decimal_wire(d("123"))
         self.assertEqual(ctx.parse_decimal_wire(encoded), d("123"))
-        small = context(max_input_chars=8)
+        small = context(max_wire_chars=8)
         with self.assertRaisesRegex(NumericLimitExceeded, "output"):
             small.serialize_decimal_wire(d("123"))
+        with self.assertRaises(NumericLimitExceeded):
+            small.parse_decimal_wire(serialize_decimal(d("123")))
 
     def test_compare_and_step_validation_are_bounded(self):
         ctx = context()
