@@ -323,3 +323,12 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - Explicitly excluded protected financial operations and Trusted Egress from optional-module grants; documented the request-time authorization sequence and separation from product entitlements.
 - Added revocation/cache/outage requirements, audit/privacy constraints and 18 adversarial CAP scenarios.
 - No executable schema, policy engine, grant issuer, active permission, module runtime or dependency was implemented. Cross-review, domain/security acceptance and G0D/G1 remain open.
+
+
+## Capability catalog cross-review — 2026-11-14
+
+- Published [NX-ARCH-REVIEW-003](architecture/NX-ARCH-REVIEW-003-capability-authorization-cross-review.md) for NX-ARCH-009.
+- Narrowed billing subscription capability to intent submission only; entitlement-state writes remain exclusively with Billing after provider verification/reconciliation.
+- Confirmed separation of capability definition, module declaration, workload grant, product entitlement, user authorization and resource-owner decision.
+- Retained CAP-R-02..09 and added CAP-19..26 as future qualification requirements.
+- Cross-review is design-level only. No candidate capability is approved or active; no schema, policy engine, grant issuer or runtime exists. G0D/G1 remain open.
