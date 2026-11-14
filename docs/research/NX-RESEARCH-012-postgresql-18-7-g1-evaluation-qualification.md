@@ -23,7 +23,7 @@ The 18.7 release announcement states that it fixes 52 security vulnerabilities a
 | Support status on review date | Supported |
 | Production approval | Not granted |
 | Deployment provider / region | Not selected |
-| Package/image digest and build provenance | Open qualification item |
+| Disposable CI image digest | Pinned to Docker Official Image multi-platform index `sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b`; linux/amd64 child manifest `sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452` |
 | Extensions | None permitted in initial G1 harness |
 | Replication/failover | No automatic failover or active-active writer |
 
@@ -149,7 +149,8 @@ This is a G1 qualification requirement. The fixture contains test-only analogues
 
 ## 5. G1 qualification checklist
 
-- [ ] Pin the exact PostgreSQL 18.7 distribution, package checksum/image digest and build provenance.
+- [x] Pin the disposable CI PostgreSQL 18.7 Docker Official Image multi-platform index digest `sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b` (linux/amd64 manifest `sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452`); the pinned workflow passed 11/11 tests on PostgreSQL 18.7, [workflow #43630438579](https://github.com/PandaGarry/NEXUS/actions/runs/43630438579).
+- [ ] Verify signed publisher build provenance, SBOM, vulnerability disposition, package checksums and independent image review; a digest pin alone is not provenance.
 - [ ] Verify the host OS/architecture and supported deployment platform.
 - [ ] Record complete configuration and server build metadata; prohibit unreviewed extensions.
 - [ ] Review all PostgreSQL 18.7 release-note `REINDEX` entries against actual schema/index definitions.
@@ -183,3 +184,6 @@ This is a G1 qualification requirement. The fixture contains test-only analogues
 - PostgreSQL 18 role membership and SET ROLE: https://www.postgresql.org/docs/18/role-membership.html
 - PostgreSQL 18 function security and untrusted languages: https://www.postgresql.org/docs/18/perm-functions.html
 - PostgreSQL 18 row security policies and table-owner bypass: https://www.postgresql.org/docs/18/ddl-rowsecurity.html
+
+
+Docker Official Image digest reference: https://hub.docker.com/layers/library/postgres/18.7/images/sha256-c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452
