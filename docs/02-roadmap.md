@@ -684,3 +684,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Verify `e7c5461ae7ccea4f29fc77461db91d44566aba36` on [workflow #43616908979](https://github.com/PandaGarry/NEXUS/actions/runs/43616908979).
 - [x] Pass 13 suites / 239 tests on Python 3.11, 3.12 and 3.13 (717 executions).
 - [ ] Keep PostgreSQL concurrency, transaction isolation, failover and egress-fencing evidence separate from Python reference CI.
+
+## Numeric-wire cross-runtime resource parity
+
+- [x] Fix the Python reference parser's integer digit budget at 512 digits, independent of interpreter defaults.
+- [x] Cover the 512/513 digit boundary for decimal and rational wire encodings.
+- [ ] Encode the same 512-digit acceptance / 513-digit rejection boundary in language-neutral vectors.
+- [ ] Require Rust implementation to return the same stable NUMERIC.RESOURCE_LIMIT class.
+- [ ] Reassess the bound only as part of an explicit production numeric profile; do not treat it as a trading or financial limit.
