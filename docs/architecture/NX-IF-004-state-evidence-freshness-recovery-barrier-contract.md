@@ -177,7 +177,9 @@ NX-IF-001 remains authoritative for approval identity, digest binding, expiry an
 
 - approval references `state_evidence_vector_id`, `vector_version` and canonical vector digest;
 - approval records the exact mandatory source entries/watermarks and requirement-policy version used;
-- Trusted Egress performs the final compatibility check at the attempt-scoped send-authorization gate immediately before initiating the venue socket write;
+- approval additionally binds the exact immutable `valuation_input_vector_id/version` defined by NX-IF-002; this is distinct from, and does not replace, the broader StateEvidenceVector;
+- Trusted Egress performs the final compatibility check at the attempt-scoped send-authorization gate immediately before initiating the venue socket write, validating the exact signed valuation vector against the authoritative persisted Risk evidence manifest and latest consumed source-watermark/correction status;
+- Egress MUST NOT call remote market/FX/fee/collateral source services or fetch replacement valuation values on the dispatch path; missing, stale, incomplete or unverifiable manifest denies send;
 - any required source generation, watermark, quality, exposure, reservation, spec, policy or halt-epoch change invalidates the approval unless the relevant contract explicitly defines a safe monotonic advancement rule;
 - a newer vector is not automatically compatible merely because its timestamp is later;
 - an incompatible approval cannot be refreshed or rebound in place; Risk must evaluate a new request and issue a new capability.
