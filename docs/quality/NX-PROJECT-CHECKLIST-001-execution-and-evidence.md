@@ -341,3 +341,12 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 **Reference-model evidence:** workflow [#43602394909](https://github.com/PandaGarry/NEXUS/actions/runs/43602394909) passed exact HEAD `e126f67b5779969ad3cffb67cfbb505760668518`: 13 isolated suites / 232 tests on each of Python 3.11, 3.12 and 3.13 (696 successful executions). The numeric-wire suite now has 12 tests, including stable error-class mapping.
 
 **Disposition:** design only. Existing fixture files and current Python workflows remain unchanged. No normalized schema, validator, Python runner or cross-language conformance is claimed.
+
+## 14. NX-ARCH-005 cross-review correction (2026-11-14)
+
+- Corrected the illustrative fixture envelope: removed a trailing comma so the example is valid strict JSON.
+- Audited the proposed operation registry against the current reference-model surface. Decimal/rational operations map to `nexus_decimal.py`; numeric-wire operations map to `numeric_wire.py` with explicit profile-bounded `max_chars`.
+- Clarified that financial fixture labels for linear-contract notional, inverse exposure and partial-fill aggregation are fixture-level targets, not currently callable reference operations. They remain non-executable migration targets until adapters, reference implementations and tests exist. `Price.notional_for` is the currently evidenced spot primitive.
+- Clarified that instrument-spec validation remains deferred as a normalized executable operation.
+- Recorded that numeric-wire classes are machine-readable; decimal/domain mappings outside the explicit typed classes still require operation-aware review. `NumericLimitExceeded` requires reviewed mapping to `NUMERIC.RESOURCE_LIMIT`; `DimensionMismatch` must not be classified by parsing exception text.
+- No fixture schema, validator, runner, Rust code or production numeric profile was created. NX-ARCH-005 remains PROPOSED and owner-review gated.
