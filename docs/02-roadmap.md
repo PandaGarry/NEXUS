@@ -829,3 +829,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Verify Python reference suites at SHA `73841573e4e02b34a0c0363bbbe21155828d0c08` (run #43617906166): 239 tests/runtime, 717 executions.
 - [ ] Re-run CI on the final documentation-synchronized branch HEAD.
 - [ ] Implement only after G0D/G1 gates: instrumented halt/Egress race tests, actual socket boundary, external process/host/network fencing and recovery evidence.
+
+## Signing authority separation
+
+- [x] Separate Risk approval signing key authority from venue request-signing/credential authority.
+- [x] Require distinct keys, workload identities and policies; prohibit key reuse.
+- [x] Keep Risk private key out of Execution/Trusted Egress; keep venue secrets out of Risk signer.
+- [ ] Prove negative access paths and compromised-workload containment.
+- [ ] Qualify key custody, HSM/KMS, rotation, revocation and recovery before implementation.
