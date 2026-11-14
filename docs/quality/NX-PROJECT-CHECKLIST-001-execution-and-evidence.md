@@ -1487,7 +1487,8 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Pass 11 PostgreSQL 18.7 tests on exact code/test SHA `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf`, [workflow #43629845855](https://github.com/PandaGarry/NEXUS/actions/runs/43629845855).
 - [x] Pass Python reference-model workflow [#43629845861](https://github.com/PandaGarry/NEXUS/actions/runs/43629845861): 13 suites / 264 tests on Python 3.11, 3.12 and 3.13 (792 executions).
 - [x] Inspect all four job logs; no test failures, ResourceWarnings or deprecation warnings.
-- [ ] Synchronize docs/PR body to the exact verified code/test head and re-run both workflows on the resulting documentation head.
+- [x] Synchronize NX-ARCH-REVIEW-008, harness README, project status, roadmap, changelog and PR #16 verification to the exact code/test evidence.
+- [x] Re-run both workflows on documentation-synchronized HEAD `6ec197e950d5dcbc6c764262114481d7b68c25e7`: PostgreSQL [#43630167895](https://github.com/PandaGarry/NEXUS/actions/runs/43630167895) passed 11/11; Python [#43630167891](https://github.com/PandaGarry/NEXUS/actions/runs/43630167891) passed 264 tests/runtime.
 - [ ] Add production DBA/migration catalog-manifest drift detection and emergency role-change reconciliation; runtime-negative tests do not prove these controls.
 
 **Disposition:** 11/11 PostgreSQL fixture tests and 264 Python tests per runtime passed on exact code/test SHA `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf`. The tests cover only the disposable fixture and do not prove DBA/cluster-level role-change safety, production RLS correctness or production readiness.
