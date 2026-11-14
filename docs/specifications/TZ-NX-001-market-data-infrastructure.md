@@ -220,3 +220,8 @@ Alert on stale critical streams, repeated gaps, schema drift, rate-limit bans, p
 - Whether sequence-less full-book feeds are permitted for selected strategies after separate validation.
 - Storage and streaming infrastructure selection after workload sizing.
 - Whether initial release includes only linear USDT/USDC perpetuals plus spot, deferring inverse/quanto products.
+
+
+## WP-D — State evidence and recovery barrier
+
+Market Data MUST publish per-stream state, quality, freshness, connection generation, event/receive/processing times, sequence/snapshot watermarks, completeness and recovery-case references in the form composed by [NX-IF-004](../architecture/NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md). Public book/trade recovery continues to follow NX-ADR-004; WP-D consumes those protocol-specific states and MUST NOT replace venue-specific sequence or snapshot semantics with a generic rule. A recovered socket is not sufficient to mark a stream valid or to reopen risk-increasing authorization. No freshness threshold is assumed until an owner-approved versioned policy is configured.
