@@ -990,3 +990,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Add race tests for source update, correction/revocation, watermark gap and stale manifest after approval but before send.
 
 **Disposition:** synchronized NX-IF-002, NX-ADR-008, NX-ARCH-REVIEW-007 and NX-REF-EXEC-002. No valuation service, evidence store, egress runtime or numeric threshold is implemented.
+
+## 18.29 Trusted Egress send-authorization linearization — 2026-11-14
+
+- [x] Define the final egress decision as a short attempt-scoped transaction over the persisted valuation manifest generation and active reservation/halt/eligibility/dispatcher fence versions.
+- [x] Bind a single-use EgressBoundaryAuthorization to the exact attempt ID and observed versions.
+- [x] Define the commit as the send-authorization linearization point.
+- [x] Require immediate socket-write initiation by the single-writer Egress process after commit; no source fetch, queue hop or unbounded async preparation.
+- [x] Prohibit holding a database transaction open across network I/O.
+- [x] Define post-gate updates as causally later; the attempt remains potentially sent and must be reconciled.
+- [ ] Define source ingestion-lag/correction objectives and prove the persisted manifest covers delayed/reordered invalidations.
+- [ ] Add crash/race tests at final-gate commit, immediately-before-socket-write and after socket-write initiation; inspect durable attempt and actual instrumented egress boundary.
+
+**Disposition:** semantic protocol added to NX-IF-002 and NX-REF-EXEC-002. No egress authorization runtime or database schema implemented.
