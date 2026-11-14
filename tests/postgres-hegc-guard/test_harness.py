@@ -97,12 +97,12 @@ def wait_for_activity(app: str, *, waiting_on_lock: bool, timeout: float = 8.0) 
 class PostgreSQLGuardHarness(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        result = run_sql("SHOW server_version;")
+        result = run_sql("SHOW server_version_num;")
         if result.returncode != 0:
             raise RuntimeError(result.stderr)
-        version = result.stdout.strip()
-        if version != "18.7":
-            raise RuntimeError(f"expected PostgreSQL 18.7 exactly, got {version!r}")
+        version_num = result.stdout.strip()
+        if version_num != "180007":
+            raise RuntimeError(f"expected PostgreSQL 18.7 (server_version_num=180007), got {version_num!r}")
         bootstrap = run_sql((ROOT / "bootstrap.sql").read_text())
         if bootstrap.returncode != 0:
             raise RuntimeError(bootstrap.stderr)
