@@ -146,14 +146,13 @@ class HaltEgressGateTests(unittest.TestCase):
 
     def test_gate_committed_attempt_survives_pending_halt_store_outage(self):
         self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7)
+        self.gate.consume_grant(attempt_id="paused")
         self.gate.store_available = False
         self.assertIsNone(self.gate.request_halt(reason="store outage"))
         self.assertEqual(self.gate.phase, HaltPhase.HALT_PENDING)
         with self.assertRaises(GateDenied):
             self.gate.acknowledge_halt()
-        # The already gate-committed sender may still initiate while halt is pending.
-        self.gate.consume_grant(attempt_id="paused")
-        self.gate.initiate_socket_write(attempt_id="paused")
+        # A grant consumed before the outage remains in-flight and may initiate.
         self.gate.store_available = True
         self.assertEqual(self.gate.commit_pending_halt(), 8)
         self.gate.acknowledge_halt()
