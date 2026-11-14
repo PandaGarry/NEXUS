@@ -670,3 +670,7 @@ HEGC now has an explicit durable one-use grant-consumption transition: `GATE_COM
 - [ ] Prove the commit-order guard and grant-consumption recovery against real PostgreSQL 18.7, HEGC and Egress processes.
 
 **Disposition:** exact code/test HEAD passed reference CI. No production HEGC, durable gate store, strict commit-order guard or socket/network fencing is implemented.
+
+## PostgreSQL SSI commit-order qualification — 2026-11-14
+
+The PostgreSQL 18.7 review identified a crucial distinction: SERIALIZABLE/SSI guarantees equivalence to some serial execution order, but does not by itself guarantee that the serialization order of overlapping transactions equals wall-clock commit order. NEXUS's HEGC contract requires a stronger real-time ordering rule. NX-RESEARCH-012 §4.2 now requires a shared gate-validation guard used by HEGC and every invalidating writer as the first SQL statement after BEGIN, before any protected read/write, held through commit; stale snapshots must abort/retry. This HEGC guard is distinct from the Risk-owned scope-state guard unless complete writer participation and database-enforced no-bypass are proven. A least-privilege SECURITY DEFINER coordination function is a G1 candidate only. No guard table/function exists; PostgreSQL 18.7 multi-connection proof remains open.
