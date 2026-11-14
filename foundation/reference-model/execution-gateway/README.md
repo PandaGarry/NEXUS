@@ -23,7 +23,7 @@ cd execution-gateway
 python -m unittest -v
 ```
 
-The current model supports only one command class: `CREATE` in a test fixture. It demonstrates:
+The current model supports only one command class: `CREATE` in a test fixture. Its 20-test suite includes independent SQLite-connection concurrency races for one-time approval consumption and single-command dispatch claiming. It demonstrates:
 - canonical command digest binding;
 - test-only approval authentication and exact scope binding;
 - expiry and current halt-epoch checks at intake and immediately before adapter invocation;
