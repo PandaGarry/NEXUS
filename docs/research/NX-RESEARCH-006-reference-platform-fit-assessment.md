@@ -24,12 +24,13 @@ The same primary documentation exposes several material differences from NEXUS c
 3. NautilusTrader does not promise universal exactly-once delivery/application. It has scoped trade-ID deduplication and unknown-outcome handling, but those guarantees depend on retained state and venue adapter semantics.
 4. Numeric value types use bounded integer precision modes (128-bit / up to 16 decimal places, or 64-bit / up to 9). This differs from the unbounded Python reference oracle and is not yet proven sufficient for every NEXUS instrument, fee, funding and accounting domain.
 5. Its reconciliation is valuable, but cannot replace NEXUS's separate ledger journal, exposure reservations, freshness barrier and cross-contract handoff.
+6. The inspected README/MIGRATION_V2 guide describes the v2 Rust/PyO3 transition; legacy v1 is on `develop_v1` and receives only critical security backports for approximately three months after cutover, with no feature/parity work. This increases API migration and version-selection risk.
 
 **Recommendation:** keep NautilusTrader as the leading *candidate execution/runtime component* for a controlled compatibility prototype, behind NEXUS-owned command authorization, durable outbox, independent Risk Engine, ledger and recovery barriers. Do not fork, vendor or connect it to a live account yet. A narrow source audit and conformance spike must decide whether to embed selected crates, use it as a process boundary, or reject it.
 
 ## 2. Evidence and review method
 
-This pass uses the current official NautilusTrader documentation and repository material available on 2026-11-14. The repository's active development branch and the `latest` documentation are moving targets; no immutable upstream commit/tag has yet been pinned for a source-level adoption review.
+This pass uses official documentation and a pinned source-inspection snapshot: upstream commit `97ecbafd6621241a2222ef5a31cf887c6d96d950` on the `develop` branch, observed on 2026-11-14. This SHA is an evidence anchor for the inspected source, not an approved release/dependency pin. The `develop` branch and `latest` documentation are moving targets.
 
 Primary references:
 - Repository and overview: https://github.com/nautechsystems/nautilus_trader
@@ -40,9 +41,10 @@ Primary references:
 - Value types: https://nautilustrader.io/docs/latest/concepts/value-types/
 - Backtest data and venues: https://nautilustrader.io/docs/latest/concepts/backtesting/data-and-venues/
 - Fill models: https://nautilustrader.io/docs/latest/concepts/backtesting/fill-models/
-- License: https://github.com/nautechsystems/nautilus_trader/blob/develop/LICENSE
+- License at inspected snapshot: https://github.com/nautechsystems/nautilus_trader/blob/97ecbafd6621241a2222ef5a31cf887c6d96d950/LICENSE
+- v2 migration guide at inspected snapshot: https://github.com/nautechsystems/nautilus_trader/blob/97ecbafd6621241a2222ef5a31cf887c6d96d950/MIGRATION_V2.md
 
-This is a documentation/source-discovery pass, not a full source audit, build, security review, performance benchmark, adapter certification or live test. Any behavior not explicitly established below remains UNKNOWN.
+This is a bounded documentation and targeted source-discovery pass against upstream snapshot `97ecbafd6621241a2222ef5a31cf887c6d96d950`, not a complete source audit, build, security review, performance benchmark, adapter certification or live test. Any behavior not explicitly established below remains UNKNOWN.
 
 ## 3. Fit against NEXUS contracts
 
@@ -124,7 +126,13 @@ Therefore:
 - preserve independent NEXUS simulation fidelity labels and calibration evidence;
 - never promote a strategy based on a single optimistic default fill model.
 
-## 5. Licensing and upstream governance
+## 5. Version maturity and upstream governance
+
+The inspected upstream README and `MIGRATION_V2.md` describe an active v2 transition: v2 uses the Rust core and PyO3 Python package on `develop`; legacy v1 is maintained on `develop_v1` for critical security backports only for approximately three months after cutover, with no feature or parity work. This is a meaningful integration risk because NEXUS would need to choose between adopting the transitioning v2 API and maintaining a legacy v1 integration with a restricted maintenance horizon.
+
+Before selecting a baseline, NEXUS must compare a released/tagged v2 candidate with the exact `develop` snapshot, inspect migration completeness for the required Rust/Python APIs and adapters, and pin the supported toolchain plus dependency graph. The source-inspection SHA in this memo is not itself a release recommendation.
+
+## 6. Licensing and upstream governance
 
 The upstream repository declares LGPL-3.0. This is a weak-copyleft license, but it is not a blanket permission to copy, modify, statically link, distribute or host arbitrary portions without obligations. The exact obligations depend on how NEXUS uses, modifies, links and distributes the upstream components and on the intended deployment/distribution model.
 
@@ -137,7 +145,7 @@ Before integration:
 
 No legal conclusion is made here.
 
-## 6. Provisional role allocation for reference platforms
+## 7. Provisional role allocation for reference platforms
 
 | Platform | Provisional NEXUS role | Disposition |
 |---|---|---|
@@ -149,11 +157,11 @@ No legal conclusion is made here.
 
 No row authorizes a dependency addition, code copy, fork, license acceptance or product integration.
 
-## 7. Bounded next gates
+## 8. Bounded next gates
 
 | Gate | Deliverable | Exit criterion |
 |---|---|---|
-| R6-A — Immutable upstream baseline | Pin candidate release/commit, license, crate graph and toolchain | Reproducible source snapshot and dependency inventory |
+| R6-A — Immutable upstream baseline | Compare released v2 tag with inspected `develop` snapshot `97ecbafd6621241a2222ef5a31cf887c6d96d950`; pin release, license, crate graph and toolchain | Reproducible supported source snapshot, migration/API assessment and dependency inventory |
 | R6-B — Numeric compatibility | Cross-check upstream Price/Quantity/Money implementation and limits against NX-ARCH-003 / NX-ADR-005 | No precision/overflow gap hidden by defaults; explicit supported domain |
 | R6-C — Risk and dispatch boundary | Trace every submit/modify/cancel/cancel-all/close path and every adapter dispatch path | Prove NEXUS approval cannot be bypassed and durable persistence precedes every external side effect |
 | R6-D — Recovery conformance | Fault tests for timeout-after-send, restart-before-ack, late fill, duplicate fill, snapshot/stream race, external/manual order and missing position report | All NEXUS critical invariants pass or documented incompatibilities reject candidate |
@@ -163,7 +171,7 @@ No row authorizes a dependency addition, code copy, fork, license acceptance or 
 
 **Stop condition:** If R6-C cannot prove an unbypassable NEXUS risk + durable dispatch boundary without a large invasive fork, do not adopt NautilusTrader as the execution core. Keep it as a benchmark and implement the NEXUS execution boundary independently.
 
-## 8. Current disposition
+## 9. Current disposition
 
 - NautilusTrader: **LEADING CANDIDATE — NOT SELECTED**.
 - Full-stack adoption: **REJECTED FOR NOW** (insufficient fit evidence; not a judgment that upstream is low quality).
