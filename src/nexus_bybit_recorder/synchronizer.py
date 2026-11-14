@@ -54,6 +54,10 @@ class BookSynchronizer:
             self.invalidate(f"malformed_delta:{exc}")
             return SyncOutcome("INVALID", False, self.last_invalidation_reason)
 
+        if delta.update_id == 1:
+            self.invalidate("u=1_reinitialization", retain_delta=delta)
+            return SyncOutcome("SYNCING", True, self.last_invalidation_reason)
+
         if self.valid:
             try:
                 assert self.book is not None
@@ -62,10 +66,6 @@ class BookSynchronizer:
                 self.invalidate(f"live_delta_requires_resync:{exc}", retain_delta=delta)
                 return SyncOutcome("SYNCING", True, self.last_invalidation_reason)
             return SyncOutcome("LIVE_VALID")
-
-        if delta.update_id == 1:
-            self.invalidate("u=1_reinitialization", retain_delta=delta)
-            return SyncOutcome("SYNCING", True, self.last_invalidation_reason)
 
         if self._buffer and delta.cross_seq < self._buffer[-1].cross_seq:
             return SyncOutcome("SYNCING", False, "decreasing_seq_delta_discarded")
