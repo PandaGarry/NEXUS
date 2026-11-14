@@ -779,3 +779,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Continue to treat CI as Python reference-model regression only; no CBOR/COSE parser, Rust, PostgreSQL, Trusted Egress, venue or live-safety proof is implied.
 
 **Disposition:** exact-head reference CI passed and direct action runtime pins are verified. G0D/G1 implementation, strict parser and crypto-provider qualification remain open.
+
+## 18.33 COSE pre-verification trust and key-material boundary — 2026-11-14
+
+- [x] Clarify that protected `kid`, `alg` and token-supplied issuer/audience are untrusted until signature verification succeeds.
+- [x] Restrict candidate key lookup to a bounded local versioned registry; prohibit token-directed remote key retrieval.
+- [x] Require local expected issuer/audience and key-purpose binding before and after signature verification; signed claims must match local expected context.
+- [x] Require exactly one eligible key; fail closed on ambiguity, stale generation, revocation or mismatch.
+- [x] Restrict verification material to public OKP/Ed25519 with 32-byte public key; reject private `d` material outside Risk; require 64-byte signature.
+- [ ] Add positive/negative cross-language COSE vectors for wrong issuer/audience, remote key URL, duplicate/ambiguous kid, private key leakage, malformed key/signature lengths and stale registry generation.
+- [ ] Verify selected COSE libraries preserve raw protected-header bytes and reject untrusted header/claim misuse without network key discovery.
+
+**Disposition:** protocol trust boundary tightened in NX-ADR-008 and NX-RESEARCH-011. No COSE implementation, key or runtime added; G0D/OD-08 remain open.
