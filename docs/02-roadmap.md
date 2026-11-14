@@ -768,3 +768,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Correctly record tested SHA `7fb396df5f3e700adf0ad151c446e38930fdadb0` and workflow [#43617626344](https://github.com/PandaGarry/NEXUS/actions/runs/43617626344).
 - [x] Confirm 13 suites / 239 tests per Python runtime (717 executions).
 - [ ] Keep database, valuation-manifest and egress tests separate from Python reference regression.
+
+## NX-IF-004 cross-contract conformance
+
+- [x] Bind RiskApprovalCapability to both StateEvidenceVector and ValuationInputVector.
+- [x] Assign final evidence compatibility check to Trusted Egress's attempt-scoped send gate.
+- [x] Reference NX-ADR-008's selected G1 CBOR/SHA-256/COSE Ed25519 profile.
+- [ ] Add tests for dual evidence-vector invalidation and egress ordering.
+- [ ] Qualify cryptographic libraries and key custody independently before implementation.
