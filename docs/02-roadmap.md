@@ -928,6 +928,15 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 
 - [x] Add explicit GATE_COMMITTED → GRANT_CONSUMED → SOCKET_INITIATED test-only state transitions; only positive consume permits one socket attempt.
 - [x] Cover lost consume response, repeated consumption, consume-store outage, sender fencing and reconciliation without blind resend.
-- [x] Pass code/test HEAD 9d618131ac9951e23c589491b2fb1039f6dc1d86 on workflow #43619080626: 13 suites / 260 tests on Python 3.11–3.13 (780 executions); egress-fencing 34 tests / 21 HaltEgressGate cases.
+- [x] Pass code/test HEAD 9d618131ac9951e23c589491b2fb1039f6dc1d86 on workflow #43619080626: 13 suites / 262 tests on Python 3.11–3.13 (786 executions); egress-fencing 36 tests / 23 HaltEgressGate cases.
 - [ ] Prove PostgreSQL SERIALIZABLE participation plus an enforced common per-scope generation/guard that provides the required commit-order property; SSI alone is not treated as strict serializability.
 - [ ] Prove idempotent durable grant status resolution, process incarnation fencing, socket-initiation evidence and recovery against a real PostgreSQL 18.7 harness.
+
+
+## Duplicate-halt cause preservation and latest reference CI
+
+- [x] Preserve the initiating halt reason for the full active halt episode; duplicate requests are idempotent and do not overwrite the cause.
+- [x] Test duplicate halt requests during HALTING and HALT_PENDING.
+- [x] Pass exact code/test HEAD fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8 on workflow #43619194630: 13 suites / 262 tests on each of Python 3.11, 3.12 and 3.13 (786 executions).
+- [x] Confirm egress-fencing package 36 tests / 23 HaltEgressGate cases.
+- [ ] Prove the common per-scope commit-order guard, HEGC grant status recovery and actual process/socket fencing with PostgreSQL 18.7 integration tests.
