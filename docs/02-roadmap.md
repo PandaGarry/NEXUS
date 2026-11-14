@@ -443,3 +443,15 @@ Review publication does not establish implementation readiness or production gua
 - Exact review HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed [workflow #43613493976](https://github.com/PandaGarry/NEXUS/actions/runs/43613493976): 13 Python reference-model suites / 237 tests each on 3.11, 3.12 and 3.13 (711 executions).
 - This is regression-only evidence; it does not validate proposed cache/revocation SLOs, outage semantics, source freshness thresholds, halt propagation, process/DB/secret/network fencing, Rust or venues.
 - Numeric objectives remain unaccepted proposals; OD-10/12 remain open.
+
+## CI supply-chain and stacked-PR integration
+
+- [x] Replace deprecated Node 20 action runtimes with current Node 24-compatible releases.
+- [x] Pin direct GitHub Actions dependencies to verified full commit SHAs.
+- [x] Verify the action-upgrade exact HEAD on Python 3.11/3.12/3.13 (13 suites, 237 tests per runtime; 711 executions).
+- [x] Confirm PR #13 -> #14 -> #16 is a correctly based stacked dependency chain.
+- [ ] Inventory and lock transitive action dependencies; add automated update/advisory monitoring.
+- [ ] Reconcile PR #16 scope against its original title and split only genuinely independent review units.
+- [ ] Integrate the stack in parent-first order after bounded review; retain Draft until review and required approval are complete.
+
+The current CI result proves only the checked-in Python reference suites. It does not close G0D/G1 or authorize Rust production code, database selection, trusted egress, venue connectivity or live execution.
