@@ -81,7 +81,7 @@ async def record_public(
             stop = asyncio.Event()
             heartbeat_task = None
             snapshot_task = None
-            snapshot_retry_delay = 0.5
+            snapshot_retry_delay = 0.0
             last_snapshot_request_at = 0.0
             synchronizer = BookSynchronizer(normalized_symbol, max_buffered_deltas=max_buffered_deltas)
 
@@ -134,7 +134,7 @@ async def record_public(
                                             await snapshot_task
                                         except (asyncio.CancelledError, Exception):
                                             pass
-                                    snapshot_task = schedule_snapshot_fetch(snapshot_retry_delay if force_refresh else 0.0)
+                                    snapshot_task = schedule_snapshot_fetch(snapshot_retry_delay)
 
                         if snapshot_task is not None and snapshot_task.done():
                             completed_task = snapshot_task
@@ -150,7 +150,7 @@ async def record_public(
                                     generation, record_type="rest_snapshot_error",
                                 )
                                 synchronizer.invalidate("rest_snapshot_fetch_failed")
-                                snapshot_retry_delay = min(snapshot_retry_delay * 2, 5.0)
+                                snapshot_retry_delay = min(max(snapshot_retry_delay * 2, 0.5), 5.0)
                                 response = None
                             if response is not None:
                                 journal.append(
