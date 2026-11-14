@@ -940,3 +940,13 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Pass exact code/test HEAD fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8 on workflow #43619194630: 13 suites / 262 tests on each of Python 3.11, 3.12 and 3.13 (786 executions).
 - [x] Confirm egress-fencing package 36 tests / 23 HaltEgressGate cases.
 - [ ] Prove the common per-scope commit-order guard, HEGC grant status recovery and actual process/socket fencing with PostgreSQL 18.7 integration tests.
+
+## PostgreSQL SSI / HEGC commit-order barrier
+
+- [x] Record that SSI serialization order is not necessarily commit order for overlapping transactions.
+- [x] Separate Risk aggregate guard from HEGC gate-validation guard.
+- [x] Require guard acquisition as first SQL statement before protected reads/writes; hold through commit and retry stale snapshots.
+- [x] Record least-privilege coordination function candidate; no direct-DML/advisory-lock bypass.
+- [ ] Prove writer-first and HEGC-first order on PostgreSQL 18.7 using multiple concurrent connections.
+- [ ] Test every invalidating writer, stale-snapshot retry, process pause/crash, ambiguous commit and multi-scope ordering.
+- [ ] Verify database privileges prevent any unguarded source mutation.
