@@ -1429,3 +1429,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove socket initiation through the actual Egress-owning boundary, not a pre-send application flag or mock adapter.
 
 **Disposition:** protocol and reference model now prohibit duplicate logical sends. No venue transport library or adapter is selected; actual transport enforcement remains G1-gated.
+
+## 18.86 Logical-send duplicate prevention and exact branch-head CI — 2026-11-14
+
+- [x] Add a regression that one consumed grant cannot initiate two logical venue-request transmissions.
+- [x] Clarify the oracle models the first transport write of a logical request, not one OS syscall, full delivery or venue acceptance.
+- [x] Verify code/test HEAD `fbccb65e3c75cbaf7081f6d1f6e02095fd53d8ee` on [workflow #43620606806](https://github.com/PandaGarry/NEXUS/actions/runs/43620606806): 264 tests per Python runtime, 792 successful executions total.
+- [x] Verify documentation-synchronized branch HEAD `3a8099750dfb562af63901163a123b8849a8d425` on [workflow #43620613920](https://github.com/PandaGarry/NEXUS/actions/runs/43620613920): 13 suites / 264 tests on Python 3.11/3.12/3.13.
+- [x] Egress-fencing passed 38 tests, including 25 HaltEgressGate cases; all three logs have no failures or deprecation warnings.
+- [ ] Qualify the actual venue transport stack for hidden retries, redirects, proxy replay and partial-write behavior.
+
+**Disposition:** Python reference model prevents a second logical send from the same consumed grant. No production transport is selected or verified.
