@@ -979,3 +979,10 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Separate internal scope-guard helper from HEGC gate transaction entrypoint; service role must not have direct source SELECT or guard/grant DML.
 - [x] Record SECURITY DEFINER identity constraints: dedicated authenticated session_user, no shared login/SET ROLE spoofing, explicit scope authorization.
 - [ ] Prove the first-operation guard acquisition, complete scope-set derivation, entrypoint privilege closure, all guarded source writers, stale-snapshot retry and both commit orders on PostgreSQL 18.7.
+
+## Exact branch-head verification
+
+- [x] Verify PR #16 documentation-synchronized HEAD `3d5181f1dc01441ebcd89145be2c0456608f501f` on workflow #43619941084.
+- [x] Pass 263 tests per Python 3.11/3.12/3.13 runtime (789 executions); egress-fencing 37 tests / HaltEgressGate 24.
+- [x] Inspect all three job logs; no failures or deprecated Node.js 20 / `punycode` warnings.
+- [ ] Implement the G1 HEGC database entrypoints, guard and role boundaries only after the multi-connection proof plan is accepted and tested.
