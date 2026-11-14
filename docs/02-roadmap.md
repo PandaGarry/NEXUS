@@ -179,7 +179,7 @@ This package validates mathematical identities only; it does not pass financial 
 - [ ] Verify T-Invest API instrument access flags and streaming/order/fill support for exact crypto-index futures/neoassets; no orders.
 - [ ] Obtain written T-Invest Lab confirmation of live spot crypto service, product terms and API availability.
 - [ ] Obtain product-specific legal advice on Articles 30–32 of Law 282-FZ and Article 30(2) software-assistance scope.
-- [ ] Draft NX-ADR-007 Venue Eligibility & Jurisdictional Activation Gate after evidence and owner review.
+- [x] Draft NX-ADR-007 Venue Eligibility & Jurisdictional Activation Gate; owner/legal acceptance and conformance evidence remain open.
 - [ ] Keep all foreign venues RESEARCH_ONLY until legal, KYC, product and API eligibility are evidenced.
 
 First-venue selection remains BLOCKED; no live trading is authorized.
