@@ -96,6 +96,22 @@ class BoundedNumericContext:
             raise NumericLimitExceeded(f"{operation} power-of-ten exponent exceeds configured maximum")
         self._check_intermediate(base_digits + exponent, operation)
 
+    def _preflight_signed_sum(self, left: int, right: int, operation: str) -> None:
+        """Reject same-sign sums that would exceed the intermediate digit budget."""
+        if left == 0 or right == 0 or (left < 0) != (right < 0):
+            return
+        exclusive_limit = 10 ** self.limits.max_intermediate_digits
+        if abs(left) >= exclusive_limit - abs(right):
+            raise NumericLimitExceeded(f"{operation} exceeds intermediate digit budget")
+
+    def _preflight_product(self, left: int, right: int) -> None:
+        """Check the exact product bound using division before multiplying."""
+        if left == 0 or right == 0:
+            return
+        max_product = (10 ** self.limits.max_intermediate_digits) - 1
+        if abs(left) > max_product // abs(right):
+            raise NumericLimitExceeded("multiplication exceeds intermediate digit budget")
+
     def parse_decimal(self, literal: str) -> ExactDecimal:
         if not isinstance(literal, str):
             raise TypeError("literal must be str")
@@ -129,7 +145,9 @@ class BoundedNumericContext:
         right_digits = _decimal_digit_count(right.coefficient) + scale - right.scale
         self._check_power10(scale - left.scale, _decimal_digit_count(left.coefficient), "addition alignment")
         self._check_power10(scale - right.scale, _decimal_digit_count(right.coefficient), "addition alignment")
-        self._check_intermediate(max(left_digits, right_digits) + 1, "addition")
+        self._check_intermediate(max(left_digits, right_digits), "addition operands")
+        left_scaled, right_scaled, _ = left._aligned(right)
+        self._preflight_signed_sum(left_scaled, right_scaled, "addition")
         return self._check_decimal(left + right, "addition result")
 
     def subtract(self, left: ExactDecimal, right: ExactDecimal) -> ExactDecimal:
@@ -140,7 +158,9 @@ class BoundedNumericContext:
         right_digits = _decimal_digit_count(right.coefficient) + scale - right.scale
         self._check_power10(scale - left.scale, _decimal_digit_count(left.coefficient), "subtraction alignment")
         self._check_power10(scale - right.scale, _decimal_digit_count(right.coefficient), "subtraction alignment")
-        self._check_intermediate(max(left_digits, right_digits) + 1, "subtraction")
+        self._check_intermediate(max(left_digits, right_digits), "subtraction operands")
+        left_scaled, right_scaled, _ = left._aligned(right)
+        self._preflight_signed_sum(left_scaled, -right_scaled, "subtraction")
         return self._check_decimal(left - right, "subtraction result")
 
     def multiply(self, left: ExactDecimal, right: ExactDecimal) -> ExactDecimal:
@@ -149,10 +169,7 @@ class BoundedNumericContext:
         scale = left.scale + right.scale
         if scale > self.limits.max_scale:
             raise NumericLimitExceeded("multiplication result scale exceeds configured maximum")
-        self._check_intermediate(
-            _decimal_digit_count(left.coefficient) + _decimal_digit_count(right.coefficient),
-            "multiplication",
-        )
+        self._preflight_product(left.coefficient, right.coefficient)
         return self._check_decimal(left * right, "multiplication result")
 
     def divide_exact(self, numerator: ExactDecimal, denominator: ExactDecimal) -> ExactRational:
