@@ -4,7 +4,6 @@ TEST-ONLY: no persistence, concurrency, source authority or distributed ordering
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
@@ -32,8 +31,8 @@ class Registration(str, Enum):
     ALREADY_PRESENT = "ALREADY_PRESENT"
 
 
-@dataclass(frozen=True, slots=True)
 class InstrumentSpecRegistry:
+    __slots__ = ("_history",)
     """Append-only registry for immutable InstrumentSpec snapshots.
 
     This object is deliberately single-process and in-memory. The caller owns
@@ -41,10 +40,8 @@ class InstrumentSpecRegistry:
     version with different content is rejected. New versions must increase.
     """
 
-    _history: dict[str, tuple[InstrumentSpec, ...]]
-
     def __init__(self) -> None:
-        object.__setattr__(self, "_history", {})
+        self._history: dict[str, tuple[InstrumentSpec, ...]] = {}
 
     def register(self, spec: InstrumentSpec) -> Registration:
         if not isinstance(spec, InstrumentSpec):
