@@ -1165,3 +1165,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Verify at the process/network boundary that only Trusted Egress has venue credentials and direct venue egress.
 
 **Disposition:** contract wording aligned; runtime and boundary-observed proof remain open.
+
+## 18.63 Test-only halt / final Egress gate reference oracle — 2026-11-14
+
+- [x] Add `halt_egress_gate.py` as a pure test-only state-machine oracle; no production imports or dependencies.
+- [x] Add 11 tests for halt-first denial, gate-first in-flight ordering, paused-process acknowledgement blocking, positive sender fencing, single-use attempt identity, halt-store outage and post-socket reconciliation.
+- [x] Ensure a gate-committed attempt remains eligible to initiate while halt is propagating, but prevents HALTED acknowledgement until socket initiation is observed or sender is positively fenced.
+- [x] Ensure a socket-initiated attempt remains a reconciliation obligation after HALTED acknowledgement.
+- [x] Document that sequential oracle tests do not prove real database linearizability, process/host/network fencing or socket behavior.
+- [ ] Run the expanded egress-fencing suite on Python 3.11/3.12/3.13 and record exact-head CI.
+- [ ] Implement actual shared-row/conditional-update ordering and fault-inject both commit orders, process pause, store outage and positive fence at the real Egress boundary.
+
+**Disposition:** reference model and unit tests added; runtime, durable halt store, transport and external fence remain unimplemented.
