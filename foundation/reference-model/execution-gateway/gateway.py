@@ -295,12 +295,28 @@ class CommandGateway:
 
     def recover_after_restart(self) -> list[str]:
         db = self.store.db
-        rows = db.execute("SELECT command_id FROM commands WHERE state=?",
-                          (CommandState.DISPATCHING.value,)).fetchall()
-        for (command_id,) in rows:
-            db.execute("UPDATE commands SET state=?,outcome=? WHERE command_id=?",
-                       (CommandState.OUTCOME_UNKNOWN.value, "PROCESS_RESTART_DURING_DISPATCH", command_id))
-        return [r[0] for r in rows]
+        recovered: list[str] = []
+        # Serialize the recovery scan and transitions. A late ACK either commits
+        # before this transaction (and is not selected) or loses its DISPATCHING
+        # compare-and-swap after recovery commits; it cannot be overwritten.
+        db.execute("BEGIN IMMEDIATE")
+        try:
+            rows = db.execute("SELECT command_id FROM commands WHERE state=?",
+                              (CommandState.DISPATCHING.value,)).fetchall()
+            for (command_id,) in rows:
+                cursor = db.execute(
+                    "UPDATE commands SET state=?,outcome=? "
+                    "WHERE command_id=? AND state=?",
+                    (CommandState.OUTCOME_UNKNOWN.value, "PROCESS_RESTART_DURING_DISPATCH",
+                     command_id, CommandState.DISPATCHING.value))
+                if cursor.rowcount == 1:
+                    recovered.append(command_id)
+            db.execute("COMMIT")
+        except Exception:
+            if db.in_transaction:
+                db.execute("ROLLBACK")
+            raise
+        return recovered
 
     def _record_stale_dispatch_observation(
         self, command_id: str, observation_type: str, detail: str, authority_epoch: int
