@@ -150,3 +150,10 @@
 - Added NX-REF-VENUE-001 test-only evidence evaluator and 28 conformance tests.
 - Added NX-REF-VENUE-002 single-process egress fencing reference and 21 race/ordering tests; CI run 43599182263 passed 231 tests/runtime on Python 3.11/3.12/3.13 (693 executions).
 - Updated historical venue research, architecture index, roadmap, project status and checklist. No venue selected, no live capability or production code added.
+
+### Added — Rust execution and cross-language conformance architecture (proposed; documentation only)
+
+- Added NX-ARCH-004 defining candidate Rust domain/execution boundaries, NEXUS-owned command/Risk/trusted-egress authority, adapter evidence classes, exact numeric constraints, language-neutral conformance fixtures and adversarial failure scenarios.
+- Created Issue #15 and branch `engineering/rust-execution-domain-conformance-v0`, based on exact PR #14 head `ab6976933cb4de9b5320b73531034d02edc53907`.
+- Updated architecture index, project checklist, roadmap and project status.
+- No Rust source, Cargo workspace, production numeric limits, venue adapter, credentials, network egress or live-trading capability added. Python models remain test-only references; no Rust/Python conformance is claimed.
