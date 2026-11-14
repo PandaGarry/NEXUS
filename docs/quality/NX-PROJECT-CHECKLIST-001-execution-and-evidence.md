@@ -1528,3 +1528,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Qualify DBA/migration control plane, emergency-change reconciliation and termination/fencing of affected existing sessions/processes.
 
 **Disposition:** one narrow but material fixture-level catalog-drift detection gap is now covered. Production DBA/migration governance, production manifest lifecycle and operational fencing remain OPEN; no production deployment or live-trading authorization follows.
+
+
+## 18.91 SHA-256 catalog fingerprint close-out — 2026-11-14
+
+- [x] Replace MD5 with Python `hashlib.sha256` over deterministic JSONB catalog snapshot text.
+- [x] Verify exact code/test HEAD `d9c7bf5fddf68792ed565fecbcef83b73dab11a7`: PostgreSQL 18.7 workflow [#43631854964](https://github.com/PandaGarry/NEXUS/actions/runs/43631854964) passed **12/12**; Python workflow [#43631854995](https://github.com/PandaGarry/NEXUS/actions/runs/43631854995) passed **264 tests/runtime** on Python 3.11/3.12/3.13 (792 executions).
+- [x] Inspect job summaries: all four jobs succeeded; PostgreSQL harness reports 12 tests / OK.
+- [ ] Keep production signed/approved manifest lifecycle, full catalog coverage, immutable audit custody and fail-closed deployment enforcement OPEN.
+
+**Disposition:** SHA-256 is used only as a test fingerprint over a bounded fixture snapshot. It is not a production attestation, signed manifest or operational drift gate.
