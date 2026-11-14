@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE — living execution register  
 **Snapshot:** 2026-11-14  
-**Branch:** `engineering/rust-execution-domain-conformance-v0`  
+**Branch:** `engineering/bybit-v5-market-data-qualification-v0` (child of PR #16 architecture branch)  
 **Scope:** NEXUS v1 foundation, documentation close-out, safe reference work and readiness-controlled implementation.
 
 This checklist is the operational index for the next actions. It does not replace ADRs, specifications, owner decisions or readiness gates. Each checked item must point to a durable artifact or commit-specific evidence. A document being published is not the same as a decision being accepted; a test passing in a reference model is not production verification.
@@ -1567,3 +1567,24 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 
 **Verification evidence:** Python workflow [#43633125568](https://github.com/PandaGarry/NEXUS/actions/runs/43633125568) passed 287 tests/runtime on Python 3.11–3.13 (861 executions); the new auth-catalog suite contributed 23 tests/runtime. PostgreSQL workflow [#43633125536](https://github.com/PandaGarry/NEXUS/actions/runs/43633125536) passed 12/12. Exact code/test HEAD: `c80d781ce7c9f2b4a015fa79f8e2c403709439d7`. These results qualify the logical reference model only.
+
+
+## 19. Product-first Bybit V5 public market-data slice — 2026-11-14
+
+- [x] Audit current repository artifacts: NX-ADR-001/002/003/004/005/007/008, NX-OWNER-DECISIONS-001, NX-SEC-001, NX-RESEARCH-003/009, PR #16 changed-file surface and existing reference-only implementations.
+- [x] Verify official Bybit V5 public feed contracts and record findings/limitations in NX-RESEARCH-013.
+- [x] Record that Bybit is a technical research candidate only; no v1 venue/account/product eligibility decision is made.
+- [x] Keep PR #16 unchanged; create a separate child workstream for public data capture/replay.
+- [x] Open separate Draft PR [#17](https://github.com/PandaGarry/NEXUS/pull/17), based on PR #16; keep it stacked and do not merge independently.
+- [ ] Pin Rust toolchain and qualify the minimum dependency set/licences before implementation.
+- [ ] Implement public WebSocket supervisor, heartbeat, reconnect generation and bounded buffering.
+- [ ] Implement full-depth snapshot/delta synchronization exactly per Bybit `u`/`seq` rules; invalidate the book on any gap/reset.
+- [ ] Implement trade parsing and per-trade `i` deduplication; never deduplicate by `seq`.
+- [ ] Implement append-only raw JSONL capture, segment manifests/checksums and deterministic replay.
+- [ ] Add malformed-input, duplicate, gap, reset, disconnect, snapshot-bridge, overflow, disk-failure and restart fault tests.
+- [ ] Add quality/latency metrics and prove no invalid book is exposed as `LIVE_VALID`.
+- [ ] Run exact-head CI and only then start a seven-day endurance recording; pair endurance with fault injection.
+- [ ] Benchmark raw storage and replay before choosing Parquet/PostgreSQL/other long-term storage.
+- [ ] Keep private account, order entry, credentials, paper fills, testnet orders and live trading out of this slice.
+
+**Disposition:** research qualification is complete. Recorder implementation is NOT STARTED; Bybit remains unselected; G0D/G1–G3 remain gated; live trading remains NOT AUTHORIZED.
