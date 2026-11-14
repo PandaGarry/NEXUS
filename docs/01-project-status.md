@@ -80,3 +80,14 @@
 - Лицензия Tradoor заявлена как AGPL-3.0-only; юридический анализ обязателен.
 
 Это контрольная точка, а не отчёт о полном аудите. Выводы связывать с точным commit SHA, путями/строками, датой и методом. Непроверенное помечать UNKNOWN, а не PASS.
+
+
+## Foundation documentation review and first conformance slice (2026-11-14)
+
+- NX-DOC-REVIEW-001 added as a bounded close-out review. Documentation baseline remains NOT FROZEN; G0D is BLOCKED.
+- Corrected the stale NX-ARCH-001 statement: NX-ADR-001 exists as PROPOSED and still requires owner review/conformance evidence.
+- PR #1–#9 remain open Draft PRs and unmerged at this status snapshot. PR #8 and #9 are sibling branches; #9 does not include #8.
+- Repository branch `docs/personal-product-profile` contains documentation only; no NEXUS root source workspace/build system was found. This is consistent with the current discovery phase.
+- NX-ARCH-003 defines the first exact-decimal conformance slice without prematurely selecting production language, bounds or rounding policy.
+- Added a dependency-free Python exact-decimal reference oracle. Local verification: `python -m unittest -v`, 9 tests passed. This is reference-model evidence only, not production runtime or Rust/WASM verification.
+- Prototype Readiness remains BLOCKED. No exchange account connection, credentials, orders, live trading, production deployment or risk-limit changes occurred.
