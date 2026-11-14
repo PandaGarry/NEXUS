@@ -316,3 +316,25 @@ The inline weighted-average arithmetic has been extracted to the test-only calla
 #### Partial-fill zero-denominator boundary — 2026-11-14
 
 The extracted arithmetic helper intentionally accepts signed `AssetAmount` values because it is a mathematical aggregation primitive, not a venue fill validator. Therefore a non-empty set can still have zero aggregate quantity. `aggregate_partial_fills` delegates that case to `ExactDecimal.divide_exact`, which raises the typed `DivisionByZero`; this is distinct from empty input (`ValueError`, invalid operation input) and malformed Python argument types (`TypeError`). For a reviewed normalized adapter, a zero total denominator is a candidate `NUMERIC.DIVISION_BY_ZERO`; empty/malformed inputs must be rejected at the schema/contract boundary and must not be mislabeled as mathematical inexactness. A dedicated regression test pins this distinction. This mapping remains proposed until the operation registry and rejection taxonomy receive owner approval.
+
+
+## 3.5 Python reference exception audit — proposed mapping only
+
+A direct pass over the current callable surface distinguishes mathematical/domain outcomes from malformed API input. The table records candidate mappings, not an accepted stable taxonomy. The normalized adapter must validate input shape/types before calling an operation, catch only documented exception types, and never inspect message text.
+
+| Reference operation | Typed reference failure | Candidate normalized class | Boundary / unresolved point |
+|---|---|---|---|
+| `ExactDecimal.parse` | `InvalidDecimal` | `NUMERIC.INVALID_SYNTAX` | Non-string input is an API/contract failure, not a numeric parse outcome. |
+| `ExactDecimal.quantize_exact` | `InexactQuantization` | `NUMERIC.INEXACT_RESULT` | Negative, boolean or non-integer target scale is malformed input (`ValueError`/type validation), not inexactness. |
+| `ExactDecimal.is_multiple_of` | `InvalidStep` | `NUMERIC.INVALID_STEP` | Adapter must type-check the step before invocation; the current method does not explicitly type-check it. |
+| `ExactDecimal.divide_exact` / `ExactRational` construction | `DivisionByZero` | `NUMERIC.DIVISION_BY_ZERO` | Wrong operand types are API failures. |
+| `ExactRational.to_decimal_exact` | `InexactDivision` | `NUMERIC.INEXACT_RESULT` | A repeating base-10 rational is mathematically valid; only the requested exact decimal conversion is impossible. |
+| `ExactRational.quantize` | `InexactDivision` with `UNNECESSARY` | `NUMERIC.INEXACT_RESULT` | Invalid/missing scale or rounding enum is malformed operation input, not an inexact result. |
+| `BoundedNumericContext` operations | `NumericLimitExceeded` | `NUMERIC.RESOURCE_LIMIT` | Match the typed exception, not its message. Synthetic caller-supplied limits are not a production profile. |
+| `Price.notional_for` | `DimensionMismatch` | Candidate `DOMAIN.UNIT_MISMATCH` | The adapter knows the operation and can distinguish base-unit mismatch; wrong input type is an API failure. |
+| `InstrumentUnitModel` conversions | `UnitModelMismatch`, `UnsupportedUnitModel`, `DimensionMismatch` | Candidate `DOMAIN.UNIT_MISMATCH` / `DOMAIN.UNSUPPORTED_OPERATION` | Identity/spec-version mismatch versus unit mismatch must be decided from typed fields and operation context, not exception text. |
+| `aggregate_partial_fills` | `DimensionMismatch`, `DivisionByZero` | Candidate `DOMAIN.UNIT_MISMATCH`, `NUMERIC.DIVISION_BY_ZERO` | Empty input (`ValueError`) and malformed tuple/value types (`TypeError`) are input-contract failures. Signed quantities are allowed by this arithmetic helper; zero aggregate quantity is a mathematical denominator failure, not venue-fill validation. |
+
+The following failures remain deliberately unmapped pending a broader reviewed taxonomy: `InvalidUnitCode`, `DomainTypeError` for invalid domain values such as non-positive prices, `UnitModelError` variants not reducible to the operation's declared scope, and raw `TypeError`/`ValueError` caused by invalid API parameters. The initial proposed rejection catalogue may need a separately reviewed domain-invalid-value class; do not silently force these failures into `UNIT_MISMATCH` or `UNSUPPORTED_OPERATION`.
+
+**Disposition:** this is a code-surface audit to inform owner review. It does not approve new stable classes, executable schema behavior or production adapter mappings. The fixture/runner implementation gate remains closed until the operation registry and error taxonomy are accepted.
