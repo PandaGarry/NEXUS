@@ -4,6 +4,14 @@
 
 ## Unreleased
 
+### Clarified — Execution preflight versus Trusted Egress final authorization (2026-11-14)
+
+- Reframed NX-IF-001 Execution checks as non-authorizing preflight and defense in depth.
+- Made Trusted Egress the sole final send-authorization boundary: it reloads persisted evidence, serializes the one-use gate with halt generation, and alone initiates the venue socket.
+- Explicitly tied the gate-first halt race to pending-attempt drain/fencing before HALTED acknowledgement.
+- No runtime, credential, signer, database schema or network fence was implemented.
+
+
 ### Added — Capability authorization cross-review (2026-11-14)
 
 - Added NX-ARCH-REVIEW-003 reviewing the capability catalog, scope/data-classification model, entitlement separation and request-time authorization.
