@@ -412,3 +412,8 @@ No code, exchange connection, credentials, order placement, risk-limit change, P
 ## WP-D evidence binding
 
 RiskApprovalCapability MUST reference the immutable StateEvidenceVector ID/version and canonical digest defined by [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md), together with the EvidenceRequirementSet/FreshnessPolicy version used for evaluation. Execution performs the final compatibility check immediately before dispatch. A material source generation, watermark, quality, spec, policy, exposure, reservation or halt-epoch change invalidates the capability unless a contractually defined monotonic compatibility rule proves otherwise. Approval MUST NOT be rebound in place; Risk must re-evaluate and issue a new capability. This is a proposed cross-contract requirement, not an implemented behavior.
+
+
+## WP-E emergency command authorization
+
+The command types already enumerated by this contract MUST use the operation-class policy and emergency authorization rules in [NX-IF-005](NX-IF-005-emergency-operations-halt-risk-reduction-contract.md). CANCEL, CLOSE, REDUCE_ONLY and CANCEL_ALL are not implicit bypasses and are not presumed risk-reducing. Every emergency command remains a separate immutable CanonicalTradeCommand bound to its exact payload digest, account/scope, current halt epoch, target-set digest where applicable, instrument-spec version, StateEvidenceVector, RecoveryBarrier and policy. A halt activation is a control-plane action and does not mint an order approval. Resume requires privileged authorization and cannot be represented as a trade command.
