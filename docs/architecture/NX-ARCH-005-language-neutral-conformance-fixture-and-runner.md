@@ -145,7 +145,7 @@ The following stable operation identifiers are proposed for the first normalized
 | EXACT_NUMERIC | `rational.divide_exact` | `{"a":"...","b":"..."}` decimal operands | Reduced rational object `{"numerator":"...","denominator":"..."}` | `NUMERIC.DIVISION_BY_ZERO` |
 | EXACT_NUMERIC | `rational.to_decimal_exact` | Reduced rational object | Canonical decimal string | `NUMERIC.INEXACT_RESULT` |
 | EXACT_NUMERIC | `rational.quantize` | Reduced rational object plus explicit non-negative scale and explicit rounding enum | Canonical decimal string | `NUMERIC.INEXACT_RESULT` for UNNECESSARY mode |
-| EXACT_NUMERIC | `numeric_wire.parse_decimal` | `{"wire":"...","max_chars":N}` | Typed decimal object `{"coefficient":"...","scale":N}` | `NUMERIC.INVALID_WIRE`, `NUMERIC.UNSUPPORTED_WIRE_VERSION`, `NUMERIC.NON_CANONICAL`, `NUMERIC.RESOURCE_LIMIT` |
+| EXACT_NUMERIC | `numeric_wire.parse_decimal` | `{"wire":"...","max_chars":N,"max_scale":N?}` | Typed decimal object `{"coefficient":"...","scale":N}` | `NUMERIC.INVALID_WIRE`, `NUMERIC.UNSUPPORTED_WIRE_VERSION`, `NUMERIC.NON_CANONICAL`, `NUMERIC.RESOURCE_LIMIT` |
 | EXACT_NUMERIC | `numeric_wire.parse_rational` | `{"wire":"...","max_chars":N}` | Typed rational object `{"numerator":"...","denominator":"..."}` | `NUMERIC.INVALID_WIRE`, `NUMERIC.UNSUPPORTED_WIRE_VERSION`, `NUMERIC.NON_CANONICAL`, `NUMERIC.RESOURCE_LIMIT` |
 | DIMENSIONAL_MATH | `financial.spot_notional`, `financial.linear_contract_notional`, `financial.inverse_contract_base_exposure`, `financial.partial_fill_aggregation_math` | Existing typed `inputs` object, migrated without dropping units/identity | Existing typed `expected` object, migrated without dropping units/identity | `DOMAIN.UNIT_MISMATCH`, `DOMAIN.IDENTITY_MISMATCH` only where explicit negative cases are added |
 | INSTRUMENT_SPEC | `instrument_spec.validate_limit_order` | Full instrument snapshot plus price/quantity | Explicit `{"outcome":"VALUE","value":{"valid":true}}` | Deferred until a dedicated fixture specifies invalid cases and exact stable rejection mapping |
@@ -167,7 +167,7 @@ The instrument-spec fixture remains a snapshot, not an executable test case. Alt
 The initial registry is a proposed normalization target, not a claim that every listed operation currently has an executable adapter:
 
 - `decimal.*` and `rational.*` operations map to methods on `ExactDecimal` / `ExactRational` in `nexus_decimal.py`. `rational.divide_exact` specifically accepts two decimal operands and returns a reduced rational.
-- `numeric_wire.parse_decimal` and `numeric_wire.parse_rational` map to `parse_decimal(encoded, max_chars=...)` and `parse_rational(encoded, max_chars=...)`. The normalized `wire` field is adapter input; the reference function's parameter is named `encoded`. The adapter must pass the profile-bounded `max_chars` explicitly.
+- `numeric_wire.parse_decimal` and `numeric_wire.parse_rational` map to `parse_decimal(encoded, max_chars=...)` and `parse_rational(encoded, max_chars=...)`. The normalized `wire` field is adapter input; the reference function's parameter is named `encoded`. The adapter must pass the profile-bounded `max_chars` explicitly. Decimal parsing also accepts optional `max_scale`; when omitted, the reference parser bounds scale by `max_chars`. A profile may supply a stricter explicit `max_scale`.
 - `financial.spot_notional` is exercised through `Price.notional_for(AssetAmount)` in `test_financial_math_fixtures.py`.
 - `financial.linear_contract_notional` is backed by `InstrumentUnitModel.linear_base_exposure(ContractCount)` and `InstrumentUnitModel.linear_notional(ContractCount, Price)` in `instrument_units.py`; its vector test verifies base exposure and quote notional.
 - `financial.inverse_contract_base_exposure` is backed by `InstrumentUnitModel.inverse_quote_notional(ContractCount)` and `InstrumentUnitModel.inverse_base_exposure(ContractCount, Price)`, returning exact rational asset exposure without implicit decimal rounding.
@@ -343,3 +343,14 @@ The following failures remain deliberately unmapped pending a broader reviewed t
 #### Divisibility API type-boundary hardening — 2026-11-14
 
 The exception audit found that `ExactDecimal.is_multiple_of` accessed `step.coefficient` before checking the operand type, allowing an accidental `AttributeError` instead of a deliberate API-contract failure. The reference method now checks `isinstance(step, ExactDecimal)` and raises `TypeError` for malformed operand types; non-positive valid decimal steps continue to raise `InvalidStep`. A dedicated regression test covers the malformed-type path. This does not change the mathematical operation or its candidate `NUMERIC.INVALID_STEP` mapping.
+
+
+#### Follow-up: numeric wire parser resource-boundary correction — 2026-11-14
+
+A targeted audit found two gaps in the test-only numeric wire parser: a syntactically valid decimal scale could be numerically enormous despite a short encoded string, and Python's own integer-string conversion ceiling could leak a raw ValueError instead of the stable wire resource class.
+
+- `parse_decimal` now accepts optional `max_scale`; when omitted, scale is bounded by `max_chars`. A scale above the configured budget raises `NumericWireResourceLimit` / `NUMERIC.RESOURCE_LIMIT` before constructing the value.
+- Regex-validated integer conversion is centralized. Interpreter digit-budget failures for decimal coefficients/scales and rational numerators/denominators are normalized to `NumericWireResourceLimit`, not exposed as implementation-specific ValueError.
+- Added tests for default and explicit scale budgets, invalid budget configuration, and oversized decimal/rational integer conversion.
+- This is a synthetic reference-parser resource guard only. It is not a selected production numeric profile; future normalized fixtures must carry an explicit reviewed profile and limits.
+
