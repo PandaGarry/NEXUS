@@ -63,7 +63,7 @@ Minimum future typed wrappers:
 - Timestamp with explicit clock source/precision;
 - TickSize and QuantityStep as positive validated increments.
 
-Operations between incompatible units must be rejected at the type/domain boundary. This initial reference model intentionally implements only scalar decimal mathematics; it does not yet model financial dimensions.
+Operations between incompatible units must be rejected at the type/domain boundary. NX-REF-DOMAIN-003 adds test-only AssetAmount, Money, Price, Notional and instrument-scoped ContractCount wrappers. NX-REF-DOMAIN-004 adds a spec-version-pinned quantity-unit mapping. These remain reference models, not production domain integration.
 
 ## 5. Instrument-rule validation
 
@@ -88,7 +88,7 @@ It is not:
 - a performance implementation;
 - evidence of Rust/WASM or backend conformance.
 
-Production implementation must match the golden vectors and add bounded-overflow, serialization, fuzz/property and cross-language tests.
+Production implementation must match the golden vectors and add bounded-overflow, serialization, fuzz/property and cross-language tests. NX-REF-DOMAIN-007/008 now provide initial test-only bounded-admission and scalar-wire references; production profiles, implementation and cross-language evidence remain open.
 
 ## 7. Acceptance criteria for this slice
 
