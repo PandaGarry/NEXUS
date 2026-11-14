@@ -123,7 +123,8 @@ class BoundedNumericTests(unittest.TestCase):
 
     def test_add_preflights_intermediate_growth(self):
         ctx = context(max_intermediate_digits=8, max_rational_numerator_digits=8,
-                      max_rational_denominator_digits=8, max_coefficient_digits=8)
+                      max_rational_denominator_digits=8, max_coefficient_digits=8,
+                      max_power10_exponent=8)
         with self.assertRaisesRegex(NumericLimitExceeded, "addition"):
             ctx.add(d("99999999"), d("99999999"))
 
