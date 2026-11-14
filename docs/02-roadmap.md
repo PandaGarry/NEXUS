@@ -692,3 +692,10 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Encode the same 512-digit acceptance / 513-digit rejection boundary in language-neutral vectors.
 - [ ] Require Rust implementation to return the same stable NUMERIC.RESOURCE_LIMIT class.
 - [ ] Reassess the bound only as part of an explicit production numeric profile; do not treat it as a trading or financial limit.
+## Risk root-scope configuration guard and valuation snapshots
+
+- [x] Include account/root scope-state in every v1 reservation/projection transaction and recheck root scope_config_version after locking all scopes.
+- [x] Bind reservation/capability to immutable market/index/FX/fee/collateral input versions and source freshness evidence.
+- [x] Keep market-data ticks out of the serialized scope-state write path; stale or invalid valuation snapshots block dispatch.
+- [ ] Add concurrency tests for scope membership change racing reservation and for valuation-input changes between reservation and dispatch.
+- [ ] Prove exact version-vector lineage, source freshness and dispatch-time invalidation in the G1 harness.
