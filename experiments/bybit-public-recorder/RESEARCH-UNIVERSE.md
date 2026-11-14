@@ -23,7 +23,7 @@ This primary configuration remains unchanged. A change to venue, product family,
 
 | Venue | Exact product family | Candidate instruments | Role | Current data / implementation status |
 |---|---|---|---|---|
-| Bybit V5 | Linear USDT contracts | BTCUSDT | Primary confirmatory | Public raw smoke exists; synchronized L2 and historical archive coverage remain unverified |
+| Bybit V5 | Linear USDT contracts | BTCUSDT | Primary confirmatory | Official public daily trade CSV listing starts 2020-03-25; current archive freshness/schema need inspection; historical L2 path remains unverified |
 | Bybit V5 | Linear USDT contracts | ETHUSDT, SOLUSDT | Exploratory instrument robustness only | Not yet captured or qualified |
 | Bybit V5 | Spot | BTCUSDT, ETHUSDT | Exploratory spot-vs-derivative comparison | Not yet captured or qualified; do not pool with linear contracts |
 | Kraken Spot WS v2 | Spot | XBT/USD, ETH/USD | Cross-venue exploratory replication candidate | Full Spot Time & Sales archive documented through 2026-09-30; WS docs reviewed; historical side semantics and data-use terms remain open; no historical L2 evidence |
@@ -59,6 +59,20 @@ Sources:
 - Historical data terms: https://www.okx.com/help/historicaldata-terms-and-conditions
 
 OKX is a research candidate, not a venue recommendation or authorization. Archive completeness, instrument coverage, actual downloadable schemas, personal account eligibility and local product eligibility remain to be verified.
+
+### Bybit historical archive note (checked 2026-11-15)
+
+The official Bybit Learn guide says downloadable historical public market data can include order-book snapshots, K-lines, trades and funding rates, and links to the public data portal. The accessible public directory currently exposes `trading/`, `spot/`, `kline_for_metatrader4/`, `premium_index/` and `spot_index/`; the `trading/BTCUSDT/` listing contains daily CSV files beginning 2020-03-25 and, in the listing inspected, extends through 2025-11-16. This verifies a public BTCUSDT trade-archive listing, not a current complete archive through today.
+
+Important caveats:
+- The accessible public directory does not expose an obvious order-book archive path. Although the Bybit Learn guide mentions order-book snapshots, NEXUS has not located or validated an actual L2 archive file, schema, depth or date range. Historical L2 remains UNKNOWN.
+- Before using the trade CSV for HYP-001, download a permitted sample privately and verify timestamp precision, trade IDs, taker-side semantics, duplicate handling, row ordering, missing days and schema changes. Do not infer semantics from filenames.
+- The directory listing is not proof that every day is complete or that the archive is current. No raw archive data is committed to the repository.
+
+Sources:
+- Bybit Learn guide: https://www.bybit.com/en/learn/bybit-guide/how-to-create-a-bybit-api-key (historical data description and public portal link)
+- Public Bybit data root: https://public.bybit.com/
+- BTCUSDT trade archive listing: https://public.bybit.com/trading/BTCUSDT/
 
 ## 3. Comparability and statistical rules
 
