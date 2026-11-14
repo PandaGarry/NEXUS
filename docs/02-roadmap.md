@@ -3,6 +3,13 @@
 Статусы меняются только при наличии проверяемых свидетельств.
 
 ## Phase 0 — Foundation Audit (In Progress)
+
+### Foundation close-out track (active)
+- [ ] Complete NX-DOC-REVIEW-001 packages D1–D8 or explicitly defer each behind a named gate.
+- [x] Add exact-decimal reference oracle and initial unit tests (9/9 local tests passed; reference-only evidence).
+- [ ] Convert reference semantics into language-neutral golden vectors and add property/fuzz coverage.
+- [ ] Approve production numeric bounds, overflow behavior, typed units and rounding ownership before financial runtime implementation.
+- [ ] Establish implementation workspace, pinned toolchain, dependency policy and reproducible CI before production-language kernel work.
 - [ ] Зафиксировать baseline commit и структуру Tradoor.
 - [ ] Завершить аудит exchange adapters и capabilities matrix. (Initial Tradoor source pass recorded in NX-RESEARCH-002; private/funding and full instrument rules remain UNKNOWN.)
 - [ ] Проверить ingestion, recorder, backfill, migrations и persistence.
