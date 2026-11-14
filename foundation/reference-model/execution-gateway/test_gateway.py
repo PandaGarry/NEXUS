@@ -343,6 +343,38 @@ class GatewayTests(unittest.TestCase):
             "WHERE command_id='cmd-001'").fetchone(),
             ("STALE_SEND_ERROR", "TimeoutError", 4))
 
+    def test_two_recovery_workers_atomically_claim_dispatching_state_once(self):
+        self.gateway.persist_approved(self.cmd, self.approval)
+        self.store.db.execute(
+            "UPDATE commands SET state='DISPATCHING' WHERE command_id='cmd-001'")
+        barrier = threading.Barrier(3)
+        outcomes = []
+        lock = threading.Lock()
+
+        def recover():
+            store = SQLiteOutbox(self.path)
+            gateway = CommandGateway(store, FakeVenueAdapter(), verification_key=KEY,
+                                     clock=lambda: self.now,
+                                     current_halt_epoch=lambda _account: self.epoch)
+            barrier.wait()
+            try:
+                result = gateway.recover_after_restart()
+            finally:
+                store.close()
+            with lock:
+                outcomes.append(result)
+
+        workers = [threading.Thread(target=recover) for _ in range(2)]
+        for worker in workers:
+            worker.start()
+        barrier.wait()
+        for worker in workers:
+            worker.join(timeout=5)
+
+        self.assertTrue(all(not worker.is_alive() for worker in workers))
+        self.assertCountEqual(outcomes, [["cmd-001"], []])
+        self.assertEqual(self.gateway.state("cmd-001"), "OUTCOME_UNKNOWN")
+
     def test_duplicate_approval_and_command_replay_rejected(self):
         self.gateway.persist_approved(self.cmd, self.approval)
         with self.assertRaises(Denied):
