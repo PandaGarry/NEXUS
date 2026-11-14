@@ -265,3 +265,17 @@ No production mapping or normalized wire contract is approved by this audit.
 - [ ] Fault-inject crashes before marker, after marker/before socket write, during write, after venue acceptance/before response, and after response/before persistence.
 
 Documentation ambiguity closed; implementation proof remains a separate gate.
+
+
+## Transaction and egress failure semantics refinement — 2026-11-14
+
+- [x] Define the logical Risk reservation transaction separately from the Command Coordinator transaction.
+- [x] Require atomic single-use capability consumption with command + reservation reference + outbox commit.
+- [x] Define Egress as the sole credential/socket owner and exclude direct venue egress from workers/adapters.
+- [x] Add crash-point matrix covering ambiguous commit, attempt marker, socket write, acceptance, fills/Ledger, takeover and recovery evidence.
+- [ ] Resolve OD-08 capability serialization/signing and key custody with security review.
+- [ ] Resolve OD-09 database, isolation, durable journal and multi-scope reservation mechanism.
+- [ ] Resolve OD-10 freshness/recovery and failover objectives; OD-12 operator/incident authority.
+- [ ] Implement and fault-inject the selected actual egress fence; prove old path cannot send after takeover under partition/restart.
+
+This refinement is proposed design only. It does not close G0/G1, select a technology provider or authorize production execution. The design intentionally avoids a distributed transaction between Risk and Command; each boundary owns its local durable commit and recovery protocol.
