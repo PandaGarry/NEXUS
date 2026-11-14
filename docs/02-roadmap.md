@@ -305,3 +305,16 @@ The active architecture track now compares database transaction models and Trust
 - [ ] Revisit NATS, Cilium and Temporal only when workload/deployment requirements justify them.
 
 No module adoption or runtime integration is implied by this research increment.
+
+
+## Modular product boundaries and security isolation (design track)
+
+- [x] Publish NX-ARCH-006 proposal for bounded contexts, module contracts, deny-by-default admission, workload identity, capability grants and independent lifecycle.
+- [x] Define Identity & Access, Demo and Learning/Wiki as separate product domains with distinct permissions and data ownership.
+- [x] Define mandatory Demo/live invariants: separate ledger/account namespace, simulator-only route, no live credentials/egress, server-side enforcement and adversarial isolation tests.
+- [ ] Cross-review against NX-ARCH-001..005, NX-SEC-001, NX-IF-001..005 and owner decisions.
+- [ ] Complete module inventory, data classification, capability matrix and G0D/D4/D6 threat-to-test mapping.
+- [ ] Select modular-monolith vs separately deployed trust domains only after deployment/threat review; decide storage isolation under OD-09.
+- [ ] Implement one safe module prototype only after G0D/G1 approval and explicit authorization; public registration and live capability remain separately gated.
+
+Publication is design progress, not implementation or security certification.
