@@ -50,3 +50,5 @@ ADR, подготовленные в обсуждении, не считаютс
 
 - [NX-REF-DOMAIN-007 — Bounded Exact Numeric Context](NX-REF-DOMAIN-007-bounded-exact-numeric-context.md) — test-only caller-configured limits and preflight checks; no production profile selected.
 - [NX-REF-DOMAIN-008 — Canonical Numeric Wire Encoding v1](NX-REF-DOMAIN-008-canonical-numeric-wire-encoding.md) — versioned scalar decimal/rational encodings with strict canonical parsing.
+
+- [NX-REF-DOMAIN-009 — Operation-Specific Financial Rounding & Valuation Contract](NX-REF-DOMAIN-009-operation-specific-financial-rounding-valuation-contract.md) — Proposed design contract; enumerates rounding/valuation boundaries for tick/lot, fees, funding, P&L, margin, liquidation, FX and Ledger; venue/owner qualification remains blocked.
