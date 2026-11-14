@@ -199,3 +199,7 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 - NX-ARCH-005 now specifies strict fixture ingestion: UTF-8-only decoding, duplicate-key and non-standard constant rejection, no JSON floating-point tokens, bounded integer control fields, raw-byte SHA-256 identity, and explicit parser resource limits. These are proposed requirements; no validator/runner exists yet.
 
 - Exact-head reference-model workflow [#43602394909](https://github.com/PandaGarry/NEXUS/actions/runs/43602394909) passed `e126f67b5779969ad3cffb67cfbb505760668518`: 13 isolated suites / 232 tests on Python 3.11, 3.12 and 3.13 (696 successful executions), including the numeric-wire stable error-class tests. This is reference-model CI only; no normalized fixture validator/runner, Rust or production execution evidence is implied.
+
+## NX-ARCH-005 cross-review update — 2026-11-14
+
+A focused contract-to-code audit corrected the strict-JSON example in NX-ARCH-005 and narrowed claims around operation coverage. Decimal/rational and numeric-wire operation mappings are tied to the actual reference-model APIs; financial-math labels without callable reference implementations and the instrument-spec snapshot remain deferred migration targets. Non-numeric rejection mappings remain review-gated and must not be inferred from exception messages. No executable schema/runner or Rust implementation exists; owner review and G0D/G1 gates remain in force.
