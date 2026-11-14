@@ -822,3 +822,9 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Python 3.11/3.12/3.13 each passed 263 tests (789 successful executions); egress-fencing passed 37 tests including 24 HaltEgressGate cases.
 - All job logs show no test failures or Node.js 20 / `punycode` deprecation warnings.
 - No code/test source changed after verified code/test SHA `c2350f7`; this does not prove Rust, PostgreSQL multi-connection serialization, HEGC database functions or external fencing.
+
+### HEGC entrypoint and database privilege-boundary review — 2026-11-14
+
+- Added NX-ARCH-REVIEW-008 to cross-review the EXECUTE-only HEGC runtime, SECURITY DEFINER owners, session_user identity, per-generation Egress principal, common guard and one-use grant lifecycle.
+- Added PostgreSQL 18 adversarial qualification requirements for search_path/temp-object spoofing, PUBLIC EXECUTE, function overload, role membership, RLS, direct-DML bypass, identity collapse and process-fence semantics.
+- Design only; no schema, role, function, database connection or runtime added.
