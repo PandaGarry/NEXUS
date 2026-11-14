@@ -635,3 +635,18 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 **PR disposition:** PR #13, #14 and #16 remain open/Draft/unmerged. Preserve stack order; review and integrate parent PRs before their dependants. PR #16's 205 commits are measured from the PR #14 head and do not include PR #14's 82 commits. The 28-file / 3,730-addition scope remains a reviewability concern; split only if a dependency-aware review proves independent packages can be separated without duplicating or destabilizing the stack.
 
 **Verification boundary:** this CI validates existing Python reference models only. It does not execute Rust, NX-ARCH-005's proposed normalized fixture schema/runner, production database transactions, process/host/network fencing, Trusted Egress, venue adapters, or live trading.
+
+
+## 18.22 Numeric wire resource-boundary hardening — 2026-11-14
+
+- [x] Audit numeric wire parsing against explicit resource-budget and stable rejection-class requirements.
+- [x] Bound decimal scale: optional max_scale; default ceiling is the caller-supplied max_chars budget.
+- [x] Normalize interpreter integer-string conversion budget failures into typed NumericWireResourceLimit / NUMERIC.RESOURCE_LIMIT for decimal and rational parsing.
+- [x] Add regression tests for default/explicit scale bounds, invalid scale-budget configuration and oversized decimal/rational integers.
+- [x] Update NX-ARCH-005 operation mapping and reference-model README; no production numeric profile or fixture runner selected.
+- [x] Verify exact code/test HEAD b0fb99d4505ba5eb405788fee8ce447f28437479 with GitHub Actions [#43614612130](https://github.com/PandaGarry/NEXUS/actions/runs/43614612130): 13 isolated suites, 239 tests per Python 3.11/3.12/3.13 runtime; 717 successful executions total.
+- [ ] Port the same bounded-resource semantics into a future normalized adapter only after NX-ARCH-005 and its explicit numeric profile are accepted.
+- [ ] Add cross-language fixtures for oversized scale and interpreter-independent integer budget behavior before Rust conformance work.
+
+**Disposition:** reference-model resource hardening complete and CI-verified at the exact code/test SHA. Production numeric bounds, Rust parser, normalized schema/runner and cross-language parity remain OPEN / gated.
+
