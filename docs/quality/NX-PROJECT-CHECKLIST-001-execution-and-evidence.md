@@ -1174,16 +1174,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Ensure a gate-committed attempt remains eligible to initiate while halt is propagating, but prevents HALTED acknowledgement until socket initiation is observed or sender is positively fenced.
 - [x] Ensure both socket-initiated attempts and fenced attempts without a trusted initiation report remain reconciliation obligations after HALTED acknowledgement.
 - [x] Document that sequential oracle tests do not prove real database linearizability, process/host/network fencing or socket behavior.
-- [x] Run the expanded egress-fencing suite on Python 3.11/3.12/3.13; exact PR-head CI passed (250 tests/runtime, 750 total) on workflow #43618215618.
+- [x] Initial 11-test revision passed on code SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1` (250 tests/runtime, 750 total) on workflow #43618215618; the later 12-test revision is tracked in 18.69.
 - [ ] Implement actual shared-row/conditional-update ordering and fault-inject both commit orders, process pause, store outage and positive fence at the real Egress boundary.
 
 **Disposition:** reference model and unit tests added; runtime, durable halt store, transport and external fence remain unimplemented.
 
 ## 18.67 Exact-head CI with HaltEgressGate reference tests — 2026-11-14
 
-- [x] Verify code/test SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1` and PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` on [workflow #43618215618](https://github.com/PandaGarry/NEXUS/actions/runs/43618215618).
+- [x] Verify PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` on [workflow #43618240612](https://github.com/PandaGarry/NEXUS/actions/runs/43618240612).
 - [x] Pass 13 isolated suites / 250 tests on Python 3.11, 3.12 and 3.13 (750 successful executions).
-- [x] Confirm egress-fencing suite contains 24 tests, including 12 HaltEgressGate cases for halt/gate ordering, paused senders, fencing and store outage.
+- [x] Confirm egress-fencing suite contains 24 tests, including 11 HaltEgressGate cases for halt/gate ordering, paused senders, fencing and store outage.
 - [x] Inspect all logs: no test failures or deprecated Node.js runtime warnings.
 - [ ] Prove the same semantics with real PostgreSQL transactions, concurrent processes, instrumented sockets and independent host/network fencing.
 
