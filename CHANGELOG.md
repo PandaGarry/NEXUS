@@ -546,3 +546,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Exact branch HEAD `e7c5461ae7ccea4f29fc77461db91d44566aba36` passed [workflow #43616908979](https://github.com/PandaGarry/NEXUS/actions/runs/43616908979).
 - Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no failures or Node.js 20 / `punycode` warnings.
 - This is reference-model regression only; no PostgreSQL concurrency harness or production database was exercised.
+
+### Numeric-wire parser integer budget made runtime-independent — 2026-11-14
+
+- Added a fixed 512-decimal-digit budget for numeric-wire integer fields, independent of caller input-size budget and Python interpreter configuration.
+- Oversized coefficient, scale, numerator or denominator values now fail with NUMERIC.RESOURCE_LIMIT before integer conversion.
+- Replaced interpreter-threshold regression with explicit 512-digit acceptance and 513-digit rejection tests for decimal and rational values.
+- This is a Python reference-parser resource limit only; Rust parity and production numeric profile remain open.
