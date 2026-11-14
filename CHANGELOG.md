@@ -806,3 +806,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Exact code/test HEAD c2350f7807587e0428b760890f6fdba09ba60f60 passed [workflow #43619636403](https://github.com/PandaGarry/NEXUS/actions/runs/43619636403).
 - Python 3.11/3.12/3.13 each passed 13 suites / 263 tests (789 executions); egress-fencing passed 37 tests, including 24 HaltEgressGate cases.
 - This is sequential reference-model evidence only. Canonical production digest construction, database uniqueness, concurrent idempotency, HEGC identity and PostgreSQL commit-order guard remain unimplemented.
+
+
+### HEGC idempotent grant retry and database-entrypoint security — 2026-11-14
+
+- Extended the HaltEgressGate reference oracle so a stable attempt ID plus identical authorization digest returns the original attempt record; a changed digest or halt epoch conflicts and never creates a replacement grant.
+- Exact code/test HEAD `c2350f7807587e0428b760890f6fdba09ba60f60` passed [workflow #43619636403](https://github.com/PandaGarry/NEXUS/actions/runs/43619636403): 263 tests on Python 3.11/3.12/3.13 (789 executions); egress-fencing 37 tests / 24 HaltEgressGate tests.
+- Refined the PostgreSQL G1 candidate: an internal guard helper is not directly exposed to app roles; HEGC uses a reviewed EXECUTE-only transaction entrypoint that acquires guards before protected reads and writes the grant in the same transaction. Domain mutations likewise use guarded procedures.
+- Added authenticated session_user identity, no shared login/SET ROLE impersonation, explicit scope authorization and complete affected-scope derivation as security proof obligations.
+- No PostgreSQL schema, function, procedure, integration harness or production HEGC has been implemented.
