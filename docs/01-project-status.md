@@ -539,3 +539,9 @@ NX-IF-001 now binds RiskEvaluationRequest, RiskDecision and RiskApprovalCapabili
 ## PostgreSQL 18.7 patch-level G1 qualification — NX-RESEARCH-012
 
 Selected PostgreSQL 18.7 as the exact G1 evaluation patch only; it was the latest supported PostgreSQL 18 minor on 2026-11-14. Official 18.7 notes report 52 security fixes and more than 140 bug fixes. NEXUS has recorded the release's index/REINDEX and incremental-backup caveats, C-extension/extension-script restrictions, and ON CONFLICT/RLS/view privilege boundaries. G1 uses a fresh full backup as the restore/PITR baseline; pre-18.7 incremental backup chains are not trusted. Runtime roles receive no DDL/extension/superuser/replication privileges; RLS and updatable views are not sole isolation boundaries. No server, schema, extension or deployment was installed/selected. See [NX-RESEARCH-012](research/NX-RESEARCH-012-postgresql-18-7-g1-evaluation-qualification.md).
+
+## Exact-head CI after valuation and PostgreSQL qualification updates — 2026-11-14
+
+PR #16 branch HEAD `7fb396df5f3e700adf0ad151c446e38930fdadb0` passed [workflow #43617605777](https://github.com/PandaGarry/NEXUS/actions/runs/43617605777). Python 3.11, 3.12 and 3.13 each passed all 13 isolated reference suites / 239 tests: **717 successful executions total**. All three job logs were inspected; no test failures, Node.js 20 or `punycode` deprecation warnings were found. This includes the deterministic 512/513-digit numeric-wire boundary tests.
+
+This remains Python reference-model CI only. It does not execute the strict CBOR parser, COSE signer/verifier, Rust, PostgreSQL 18.7, Risk concurrency, Trusted Egress, external host/network fencing, venue adapters or live trading. PR #16 remains Draft/open/unmerged and parent-first.
