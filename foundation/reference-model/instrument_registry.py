@@ -54,11 +54,13 @@ class InstrumentSpecRegistry:
             self._history[spec.instrument_id] = (spec,)
             return Registration.ADDED
 
+        for existing in history:
+            if spec.spec_version == existing.spec_version:
+                if spec == existing:
+                    return Registration.ALREADY_PRESENT
+                raise VersionConflict("same spec_version has different snapshot content")
+
         latest = history[-1]
-        if spec.spec_version == latest.spec_version:
-            if spec == latest:
-                return Registration.ALREADY_PRESENT
-            raise VersionConflict("same spec_version has different snapshot content")
         if spec.spec_version < latest.spec_version:
             raise VersionConflict("spec_version must increase monotonically")
 
