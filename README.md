@@ -10,7 +10,7 @@
 - [Current status and evidence register](docs/PROJECT_STATUS.md)
 - [Architecture decision index](docs/ADR_INDEX.md)
 - [Risk register](docs/RISK_REGISTER.md)
-- [Security baseline](docs/SECURITY.md)
+- [Security baseline](SECURITY.md)
 - [AI agent operating rules](AGENTS.md)
 - [Venue qualification matrix](docs/VENUE_QUALIFICATION_MATRIX.md)
 - [Product stages and commercial activation triggers](docs/PRODUCT_EVOLUTION.md)
