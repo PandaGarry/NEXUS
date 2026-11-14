@@ -33,3 +33,6 @@ jobs:
       - name: Test egress authority handover reference
         working-directory: foundation/reference-model/egress-fencing
         run: python -m unittest -v
+      - name: Test instrument specification reference
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_instrument_spec.py
