@@ -128,6 +128,25 @@ This guard is a design candidate, not a selected/implemented mechanism. Before G
 
 
 
+
+
+### 4.3 SECURITY DEFINER entrypoint and caller identity
+
+The preferred G1 HEGC shape is an EXECUTE-only runtime principal invoking a small set of reviewed SECURITY DEFINER entrypoints. The definer owner performs the bounded source read set and writes only HEGC control state; the application runtime has no direct SELECT on Risk/Command/evidence/eligibility/dispatcher source tables and no direct DML on guard, HaltState or EgressBoundaryAuthorization. A separate guard-function owner writes only the common guard and reads only minimal scope-membership/config-version metadata.
+
+Mandatory constraints:
+
+- Definer owners are NOLOGIN, NOINHERIT, non-superuser, NOBYPASSRLS, have no privileged role memberships, and are not owners of source-domain tables. They have no CREATEROLE, CREATEDB or REPLICATION privilege.
+- Every SECURITY DEFINER function fixes search_path to pg_catalog first, trusted schemas next and pg_temp last; all security-sensitive objects are schema-qualified. No dynamic SQL, caller-supplied object names or untrusted language is allowed.
+- PostgreSQL grants EXECUTE on new functions to PUBLIC by default. Revoke PUBLIC EXECUTE and issue only explicit per-workload grants in the same DDL transaction that creates/replaces the function. Test function overloads and accidental grants.
+- Inside SECURITY DEFINER, current_user is the definer owner; session_user is the authenticated database login. Caller authorization must use the authenticated session principal, not current_user, caller-supplied GUCs or JSON identity fields. Runtime roles have no membership path to a definer/privileged role and cannot SET ROLE into one.
+- HEGC and Egress must not share a database login. In v1, each Egress process generation has a distinct database principal/credential mapped to its immutable workload generation, artifact digest and environment in a trusted registry. The grant binds to that generation. A shared connection-pooler server login collapses session_user and invalidates the identity guarantee unless the pooler preserves distinct authenticated server principals.
+- Disabling a role, setting NOLOGIN or rotating its credential does not terminate an already established backend session and is not proof that the old process/socket is fenced. Terminate/revoke the database session and independently prove process/host/network fencing; a database principal is identity evidence, not a transport fence.
+- Definer owners must not have BYPASSRLS and must not own source tables. PostgreSQL superusers and BYPASSRLS roles bypass RLS; table owners normally bypass it unless FORCE ROW LEVEL SECURITY is enabled. Test the actual RLS policies under the definer owner and verify only intended source rows are visible.
+- The entrypoint returns only an opaque grant reference and bounded attempt status. It must not return unrestricted source records or canonical financial payloads to the HEGC runtime.
+
+This is a G1 qualification requirement, not a claim that the database functions or roles exist.
+
 ## 5. G1 qualification checklist
 
 - [ ] Pin the exact PostgreSQL 18.7 distribution, package checksum/image digest and build provenance.
@@ -158,3 +177,9 @@ This guard is a design candidate, not a selected/implemented mechanism. Before G
 - PostgreSQL 18 application-level consistency / SERIALIZABLE caveats: https://www.postgresql.org/docs/18/applevel-consistency.html
 
 **Final disposition:** PostgreSQL 18.7 is the current G1 evaluation patch target only. Production database selection, hosting, replication, backup retention, RPO/RTO, failover and financial correctness remain unapproved and evidence-gated.
+- PostgreSQL 18 CREATE FUNCTION and SECURITY DEFINER guidance (search_path, default PUBLIC EXECUTE): https://www.postgresql.org/docs/18/sql-createfunction.html
+- PostgreSQL 18 session_user/current_user semantics: https://www.postgresql.org/docs/18/functions-info.html
+- PostgreSQL 18 role attributes (NOLOGIN, NOINHERIT, BYPASSRLS): https://www.postgresql.org/docs/18/role-attributes.html
+- PostgreSQL 18 role membership and SET ROLE: https://www.postgresql.org/docs/18/role-membership.html
+- PostgreSQL 18 function security and untrusted languages: https://www.postgresql.org/docs/18/perm-functions.html
+- PostgreSQL 18 row security policies and table-owner bypass: https://www.postgresql.org/docs/18/ddl-rowsecurity.html
