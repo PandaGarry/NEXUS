@@ -20,7 +20,7 @@
 | Autonomous Execution Engine specification | PROPOSED | ТЗ-NX-004 опубликовано; private adapters, durable outbox, reconciliation, vault/signer и runtime tests не реализованы/не проверены |
 | Independent Risk Engine specification | PROPOSED | ТЗ-NX-005 опубликовано; policy registry, exposure calculator, approval signer, reservations, kill-switch controller и conformance tests не реализованы/не проверены |
 | Portfolio & Financial Ledger specification | PROPOSED | ТЗ-NX-006 опубликовано; journal, posting engine, accounting projections, reconciliation, replay and restore tests не реализованы/не проверены |
-| Cross-specification interfaces | BLOCKED | NX-ARCH-REVIEW-001 выявил 12 design gaps: canonical command/digest, reservation lifecycle, exposure ownership, Execution↔Ledger handoff, freshness vector, halt/recovery protocol and related contracts. WP-A..WP-E не закрыты |
+| Cross-specification interfaces | BLOCKED | NX-ARCH-REVIEW-001 выявил 12 design gaps. WP-A design artifact NX-IF-001 создан и зарегистрирован; canonicalization, cryptographic choices, owner/security review and conformance vectors remain unapproved/unverified. WP-B..WP-E remain open |
 | Target architecture | PROPOSED | NX-ARCH-001 опубликован; owner review и согласование TBD deployment decisions требуются |
 | Prototype readiness | BLOCKED | Не начинать прототипирование |
 
@@ -29,6 +29,7 @@
 - [NX-ADR-001 — Unified Market Event Contract](architecture/NX-ADR-001-unified-market-event-contract.md) — canonical event envelope, typed payload semantics, exact units, timestamps, provenance, ordering and schema evolution. Design only; no implementation or conformance tests.
 - [NX-ARCH-001 — Target Architecture & Deployment Topology](architecture/NX-ARCH-001-target-architecture.md) — logical boundaries, trust model, command/data flows, deployment baseline and owner decisions. Design only; no implementation or runtime verification.
 - [NX-ARCH-REVIEW-001 — Cross-Specification Contract Review](architecture/NX-ARCH-REVIEW-001-cross-specification-contract-review.md) — bounded review of cross-service contracts; 12 findings, five closure work packages, interface readiness BLOCKED.
+- [NX-IF-001 — Canonical Trade Command & Risk Approval Contract](architecture/NX-IF-001-canonical-trade-command-risk-approval-contract.md) — WP-A proposed contract for TradeIntent → CanonicalTradeCommand → RiskApprovalCapability; implementation and conformance tests NOT STARTED.
 - [NX-ADR-002 — Execution Integrity & Reconciliation](architecture/NX-ADR-002-execution-integrity-reconciliation.md)
 - [NX-ADR-003 — Simulation Fidelity & Strategy Validation](architecture/NX-ADR-003-simulation-fidelity-strategy-validation.md)
 - [NX-ADR-004 — Market Data Recovery State Machine](architecture/NX-ADR-004-market-data-recovery-state-machine.md)
