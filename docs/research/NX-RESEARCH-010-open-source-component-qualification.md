@@ -97,3 +97,41 @@ A broker ACK is not a venue ACK. A database commit is not proof an order was sen
 - Existing NEXUS Nautilus audits: NX-RESEARCH-006/007/008.
 
 Upstream status and licenses can change. Re-check the exact pinned version and transitive graph before adoption. This memo is a shortlist, not a legal opinion or source-level qualification.
+
+## 8. Fresh official-documentation cross-check — 2026-11-14
+
+This follow-up checks the candidate shortlist against current upstream documentation. It refines evaluation constraints; it does not select or integrate any component.
+
+### PostgreSQL transaction semantics
+
+- PostgreSQL 18 documents that SERIALIZABLE transactions can be aborted with `serialization_failure` when concurrent read/write dependencies cannot be serialized. A future NEXUS implementation must retry the **entire bounded transaction** from a fresh snapshot, with a finite retry budget and idempotent caller semantics; retrying only the failed statement is not sufficient.
+- PostgreSQL advisory locks are application-defined and the database does not enforce that all writers use them. They cannot be the sole correctness mechanism for reservations or capability consumption.
+- Row/table locks and serializable isolation still do not fence a stale process from an external venue socket. Database correctness and external-send authority are separate proofs.
+
+### NATS JetStream delivery semantics
+
+- JetStream consumers normally provide at-least-once delivery through acknowledgement tracking and redelivery.
+- Its documented exactly-once mode combines publication deduplication IDs with double acknowledgements over a configured deduplication window. This is a broker-level message guarantee, not exactly-once execution of arbitrary external side effects.
+- NEXUS must retain durable idempotency, outbox/inbox state, reconciliation and trusted-egress fencing even if JetStream is adopted. Broker ACK must never be treated as venue acceptance or fill evidence.
+
+### OpenTelemetry data minimization
+
+- OpenTelemetry explicitly places responsibility for identifying sensitive data on the implementer. Attribute/filter/redaction/transform processors are defense-in-depth, not a substitute for preventing sensitive values from entering telemetry.
+- NEXUS instrumentation should use allowlisted attributes and bounded-cardinality labels at source; never emit credentials, signatures, canonical order payloads or unrestricted financial/account records. Telemetry outage must not block Risk, halt or execution safety.
+
+### OpenBao audit boundary
+
+- OpenBao audit devices log API requests/responses, but its documented non-audited paths include initialization, seal/unseal, health/leader and Raft bootstrap/join operations; optional unauthenticated metrics/profiling paths also require review.
+- Multiple audit devices can provide redundant copies, but deployment must separately protect audit sink integrity, availability, access and recovery. "Audit enabled" alone is not a complete control.
+
+### Current source references
+
+- PostgreSQL 18 transaction isolation: https://www.postgresql.org/docs/current/sql-set-transaction.html
+- PostgreSQL explicit/advisory locking: https://www.postgresql.org/docs/current/explicit-locking.html
+- NATS JetStream delivery and replay: https://docs.nats.io/concepts/jetstream
+- NATS JetStream delivery/acknowledgement model: https://docs.nats.io/learn/jetstream/
+- OpenTelemetry sensitive-data handling: https://opentelemetry.io/docs/security/handling-sensitive-data/
+- OpenTelemetry Collector security: https://opentelemetry.io/docs/security/
+- OpenBao audit devices: https://openbao.org/docs/audit/
+
+**Disposition unchanged:** PostgreSQL, OpenTelemetry Collector, OpenBao and NATS JetStream remain candidates only. No runtime dependency, database, broker, secret manager or deployment topology is selected or installed. Exact versions, licenses, security advisories, transitive dependencies and deployment threat model must be requalified at adoption time.
