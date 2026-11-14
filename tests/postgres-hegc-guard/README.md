@@ -69,3 +69,12 @@ The initial test iteration exposed a harness assertion issue, not a database pri
 ## PostgreSQL container image pin
 
 The workflow pins the Docker Official Image multi-platform index digest `sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b`; Docker Hub identifies the linux/amd64 child manifest as `sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452`. The exact workflow commit `1844a9964fee667b7d29299a5b75f0f07df5076d` passed PostgreSQL workflow [#43630438579](https://github.com/PandaGarry/NEXUS/actions/runs/43630438579) (11/11) and Python workflow [#43630438570](https://github.com/PandaGarry/NEXUS/actions/runs/43630438570) (264 tests per runtime). This pins the referenced image content but does not itself prove publisher build provenance, signatures, SBOM completeness or vulnerability acceptability.
+
+
+## Catalog-manifest drift regression — 2026-11-14
+
+The fixture harness now computes a deterministic SHA-256-independent test fingerprint (MD5 over canonical JSONB text) of the relevant disposable `nexus_*` PostgreSQL catalog surface: role attributes, role memberships, schema owners/ACLs, relation owners/RLS flags/ACLs, function identity/owner/SECURITY mode/configuration/ACLs, RLS policy definitions/roles and default privileges. The fingerprint is a regression oracle only; it is not a signed production manifest, cryptographic attestation or continuous production drift monitor.
+
+The new test deliberately changes and restores four catalog dimensions: a runtime role's CREATEROLE attribute, PUBLIC EXECUTE on the HEGC entrypoint, SECURITY DEFINER/INVOKER mode and an unexpected trusted-schema function. Each mutation must change the fingerprint; each exact restoration must return to the approved baseline. Exact code/test HEAD `f815c351a709ff169996e3f0e451da73651a142c` passed PostgreSQL workflow [#43631662692](https://github.com/PandaGarry/NEXUS/actions/runs/43631662692): **12/12 tests** on PostgreSQL 18.7. Python workflow [#43631662864](https://github.com/PandaGarry/NEXUS/actions/runs/43631662864) passed 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions). All four jobs completed successfully.
+
+This remains disposable-fixture evidence. The production approved-manifest signing/storage/review lifecycle, deployment-time fail-closed comparison, catalog coverage qualification against the eventual production schema, independent DBA control plane, audit custody, emergency-change reconciliation and active-session/network fencing remain OPEN.
