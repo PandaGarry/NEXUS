@@ -1221,6 +1221,9 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Define one active HEGC instance, PostgreSQL 18.7 control-owned schema/role, fail-closed outage and no automatic failover before fencing/grant reconciliation.
 - [x] Add a test-only Python oracle for the two legal halt/gate commit orders, pause-after-gate, positive sender fencing, unknown outcome and halt-store outage.
 - [x] Extend the oracle with pending-halt/store-recovery races, repeated halt idempotency and signed-64-bit halt-epoch exhaustion.
+- [x] Add duplicate halt-request regressions during store outage and after HALTED; the current `test_halt_egress_gate.py` contains 18 state-machine tests.
+- [x] Verify exact PR #16 HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` with workflow [#43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 isolated suites / 255 tests on each of Python 3.11, 3.12 and 3.13; 765 successful executions total.
+- [x] Inspect all three runtime logs: no failures, Node.js 20 deprecation or `punycode` warnings.
 - [ ] Prove HEGC role grants, API authentication, one-use grant consumption, workload identity and audit integrity.
 - [ ] Prove actual socket-initiation reporting and independent process/host/network fencing; the Python oracle is sequential and not a production concurrency proof.
 
