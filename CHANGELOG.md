@@ -925,3 +925,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Replaced the test-only catalog fingerprint's MD5 with Python `hashlib.sha256` over deterministic JSONB snapshot text.
 - Exact code/test HEAD `d9c7bf5fddf68792ed565fecbcef83b73dab11a7` passed PostgreSQL 18.7 12/12 and Python 3.11/3.12/3.13 264 tests/runtime (792 executions).
 - Production signed/approved manifest and deployment-time fail-closed drift enforcement remain OPEN.
+
+
+### Verified — Authorization-catalog manifest admission reference (2026-11-14)
+
+- Python reference workflow [#43633125568](https://github.com/PandaGarry/NEXUS/actions/runs/43633125568) passed exact code/test HEAD `c80d781ce7c9f2b4a015fa79f8e2c403709439d7`: 287 tests/runtime on Python 3.11, 3.12 and 3.13 (861 executions), including 23 manifest admission tests/runtime.
+- PostgreSQL HEGC workflow [#43633125536](https://github.com/PandaGarry/NEXUS/actions/runs/43633125536) passed 12/12.
+- Production CBOR/COSE, trust services, catalog observer and deployment gate remain unimplemented and unauthorized.
