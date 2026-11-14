@@ -886,7 +886,7 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Treat positive sender fencing as prevention of future writes only.
 - [x] Keep an attempt OUTCOME_UNKNOWN and reservation held when no trusted socket-initiation report exists.
 - [x] Prohibit DEFINITELY_NOT_SENT classification or reservation release from fence evidence alone.
-- [x] Verify the expanded 16-test HaltEgressGate oracle on Python 3.11/3.12/3.13 (included in 24 egress-fencing tests; 255 total tests/runtime, 765 executions; workflow #43618694545).
+- [x] Verify the expanded 16-test HaltEgressGate oracle on Python 3.11/3.12/3.13 (included in 29 egress-fencing tests; 255 total tests/runtime, 765 executions; workflow #43618694545).
 - [ ] Prove initiation reports, external fence attestation and venue reconciliation at the real Egress boundary.
 
 
@@ -899,3 +899,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 
 - [x] Verify halt/Egress gate reference-model code SHA `f1c0bd0576bd42058ca2482706533248bcf6069b` on workflow [#43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 255 tests on each of Python 3.11/3.12/3.13 (765 executions).
 - [ ] Replace sequential oracle assumptions with actual concurrent PostgreSQL/HEGC tests and instrumented socket/network boundary evidence.
+
+## HEGC / halt-gate current reference verification
+
+- [x] Verify SHA `9b88eabb80e44510e29013fe02315c354c4b488b` on workflow #43618875958.
+- [x] Pass 257 tests per Python 3.11/3.12/3.13 runtime (771 executions); egress-fencing package 31 tests / 18 HaltEgressGate cases.
+- [x] Inspect all three logs for failures and deprecated action runtimes; none found.
+- [ ] Re-run exact-head CI after the signed-64-bit epoch-exhaustion grant-denial guard.
+- [ ] Prove the HEGC SERIALIZABLE read/write protocol with all gate-critical writers and actual socket-boundary fencing.
