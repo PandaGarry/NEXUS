@@ -111,7 +111,29 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 
 **Exit:** reproducible workspace and architecture conformance evidence; no production or live capability implied.
 
-## 5. Ordered active queue
+
+## 5. G0/G1 critical-invariant evidence matrix
+
+This is a first-pass matrix, not a certification. "Current evidence" describes only what is actually checked in. Missing implementation evidence remains an explicit gap.
+
+| Critical invariant | Owning artifacts | Required verification | Current evidence | Remaining gap / disposition |
+|---|---|---|---|---|
+| Financial scalars are exact; no authoritative float | NX-ARCH-003, NX-ADR-005 | Golden, property, overflow and cross-language tests | Python oracle: 15 vectors, 1,000 deterministic rational-oracle cases; CI on Python 3.11–3.13 | Production bounded type, typed units, overflow and cross-language tests OPEN |
+| Instrument rules are known/versioned before order validation | NX-ADR-005, ТЗ-NX-001 | Venue fixtures, schema validation, historical-spec tests | Requirements only; Tradoor metadata gaps recorded in NX-RESEARCH-002 | No authoritative NEXUS instrument registry or venue fixture set |
+| Market data cannot become LIVE_VALID across sequence gaps | NX-ADR-001/004, NX-IF-004 | Snapshot/delta bridge, sequence-gap, reconnect and replay fault tests | Proposed state machine and contracts | No NEXUS stream implementation or conformance harness |
+| Command approval is bound to immutable payload and scope | NX-IF-001, NX-REF-EXEC-001 | Tamper, scope, expiry, replay and one-time-consumption tests | Python/SQLite fake model; 21 deterministic tests | Test HMAC only; production signer, canonical serialization and key custody OPEN |
+| Command is durable before external side effect | NX-ADR-002, NX-REF-EXEC-001 | Crash-before/after-commit and dispatch-boundary tests | Local SQLite transaction model and fault injection | No production database/transaction semantics; no independent durable egress |
+| Ambiguous send is never blindly retried | NX-ADR-002, NX-IF-004, NX-REF-EXEC-001 | Timeout, crash-after-send, restart and duplicate-attempt tests | Model preserves OUTCOME_UNKNOWN and denies redispatch | Venue reconciliation and private event coverage not implemented |
+| Stale dispatcher cannot send after losing authority | NX-REF-EXEC-002, NX-IF-005 | Host/network fencing and adversarial stale-worker tests against actual egress | Counterexample proves current unfenced adapter can still be called; late ACK state overwrite is rejected | **BLOCKER:** no concrete independently enforced egress fence |
+| Risk reservations prevent concurrent over-allocation | NX-IF-002, ТЗ-NX-005 | Atomic multi-scope reservation, stale snapshot and concurrency tests | Single pre-created reservation fixture and approval-consumption race | No exposure calculator or production reservation service |
+| Fills post exactly once to a balanced ledger | NX-IF-003, ТЗ-NX-006 | Inbox dedupe, atomic journal, correction/bust and replay tests | Contract design only | No ledger implementation or accounting fixtures |
+| Recovery waits for complete source evidence | NX-IF-004, NX-ADR-004 | Watermark, freshness, quarantine and restart-barrier tests | Contract/state-machine design only | No recovery barrier runtime or venue-specific completeness proof |
+| AI/strategy cannot bypass Risk or access venue credentials | NX-SEC-001, NX-IF-001, NX-ARCH-001 | Network isolation, secret access and policy-bypass tests | Threat model and architecture requirements | No deployed trust boundary, vault, signer or isolation tests |
+| Halt/emergency operations are scoped and fail closed | NX-IF-005, ТЗ-NX-004/005 | Halt epoch, stale worker, cancel/fill race and resume authorization tests | Proposed operation matrix and halt contracts | No operator workflow, venue capability certification or runtime implementation |
+
+**D4 disposition:** IN PROGRESS. This matrix makes the critical evidence gaps explicit; it does not close them. Every row must reach a verified or explicitly deferred disposition before the relevant readiness gate can pass.
+
+## 6. Ordered active queue
 
 | Priority | Action | Status | Completion evidence |
 |---|---|---|---|
@@ -122,7 +144,7 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 | P4 | Resolve PR integration sequence and owner review | BLOCKED | Explicit integration plan and required owner decisions |
 | P5 | Prototype workspace readiness | BLOCKED | G0D/G1 PASS and explicit authorization for safe read-only/paper prototype |
 
-## 6. Change-control and documentation rules
+## 7. Change-control and documentation rules
 
 For every substantive code or architecture change:
 1. Update the owning ADR/spec/reference-conformance document in the same work package.
@@ -133,7 +155,7 @@ For every substantive code or architecture change:
 6. Keep PRs Draft until the bounded review is complete; do not merge into the default branch without the required approval.
 7. No secret material, live credentials, private account data or personal financial identifiers in Git.
 
-## 7. Explicit non-authorizations
+## 8. Explicit non-authorizations
 
 This checklist does not authorize:
 - real exchange credentials, private account connectivity or order placement;
