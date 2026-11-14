@@ -7,7 +7,8 @@
 **Operational checklist:** [NX-PROJECT-CHECKLIST-001](quality/NX-PROJECT-CHECKLIST-001-execution-and-evidence.md). It is the current source for D1–D8 package status and ordered engineering work.
 
 ### Foundation close-out track (active)
-- [ ] Complete NX-DOC-REVIEW-001 packages D1–D8 or explicitly defer each behind a named gate.\n- [x] Add test-only egress authority handover state-machine model; actual network/host fencing remains BLOCKED.
+- [ ] Complete NX-DOC-REVIEW-001 packages D1–D8 or explicitly defer each behind a named gate.
+- [x] Add test-only egress authority handover state-machine model; actual network/host fencing remains BLOCKED.
 - [x] Add exact-decimal reference oracle and unit tests (11/11; reference-only evidence).
 - [x] Publish language-neutral golden vectors v1.0.0 (15 cases); Python oracle passes all vectors.
 - [x] Add deterministic exact-arithmetic property checks: 1,000 seeded cases cross-checked against independent `fractions.Fraction` arithmetic.
