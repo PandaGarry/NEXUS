@@ -452,3 +452,17 @@ Disposition: PROPOSED design analysis only. No database/provider/crypto/network 
 - [ ] Add NATS only if measured fan-out/replay requirements justify its operational cost.
 
 Disposition: research-only. No package, service, broker, database, vault or deployment module has been added to runtime. See NX-RESEARCH-010.
+
+
+## 18.8 Modular product and trust-boundary design (PROPOSED)
+
+- [x] Publish NX-ARCH-006 as a design proposal: bounded contexts, protected core, versioned contracts, module manifest/admission, workload identity, capability allowlists, independent data ownership, failure containment, and lifecycle controls.
+- [x] Specify hard Demo/live separation: distinct account namespace and ledger, simulator-only execution, no production credentials or live-egress route, server-enforced type checks, and adversarial cross-domain tests.
+- [x] Specify Learning/Wiki as a low-privilege domain with sanitized content and no trading/secret write access.
+- [ ] Cross-review NX-ARCH-006 against NX-ARCH-001..005, NX-SEC-001, NX-IF-001..005 and NX-OWNER-DECISIONS-001; resolve contradictions and owner/security review findings.
+- [ ] Draft module inventory, data classification, service ownership and capability matrix for the bounded v1 product scope.
+- [ ] Add contract compatibility, forged-identity/IDOR, module-compromise, demo-to-live, secret-isolation, network-egress and rollback adversarial test plans to the D4/D6 evidence matrix.
+- [ ] Decide modular-monolith/process boundaries and storage isolation only after G0D threat/deployment review and OD-09; no premature microservice decomposition.
+- [ ] Do not implement public registration, third-party plugin loading, production identity, or module runtime before owner/security gate approval.
+
+**Disposition:** documentation/design only. No package, identity provider, plugin framework, database, service, public user account or live capability was installed or enabled. NX-ARCH-006 does not pass G0D/G1 by publication.
