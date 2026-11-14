@@ -366,3 +366,5 @@ The exact decimal oracle is arbitrary precision; `BoundedNumericContext` wraps i
 - [ ] Add the operation to normalized fixtures only after NX-ARCH-005 owner review and schema/runner approval.
 
 **Boundary:** arithmetic over supplied typed values only; no venue fill validation, fees, funding, P&L, accounting or rounding policy. No production code or authorization is added.
+
+- [x] Pin the zero-total-quantity boundary: non-empty signed inputs with zero aggregate quantity raise typed `DivisionByZero`; empty input and malformed argument types remain separate input-contract failures.
