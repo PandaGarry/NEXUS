@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+### Added — Bounded exact numeric context and canonical scalar wire (test-only; CI pending)
+- Added mandatory caller-supplied NumericLimits and BoundedNumericContext preflight for decimal input, scale alignment, multiplication, rational division, compare, step checks, exact conversion and quantization.
+- Added strict versioned scalar wire formats nxd1 (decimal) and nxr1 (reduced rational); parsers require explicit input character budgets and reject non-canonical forms.
+- Added dedicated bounded-numeric and wire-conformance suites. No production limits or cross-language adoption are approved.
+
+
 ### Added — Exact rational inverse base exposure (test-only; CI verified)
 - Added `RationalAssetAmount` and a conventional inverse-contract formula: quote notional divided by quote-per-base price.
 - Preserves repeating results as reduced rationals (e.g. 1/300 BTC); finite decimal conversion is conditional and quantization requires an explicit mode.
