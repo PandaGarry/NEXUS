@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE — living execution register  
 **Snapshot:** 2026-11-14  
-**Branch:** `foundation/domain-kernel-reference-v0`  
+**Branch:** `foundation/instrument-spec-reference-v0`  
 **Scope:** NEXUS v1 foundation, documentation close-out, safe reference work and readiness-controlled implementation.
 
 This checklist is the operational index for the next actions. It does not replace ADRs, specifications, owner decisions or readiness gates. Each checked item must point to a durable artifact or commit-specific evidence. A document being published is not the same as a decision being accepted; a test passing in a reference model is not production verification.
@@ -47,7 +47,7 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 ## 4. Technical workstreams
 
 ### W1 — Market data and instrument truth
-- [x] Publish a first venue-neutral instrument-spec reference schema, provenance fields and immutable snapshot validator (NX-REF-DOMAIN-001); full registry/version authority remains open.
+- [x] Publish a first venue-neutral instrument-spec reference schema, provenance fields and immutable snapshot validator (NX-REF-DOMAIN-001).\n- [ ] Qualify NX-REF-DOMAIN-002 registry history semantics against owner-approved identity, version assignment, source precedence, effective-time conflict and persistence decisions.
 - [ ] Complete the canonical metadata contract for price bands, leverage tiers, margin brackets, order capabilities and all contract denomination semantics; the current reference slice covers only a narrow subset.
 - [ ] Build venue fixtures only from official documented responses; preserve unknown/unsupported fields explicitly.
 - [ ] Define stream identity, sequence scope, snapshot bridge, gap detection, stale/degraded states and replay evidence.
