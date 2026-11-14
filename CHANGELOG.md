@@ -574,3 +574,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Recorded release caveats for index integrity/REINDEX, incremental backup chains, C-extension rebuilds, extension scripts and privilege-sensitive SQL paths.
 - Added G1 constraints: fresh full backup for PITR qualification, no unreviewed extensions/C extensions, no dblink or untrusted replication subscriptions, and base-table-only authoritative writes.
 - No PostgreSQL instance, schema, extension or production deployment was created or approved. Requalify the latest supported 18.x patch before any future deployment.
+
+### Persisted valuation-evidence manifest required at Trusted Egress — 2026-11-14
+
+- Defined immutable ValuationInputVector identity/version and binding across ExposureSnapshot, RiskReservation and RiskApprovalCapability.
+- Trusted Egress reads the authoritative persisted Risk evidence manifest and consumed source-watermark/correction status before send.
+- Prohibited source-service calls and replacement market/FX/fee/collateral fetches on the dispatch path.
+- Missing/stale/incomplete manifest, watermark gaps or inadmissible freshness/drift evidence fail closed; newer values never silently rebind an approval.
+- Ingestion/invalidation objectives and race tests remain open; no runtime implemented.
