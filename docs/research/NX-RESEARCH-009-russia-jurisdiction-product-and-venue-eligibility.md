@@ -163,7 +163,7 @@ No real key, order, transfer, deposit or withdrawal is needed for this qualifica
 
 ## 6. Architecture follow-up
 
-**NX-ADR-007 — Venue Eligibility & Jurisdictional Activation Gate** has now been drafted as a PROPOSED architecture decision in this research branch. It defines an immutable evidence record, fail-closed adapter states, legal/account/product activation requirements and egress-bound eligibility fencing. NX-ADR-006 remains reserved for the previously deferred strategy-validation/research-governance topic. Owner/legal acceptance and conformance evidence remain open.
+**NX-ADR-007 — Venue Eligibility & Jurisdictional Activation Gate** has been drafted as a PROPOSED architecture decision. **NX-REF-VENUE-001** adds a test-only deterministic evidence evaluator and 24 fail-closed conformance tests for scope, freshness, expiry, approval revision and suspended/revoked states. It does not interpret law or grant authorization. NX-ADR-006 remains reserved for the previously deferred strategy-validation/research-governance topic. Owner/legal acceptance and exact-head CI evidence remain open.
 
 ## 7. Disposition
 
