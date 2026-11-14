@@ -140,6 +140,14 @@ Additional arithmetic observation: the inspected catalogue parser, OI parser and
 
 **Evidence:** [Product model](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/catalog.rs#L7-L75), [Binance metadata extraction](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/binance.rs#L160-L195), [Order Flow contract-size conversion](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/lib/orderflow.ts#L391-L430), [Deribit size conversion](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/orderflow-venues.ts#L130-L152).
 
+### Hyperliquid precision semantics — correction after official-doc verification
+
+The initial interpretation that the parser incorrectly assigns size precision to price precision was too strong and is withdrawn. Hyperliquid's official rule states that perpetual prices may have up to five significant figures and no more than `6 - szDecimals` decimal places; size itself is rounded to `szDecimals`. Therefore Tradoor's calculation `6 - szDecimals` is consistent with the documented maximum decimal-place constraint for perp prices.
+
+However, a single `price_decimals` field still does not fully represent the rule: it omits the five-significant-figures constraint, keeps size step/precision implicit, and cannot express separate spot/perp maximum decimal bases (spot uses MAX_DECIMALS 8). NEXUS must model venue-specific price precision rules and quantity precision independently, including significant-figure constraints where applicable.
+
+**Evidence:** [Tradoor Hyperliquid parser lines 51–69](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/hyperliquid.rs#L51-L69); [Hyperliquid official Tick and Lot Size rules](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size).
+
 ## 8. Private execution boundary
 
 The inspected topology and venue source registry establish public market-data parsing, not authenticated private account streams or order placement. No evidence in this bounded pass establishes signed private REST, authenticated user streams, order lifecycle tracking, fill reconciliation or safe retry semantics for the listed venues. Mark all such capabilities **UNKNOWN**, not supported or unsupported, until their own source-level audit is complete.
