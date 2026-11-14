@@ -977,3 +977,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Requalify the latest supported 18.x patch before any future deployment decision.
 
 **Disposition:** PostgreSQL 18.7 is the bounded G1 evaluation target only. No instance, schema, extension or production topology is selected or installed.
+
+## 18.28 Persisted valuation-evidence manifest at Trusted Egress — 2026-11-14
+
+- [x] Define immutable ValuationInputVector identity/version and source provenance in NX-IF-002.
+- [x] Bind ExposureSnapshot, RiskReservation and RiskApprovalCapability to the same exact vector ID/version.
+- [x] Require Trusted Egress to read the authoritative persisted Risk evidence manifest and latest consumed source-watermark/correction status.
+- [x] Prohibit Egress from calling market/FX/fee/collateral source services or fetching replacement values on the dispatch path.
+- [x] Require the manifest to prove watermark continuity and bounded ingestion lag; missing/stale/unknown evidence denies send.
+- [x] Define policy semantics for a newer tick: older immutable vector remains valid only while source-specific freshness/clock/quality/drift policy passes; a policy may explicitly require latest.
+- [ ] Define the source ingestion and invalidation SLA/measurement contract, including delayed correction events and stream gaps.
+- [ ] Add race tests for source update, correction/revocation, watermark gap and stale manifest after approval but before send.
+
+**Disposition:** synchronized NX-IF-002, NX-ADR-008, NX-ARCH-REVIEW-007 and NX-REF-EXEC-002. No valuation service, evidence store, egress runtime or numeric threshold is implemented.
