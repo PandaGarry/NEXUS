@@ -36,6 +36,13 @@ class BoundedNumericTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             BoundedNumericContext()
 
+    def test_zero_scale_and_zero_power_budget_are_valid(self):
+        ctx = context(max_scale=0, max_power10_exponent=0)
+        self.assertEqual(ctx.parse_decimal("123"), d("123"))
+        self.assertEqual(ctx.add(d("1"), d("2")), d("3"))
+        with self.assertRaises(NumericLimitExceeded):
+            ctx.parse_decimal("1.0")
+
     def test_parse_accepts_within_explicit_limits(self):
         ctx = context()
         self.assertEqual(ctx.parse_decimal("123.4500"), d("123.45"))
