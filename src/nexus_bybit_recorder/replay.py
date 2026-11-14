@@ -142,6 +142,7 @@ def replay_book(path: str | Path) -> dict:
                 delta_events += 1
         elif record_type == "raw_rest_snapshot":
             metadata = record.get("metadata") or {}
+            sync = None
             try:
                 payload = json.loads(raw)
                 result = payload.get("result", {}) if isinstance(payload, dict) else {}
@@ -160,7 +161,7 @@ def replay_book(path: str | Path) -> dict:
                 sync.on_snapshot(snapshot)
                 snapshot_events += 1
             except (ValueError, TypeError, KeyError, json.JSONDecodeError):
-                if "sync" in locals():
+                if sync is not None:
                     sync.invalidate("replay_snapshot_invalid")
         elif record_type in {"rest_snapshot_error", "snapshot_validation_error"}:
             # Error events invalidate the current generation's in-flight book state.
