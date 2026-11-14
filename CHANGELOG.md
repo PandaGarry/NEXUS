@@ -582,3 +582,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Prohibited source-service calls and replacement market/FX/fee/collateral fetches on the dispatch path.
 - Missing/stale/incomplete manifest, watermark gaps or inadmissible freshness/drift evidence fail closed; newer values never silently rebind an approval.
 - Ingestion/invalidation objectives and race tests remain open; no runtime implemented.
+
+### Trusted Egress send-authorization linearization defined — 2026-11-14
+
+- Added a short attempt-scoped final authorization transaction over persisted valuation manifest, reservation, halt, eligibility and dispatcher-fence versions.
+- Committed single-use EgressBoundaryAuthorization is the send-authorization linearization point; the single-writer Egress process immediately initiates socket write.
+- No source fetch/queue hop/unbounded async preparation is allowed after the final gate; no database transaction is held over network I/O.
+- Post-gate updates are causally later; the attempt remains potentially sent and requires reconciliation. Crash/race runtime tests remain open.
