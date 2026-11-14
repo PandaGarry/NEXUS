@@ -2,7 +2,7 @@
 import unittest
 
 from nexus_decimal import ExactDecimal as D
-from domain_types import AssetAmount, ContractCount, DimensionMismatch, Notional, Price
+from domain_types import AssetAmount, ContractCount, DimensionMismatch, Notional, Price, RationalAssetAmount
 from instrument_spec import (
     Applicability, ContractType, InstrumentSpec, InstrumentStatus, MarketType,
 )
@@ -10,6 +10,7 @@ from instrument_units import (
     InstrumentUnitModel, MultiplierDimension, QuantityKind,
     UnitModelMismatch, UnsupportedUnitModel,
 )
+from nexus_decimal import ExactRational, InexactDivision, RoundingMode
 
 
 def d(value):
@@ -136,14 +137,39 @@ class InstrumentUnitsTests(unittest.TestCase):
                 multiplier_dimension=MultiplierDimension.BASE_ASSET_PER_CONTRACT,
             )
 
-    def test_inverse_base_exposure_blocks_without_division_policy(self):
+    def test_inverse_base_exposure_returns_exact_rational_without_rounding(self):
         model = InstrumentUnitModel.from_explicit_mapping(
             inverse_spec(), quantity_kind=QuantityKind.CONTRACT_COUNT,
             multiplier_dimension=MultiplierDimension.QUOTE_ASSET_PER_CONTRACT,
         )
-        with self.assertRaisesRegex(UnsupportedUnitModel, "exact division"):
-            model.inverse_base_exposure(
-                model.contract_count(d("3")), Price("BTC", "USD", d("60000"))
+        exposure = model.inverse_base_exposure(
+            model.contract_count(d("1")), Price("BTC", "USD", d("30000"))
+        )
+        self.assertEqual(exposure, RationalAssetAmount("BTC", ExactRational(1, 300)))
+        with self.assertRaises(InexactDivision):
+            exposure.to_asset_amount_exact()
+        self.assertEqual(
+            exposure.quantize(8, RoundingMode.HALF_EVEN),
+            AssetAmount("BTC", d("0.00333333")),
+        )
+
+    def test_inverse_exposure_uses_exact_terminating_conversion_when_possible(self):
+        model = InstrumentUnitModel.from_explicit_mapping(
+            inverse_spec(), quantity_kind=QuantityKind.CONTRACT_COUNT,
+            multiplier_dimension=MultiplierDimension.QUOTE_ASSET_PER_CONTRACT,
+        )
+        exposure = model.inverse_base_exposure(
+            model.contract_count(d("3")), Price("BTC", "USD", d("60000"))
+        )
+        self.assertEqual(exposure, RationalAssetAmount("BTC", ExactRational(1, 200)))
+        self.assertEqual(exposure.to_asset_amount_exact(), AssetAmount("BTC", d("0.005")))
+
+    def test_inverse_model_requires_base_asset_settlement(self):
+        with self.assertRaisesRegex(UnitModelMismatch, "settlement in the base asset"):
+            InstrumentUnitModel.from_explicit_mapping(
+                inverse_spec(settlement_asset="USD"),
+                quantity_kind=QuantityKind.CONTRACT_COUNT,
+                multiplier_dimension=MultiplierDimension.QUOTE_ASSET_PER_CONTRACT,
             )
 
     def test_quanto_model_is_explicitly_unsupported(self):
