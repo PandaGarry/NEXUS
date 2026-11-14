@@ -38,8 +38,8 @@ The reference validator:
 4. rejects missing required minimum notional and ambiguous UNKNOWN applicability;
 5. requires a multiplier for derivative contract types and rejects one on SPOT;
 6. blocks non-ACTIVE lifecycle state and UNKNOWN contract type;
-7. blocks INVERSE and QUANTO because their notional/exposure formulas are not implemented;
-8. validates positive order price/quantity, exact tick/lot divisibility, min/max quantity and price × quantity minimum notional without binary floating point.
+7. blocks all derivative models (LINEAR / INVERSE / QUANTO) because their notional/exposure formulas are not implemented; blocks spot quote-quantity semantics because this slice only defines base-quantity checks;
+8. validates positive order price/quantity, exact tick/lot divisibility, min/max quantity and price × base-quantity minimum notional without binary floating point.
 
 `NOT_APPLICABLE` is an explicit declaration, not an inferred absence. A missing field cannot silently become zero, one or a guessed default.
 
