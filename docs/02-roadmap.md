@@ -241,3 +241,14 @@ The financial operation audit has been corrected: spot, linear and inverse paths
 - [ ] Register the operation in normalized fixture suites only after owner review of NX-ARCH-005 and approval of schema/runner implementation.
 
 No venue fill policy, fees, funding, P&L, accounting or rounding semantics are introduced. Reference-only; production readiness unchanged.
+
+
+## Operation-specific rejection mapping audit — 2026-11-14
+
+- [x] Inspect current typed exception surfaces for exact decimal, rational, bounded numeric, dimensional domain, instrument-unit and partial-fill aggregation operations.
+- [x] Separate mathematical/domain failures from malformed API input and record candidate stable mappings in NX-ARCH-005.
+- [x] Identify unresolved invalid-domain-value and identity-mismatch cases instead of forcing them into an inaccurate class.
+- [ ] Owner review and approval of the rejection taxonomy and operation registry.
+- [ ] Implement adapters/schema/runner only after approval.
+
+No production mapping or normalized wire contract is approved by this audit.
