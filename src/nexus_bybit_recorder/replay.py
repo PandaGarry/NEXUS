@@ -83,7 +83,8 @@ def summarize(path: str | Path) -> dict:
             continue
         op = payload.get("op")
         if isinstance(op, str):
-            control_ops[op] += 1
+            control_label = "pong_reply" if op == "ping" and payload.get("ret_msg") == "pong" else op
+            control_ops[control_label] += 1
             control_frames += 1
         elif any(key in payload for key in ("success", "retCode", "ret_msg", "conn_id", "req_id")):
             control_ops["control_without_op"] += 1
