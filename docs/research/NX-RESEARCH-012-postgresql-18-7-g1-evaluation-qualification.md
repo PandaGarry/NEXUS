@@ -103,6 +103,20 @@ For the required real-time ordering, G1 MUST additionally prove an enforced comm
 - Enforce participation at the database boundary: revoke direct source DML paths that bypass the guard and route writes through reviewed procedures/roles. An application convention or advisory lock that any writer can omit is not proof. Preserve least privilege; HEGC must not receive broad UPDATE access to Risk/Command source tables just to acquire locks.
 - Keep SERIALIZABLE as defense in depth and retain bounded whole-transaction retry for 40001/40P01. A generation string read without an atomic shared guard is not proof of a common commit order.
 
+### Recommended G1 guard-function implementation shape
+
+The preferred G1 mechanism to evaluate is a narrowly scoped database-owned function, not direct cross-service DML:
+
+- Function: `nexus_control.acquire_scope_guards(scope_ids uuid[])`, implemented only after schema/role review. It validates the complete bounded scope set (including the mandatory account/root guard), rejects duplicates/unknown scopes, sorts canonical UUID bytes, and atomically advances/locks each guard row in that deterministic order.
+- The function is `SECURITY DEFINER`, owned by a dedicated `NOLOGIN`, non-superuser `nexus_control_owner` role. That owner has write privilege only on the guard table, not on Risk/Command/Ledger source tables.
+- Fix `search_path` to trusted schemas with `pg_temp` last; schema-qualify every object; prohibit dynamic SQL, caller-supplied object names and untrusted languages/extensions. The control schema is not writable by service roles.
+- Revoke function EXECUTE from PUBLIC and grant it only to explicit, reviewed domain-writer and HEGC roles in the same DDL transaction. Callers receive no direct DML rights on the guard table. No direct source-table DML path may bypass the reviewed domain write procedures.
+- Each domain-owned source-write procedure and each HEGC final-gate transaction calls the guard function as its first statement inside the same outer SERIALIZABLE transaction, then performs its source mutation or grant validation/write before commit. The row locks and generation updates remain held through that commit.
+- If the SERIALIZABLE snapshot predates a concurrent guard update while waiting, the operation must surface 40001 and restart the whole transaction from a fresh snapshot; the function MUST NOT swallow/retry internally using the stale snapshot.
+- The function is only a candidate enforcement mechanism. Security-definer ownership, fixed search_path, privilege revocation, function overloading, temporary-object spoofing, SQL injection, scope-set completeness, max fan-out, deadlock ordering, guard bypass and crash recovery all require adversarial tests.
+
+This pattern preserves service ownership of source tables while giving the common guard one narrow, audited write authority. It is not implemented or approved for production.
+
 This guard is a design candidate, not a selected/implemented mechanism. Before G1, run PostgreSQL 18.7 multi-connection tests proving both source-writer-first and HEGC-first order, pause/crash points, stale-snapshot retry, guard bypass denial, deterministic multi-scope locking and ambiguous commit recovery. Until the commit-order property is demonstrated, HEGC MUST deny a final grant whenever it cannot prove the bound validation state is current under the common guard.
 
 **Why this matters:** the existing contract says updates committed before the final gate are visible and updates committed after it are causally later. That is a real-time ordering requirement; ordinary SSI serializability alone must not be represented as proof.
