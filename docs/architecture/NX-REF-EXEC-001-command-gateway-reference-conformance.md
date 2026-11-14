@@ -33,7 +33,7 @@ The approval is bound to command ID/digest, account, venue, instrument, instrume
 
 ## 4. Test scenarios
 
-The test suite currently covers 21 deterministic cases:
+The test suite currently covers 23 deterministic cases:
 - valid approval and one adapter invocation;
 - tampered signature;
 - command payload mutation;
@@ -54,7 +54,9 @@ The test suite currently covers 21 deterministic cases:
 - two gateway instances concurrently racing to consume the same approval/reservation;
 - two dispatcher instances racing to claim one persisted command while the winning adapter call is held open;
 - non-canonical decimal rejection;
-- stale worker resumes after recovery: venue send still occurs without an egress fence, while a conditional state transition rejects the late ACK and records it as a stale observation.
+- stale worker resumes after recovery: venue send still occurs without an egress fence, while conditional state transitions reject the late ACK and record it as a stale observation;
+- stale pre-send guard runs after recovery: conditional rejection preserves OUTCOME_UNKNOWN and records a dispatch observation instead of overwriting recovered state;
+- stale adapter timeout/error after recovery: conditional rejection preserves OUTCOME_UNKNOWN and records the stale error separately.
 
 ## 5. Verification record
 
@@ -65,13 +67,13 @@ cd foundation/reference-model/execution-gateway
 python -m unittest -v
 ```
 
-GitHub Actions run [#43590395882](https://github.com/PandaGarry/NEXUS/actions/runs/43590395882) completed with **success** on exact PR HEAD `3fb21aa53c9d6c72afcf6761493388f417fcb56b`. Both suites passed on Python 3.11, 3.12 and 3.13: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases) and 21 gateway tests in each runtime. The gateway suite includes the stale-worker egress counterexample and the late-ACK state-CAS guard.
+GitHub Actions run [#43591389103](https://github.com/PandaGarry/NEXUS/actions/runs/43591389103) completed with **success** on exact PR HEAD `f2dc357e9c65f0c2e108e670c4211bb36ff1a162`. All three suites passed on Python 3.11, 3.12 and 3.13: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases), 23 gateway tests and 13 egress-handover tests in each runtime. The gateway suite includes the stale-worker egress counterexample and conditional guards for late ACK, pre-send rejection and adapter error paths.
 
 This is CI verification of the checked-in reference model only. It is not production, multi-process, database durability, security or exchange-adapter verification.
 
 ## 6. Known unsafe counterexample — explicit failure evidence
 
-The new adversarial test deliberately demonstrates a defect in the current model; it is expected to pass because it asserts the unsafe behavior is reproducible. A separate local state-CAS guard now prevents a late ACK from overwriting recovery state and records the response as an observation. A worker pauses after its final local halt/expiry check and immediately before network send. A second gateway runs restart recovery and changes DISPATCHING to OUTCOME_UNKNOWN. The old worker then resumes and sends to the adapter. The reference model now rejects its late ACK as a state transition and appends LATE_ACK_STALE_STATE to the venue-observation inbox, preserving OUTCOME_UNKNOWN. The test still proves the more fundamental egress-fencing defect: local state CAS cannot prevent a stale process with direct network access from sending. This is a counterexample, not a safety pass.
+The new adversarial test deliberately demonstrates a defect in the current model; it is expected to pass because it asserts the unsafe behavior is reproducible. Conditional state transitions now prevent late ACK, stale pre-send rejection and adapter-error paths from overwriting recovery state; stale responses/errors are recorded separately. A worker pauses after its final local halt/expiry check and immediately before network send. A second gateway runs restart recovery and changes DISPATCHING to OUTCOME_UNKNOWN. The old worker then resumes and sends to the adapter. The reference model rejects its late ACK as a state transition and appends LATE_ACK_STALE_STATE to the venue-observation inbox, preserving OUTCOME_UNKNOWN. The same compare-and-swap discipline now protects the second pre-send guard and adapter-error handling: if recovery has already changed the command state, the stale worker records a dispatch observation and cannot replace OUTCOME_UNKNOWN. These guards protect authoritative state only; they do not prevent the old process from having already reached or reaching the venue adapter. The test still proves the more fundamental egress-fencing defect: local state CAS cannot prevent a stale process with direct network access from sending. This is a counterexample, not a safety pass.
 
 Required production invariant: once a dispatcher loses authority or recovery takes ownership, the stale dispatcher must be technically unable to reach the venue egress boundary and must be unable to mutate authoritative command state. A database lease/token checked by the stale process itself is insufficient if that process retains direct venue credentials or an open network path. Only a separately fenced egress authority may hold venue credentials/network capability; recovery must acquire/fence that authority before changing dispatch ownership. Venue idempotency/client-order IDs and reconciliation are additional defenses, not substitutes for egress fencing.
 
