@@ -1,7 +1,7 @@
 # NX-OWNER-DECISIONS-001 — Critical Owner Decision Register
 
 **Date:** 2026-11-14  
-**Status:** PROPOSED — register with owner-directed decisions OD-01, OD-04 and OD-15 accepted; remaining decisions open/deferred  
+**Status:** PROPOSED — OD-01/04 accepted, OD-15 partially accepted; G1 technical baselines selected for OD-08/09/10/12 under delegated technical authority; production and owner-only decisions remain open  
 **Scope:** Phase 0 architecture closure and safe implementation-readiness gates  
 **Baseline:** WP-E head `c44510810fca9de4a79d5728235b46ef6784770b`  
 **Related:** NX-ARCH-REVIEW-001, NX-IF-001..005, NX-ADR-001..005, NX-ARCH-001, ТЗ-NX-001..006, NX-SEC-001
@@ -40,11 +40,11 @@ A decision may be deferred to a later gate only if the earlier phase can safely 
 | OD-05 | Manual/external activity | Detect and quarantine external/manual orders and positions; do not attribute them to a strategy; choose later whether manual trading is prohibited or routed through NEXUS | G1/G2 | Unknown external exposure blocks affected risk-increasing scope |
 | OD-06 | Numeric risk policy | Owner must set hard limits for order notional/quantity, gross/net exposure, leverage/margin, concentration, daily loss, drawdown and halt triggers; no numeric defaults are invented | G3 | Live risk-increasing authorization is blocked |
 | OD-07 | Valuation, collateral and FX | Approve mark/index/FX source hierarchy, freshness, haircuts, collateral eligibility and inverse/quanto calculation policy; initially avoid cross-currency/cross-venue collateral if not fully modeled | G1/G3 | Material valuation remains UNKNOWN/PARTIAL; risk approval blocked |
-| OD-08 | Canonical serialization and signing | Select canonical serialization, digest/signature envelope, key custody, rotation and revocation only after security review and cross-language golden vectors | G1/G3 | No production RiskApprovalCapability or live signing |
-| OD-09 | Durable storage and transaction boundaries | Choose storage/event-log/inbox-outbox/reservation transaction model from workload and failure requirements; prove atomic multi-scope reservation and journal posting before relying on it | G1 | No implementation may claim durable reservation or financial correctness |
-| OD-10 | Freshness and recovery policy | Set source-specific thresholds, completeness/retention requirements, clock uncertainty, retry budgets and RTO/RPO per operation/scope | G1/G2 | Mandatory unconfigured evidence blocks risk-increasing authorization |
+| OD-08 | Canonical serialization and signing | **G1 TECHNICAL BASELINE SELECTED:** RFC 8949 restricted deterministic CBOR; SHA-256 domain-separated digest; COSE_Sign1 EdDSA/Ed25519. Exact libraries, non-exportable key custody, rotation/revocation and security/jurisdictional review remain gated | G1/G3 | No production RiskApprovalCapability or live signing |
+| OD-09 | Durable storage and transaction boundaries | **G1 TECHNICAL BASELINE SELECTED:** PostgreSQL 18 evaluation target, one primary, service-owned schemas/roles and separate Risk/Command/Ledger local ACID transactions; no distributed transaction or automatic failover before fencing proof | G1 | No production durability or financial-correctness claim until isolation, crash, backup/restore and egress proofs pass |
+| OD-10 | Freshness and recovery policy | **G1 TECHNICAL BASELINE SELECTED:** source-specific EvidenceRequirementSet/FreshnessPolicy, explicit completeness/watermarks and monotonic elapsed-time; no global TTL; unknown/unconfigured mandatory evidence fails closed. Numeric thresholds, retention, clock uncertainty and RTO/RPO remain owner/domain decisions | G1/G2 | Mandatory unconfigured evidence blocks risk-increasing authorization |
 | OD-11 | Accounting policy | Approve chart of accounts, fee/funding/interest/settlement treatment, realized-P&L precedence, timezone/session boundaries, precision and residual-dust policy | G1/G2 | Ledger remains proposed; unknown categories stay suspense/UNKNOWN |
-| OD-12 | Emergency operations governance | Assign halt/resume roles, step-up method, dual-control scopes, protective-order policy, permitted emergency actions and whether any offline emergency plan is allowed | G1/G3 | Halt remains available; emergency order workflows remain disabled unless specifically pre-approved |
+| OD-12 | Emergency operations governance | **SAFE V1 BASELINE SELECTED:** single Owner; halt is always available; resume is Owner-only with step-up and READY RecoveryBarrier; no automatic cancel-all/flatten, no offline emergency order plan; break-glass is containment-only. Identity provider/step-up mechanism and any future second-operator dual control remain open | G1/G3 | Emergency order workflows remain disabled; no automatic order or protective-order mutation |
 | OD-13 | Venue emergency capabilities | Certify native amend/cancel-replace, cancel-all scope, reduce-only/close-position, partial-fill races, rate-limit priority and reconciliation behavior per exact account mode | G2/G3 | Unsupported/unknown emergency command classes remain disabled |
 | OD-14 | Simulation and strategy-validation target | Select a layered approach only after matching fidelity needs: historical research, book replay, execution simulation and paper/shadow are separate acceptance targets | G1 | No profitability or execution-fidelity claim; no live strategy promotion |
 | OD-15 | Deployment and availability objectives | **PARTIALLY ACCEPTED:** server-side autonomous execution; Desktop+Web are clients of one backend and authoritative state. Hosting provider/region, operator access details, backup/restore and RTO/RPO remain open | G0/G1 | Core topology invariant closed; production deployment remains blocked |
@@ -77,7 +77,7 @@ The owner delegated conservative technical baseline choices to the technical lea
 - **Still open:** hosting provider, deployment region, operational staffing, backup/restore objectives, RPO/RTO and production availability targets.
 - **Authority:** this restates the user's earlier explicit Desktop + Web and Autonomous product decisions; it does not authorize production deployment.
 
-No other OD item is inferred to be accepted by the delegation. In particular, venue/product selection, numeric risk limits, signing algorithms, financial accounting policy, emergency operator roles and live-trading authorization remain open and fail closed.
+No other OD item is recorded as owner-accepted. The G1 baselines for OD-08/09/10/12 below are technical-lead selections under the owner's expanded delegation, not production approvals. Venue/product selection, numeric Risk limits, accounting policy, production key custody, operator identity, emergency venue semantics and live-trading authorization remain gated and fail closed.
 
 ## 4. Recommended sequencing
 
@@ -139,3 +139,39 @@ This register is considered administratively complete when:
 This register derives from the current WP-A..WP-E design drafts. OD-01 and OD-04 are accepted under the owner's explicit delegation dated 2026-11-14; OD-15 is partially accepted based on earlier explicit product decisions. All other choices remain open/deferred and are not inferred. No code, tests, builds, benchmarks, venue connections, credentials, orders, risk-limit changes or live trading were performed.
 
 **Prototype Readiness remains BLOCKED pending owner decisions and evidence-based gates.**
+
+
+## 3B. Delegated technical baselines selected on 2026-11-14
+
+The owner subsequently instructed the technical lead to perform the deeper project/upstream audit, resolve technical questions independently and choose the safest suitable solutions. The following bounded G1 baselines are therefore **selected by delegated technical authority**. They are not represented as owner acceptance of production risk, legal compliance, credentials, live trading or deployment.
+
+### OD-08 — Canonical bytes, digest and approval signature
+
+- **G1 baseline:** RFC 8949 core deterministic CBOR under the strict NEXUS profile in NX-ADR-008; reject duplicate map keys, invalid UTF-8, tags, indefinite lengths and all floats; use exact strings/typed values for financial data and signed 64-bit integers only for declared control metadata.
+- **Digest:** SHA-256 over a fixed NEXUS command-domain separator and deterministic command bytes.
+- **Capability signature:** COSE_Sign1 with EdDSA / Ed25519; protected algorithm and key ID; fixed NEXUS external-AAD context. Risk signing authority is isolated and asymmetric; Execution receives public verification material only.
+- **Not selected:** exact encoder/decoder crates, key custody provider/HSM/KMS, production key ceremony, rotation windows and jurisdictional acceptance. These require exact-version security review and cross-language vectors before implementation or production.
+
+### OD-09 — Persistence and transaction ownership
+
+- **G1 baseline:** PostgreSQL 18 is the leading evaluation target, using one logical primary, separate service-owned schemas/roles and no shared application superuser.
+- **Transaction model:** Risk reservation, Command approval-consumption/outbox and Ledger inbox/journal posting are separate local ACID transactions with explicit durable handoff and reconciliation. No distributed ACID transaction and no broker as source of truth.
+- **Risk concurrency:** evaluate SERIALIZABLE plus deterministic scope-row locking, unique idempotency constraints and state-version guards; retry the entire transaction on serialization failure within a finite budget. Unknown commit is reconciled by durable identity, never blindly retried.
+- **Failover:** no automatic or active-active failover in G1. Backup/restore/PITR and old-primary fencing must be proven before any failover design can be selected.
+- **Not selected:** exact PostgreSQL patch, hosting provider, replication topology, backup retention and RTO/RPO.
+
+### OD-10 — Freshness and recovery
+
+- **G1 baseline:** per-source/per-scope/per-operation EvidenceRequirementSet and FreshnessPolicy, explicit sequence/cursor/watermark/completeness/clock-quality evidence, monotonic elapsed-time and fail-closed UNKNOWN handling.
+- No global TTL. RecoveryBarrier remains scope- and dependency-aware; process restart or socket reconnect is not readiness.
+- Numeric freshness thresholds, retention, clock uncertainty, retry budgets and RTO/RPO remain source-owner/owner decisions; affected risk-increasing operation stays blocked until configured and evidenced.
+
+### OD-12 — Emergency operations
+
+- **V1 safe baseline:** one Owner identity; authenticated scoped halt can be requested without a trade approval; resume requires Owner step-up, reason/evidence and READY RecoveryBarrier.
+- No automatic cancel-all, flatten or protective-order removal; no offline emergency order plan; emergency order workflows remain disabled until exact venue/account-mode semantics are certified.
+- Break-glass is limited to halt/isolation/credential-route containment and cannot create orders, mint approvals, relax Risk limits or transfer assets.
+- Dual control is not simulated with one human. If a second independent operator is later introduced, high-impact resume/emergency actions require a separately reviewed two-person policy. Identity provider and step-up mechanism remain unselected.
+
+These choices close the technical direction for G1 design. They do not close OD-03, OD-06, OD-07, OD-11, OD-13, numeric operating thresholds, production deployment or G3 authorization.
+
