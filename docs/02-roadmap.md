@@ -392,3 +392,15 @@ Cross-review completion is not architecture acceptance or security verification.
 - [ ] Implement a strict validator and policy enforcement only after G0D acceptance; prove boundaries in G1.
 
 No active grants or runtime authorization policy are created by the design artifact.
+
+
+## Capability authorization cross-review
+
+- [x] Complete NX-ARCH-REVIEW-003 and correct billing capability semantics.
+- [x] Extend adversarial qualification scenarios CAP-19..26.
+- [x] Record remaining findings CAP-R-02..09 and gate dependencies.
+- [ ] Approve capability IDs, owners, contracts, scopes, data classes and negative tests.
+- [ ] Close canonical resource binding, projection lineage, revocation, audit and billing-outage evidence before G0D/G1.
+- [ ] Preserve no-billing-dependency invariant on Risk/command/dispatch/Trusted Egress.
+
+Review completion is not implementation acceptance.
