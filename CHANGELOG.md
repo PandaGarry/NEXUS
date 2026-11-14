@@ -400,3 +400,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Branch HEAD `928d5fd261553676c3fad6a8e88b984a862af338` passed [workflow #43615282210](https://github.com/PandaGarry/NEXUS/actions/runs/43615282210).
 - Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions).
 - No test failures or Node.js 20 / `punycode` deprecation warnings. Evidence remains limited to Python reference models.
+
+
+### Post-sync exact-head verification — 2026-11-14
+
+- Normalized the final G1 checklist section order and verified exact HEAD `9e9035033da77d958601cb6b69128e13e2551a0d` with [workflow #43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737).
+- All 13 isolated Python reference suites passed on Python 3.11/3.12/3.13: 239 tests per runtime, 717 executions total.
+- No Node.js 20 or punycode deprecation warnings remain in the job logs.
+- PR #16 remains a 265-commit / 32-file / 4,467-addition / 72-deletion Draft in the verified parent-first stack.
+- No Rust runtime, production DB, signer, Trusted Egress, venue connection or live order path was introduced.
