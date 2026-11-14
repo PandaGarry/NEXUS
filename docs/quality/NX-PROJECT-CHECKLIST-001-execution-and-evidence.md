@@ -205,3 +205,15 @@ This checklist does not authorize:
 - Exact finite-decimal conversion is conditional; quantization requires explicit scale and rounding mode.
 - Synthetic tests cover terminating and non-terminating outcomes, explicit quantization and settlement mismatch.
 - Dedicated suite is part of the Python 3.11–3.13 CI workflow; current-head evidence pending.
+
+
+## 13. Bounded numeric context and canonical scalar wire increment
+
+- Added BoundedNumericContext as a separate preflight/admission layer; the arbitrary-precision oracle remains unchanged.
+- NumericLimits are mandatory and caller-supplied; no default or production profile is selected. Zero scale and zero power-of-ten budgets are valid; input/digit/intermediate budgets must be positive.
+- Added preflight guards for input characters, coefficient digits, scale, scale-alignment powers, multiplication scale/growth, division pre-reduction numerator/denominator, rational bounds and quantization expansion.
+- Added bounded compare, step divisibility, exact terminating conversion and canonical wire parsing.
+- Added nxd1 decimal and nxr1 rational encodings with strict canonical grammar, normalized/reduced forms, version tags and mandatory max_chars parsing.
+- Conservative division preflight may reject a quotient whose unreduced values exceed budget even if GCD reduction would fit; this behavior is documented.
+- Added dedicated bounded numeric and numeric wire CI suites. Verification pending exact-head PR run.
+- No production limits, fixed-width integer choice, resource-safety proof, Rust implementation or cross-language conformance is approved.
