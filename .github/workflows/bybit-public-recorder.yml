@@ -53,7 +53,7 @@ jobs:
           nexus-bybit-record --symbol BTCUSDT --output evidence/bybit-public-10m.jsonl --duration 600
       - name: Verify journal and require both live topics
         run: |
-          nexus-bybit-replay evidence/bybit-public-10m.jsonl | tee evidence/replay-summary.json
+          nexus-bybit-replay evidence/bybit-public-10m.jsonl --replay-book | tee evidence/replay-summary.json
           python - <<'PY'
           import json
           from pathlib import Path
@@ -67,6 +67,9 @@ jobs:
               raise SystemExit(f"journal classification does not reconcile: {summary}")
           if summary.get("snapshot_responses", 0) <= 0 or summary.get("valid_book_events", 0) <= 0:
               raise SystemExit(f"no synchronized full-depth book was observed: {summary}")
+          book_replay = summary.get("book_replay", {})
+          if not book_replay.get("replay_matches_recorded_valid_markers", False) or book_replay.get("marker_mismatches"):
+              raise SystemExit(f"book replay does not match recorded valid markers: {book_replay}")
           print(json.dumps(summary, indent=2, sort_keys=True))
           PY
       - name: Upload raw public capture and replay summary
