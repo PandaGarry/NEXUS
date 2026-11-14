@@ -2,14 +2,14 @@
 
 **Дата среза:** 2026-11-14  
 **Общий статус:** BLOCKED — Prototype Readiness Gate не пройден; bounded v1 scope decisions OD-01/04 accepted  
-**Текущая фаза:** Phase 0 — Foundation Audit / Architecture Synthesis; bounded instrument-spec reference implementation in a stacked Draft PR
+**Текущая фаза:** Phase 0 — bounded foundation close-out; parallel product-first workstream: Bybit V5 public market-data qualification (research complete, recorder implementation not started)
 
 | Область | Статус | Комментарий |
 |---|---|---|
 | Цель и продуктовые границы | Accepted / personal-first proposal | NEXUS v1 proposed as closed single-owner personal product; no public users or commercial service in initial scope. NX-ARCH-002 is proposed and requires owner review |
 | Архитектурные принципы | Proposed / Partially accepted | Требуются финальные ADR |
 | Tradoor audit | In Progress | Source pass обновлён до HEAD 6ab3877; funding/private execution capability audit добавлен в NX-RESEARCH-002. Полная per-venue сертификация, instrument metadata и runtime verification остаются открыты |
-| Exchange capabilities matrix | Incomplete | Trade/book/OI/liquidation первично просмотрены; per-channel matrix и UNKNOWN поля ещё не закрыты |
+| Exchange capabilities matrix | Incomplete | Tradoor source audit remains partial. Bybit V5 public trade/full-depth book contracts are now documented in NX-RESEARCH-013; this is technical research only, not venue selection or runtime verification |
 | Simulation fidelity | In Progress | Tradoor paper-модель недостаточна для реалистичного исполнения |
 | Runtime verification | Partial / reference-only | GitHub Actions run [#43593302985](https://github.com/PandaGarry/NEXUS/actions/runs/43593302985) passed code/workflow HEAD `5a1369435dd9024191f193df70651f1c00a36c6e`: six isolated suites (11 exact-decimal, 24 gateway, 13 egress-handover, 17 instrument-specification, 12 instrument-registry and 16 dimensional-type tests) on Python 3.11, 3.12 and 3.13 (93 tests per runtime; 279 matrix executions; 1,000 seeded rational-oracle cases inside each exact-decimal suite). Reference-only; no production runtime, real egress fencing or exchange-adapter verification claimed |
 | Security threat model | Drafted / Proposed | NX-SEC-001 сохранён; owner review, deployment-specific analysis и security verification не выполнены |
@@ -30,6 +30,15 @@
 - **WP-C — Execution ↔ Ledger:** NX-IF-003 создан как PROPOSED design draft. Определены source ownership, canonical fill identity, durable Execution outbox/Ledger inbox, atomic balanced journal posting, fee/correction semantics, projection watermark и WP-B FILL_PENDING_LEDGER handoff. Owner decisions, implementation choices and conformance evidence remain open; no implementation or tests claimed.
 - **WP-D — Freshness & Recovery:** NX-IF-004 создан как PROPOSED design draft. Определены StateEvidenceVector, source-specific freshness/quality/reconciliation dimensions, versioned EvidenceRequirementSet/FreshnessPolicy, RecoveryCase/quarantine, scoped generation-fenced RecoveryBarrier и dependency-aware restart/reconciliation ordering. Owner thresholds, venue/account scope, persistence and operator decisions remain open; no implementation or tests claimed.
 - **WP-E — Emergency Operations:** NX-IF-005 создан как PROPOSED design draft. Определены monotonic scoped HaltState/epochs, explicit CREATE/AMEND/CANCEL/CLOSE/REDUCE_ONLY/CANCEL_ALL/FLATTEN classification, bounded EmergencyActionPlan, protective-order handling, operator step-up/dual-control and gated resume. Venue capability certification, role assignments and emergency-policy decisions remain open; no implementation or tests claimed.
+
+## Product-first vertical slice qualification (2026-11-14)
+
+- NX-RESEARCH-013 completes a bounded official Bybit V5 public market-data contract review and defines a read-only recorder/replay slice.
+- The proposed fixture is `linear / BTCUSDT` only; it is not a venue or instrument selection. NX-RESEARCH-009 / NX-ADR-007 eligibility remains a hard gate.
+- Existing NX-ADR-001/004/005 and exact numeric reference work are reused. No production adapter, Rust workspace, recorder, replay engine, database, strategy, private account connection or order path exists yet.
+- PR #16 remains Draft and frozen for scope growth. Implementation is to proceed in a separate child PR based on PR #16.
+- First implementation acceptance requires snapshot/delta bridge correctness, `u` continuity and reset handling, per-trade-ID deduplication, raw replay, deterministic fault injection, data-quality metrics and exact-head CI.
+- COSE/CBOR implementation, HEGC expansion, AI/UI/WASM, multi-venue support and database/broker expansion remain deferred.
 
 ## Research and architecture records
 
