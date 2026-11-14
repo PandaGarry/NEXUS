@@ -688,3 +688,14 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [x] Constrain COSE key to OKP / Ed25519; reject Ed448, -8, algorithm/key mismatch and substitution.
 - [x] Treat protected kid as a lookup hint only; issuer/algorithm/purpose/validity/revocation/generation-bound lookup must yield exactly one eligible key.
 - [ ] Qualify exact COSE libraries and provider interoperability; add rejection vectors before implementation.
+
+## 18.23 Canonical CBOR decoder acceptance boundary — 2026-11-14
+
+- [x] Verify RFC 8949 §4.2.1 core deterministic map ordering is bytewise lexicographic over deterministic key encodings (not legacy length-first ordering).
+- [x] Clarify that canonicality is an ingress requirement, not merely an encoder preference.
+- [x] Restrict command map keys to schema-defined text field names and require rejection of unknown/duplicate keys.
+- [x] Require decoder rejection of non-preferred integer/length encodings, indefinite lengths, unsorted maps and trailing bytes before object materialization.
+- [ ] Add byte-level negative vectors for non-shortest integer/length encodings, wrong map order, duplicate keys, trailing bytes, nested limits and invalid UTF-8 in both language implementations.
+- [ ] Confirm selected Python/Rust CBOR libraries expose raw-token/duplicate detection and deterministic-profile validation; reject a library if it normalizes malformed input before NEXUS can inspect it.
+
+**Disposition:** protocol requirement clarified; no CBOR implementation or dependency selected. Cross-language parser proof remains G1-gated.
