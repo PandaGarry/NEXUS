@@ -25,7 +25,7 @@ This ADR selects bounded G1 evaluation defaults. It does not select a cloud, dat
 |---|---|---|
 | Canonical command bytes | RFC 8949 core deterministic CBOR with a strict NEXUS profile | Exact encoder/decoder libraries and versions; golden vectors; implementation |
 | Command digest | SHA-256 over a NEXUS command-domain separator and deterministic command bytes | Exact versioned digest envelope and test vectors |
-| Risk approval envelope | COSE_Sign1, EdDSA / Ed25519, protected algorithm and key identifier | Provider/HSM support, key custody, lifecycle, security review and jurisdictional qualification |
+| Risk approval envelope | COSE_Sign1, fully specified COSE Ed25519 algorithm (-19, RFC 9864), protected algorithm and key identifier | Provider/HSM support, key custody, lifecycle, security review and jurisdictional qualification |
 | Persistence candidate | PostgreSQL 18, one logical primary, service-owned schemas and roles | Exact patch version, deployment, backup/restore, isolation and failure proof |
 | Transactions | Separate Risk, Command and Ledger local ACID transactions; no distributed transaction | Isolation/locking implementation and crash/concurrency evidence |
 | Messaging | Transactional outbox/inbox in the owning database; no broker initially | Add a broker only after measured fan-out/replay need |
@@ -74,9 +74,10 @@ A schema or canonicalization change that affects bytes requires a new version an
 
 ### 4.1 Selected G1 envelope
 
-Use **COSE_Sign1** with **EdDSA / Ed25519** for the G1 capability-signing profile.
+Use **COSE_Sign1** with the fully specified **COSE Ed25519 algorithm (COSE alg = -19, RFC 9864)** for the G1 capability-signing profile. Do not use the older polymorphic COSE EdDSA identifier (-8): RFC 9864 deprecates polymorphic algorithm identifiers and provides the fully specified Ed25519 replacement.
 
-- Algorithm identifier is protected; the key identifier (kid) is protected and bound to a versioned key registry.
+- The fully specified algorithm identifier (-19) is protected and MUST match the COSE key's algorithm policy; the COSE key MUST be OKP with the Ed25519 curve. Reject polymorphic EdDSA (-8), Ed448, algorithm substitution and key/algorithm mismatch.
+- The key identifier (kid) is protected as an integrity-protected lookup hint and resolved through a versioned key registry. COSE does not define kid as security-critical or guarantee uniqueness: verification MUST NOT trust kid alone. Resolve against issuer, algorithm, key purpose, validity/revocation state and registry generation; require exactly one eligible key or fail closed on ambiguity. The signed payload issuer/audience and key-registry binding remain authoritative.
 - The signed payload contains the command digest, command ID, reservation ID, exact account/scope, issuer and audience, issue/not-before/expiry times, policy/spec/exposure versions, halt epoch, capability schema version and a unique approval/nonce identity.
 - COSE external AAD carries a fixed NEXUS protocol-domain context; it is not supplied by Strategy, AI or an untrusted client.
 - Risk's signing key is distinct from every venue API/signing key.
@@ -84,7 +85,7 @@ Use **COSE_Sign1** with **EdDSA / Ed25519** for the G1 capability-signing profil
 - Private signing material is held behind a dedicated Risk signer boundary and must be non-exportable in a production deployment. Ordinary API, Strategy, AI, Dispatcher and adapter workers receive no signing authority.
 - Key rotation, activation/retirement, emergency revocation, historical verification and issuer/audience rules are explicit stateful controls.
 
-COSE/EdDSA is selected as the protocol baseline, not as proof that a particular HSM/KMS supports Ed25519. The production key-custody provider is not selected. If a required custody provider cannot safely support the selected profile, that incompatibility must return to security review; do not silently substitute HMAC or custom cryptography.
+COSE_Sign1 / fully specified COSE Ed25519 is selected as the protocol baseline, not as proof that a particular HSM/KMS supports Ed25519. The production key-custody provider is not selected. If a required custody provider cannot safely support the selected profile, that incompatibility must return to security review; do not silently substitute HMAC or custom cryptography.
 
 ### 4.2 Signature is not authorization
 
@@ -209,7 +210,7 @@ The identity provider and step-up mechanism are not selected. This baseline deli
 ### Costs and unresolved evidence
 - CBOR decoder strictness, duplicate-key detection and resource limits need cross-language tests.
 - Exact Python/Rust libraries, versions, build provenance and licenses are not selected.
-- Ed25519 support and non-exportable key custody must be proven for the eventual provider.
+- Ed25519 support, RFC 9864 alg=-19 interoperability, non-exportable key custody, issuer-scoped key lookup and ambiguous-kid rejection must be proven for the eventual provider.
 - PostgreSQL 18 exact patch, host, replication, backup and restore topology remain unselected.
 - Transaction isolation, concurrency, ambiguous commit, crash/restart and actual egress-boundary fault tests remain mandatory.
 - Source-specific freshness thresholds, data retention, RTO/RPO and operator identity details remain open.
@@ -221,7 +222,7 @@ This ADR is selected as the **G1 technical design baseline** under the owner's d
 
 Before implementation:
 - [ ] review the exact CBOR/COSE libraries and versions for Python and Rust;
-- [ ] publish cross-language canonical byte, digest and COSE signature vectors;
+- [ ] publish cross-language canonical byte, digest and COSE signature vectors using RFC 9864 COSE Ed25519 alg=-19; include rejection vectors for deprecated alg=-8, wrong curve, algorithm/key mismatch and ambiguous kid;
 - [ ] run duplicate-key, invalid UTF-8, float/tag/indefinite-length, integer-range and resource-exhaustion tests;
 - [ ] prove Risk reservation concurrency, all-scope atomicity, serialization retry and unknown-commit reconciliation on the exact PostgreSQL version;
 - [ ] prove Command single-use consumption/outbox atomicity and Ledger inbox/journal idempotency;
@@ -237,7 +238,8 @@ No runtime dependency, database, key, credential, venue, order or production dep
 - RFC 8949 — CBOR, core deterministic encoding: https://www.rfc-editor.org/rfc/rfc8949.html
 - RFC 8785 — JSON Canonicalization Scheme: https://www.rfc-editor.org/rfc/rfc8785.html
 - RFC 9052 — COSE structures and signing process: https://www.rfc-editor.org/rfc/rfc9052.html
-- RFC 9053 — COSE initial algorithms / EdDSA: https://www.rfc-editor.org/rfc/rfc9053.html
+- RFC 9053 — COSE initial algorithms (updated by RFC 9864): https://www.rfc-editor.org/rfc/rfc9053.html
+- RFC 9864 — fully specified COSE Ed25519 algorithm (-19); deprecates polymorphic EdDSA (-8): https://www.rfc-editor.org/rfc/rfc9864.html
 - RFC 8032 — EdDSA / Ed25519: https://www.rfc-editor.org/rfc/rfc8032.html
 - NIST FIPS 186-5 — Digital Signature Standard: https://csrc.nist.gov/pubs/fips/186-5/final
 - PostgreSQL 18 transaction isolation: https://www.postgresql.org/docs/18/sql-set-transaction.html
