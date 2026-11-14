@@ -421,3 +421,9 @@ Branch HEAD `928d5fd261553676c3fad6a8e88b984a862af338` passed [GitHub Actions #4
 - All three logs are free of Node.js 20 and punycode deprecation warnings.
 - Current PR #16 snapshot: 265 commits, 32 files, 4,467 additions, 72 deletions; full parent ancestry remains open/Draft and PR #16 remains Draft.
 - This is reference-model CI only; Rust, PostgreSQL, COSE, trusted egress, venue adapters and live trading are not verified.
+
+## Full stacked-PR ancestry and current exact-head verification — 2026-11-14
+
+GitHub metadata confirms the direct dependency chain by exact SHA equality: PR #1 → #2 → #3 → #4 → #5 → #6 → #7 → #9 → #10 → #11 → #12 → #13 → #14 → #16. PR #8 is a parallel branch from PR #7 and is not an ancestor of #16. All direct-chain PRs remain open, Draft and unmerged. PR #16 correctly targets PR #14's exact head; parent-first integration is mandatory.
+
+Current PR #16 head `9e9035033da77d958601cb6b69128e13e2551a0d` passed [workflow #43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737): 13 isolated Python reference suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 successful executions). No test failures or Node.js 20 / `punycode` deprecation warnings. This is reference-model regression only; Rust, CBOR/COSE, PostgreSQL, Trusted Egress, external fencing, venue and live-safety behavior remain untested.
