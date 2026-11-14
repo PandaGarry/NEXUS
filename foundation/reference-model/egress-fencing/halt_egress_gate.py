@@ -63,8 +63,14 @@ class HaltEgressGate:
         self._require_text(reason, "halt reason")
         self.halt_reason = reason
         if not self.store_available:
-            self.phase = HaltPhase.HALT_PENDING
-            return None
+            if self.phase is HaltPhase.ACTIVE:
+                self.phase = HaltPhase.HALT_PENDING
+                return None
+            if self.phase is HaltPhase.HALT_PENDING:
+                return None
+            # A previously committed/acknowledged epoch is not downgraded by
+            # a later store outage or duplicate halt request.
+            return self.epoch
         if self.phase is HaltPhase.ACTIVE:
             if self.epoch >= MAX_HALT_EPOCH:
                 self.phase = HaltPhase.HALT_PENDING
