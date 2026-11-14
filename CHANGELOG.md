@@ -361,3 +361,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Added adversarial tests for extreme scales and oversized integer strings.
 - Exact code/test HEAD b0fb99d4505ba5eb405788fee8ce447f28437479 passed [workflow #43614612130](https://github.com/PandaGarry/NEXUS/actions/runs/43614612130): 13 suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 successful executions).
 - Test-only reference hardening; no production numeric profile, normalized fixture runner or Rust implementation was introduced.
+
+### COSE signing profile corrected to fully specified Ed25519 — 2026-11-14
+
+- Standards review found RFC 9053's polymorphic COSE EdDSA identifier (-8) is superseded for fully specified algorithm selection by RFC 9864.
+- Updated NX-ADR-008 to use COSE Ed25519 algorithm identifier -19, with OKP / Ed25519 key constraints.
+- Added rejection requirements for deprecated -8, Ed448, algorithm/key mismatch and substitution.
+- Clarified that protected `kid` is a lookup hint, not a unique or security-authoritative identity; key resolution must bind issuer, algorithm, purpose, status and registry generation and fail closed on ambiguity.
+- No signer/verifier implementation, cryptographic dependency, key material or key custody provider was added.
