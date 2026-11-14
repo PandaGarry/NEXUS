@@ -329,3 +329,12 @@ The then-current branch head `e15e47f9512bc07a1f6534a4f41b0d27d7d42578` passed G
 ### Exact-head regression evidence for NX-ARCH-REVIEW-004 — 2026-11-14
 
 Exact branch HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed GitHub Actions [#43613212116](https://github.com/PandaGarry/NEXUS/actions/runs/43613212116): Python 3.11/3.12/3.13, 13 isolated suites / 237 tests per runtime, 711 successful executions. This is Python reference-model regression only; it does not execute the new traceability artifact, capability policy, domain APIs, grants, module isolation, Rust or venue behavior. No capability or runtime was activated.
+
+
+### Added — Revocation, freshness and control-plane outage objective proposal (2026-11-14)
+
+- Added NX-ARCH-REVIEW-005 reconciling NX-ARCH-008/009 revocation, NX-IF-004 source freshness/recovery, NX-IF-005 halt propagation and NX-SEC-001 credential isolation.
+- Separated authorization freshness, data freshness, control propagation and RecoveryBarrier readiness; defined a control-plane outage matrix and in-flight side-effect semantics.
+- Proposed conservative numeric targets only for low-risk authorization cache and cancellation discussion. They are explicitly not accepted SLOs, production guarantees or defaults.
+- Kept venue/source freshness thresholds, halt deadline, RTO/RPO, OD-10 and OD-12 owner decisions open. No executable policy, cache, revocation service, dependency, secret manager, network fence or runtime added.
+- Updated architecture index, checklist, status, roadmap and changelog.
