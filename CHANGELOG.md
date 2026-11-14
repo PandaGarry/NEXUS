@@ -4,6 +4,13 @@
 
 ## Unreleased
 
+### Added — Bybit V5 public market-data vertical-slice qualification (2026-11-14)
+
+- Added NX-RESEARCH-013 with an official Bybit V5 public feed audit, explicit snapshot/delta and trade-ID semantics, data-quality limitations, later execution/reconciliation caveats and a bounded read-only recorder/replay plan.
+- Recorded that Bybit remains a technical research candidate only; no venue, account or product selection is made and no private access or trading is authorized.
+- Froze PR #16 scope and moved implementation to a separate child workstream. Recorder implementation and runtime evidence are not yet present.
+
+
 
 ### Verified — Authorization-catalog manifest admission reference (2026-11-14)
 
