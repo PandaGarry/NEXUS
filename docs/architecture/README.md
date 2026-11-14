@@ -9,12 +9,13 @@
 | [NX-ADR-003](NX-ADR-003-simulation-fidelity-strategy-validation.md) | Simulation Fidelity & Strategy Validation | Proposed |
 | [NX-ADR-004](NX-ADR-004-market-data-recovery-state-machine.md) | Market Data Recovery State Machine | Proposed |
 | [NX-ADR-005](NX-ADR-005-instrument-specification-exact-arithmetic.md) | Instrument Specification & Exact Arithmetic | Proposed |
-| NX-ADR-006 | Strategy Validation / Research Governance | Planned |
+| NX-ADR-006 | Strategy Validation / Research Governance | Deferred — covered by NX-ADR-003 unless a distinct governance decision emerges |
 | [NX-SEC-001](../security/NX-SEC-001-threat-model-credential-isolation.md) | Threat Model / Credential Isolation | Proposed |
 | [NX-ARCH-001](NX-ARCH-001-target-architecture.md) | Target Architecture & Deployment Topology | Proposed |
 | [NX-ARCH-003](NX-ARCH-003-domain-kernel-numeric-model.md) | Domain Kernel & Exact Numeric Model | Proposed |
 
 ## Architecture reviews and foundation design
+- [NX-PROJECT-CHECKLIST-001 — Project Execution and Evidence Checklist](../quality/NX-PROJECT-CHECKLIST-001-execution-and-evidence.md) — Active living checklist with G0D D1–D8 status, engineering workstreams, evidence requirements and explicit non-authorizations.
 - [NX-ARCH-REVIEW-001 — Cross-Specification Contract Review](NX-ARCH-REVIEW-001-cross-specification-contract-review.md) — Proposed; design findings and closure work packages.
 - [NX-DOC-REVIEW-001 — Foundation Documentation Final Review](../quality/NX-DOC-REVIEW-001-foundation-documentation-final-review.md) — In progress; integration and G0 documentation blockers.
 
@@ -28,7 +29,7 @@
 - [NX-IF-004 — State Evidence, Freshness & Recovery Barrier Contract](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md) — Proposed; WP-D design artifact for per-source evidence vectors, freshness policy, quarantine, scoped recovery cases and restart/reconciliation barriers; not accepted or implemented.
 - [NX-IF-005 — Emergency Operations, Halt & Risk-Reduction Authorization Contract](NX-IF-005-emergency-operations-halt-risk-reduction-contract.md) — Proposed; WP-E design artifact for monotonic scoped halts, operation-class authorization, bounded emergency plans, protective-order handling and controlled resume; not accepted or implemented.
 - [NX-ARCH-REVIEW-001 — Cross-Specification Contract Review](NX-ARCH-REVIEW-001-cross-specification-contract-review.md) — Proposed; WP-A..WP-E design drafts published; owner decisions and conformance evidence remain open.
-- [NX-OWNER-DECISIONS-001 — Critical Owner Decision Register](NX-OWNER-DECISIONS-001-critical-owner-decision-register.md) — Proposed; OD-01..OD-15 grouped by G0–G3 readiness gates; no owner decisions are assumed accepted.
+- [NX-OWNER-DECISIONS-001 — Critical Owner Decision Register](NX-OWNER-DECISIONS-001-critical-owner-decision-register.md) — Proposed register; OD-01/04 accepted, OD-15 partially accepted; remaining decisions open/deferred by gate.
 
 ADR, подготовленные в обсуждении, не считаются опубликованными или принятыми до появления полного документа в репозитории и review. Interface contracts также требуют owner/security review и conformance evidence.
 
