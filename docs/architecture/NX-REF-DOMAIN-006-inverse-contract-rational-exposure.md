@@ -43,3 +43,6 @@ Synthetic tests cover exact 1/300 BTC exposure, terminating 1/200 BTC exposure, 
 ## 6. Exit boundary
 
 No production use until venue-specific official specifications and captured fixtures are reviewed, operation-specific rounding is approved, and the same formulas pass independent cross-language golden vectors and property tests.
+
+
+**CI evidence:** PR run [#43594275808](https://github.com/PandaGarry/NEXUS/actions/runs/43594275808) passed the current PR snapshot on Python 3.11, 3.12 and 3.13. The complete workflow ran 129 tests per runtime / 387 matrix executions. This is synthetic reference evidence only.
