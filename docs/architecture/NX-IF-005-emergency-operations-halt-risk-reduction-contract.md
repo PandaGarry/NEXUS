@@ -409,8 +409,8 @@ At minimum, test:
 ## 12. Acceptance criteria
 
 1. HaltState is durable, scoped, monotonic and protected against stale writers/epochs.
-2. Risk-increasing approvals and queued dispatches are blocked immediately on a halt request at the authoritative control boundary.
-3. Every dispatch boundary checks current halt epoch immediately before network send.
+2. Risk-increasing approvals and queued commands without a committed final EgressBoundaryAuthorization are blocked immediately on a halt request at the authoritative control boundary.
+3. The final EgressBoundaryAuthorization and halt-epoch transition serialize on the same authoritative generation: halt-first denies socket initiation; gate-first is an in-flight attempt that remains reserved/reconciliation-gated, and Egress cannot acknowledge the newer halt epoch until the attempt is drained to observed socket initiation or its sender is positively fenced.
 4. A non-acknowledging dispatcher is isolated or remains a blocking failure; HALTED is not falsely reported as fully enforced.
 5. Already-dispatched orders remain exposed until authoritative venue evidence resolves them.
 6. Halt activation is possible while Risk Engine is unavailable through an authenticated independent path.
