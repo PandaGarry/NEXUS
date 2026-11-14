@@ -518,3 +518,17 @@ Disposition: research-only. No package, service, broker, database, vault or depl
 ### Final synchronized documentation-head verification — 2026-11-14
 
 The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` passed exact-head GitHub Actions [#43611122433](https://github.com/PandaGarry/NEXUS/actions/runs/43611122433). Python 3.11, 3.12 and 3.13 jobs all completed successfully; each ran 13 isolated reference-model suites / 237 tests (711 successful executions total). This is existing Python reference-model regression evidence only. It does not test NX-ARCH-008's proposed registry, manifest, workload identity, grants, module runtime/isolation, secrets, database permissions, network/egress enforcement, Rust, venue behavior or live-trading safety. NX-ARCH-008 remains PROPOSED / DESIGN ONLY; G0D/G1 remain open.
+
+
+## 18.13 Module governance cross-architecture review
+
+- [x] Cross-review NX-ARCH-001, NX-ARCH-006, NX-ARCH-007, NX-ARCH-008, NX-SEC-001, NX-IF-001..005 and NX-OWNER-DECISIONS-001; publish NX-ARCH-REVIEW-002.
+- [x] Clarify that the Contract Gateway performs admission-level checks while each resource-owning service remains authoritative for operation/resource authorization.
+- [x] Clarify that T4 is a protection classification, not a shared Risk/Command/Ledger/Egress workload identity or permission set.
+- [x] Record remaining findings F-03..F-08: executable permission mapping, revocation objective, trust roots, actual storage/network/host isolation, first G1 module/resource budgets, and operator/support authority.
+- [ ] Close findings F-03..F-08 with owner/security decisions and observed enforcement-boundary evidence before the corresponding G0D/G1 gates.
+- [ ] Map each permission matrix cell to a contract, owner, data scope, enforcement point, audit event and negative test.
+- [ ] Define measurable revocation propagation/cache and in-flight cancellation objectives before any module prototype.
+- [ ] Do not infer acceptance, implementation readiness or security certification from the cross-review.
+
+**Disposition:** design cross-review complete; acceptance not granted. No runtime or dependency selected. See [NX-ARCH-REVIEW-002](../architecture/NX-ARCH-REVIEW-002-module-governance-cross-review.md).
