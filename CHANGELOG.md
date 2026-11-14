@@ -882,3 +882,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - PostgreSQL workflow #43628823064 passed 9 tests on PostgreSQL 18.7. Python workflow #43628823097 passed 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions).
 - Out-of-band role/ACL changes and production authorization-catalog mutation paths remain unqualified.
 
+
+### Exact latest PR #16 branch-head evidence refresh — 2026-11-14
+
+- Refreshed PR #16 to exact branch HEAD `49cb8ba73bfb9cf61fafba3108cf8ead6d16321b`.
+- PostgreSQL 18.7 disposable HEGC fixture workflow [#43630768858](https://github.com/PandaGarry/NEXUS/actions/runs/43630768858) passed 11/11 tests.
+- Python reference workflow [#43630768860](https://github.com/PandaGarry/NEXUS/actions/runs/43630768860) passed 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions).
+- Inspected all four job steps/logs. Permission-denied and serialization messages are expected from negative/adversarial assertions; all corresponding jobs completed successfully.
+- The latest branch delta after the pinned-image code/test commit is documentation-only. Production DBA/migration catalog-manifest drift detection, emergency role-change reconciliation, existing-session termination, expanded RLS tests, crash/restore/PITR, true uncertain-COMMIT recovery, signed image provenance/SBOM/vulnerability disposition and independent security review remain open.
+- PR #16 remains Draft and stacked on PR #14. No production deployment or live trading is authorized by these fixture/reference results.
