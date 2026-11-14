@@ -9,7 +9,7 @@ import unittest
 from fractions import Fraction
 from pathlib import Path
 
-from nexus_decimal import ExactDecimal as D, ExactRational, InexactDivision
+from nexus_decimal import DivisionByZero, ExactDecimal as D, ExactRational, InexactDivision
 from domain_types import AssetAmount, ContractCount, DimensionMismatch, Notional, Price
 from instrument_spec import Applicability, ContractType, InstrumentSpec, InstrumentStatus, MarketType
 from instrument_units import InstrumentUnitModel, MultiplierDimension, QuantityKind
@@ -215,6 +215,14 @@ class FinancialMathFixtureTests(unittest.TestCase):
                      result.weighted_average_price.denominator),
             Fraction(5, 3),
         )
+
+    def test_partial_fill_aggregation_rejects_zero_total_quantity(self):
+        fills = [
+            (AssetAmount("BTC", d("1")), Price("BTC", "USDT", d("10"))),
+            (AssetAmount("BTC", d("-1")), Price("BTC", "USDT", d("11"))),
+        ]
+        with self.assertRaises(DivisionByZero):
+            aggregate_partial_fills(fills)
 
 
     def test_spot_notional_matches_fraction_oracle_for_seeded_cases(self):
