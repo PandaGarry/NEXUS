@@ -225,4 +225,9 @@ A small API-boundary defect found during the exception audit was corrected: `Exa
 
 ## Cross-contract pre-egress ordering clarification — 2026-11-14
 
+## Reservation/dispatch review finding refresh — 2026-11-14
+
+NX-ARCH-REVIEW-001 F-02 was stale in wording: it still described the reservation/command lifecycle as wholly unspecified, although NX-IF-001 §8.3, NX-IF-002 and NX-ADR-002 now publish the ordered design contract. F-02 is now explicitly marked **partially resolved at design level only**: durable reservation precedes capability issuance; single-use capability consumption is atomic with canonical command/outbox commit; ambiguous dispatch retains reservation. Owner acceptance, transaction/isolation choice, crash/replay/concurrency evidence, full reservation lifecycle proof and independently enforced egress fencing remain open. No runtime or distributed-safety guarantee is implied.
+
+
 A targeted review found one ambiguous label in the IF-002 exposure lifecycle table: “marks command as dispatching / sends it” did not make the ordering between the durable attempt marker and network side effect explicit. The row now requires the dispatcher to commit the durable pre-egress marker before any network action. That marker moves exposure to `DISPATCH_OUTCOME_UNKNOWN` and is expressly not evidence that bytes were sent. The conservative reservation remains held until authoritative venue outcome and reconciliation. NX-ARCH-REVIEW-001 records the clarification. This aligns documentation only; production storage, transaction isolation, fencing and egress enforcement remain unimplemented and unverified.
