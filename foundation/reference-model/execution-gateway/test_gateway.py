@@ -139,6 +139,18 @@ class GatewayTests(unittest.TestCase):
         with self.assertRaises(Denied):
             unsupported.canonical_bytes()
 
+    def test_crash_after_venue_accept_before_ack_persistence_is_unknown(self):
+        self.gateway.persist_approved(self.cmd, self.approval)
+        with self.assertRaises(InjectedCrash):
+            self.gateway.dispatch("cmd-001", crash_after_venue_accept=True)
+        self.assertEqual(len(self.adapter.calls), 1)
+        self.assertEqual(self.gateway.state("cmd-001"), "DISPATCHING")
+        self.assertEqual(self.gateway.recover_after_restart(), ["cmd-001"])
+        self.assertEqual(self.gateway.state("cmd-001"), "OUTCOME_UNKNOWN")
+        with self.assertRaises(Denied):
+            self.gateway.dispatch("cmd-001")
+        self.assertEqual(len(self.adapter.calls), 1)
+
     def test_timeout_after_possible_send_is_unknown_and_not_resent(self):
         self.gateway.persist_approved(self.cmd, self.approval)
         self.adapter.result = "timeout"
