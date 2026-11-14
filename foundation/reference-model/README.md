@@ -33,3 +33,15 @@ The model uses arbitrary-precision integer coefficients. This is intentionally d
 - no claim of production, Rust/WASM or backend conformance.
 
 Never import this package into a production trading service. Production code must independently implement the approved contract and pass shared golden vectors, property tests and integration tests.
+
+
+## Execution gateway reference slice
+
+See [execution-gateway/README.md](execution-gateway/README.md) and [NX-REF-EXEC-001](../../docs/architecture/NX-REF-EXEC-001-command-gateway-reference-conformance.md). This is a test-only Python/SQLite conformance model with a fake adapter. Run its suite with:
+
+```bash
+cd execution-gateway
+python -m unittest -v
+```
+
+The GitHub Actions workflow runs both reference suites on Python 3.11, 3.12 and 3.13. A workflow definition is not evidence of a pass; consult the run attached to the exact PR HEAD. No production, multi-process or live-exchange guarantees are claimed.
