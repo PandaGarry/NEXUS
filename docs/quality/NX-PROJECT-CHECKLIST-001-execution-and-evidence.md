@@ -1564,3 +1564,6 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Add complete PostgreSQL catalog observer, deployment gate and post-startup drift enforcement.
 
 **Limit:** logical-object reference model only; no CBOR/COSE implementation or production authorization.
+
+
+**Verification evidence:** Python workflow [#43633125568](https://github.com/PandaGarry/NEXUS/actions/runs/43633125568) passed 287 tests/runtime on Python 3.11–3.13 (861 executions); the new auth-catalog suite contributed 23 tests/runtime. PostgreSQL workflow [#43633125536](https://github.com/PandaGarry/NEXUS/actions/runs/43633125536) passed 12/12. Exact code/test HEAD: `c80d781ce7c9f2b4a015fa79f8e2c403709439d7`. These results qualify the logical reference model only.
