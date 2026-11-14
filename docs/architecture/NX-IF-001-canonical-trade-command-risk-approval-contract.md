@@ -306,7 +306,7 @@ Reason codes are machine-stable; human-readable explanations may evolve independ
 - AI and Strategy have no permission to issue or consume approval capabilities.
 - Operator-originated commands require authenticated actor identity, role and audit context; privileged scopes may require dual control per owner policy.
 
-G1 capability-signature baseline is COSE_Sign1 with EdDSA / Ed25519, selected in NX-ADR-008. Exact vetted library/version, non-exportable key custody provider, key ceremony, rotation/revocation operations and jurisdictional/security approval remain open. No custom cryptography.
+G1 capability-signature baseline is COSE_Sign1 with the fully specified COSE Ed25519 algorithm identifier -19 (RFC 9864), selected in NX-ADR-008. The deprecated polymorphic EdDSA identifier -8 is rejected. Exact vetted library/version, non-exportable key custody provider, key ceremony, rotation/revocation operations and jurisdictional/security approval remain open. No custom cryptography.
 
 ## 12. Contract state transitions
 
@@ -421,5 +421,8 @@ The command types already enumerated by this contract MUST use the operation-cla
 
 ## G1 technical baseline alignment — NX-ADR-008
 
-The delegated G1 baseline is RFC 8949 restricted deterministic CBOR for canonical command bytes, SHA-256 with a fixed NEXUS command-domain separator for the digest, and COSE_Sign1 EdDSA/Ed25519 for RiskApprovalCapability. This is a technical design selection only. It does not select a key custody provider, authorize a signer/runtime, or close production Security/jurisdictional review. See [NX-ADR-008](NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md).
+The delegated G1 baseline is RFC 8949 restricted deterministic CBOR for canonical command bytes, SHA-256 with a fixed NEXUS command-domain separator for the digest, and COSE_Sign1 with fully specified COSE Ed25519 algorithm identifier -19 (RFC 9864) for RiskApprovalCapability. This is a technical design selection only. It does not select a key custody provider, authorize a signer/runtime, or close production Security/jurisdictional review. See [NX-ADR-008](NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md).
 
+
+
+COSE verification MUST reject the deprecated polymorphic algorithm identifier -8, Ed448, non-OKP keys, non-Ed25519 curves, algorithm/key mismatch and algorithm substitution. A protected kid is only a lookup hint; resolve the signing key against signed issuer, algorithm, purpose, validity/revocation state and registry generation, requiring exactly one eligible key. See NX-ADR-008 and RFC 9864.
