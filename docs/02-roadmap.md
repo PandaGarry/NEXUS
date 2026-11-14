@@ -335,3 +335,17 @@ Publication is design progress, not implementation or security certification.
 - [ ] Only after explicit owner/legal/security approval consider public registration, payment integration, subscriptions, teams, multi-tenancy or commercial launch.
 
 These are architectural readiness items, not commitments to ship all listed product domains.
+
+
+## Module registry and admission governance (design track)
+
+- [x] Publish NX-ARCH-008 with immutable module/artifact identity, registry record, lifecycle, trust tiers and manifest requirements.
+- [x] Separate capability catalog, module declaration, workload grant, commercial entitlement and request-time domain authorization.
+- [x] Define proposed module/data permission matrix, protected-core exclusions, contract/dependency policy, revocation and rollback requirements.
+- [x] Define 20 adversarial module qualification scenarios and G0D/G1 exit criteria.
+- [ ] Cross-review NX-ARCH-008 with NX-ARCH-001..007, NX-SEC-001, NX-IF-001..005 and owner decisions.
+- [ ] Convert the proposed record into a versioned canonical schema only after ownership, signing/provenance and policy decisions are reviewed.
+- [ ] Specify and test actual workload identity, storage/secret isolation, network/egress enforcement and revocation propagation before selecting a runtime.
+- [ ] Select one low-risk first-party read-model module for a non-production G1 prototype only after G0D approval.
+
+No executable registry, plugin loader, module runtime, third-party code execution or new dependency is approved by this design increment.
