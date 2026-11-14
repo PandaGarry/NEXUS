@@ -587,3 +587,9 @@ Latest verified reference CI: SHA `73841573e4e02b34a0c0363bbbe21155828d0c08`, [w
 ## Risk signing versus venue signing authority separation — 2026-11-14
 
 NX-SEC-001 now explicitly separates the private key that signs RiskApprovalCapability from venue API credentials and venue request-signing capability. They use distinct keys, workload identities and policies; key reuse is prohibited. The Risk signing authority alone holds the Risk private key, while Execution/Trusted Egress receive public verification material only. Trusted Egress alone holds venue credentials and owns the venue socket. EgressBoundaryAuthorization is a separate one-use attempt control, not a Risk approval or venue credential. KMS/HSM/vault, key lifecycle and compromise tests remain open; no key or credential is present.
+
+## Exact-head CI after halt / signing-authority updates — 2026-11-14
+
+PR #16 HEAD `dbfba513b86a79b8b6574a80c1beb136b28836c7` passed [workflow #43618114058](https://github.com/PandaGarry/NEXUS/actions/runs/43618114058). Python 3.11, 3.12 and 3.13 each passed all 13 isolated reference suites / 239 tests (**717 successful executions total**). All job logs were inspected; no failures, Node.js 20 deprecation or `punycode` warnings. The tested branch includes the Risk/venue signing authority split and the clarified halt-request versus fully-enforced HALTED semantics.
+
+This is Python reference-model CI only. It does not implement or verify signing keys, KMS/HSM, halt storage, EgressBoundaryAuthorization, PostgreSQL, Rust, network fencing, venue behavior or live trading.
