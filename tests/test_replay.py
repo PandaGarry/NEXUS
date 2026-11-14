@@ -29,6 +29,7 @@ class ReplayTests(unittest.TestCase):
             self.assertEqual(summary["control_frames"], 3)
             self.assertEqual(summary["non_json_frames"], 1)
             self.assertEqual(summary["other_json_frames"], 1)
+            self.assertEqual(summary["non_ws_records"], 1)
             self.assertEqual(summary["record_types"], {"raw_rest_snapshot": 1, "raw_ws_frame": 7})
             self.assertEqual(summary["classification_total"], 8)
             self.assertTrue(summary["classification_reconciles"])
