@@ -183,3 +183,7 @@ This package validates mathematical identities only; it does not pass financial 
 - [ ] Keep all foreign venues RESEARCH_ONLY until legal, KYC, product and API eligibility are evidenced.
 
 First-venue selection remains BLOCKED; no live trading is authorized.
+
+- [x] Add test-only venue eligibility evidence evaluator and 24 deterministic fail-closed scenarios; exact-head CI verification pending.
+- [ ] Verify the venue eligibility reference suite passes on Python 3.11, 3.12 and 3.13 at the exact PR head.
+- [ ] Keep NX-ADR-007 PROPOSED until owner and qualified legal review are complete.
