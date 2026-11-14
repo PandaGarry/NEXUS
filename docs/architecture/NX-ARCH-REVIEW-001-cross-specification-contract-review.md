@@ -109,8 +109,8 @@ The following contracts are required before implementation. WP-A now has a propo
 
 1. **CanonicalTradeCommand v1** — proposed in [NX-IF-001](NX-IF-001-canonical-trade-command-risk-approval-contract.md); not accepted, implemented or conformance-tested.
 2. **StateEvidenceVector v1** — provenance, freshness, quality, watermarks and version lineage for every risk input.
-3. **ExposureSnapshot v1** — positions + open orders + pending commands + reservations + unknown exposure, with exclusive bucket ownership and a monotonic snapshot version.
-4. **RiskReservation v1** — durable reservation lifecycle, capacity accounting, fencing, expiry and resolution evidence.
+3. **ExposureSnapshot v1** — proposed in [NX-IF-002](NX-IF-002-exposure-snapshot-risk-reservation-contract.md); exclusive bucket ownership, source authority, quality, lineage and monotonic scope versions. Not accepted or implemented.
+4. **RiskReservation v1** — proposed in [NX-IF-002](NX-IF-002-exposure-snapshot-risk-reservation-contract.md); durable lifecycle, atomic multi-scope capacity reservation, fencing, conservative expiry and evidence-based release. Not accepted or implemented.
 5. **RiskApprovalCapability v1** — signature over command digest, scope, spec/policy versions, exposure snapshot/reservation version, halt epoch, nonce, issue/expiry and one-time consumption.
 6. **ExecutionOutcomeEvent v1** — durable command/order/fill/cancel/reject/unknown transitions with native evidence and deduplication scope.
 7. **FinancialPostingEvent v1** — idempotent Ledger input linked to authoritative execution/account event evidence and posting-rule version.
@@ -137,7 +137,7 @@ These are proposed design artifacts, not existing implemented schemas.
 | Work package | Scope | Exit criteria |
 |---|---|---|
 | WP-A Command & approval contracts | NX-IF-001 design draft exists | Owner/security decisions, canonicalization/digest selection, golden vectors and conformance evidence remain open |
-| WP-B Exposure & reservation | Exposure buckets, reservations, concurrent requests, unknown outcomes | State machine, ownership matrix, crash/race test matrix, no double count/omission invariant |
+| WP-B Exposure & reservation | NX-IF-002 design draft published | Owner decisions, persistence/transaction design, schema conformance and concurrency/fault evidence remain open |
 | WP-C Execution ↔ Ledger | Durable event handoff, fill identity, posting idempotency | Event ownership, inbox/outbox contracts, replay and duplicate/correction tests |
 | WP-D Freshness & recovery | Evidence vector, watermarks, quarantine, startup barrier | Per-scope state model, fault scenarios, explicit recovery gates |
 | WP-E Emergency operations | Halt/cancel/amend/reduce/close semantics | Venue capability matrix, operator authorization, race and failure tests |
@@ -157,7 +157,7 @@ No numeric risk limits are invented. UNCONFIGURED remains a hard block for live 
 
 ## 8. Review disposition and verification limits
 
-**Disposition: BLOCKED. WP-A design draft published (NX-IF-001); WP-A acceptance and WP-B through WP-E design closure plus owner review remain outstanding.**
+**Disposition: BLOCKED. WP-A (NX-IF-001) and WP-B (NX-IF-002) design drafts published; both require owner/security review and conformance evidence. WP-C through WP-E design closure remains outstanding.**
 
 Verified in this review:
 - all reviewed source documents were fetched from the named branch;
