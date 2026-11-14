@@ -154,6 +154,9 @@ This guard is a design candidate, not a selected/implemented mechanism. Before G
 - PostgreSQL versioning policy / supported minor releases: https://www.postgresql.org/support/versioning/
 - PostgreSQL 18.7 transaction serialization failure handling: https://www.postgresql.org/docs/18/mvcc-serialization-failure-handling.html
 - PostgreSQL 18.7 transaction isolation: https://www.postgresql.org/docs/18/transaction-iso.html
+- PostgreSQL source-level SSI design notes (including serialization dependencies and WAL replay considerations): https://github.com/postgres/postgres/blob/master/src/backend/storage/lmgr/README-SSI
+- O'Neil & O'Neil, “Determining serialization order for serializable snapshot isolation,” Information Systems 58 (2016), DOI: https://doi.org/10.1016/j.is.2016.02.001 — documents that SSI serialization order need not equal commit order.
+- PostgreSQL Wiki, Serializable — explanation of apparent serial order under SSI and its distinction from commit order: https://wiki.postgresql.org/wiki/Serializable
 - PostgreSQL 18 privileges: `SELECT FOR SHARE/UPDATE` requires UPDATE privilege on at least one column: https://www.postgresql.org/docs/18/ddl-priv.html
 - PostgreSQL 18 SECURITY DEFINER function safety: fixed trusted search_path, `pg_temp` last and explicit PUBLIC EXECUTE revocation: https://www.postgresql.org/docs/18/sql-createfunction.html
 - PostgreSQL 18 function security / trusted object ownership: https://www.postgresql.org/docs/18/perm-functions.html
