@@ -1234,7 +1234,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 - [x] Verify exact code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` on [workflow #43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545).
 - [x] Pass 13 isolated suites / 255 tests on each of Python 3.11, 3.12 and 3.13 (765 successful executions total).
-- [x] Confirm the egress-fencing package passes 24 tests, including all 16 HaltEgressGate tests.
+- [x] Confirm the egress-fencing package passed 29 tests, including 16 HaltEgressGate tests at that historical SHA.
 - [x] Inspect all three job logs; no test failures or deprecation warnings.
 - [x] Preserve OUTCOME_UNKNOWN and reservation retention when a positive sender fence exists without trusted socket-initiation evidence.
 - [ ] Implement and prove HEGC idempotent grant persistence, changed-binding conflicts, restart recovery and least-privilege role enforcement.
@@ -1242,3 +1242,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove trusted socket-initiation observation and independent process/host/network fencing; reconcile ambiguous venue outcomes without blind resend.
 
 **Disposition:** exact code/test HEAD passed Python reference CI. Sequential tests do not prove production concurrency, durable control state, actual socket behavior, external fencing or live-trading safety.
+
+## 18.72 Exact-head CI after 18-case halt-gate model and HEGC transaction review — 2026-11-14
+
+- [x] Verify PR #16 HEAD `9b88eabb80e44510e29013fe02315c354c4b488b` with [workflow #43618875958](https://github.com/PandaGarry/NEXUS/actions/runs/43618875958).
+- [x] Python 3.11, 3.12 and 3.13 each passed 13 isolated suites / 257 tests: 771 successful executions total.
+- [x] Confirm egress-fencing package passed 31 tests, including 18 HaltEgressGate state-machine tests.
+- [x] Inspect all three logs: no failures, Node.js 20 deprecation or `punycode` warnings.
+- [x] Verify sender-fenced attempts without trusted initiation report remain OUTCOME_UNKNOWN and reservation-held.
+- [ ] Re-run exact-head CI after the signed-64-bit epoch exhaustion grant-denial and HEGC consistency documentation updates.
+- [ ] Prove HEGC SERIALIZABLE participation by all gate-critical writers, role grants, one-use grant consumption and actual process/socket fencing.
+
+**Disposition:** exact code/test HEAD passed Python reference CI. Later commits add one fail-closed epoch-boundary assertion and documentation; no HEGC or production egress runtime exists.
