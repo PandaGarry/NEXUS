@@ -21,7 +21,7 @@ class ReplayTests(unittest.TestCase):
                 journal.append('{"retCode":0,"result":{"s":"BTCUSDT"}}', 1, record_type="raw_rest_snapshot", metadata={"http_status": 200})
                 journal.append('{"state":"LIVE_VALID","valid":true,"update_id":10,"cross_seq":100}', 1, record_type="derived_book_state")
             rows = list(iter_verified_frames(path))
-            self.assertEqual([r["connection_generation"] for r in rows], [1] * 8)
+            self.assertEqual([r["connection_generation"] for r in rows], [1] * 9)
             summary = summarize(path)
             self.assertEqual(summary["frames"], 9)
             self.assertEqual(summary["connection_generations"], 1)
