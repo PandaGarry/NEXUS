@@ -650,3 +650,20 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 
 **Disposition:** reference-model resource hardening complete and CI-verified at the exact code/test SHA. Production numeric bounds, Rust parser, normalized schema/runner and cross-language parity remain OPEN / gated.
 
+
+
+## 18.23 Delegated G1 technical baseline selection — 2026-11-14
+
+- [x] Publish NX-ADR-008 selecting the G1 design baseline for canonical command encoding, capability signing, persistence, transaction ownership, freshness/recovery and emergency operations.
+- [x] Select RFC 8949 restricted deterministic CBOR, SHA-256 domain-separated command digest and COSE_Sign1 EdDSA/Ed25519 for G1 qualification; keep exact libraries and non-exportable key custody provider gated.
+- [x] Select PostgreSQL 18 as the G1 persistence evaluation target; one primary, service-owned schemas/roles, separate Risk/Command/Ledger local ACID transactions, no distributed ACID or automatic failover.
+- [x] Select source-specific EvidenceRequirementSet/FreshnessPolicy with explicit watermarks/completeness and fail-closed UNKNOWN; no global TTL.
+- [x] Select single-owner emergency defaults: Owner-only step-up resume after RecoveryBarrier, no automatic cancel-all/flatten, no offline emergency order plan, break-glass containment only.
+- [x] Update NX-OWNER-DECISIONS-001, NX-IF-001, NX-REF-EXEC-002, NX-RESEARCH-010 and architecture index to reference the selected G1 baseline.
+- [ ] Qualify exact Python/Rust CBOR/COSE libraries, versions, licenses, supply-chain provenance and cross-language golden vectors.
+- [ ] Prove non-exportable Ed25519 key custody and rotation/revocation in the selected provider; obtain security and jurisdictional review.
+- [ ] Prove PostgreSQL reservation concurrency, serialization retries, ambiguous commit, backup/restore/PITR and old-primary fencing on the exact version.
+- [ ] Obtain source-owner numeric freshness/retention/clock and OD-10 RTO/RPO decisions; keep affected risk-increasing operations blocked until configured.
+- [ ] Implement and fault-test the real process/host/network Trusted Egress fence before G1/G3 readiness claims.
+
+**Disposition:** technical direction selected for G1 evaluation under delegated authority. No database, key, secret manager, cloud, venue, credentials, production deployment or live capability is installed/selected/authorized. Owner-only risk, accounting, venue, legal and production decisions remain open.
