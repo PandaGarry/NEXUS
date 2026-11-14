@@ -547,3 +547,9 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Reject the cose2 built-in Ed25519 provider because it uses deprecated alg=-8; any future test requires a custom -19 signer/verifier.
 - [ ] Build strict byte-level validator and cross-language positive/negative vectors.
 - [ ] Complete exact-version provenance, license, SBOM, vulnerability, fuzz and resource-boundary review before any dependency adoption.
+
+## CBOR command-key profile refinement
+
+- [x] Restrict command map keys to fixed schema-defined ASCII names only.
+- [x] Keep Unicode user text in values, with strict UTF-8 and no implicit normalization.
+- [ ] Add negative vectors for non-ASCII keys, Unicode normalization lookalikes, duplicate keys and unknown field names in both language implementations.
