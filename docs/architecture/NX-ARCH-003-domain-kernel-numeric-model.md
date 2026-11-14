@@ -134,3 +134,6 @@ NX-REF-DOMAIN-008 defines nxd1 decimal and nxr1 rational scalar encodings. Parse
 
 
 Latest bounded numeric/wire evidence: PR run [#43595199511](https://github.com/PandaGarry/NEXUS/actions/runs/43595199511) passed exact PR HEAD `fddd03f59baa159d8ed345691221c2446b0f60e3` on Python 3.11–3.13; ten isolated suites, 172 tests per runtime / 516 matrix executions. This remains reference-only and does not select production limits.
+
+
+Latest exact PR-head verification: run [#43595449902](https://github.com/PandaGarry/NEXUS/actions/runs/43595449902) passed commit `6200bae99e9b7ce865487a40312d0074c0e2a276` on Python 3.11–3.13. Ten suites, 172 tests per runtime / 516 matrix executions. Production limits and resource-safety proof remain open.
