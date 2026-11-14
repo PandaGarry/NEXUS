@@ -145,3 +145,13 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 - This is mathematical reference evidence only. It does not qualify venue multipliers, reporting scope, fees, funding, P&L, margin, liquidation, FX or accounting. G0/G1 and live-trading restrictions are unchanged.
 
 - Expanded fixture verification: 650 deterministic seeded property cases (spot exact product, partial-fill permutation/partition invariance, inverse contract-value identity). GitHub Actions run [#43596851904](https://github.com/PandaGarry/NEXUS/actions/runs/43596851904) passed exact code/test commit `0f0b44e927aacf67d6f7a5678b160b3e3c6088e0`: 182 tests per runtime across Python 3.11, 3.12 and 3.13. This remains bounded test-only evidence, not formal verification or production/venue qualification.
+
+## Russia jurisdiction and first-venue qualification update (2026-11-14)
+
+- Published NX-RESEARCH-009 as the current RF-resident jurisdiction/product eligibility baseline.
+- Law No. 282-FZ entered into force 2026-09-01; Article 30(1)'s resident-intermediary rule enters 2027-07-01. Article 30(2) includes a prohibition on assisting unlawful transactions, including software; its application to private owner-operated NEXUS requires legal review.
+- Bank of Russia FAQ confirms from 2027-07-01 residents transact through Chapter 4 participants, including licensed brokers or CBR-registered crypto-exchange organizations; direct P2P between individuals is not included.
+- CBR record confirms ООО «Т-ИНВЕСТ ЛАБ» has an active right to operate as an organization exchanging digital currencies from 2026-10-06 and holds broker/depository permissions. This does not establish a public crypto API.
+- MOEX crypto-index futures and SPB/T-Invest crypto-index neoassets found are qualified-investor-only; both are cash-settled RUB products, not spot crypto/global USDT perps.
+- Foreign venues remain research-only; Kraken removed from RF v1 shortlist, Coinbase/Bybit/OKX not qualified for the owner's exact account/product/legal route.
+- No venue selected, no API keys connected, no live orders or transfers. A proposed jurisdictional eligibility record is required before any adapter can be LIVE-ELIGIBLE.
