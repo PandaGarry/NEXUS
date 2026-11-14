@@ -3,7 +3,7 @@ name: Reference model conformance
 on:
   push:
     branches:
-      - foundation/domain-kernel-reference-v0
+      - 'foundation/**'
   pull_request:
   workflow_dispatch:
 
