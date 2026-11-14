@@ -387,3 +387,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Current exact branch HEAD `7914772358d2ee49c87374373bad5c589d0a2905` passed [workflow #43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349): 13 isolated suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 successful executions).
 - Direct GitHub Actions are full-SHA pinned; no Node.js 20 or punycode deprecation warning appears in the verified logs.
 - CI scope remains Python reference models only. No Rust, PostgreSQL, COSE, Trusted Egress, venue or live-execution evidence is implied. No PR was merged or retargeted.
+
+### Final synchronized G1 baseline exact-head CI — 2026-11-14
+
+- Exact branch HEAD `7914772358d2ee49c87374373bad5c589d0a2905` passed [workflow #43615176349](https://github.com/PandaGarry/NEXUS/actions/runs/43615176349).
+- Python 3.11, 3.12 and 3.13 each passed all 13 isolated suites / 239 tests; 717 successful executions total.
+- All three logs show no test failures and no Node.js 20 / `punycode` deprecation warnings.
+- Verification is limited to existing Python reference models; no Rust, CBOR/COSE, PostgreSQL, Trusted Egress, venue or live-safety implementation was exercised.
