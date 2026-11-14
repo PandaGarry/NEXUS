@@ -232,6 +232,70 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         self.assertNotEqual(conflict.returncode, 0)
         self.assertIn("23505", conflict.stderr)
 
+    def test_concurrent_duplicate_attempt_retries_to_same_grant(self) -> None:
+        account, scopes = self.seed()
+        attempt = str(uuid.uuid4())
+        holder = start_sql(
+            self.gate_sql(account, scopes, attempt, "concurrent-duplicate", sleep=3),
+            "nexus_hegc", "hegc-test-only", "duplicate-holder",
+        )
+        wait_for_activity("duplicate-holder", waiting_on_lock=False)
+        contender = start_sql(
+            self.gate_sql(account, scopes, attempt, "concurrent-duplicate"),
+            "nexus_hegc", "hegc-test-only", "duplicate-contender",
+        )
+        try:
+            wait_for_activity("duplicate-contender", waiting_on_lock=True)
+            holder_code, holder_out, holder_err = finish(holder)
+            self.assertEqual(holder_code, 0, holder_err)
+            code, _, stderr = finish(contender)
+        finally:
+            if holder.poll() is None:
+                holder.terminate()
+                finish(holder)
+            if contender.poll() is None:
+                contender.terminate()
+                finish(contender)
+        self.assertNotEqual(code, 0, stderr)
+        self.assertIn("40001", stderr)
+        retry = run_sql(
+            self.gate_sql(account, scopes, attempt, "concurrent-duplicate"),
+            user="nexus_hegc", password="hegc-test-only",
+        )
+        self.assertEqual(retry.returncode, 0, retry.stderr)
+        self.assertEqual(holder_out.strip(), retry.stdout.strip())
+
+    def test_lost_post_commit_response_recovers_same_grant(self) -> None:
+        account, scopes = self.seed()
+        attempt = str(uuid.uuid4())
+        holder = start_sql(
+            self.gate_sql(account, scopes, attempt, "lost-response", sleep=10),
+            "nexus_hegc", "hegc-test-only", "lost-response-holder",
+        )
+        try:
+            deadline = time.monotonic() + 8.0
+            grant_id = ""
+            while time.monotonic() < deadline:
+                found = run_sql(
+                    f"SELECT grant_id FROM nexus_hegc.egress_grant WHERE attempt_id={lit(attempt)}::uuid;"
+                )
+                if found.returncode == 0 and found.stdout.strip():
+                    grant_id = found.stdout.strip()
+                    break
+                time.sleep(0.05)
+            self.assertTrue(grant_id, "grant did not commit before timeout")
+            wait_for_activity("lost-response-holder", waiting_on_lock=False)
+        finally:
+            if holder.poll() is None:
+                holder.terminate()
+                finish(holder)
+        retry = run_sql(
+            self.gate_sql(account, scopes, attempt, "lost-response"),
+            user="nexus_hegc", password="hegc-test-only",
+        )
+        self.assertEqual(retry.returncode, 0, retry.stderr)
+        self.assertEqual(grant_id, retry.stdout.strip())
+
     def test_writer_first_forces_gate_whole_transaction_retry(self) -> None:
         account, scopes = self.seed()
         attempt = str(uuid.uuid4())
