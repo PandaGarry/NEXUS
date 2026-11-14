@@ -254,6 +254,18 @@ Passing this gate does not pass G0D/G1–G3, does not certify Bybit eligibility,
 - production API-key policy, IP allowlist, no-withdrawal permission availability and subaccount restrictions;
 - production security review and emergency operating procedure.
 
+
+
+## 8.1 Current service-restriction cross-check (2026-11-14)
+
+The official Bybit Help Center page **Service Restricted Countries**, last updated 2026-10-16, lists the United States, Chinese Mainland, Hong Kong, Singapore, Canada, North Korea, Cuba, Iran, Uzbekistan, Crimea, non-government-controlled areas of Donetsk, Luhansk, Kherson and Zaporizhzhia, Sudan and Syria; it also identifies Dubai for Bybit Virtual Asset Platform Operator LLC and retains discretion to restrict other jurisdictions. It separately excludes persons/entities on the specified US, EU and UK sanctions lists and certain owned/controlled entities.
+
+The page's current list does not name the Russian Federation as a whole. That fact alone is **not** proof that an RF-resident individual, a particular account, legal entity, or derivative product is eligible. Account onboarding/KYC, contracting entity, product terms, sanctions screening, local law and current platform decisions still require case-specific verification. Conversely, if the relevant user is resident in a listed excluded jurisdiction, public API reachability does not establish eligibility to use the venue's services.
+
+No user residence or account status is inferred in this research. No venue-selection decision is made.
+
+Official source (current at review time): https://www.bybit.com/en/help-center/article/Service-Restricted-Countries/trade/spot
+
 ## 9. Sources and evidence boundary
 
 All vendor facts below are from official Bybit V5 documentation. The documentation itself is mutable; the as-of date is recorded above.
