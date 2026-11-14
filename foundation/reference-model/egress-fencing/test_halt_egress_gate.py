@@ -41,7 +41,8 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.phase, HaltPhase.HALTED)
         with self.assertRaises(GateDenied):
             self.gate.consume_grant(attempt_id="paused")
-        self.gate.initiate_socket_write(attempt_id="paused")
+        with self.assertRaises(GateDenied):
+            self.gate.initiate_socket_write(attempt_id="paused")
         self.assertEqual(self.gate.attempts["paused"].phase, AttemptPhase.SENDER_FENCED_UNKNOWN)
         self.assertTrue(self.gate.attempts["paused"].reservation_held)
         self.assertEqual(self.gate.reconciliation_required(), ("paused",))
@@ -155,6 +156,8 @@ class HaltEgressGateTests(unittest.TestCase):
         # A grant consumed before the outage remains in-flight and may initiate.
         self.gate.store_available = True
         self.assertEqual(self.gate.commit_pending_halt(), 8)
+        # The already-consumed grant is still in-flight; observe its one socket attempt before HALTED.
+        self.gate.initiate_socket_write(attempt_id="paused")
         self.gate.acknowledge_halt()
         self.assertEqual(self.gate.phase, HaltPhase.HALTED)
         self.assertEqual(self.gate.reconciliation_required(), ("paused",))
