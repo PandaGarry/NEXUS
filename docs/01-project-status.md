@@ -332,3 +332,12 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - Confirmed separation of capability definition, module declaration, workload grant, product entitlement, user authorization and resource-owner decision.
 - Retained CAP-R-02..09 and added CAP-19..26 as future qualification requirements.
 - Cross-review is design-level only. No candidate capability is approved or active; no schema, policy engine, grant issuer or runtime exists. G0D/G1 remain open.
+
+
+## Capability-to-interface contract traceability — 2026-11-14
+
+- Located and inspected the canonical NX-IF-001..005, NX-SEC-001 and NX-OWNER-DECISIONS-001 files on the active engineering branch.
+- Published [NX-ARCH-REVIEW-004](architecture/NX-ARCH-REVIEW-004-capability-to-interface-contract-traceability.md), mapping all 12 proposed NX-ARCH-009 capabilities to existing contract evidence or an explicit missing-contract gap.
+- Confirmed the IF contracts are protected execution, Risk, Ledger, recovery and emergency-control boundaries, not general module APIs or direct data-store grants.
+- Recorded v1 account/subaccount scope constraints, missing product-domain contracts, cross-cutting contract requirements and a source-grounded but incomplete data inventory.
+- Field-level classification/retention, domain-owner acceptance, revocation objectives and boundary-observed G1 evidence remain open. No runtime, permission, dependency or integration was added.
