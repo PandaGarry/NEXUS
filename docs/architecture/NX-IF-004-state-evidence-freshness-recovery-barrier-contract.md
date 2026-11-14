@@ -360,6 +360,11 @@ At minimum, the conformance suite must cover:
 23. Deterministic fixtures cover at least one sequenced public book, one sequence-limited public feed and private account/order reconciliation for each initially selected venue.
 24. Fault-injection tests cover crash points between every durable handoff and projection watermark.
 25. No implementation, CI, runtime or production-readiness pass is claimed until corresponding evidence is recorded.
+26. RiskApprovalCapability binds the exact immutable valuation_input_vector_id/version from NX-IF-002 separately from the broader StateEvidenceVector.
+27. Trusted Egress rejects a missing, stale, incomplete, corrected/revoked or unverifiable persisted Risk valuation-evidence manifest and makes no remote source-service call or valuation substitution on the dispatch path.
+28. A newer market-data tick alone does not invalidate a still-admissible immutable valuation vector unless the versioned source/operation policy explicitly requires latest; the signed vector is never silently rebound.
+29. Cross-source valuation vectors preserve source identity, source-native watermark/sequence, clock quality, correction lineage and exact numeric representation; incoherent or incomplete source combinations fail closed.
+30. RecoveryBarrier readiness and Egress approval compatibility are checked independently; a READY barrier does not itself authorize a command or bypass RiskApprovalCapability validation.
 
 ## 11. Open owner decisions
 
