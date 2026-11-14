@@ -36,7 +36,7 @@ class NumericWireTests(unittest.TestCase):
     def test_decimal_rejects_noncanonical_integer_and_scale(self):
         for value in ("nxd1:+1:0", "nxd1:01:0", "nxd1:-0:0", "nxd1:1:00"):
             with self.subTest(value=value), self.assertRaises(NumericWireError):
-                parse_decimal(value)
+                parse_decimal(value, max_chars=128)
 
     def test_decimal_rejects_non_normalized_coefficient_scale(self):
         with self.assertRaisesRegex(NumericWireError, "normalized"):
@@ -51,7 +51,7 @@ class NumericWireTests(unittest.TestCase):
         for value in ("nxr1:+1:3", "nxr1:01:3", "nxr1:-0:1",
                       "nxr1:1:0", "nxr1:1:-3", "nxr1:1:03"):
             with self.subTest(value=value), self.assertRaises(NumericWireError):
-                parse_rational(value)
+                parse_rational(value, max_chars=128)
 
     def test_rational_rejects_unreduced_fraction(self):
         with self.assertRaisesRegex(NumericWireError, "reduced"):
