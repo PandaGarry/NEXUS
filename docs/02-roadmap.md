@@ -560,3 +560,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions).
 - [x] No test failures or Node.js 20 / `punycode` deprecation warnings.
 - [ ] Continue strict CBOR, COSE and dependency qualification separately; this workflow remains Python reference-only.
+
+## Final action-runtime and exact-head regression
+
+- [x] Verify exact HEAD `69657a0808b859b17ab94a6d3e008a2ae9671cc7` on workflow [#43615820603](https://github.com/PandaGarry/NEXUS/actions/runs/43615820603).
+- [x] Pass 13 suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 executions).
+- [x] Confirm no test failures or Node.js 20 / `punycode` warnings.
+- [x] Verify both direct pinned GitHub Actions manifests declare Node 24 at their exact pinned commit SHAs.
+- [ ] Keep CI claims limited to Python reference models; CBOR/COSE, Rust, persistence, egress and venue qualification remain separate gates.
