@@ -1084,7 +1084,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** semantic race closed at design level across NX-IF-005, NX-ADR-008, NX-ARCH-REVIEW-005 and NX-REF-EXEC-002. No runtime or transport fence is implemented; halt propagation remains unproven.
 
-## 18.32 Halt epoch versus final Egress authorization race — 2026-11-14
+## 18.59 Halt epoch versus final Egress authorization race — 2026-11-14
 
 - [x] Require halt epoch transition and final EgressBoundaryAuthorization to serialize on the same authoritative halt-state generation.
 - [x] Define halt-wins ordering: final Egress gate observes new epoch and denies socket initiation.
@@ -1120,3 +1120,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove external process/host/network fencing and that no stale/queued attempt can initiate a socket write after boundary acknowledgement.
 
 **Disposition:** linearization semantics are specified across NX-IF-005, NX-REF-EXEC-002 and NX-ARCH-REVIEW-005. No egress runtime, halt store or network fence is implemented; production halt guarantee remains unproven.
+
+## 18.60 Exact-head CI after halt / Egress linearization review — 2026-11-14
+
+- [x] Verify SHA `73841573e4e02b34a0c0363bbbe21155828d0c08` with [workflow #43617906166](https://github.com/PandaGarry/NEXUS/actions/runs/43617906166).
+- [x] Python 3.11, 3.12 and 3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
+- [x] Inspect all three job logs: no test failures, Node.js 20 deprecation or `punycode` deprecation warnings.
+- [x] Include the halt-first/gate-first/pause-after-gate/positive-fence semantics in NX-IF-005's adversarial acceptance matrix (cases 36–42).
+- [x] Resolve all duplicate `18.x` checklist section identifiers; the current sequence is unique through 18.60.
+- [ ] Re-run exact-head CI after the final documentation-only synchronization commits below/after this entry.
+- [ ] Execute the halt/Egress race matrix at an instrumented socket boundary; the Python reference CI does not test this architecture contract.
+
+**Disposition:** latest verified CI is exact for `7384157`; subsequent commits are documentation-only. No halt store, Egress runtime or external fence exists.
