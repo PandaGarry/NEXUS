@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from typing import Any, Iterable
 
 
@@ -13,15 +13,25 @@ class SnapshotNotCaughtUp(RuntimeError):
     """The REST snapshot is not aligned with the buffered WebSocket stream yet."""
 
 
+def _validated_level(price: str, quantity: str) -> tuple[Decimal, Decimal]:
+    try:
+        p, q = Decimal(price), Decimal(quantity)
+    except (InvalidOperation, TypeError, ValueError) as exc:
+        raise ValueError("invalid order-book decimal") from exc
+    if not p.is_finite() or not q.is_finite() or p <= 0 or q < 0:
+        raise ValueError("invalid order-book decimal")
+    return p, q
+
+
 def _levels(raw: Iterable[Iterable[str]]) -> dict[str, str]:
     result: dict[str, str] = {}
     for row in raw:
-        if len(row) != 2:
+        if not isinstance(row, (list, tuple)) or len(row) != 2:
             raise ValueError("order-book level must contain price and quantity")
-        price, quantity = str(row[0]), str(row[1])
-        p, q = Decimal(price), Decimal(quantity)
-        if not p.is_finite() or not q.is_finite() or p <= 0 or q < 0:
-            raise ValueError("invalid order-book decimal")
+        if not isinstance(row[0], str) or not isinstance(row[1], str):
+            raise ValueError("order-book price and quantity must be strings")
+        price, quantity = row
+        _, q = _validated_level(price, quantity)
         if q != 0:
             result[price] = quantity
     return result
@@ -37,14 +47,38 @@ class Delta:
 
     @classmethod
     def from_message(cls, message: dict[str, Any]) -> "Delta":
-        if message.get("type") != "delta":
+        if not isinstance(message, dict) or message.get("type") != "delta":
             raise ValueError("full orderbook stream must contain delta messages")
-        data = message["data"]
+        data = message.get("data")
+        if not isinstance(data, dict):
+            raise ValueError("delta data must be an object")
+
+        def sequence(name: str, minimum: int) -> int:
+            value = data.get(name)
+            if isinstance(value, bool) or not isinstance(value, int) or value < minimum:
+                raise ValueError(f"delta {name} must be an integer >= {minimum}")
+            return value
+
+        def side_levels(name: str) -> tuple[tuple[str, str], ...]:
+            raw_levels = data.get(name, [])
+            if not isinstance(raw_levels, list):
+                raise ValueError(f"delta {name} must be an array")
+            parsed: list[tuple[str, str]] = []
+            for row in raw_levels:
+                if not isinstance(row, (list, tuple)) or len(row) != 2:
+                    raise ValueError("order-book level must contain price and quantity")
+                price, quantity = row
+                if not isinstance(price, str) or not isinstance(quantity, str):
+                    raise ValueError("order-book price and quantity must be strings")
+                _validated_level(price, quantity)
+                parsed.append((price, quantity))
+            return tuple(parsed)
+
         return cls(
-            update_id=int(data["u"]),
-            cross_seq=int(data["seq"]),
-            bids=tuple((str(x[0]), str(x[1])) for x in data.get("b", [])),
-            asks=tuple((str(x[0]), str(x[1])) for x in data.get("a", [])),
+            update_id=sequence("u", 1),
+            cross_seq=sequence("seq", 0),
+            bids=side_levels("b"),
+            asks=side_levels("a"),
             raw=message,
         )
 
@@ -95,9 +129,7 @@ class OrderBook:
     @staticmethod
     def _apply_side(side: dict[str, str], changes: Iterable[tuple[str, str]]) -> None:
         for price, quantity in changes:
-            p, q = Decimal(price), Decimal(quantity)
-            if not p.is_finite() or not q.is_finite() or p <= 0 or q < 0:
-                raise ValueError("invalid delta decimal")
+            _, q = _validated_level(price, quantity)
             if q == 0:
                 side.pop(price, None)
             else:
