@@ -553,3 +553,9 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Oversized coefficient, scale, numerator or denominator values now fail with NUMERIC.RESOURCE_LIMIT before integer conversion.
 - Replaced interpreter-threshold regression with explicit 512-digit acceptance and 513-digit rejection tests for decimal and rational values.
 - This is a Python reference-parser resource limit only; Rust parity and production numeric profile remain open.
+### Risk root-scope guard and immutable valuation inputs — 2026-11-14
+
+- Made the account/root scope-state record mandatory in every v1 reservation/projection transaction; recheck root scope_config_version after locking the full scope set.
+- Bound Risk reservations and capabilities to exact immutable market/index/FX/fee/collateral input versions and freshness evidence.
+- Kept market-data ticks out of the serialized scope-state write path; stale or policy-invalid valuation inputs block dispatch.
+- Synchronized NX-ADR-008, NX-IF-002, NX-ARCH-REVIEW-007 and OD-09. No runtime or schema was implemented.
