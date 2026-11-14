@@ -187,14 +187,13 @@ class GatewayTests(unittest.TestCase):
         barrier.wait()
         for thread in threads:
             thread.join(timeout=5)
-        try:
-            self.assertTrue(all(not thread.is_alive() for thread in threads))
-            self.assertCountEqual(outcomes, ["COMMITTED", "DENIED"])
-            self.assertEqual(self.store.db.execute(
-                "SELECT COUNT(*) FROM commands WHERE command_id='cmd-001'").fetchone()[0], 1)
-            self.assertEqual(self.store.db.execute(
-                "SELECT state FROM reservations WHERE reservation_id='res-1'").fetchone()[0], "CONSUMED")
-    
+        self.assertTrue(all(not thread.is_alive() for thread in threads))
+        self.assertCountEqual(outcomes, ["COMMITTED", "DENIED"])
+        self.assertEqual(self.store.db.execute(
+            "SELECT COUNT(*) FROM commands WHERE command_id='cmd-001'").fetchone()[0], 1)
+        self.assertEqual(self.store.db.execute(
+            "SELECT state FROM reservations WHERE reservation_id='res-1'").fetchone()[0], "CONSUMED")
+
     def test_two_dispatcher_instances_cannot_claim_same_command(self):
         entered = threading.Event()
         release = threading.Event()
@@ -215,11 +214,10 @@ class GatewayTests(unittest.TestCase):
                                   current_halt_epoch=lambda _account: self.epoch)
         self.gateway.persist_approved(self.cmd, self.approval)
         outcomes = []
-        adapter1 = blocking
 
         def first_dispatch():
             store1 = SQLiteOutbox(self.path)
-            gateway1 = CommandGateway(store1, adapter1, verification_key=KEY,
+            gateway1 = CommandGateway(store1, blocking, verification_key=KEY,
                                       clock=lambda: self.now,
                                       current_halt_epoch=lambda _account: self.epoch)
             try:
