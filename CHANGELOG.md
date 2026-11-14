@@ -3,6 +3,7 @@
 Заметные изменения проекта фиксируются в обратном хронологическом порядке. Release notes пишутся понятным языком; инженерные детали остаются в ADR/PR.
 
 ## Unreleased
+undefined
 
 ### Hardened — PostgreSQL 18.7 CI image digest pin (2026-11-14)
 
