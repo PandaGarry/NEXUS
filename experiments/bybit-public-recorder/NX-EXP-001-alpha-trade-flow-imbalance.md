@@ -7,21 +7,22 @@
 
 ## Objective
 
-Run a small, falsifiable strategy experiment in parallel with data engineering. The objective is not to produce a profitable bot by the deadline; it is to determine whether a simple public-data hypothesis deserves further research after realistic execution costs.
+Run a small, falsifiable strategy experiment in parallel with data engineering. The objective is not to produce a profitable bot by the deadline; it is to determine whether a simple public-data hypothesis deserves further research after realistic execution costs. The prior expectation is deliberately conservative: short-horizon BTCUSDT taker-flow imbalance is a heavily studied signal and may have no residual edge after spread, fees and impact.
 
 ## HYP-001 — short-horizon taker-flow imbalance
 
-**Hypothesis:** On linear BTCUSDT, unusually one-sided taker notional flow over a short rolling window contains predictive information about the next 1–5 second mid-price move.
+**Primary hypothesis/configuration (confirmatory):** On linear BTCUSDT, a 5-second taker-notional imbalance with absolute threshold 0.20 predicts the direction of the next 3-second mid-price move, and retains positive net expectancy under executable-side fills and measured costs.
 
 For each completed 1-second bucket:
 
 - signed notional = sum(price × size) for taker buys minus sum(price × size) for taker sells;
 - total notional = sum(price × size) for all trades;
 - imbalance = signed notional / total notional;
-- pre-register windows of 1s and 5s, thresholds 0.10 / 0.20 / 0.30, and forward horizons 1s / 3s / 5s;
-- no feature may use trades or book events timestamped after the decision point.
+- primary configuration is frozen now: 5-second rolling window, absolute imbalance threshold 0.20, 3-second forward horizon;
+- decision timestamp is the end of the completed bucket; no feature may use trades or book events timestamped after that decision point;
+- only one primary configuration is confirmatory. It is not to be replaced by whichever configuration looks best.
 
-The fixed parameter grid is for a small train-only selection. The selected configuration is frozen before each out-of-sample fold. No repeated tuning on the final holdout.
+**Secondary exploratory grid:** windows 1s / 5s, thresholds 0.10 / 0.20 / 0.30, horizons 1s / 3s / 5s (18 total combinations, including the primary). All non-primary combinations are exploratory, must be labelled as such, and cannot independently justify a positive alpha claim. If inferential p-values are reported for the grid, apply Holm–Bonferroni correction across all 18 tests and also disclose the unadjusted values. No selecting the best of 18 and reporting it as if pre-specified.
 
 ## Data qualification
 
@@ -29,7 +30,7 @@ Primary candidate: Bybit's official historical data download page:
 
 https://www.bybit.com/en/derivative-activity/history-data
 
-Bybit's V5 recent-trade endpoint is not an arbitrary-range history service; the official API documentation points to downloadable archives. The archive page is dynamically rendered, so product/category/date coverage must be inspected and recorded before the experiment begins.
+Bybit's V5 recent-trade endpoint is not an arbitrary-range history service; the official API documentation points to downloadable archives. The archive page is dynamically rendered, so product/category/date coverage must be inspected and recorded before the experiment begins. Specifically verify that the archive contains trade-level records (not merely candles), with timestamps, trade IDs, side, price and size. Do not assume L2 history exists.
 
 Minimum required for an executable-cost conclusion:
 
@@ -38,7 +39,7 @@ Minimum required for an executable-cost conclusion:
 - documented missing intervals, time zone and product specification;
 - exact instrument metadata for the period.
 
-If only trades or candles are available, HYP-001 may be evaluated for *predictive association*, but it must not be described as executable net alpha. No assumed fill at mid-price.
+If archives contain trades but no L2, the archive can support predictive-association screening only. Executable-cost conclusions then require our own synchronized live capture; otherwise publish an explicit data-coverage blocker. Candles alone do not qualify for this trade-flow hypothesis. No assumed fill at mid-price.
 
 ## Execution-cost model
 
@@ -58,6 +59,9 @@ If the user's actual fee tier is unknown, do not invent it. Publish a sensitivit
 - chronological train / validation / test split; additionally use at least three rolling walk-forward out-of-sample folds;
 - purge overlapping labels and embargo at least the maximum forward horizon around split boundaries;
 - use block bootstrap (not IID shuffle) for confidence intervals;
+- primary configuration is fixed before looking at OOS results; any secondary model selection occurs on training data only and is reported separately;
+- for the primary confirmatory test, report the pre-specified effect estimate and 95% block-bootstrap confidence interval; do not tune the primary threshold/window/horizon after seeing OOS data;
+- for the 18-combination secondary grid, report all combinations and apply Holm–Bonferroni to the family of 18 inferential tests;
 - report trade count, turnover, average holding time, gross/net expectancy, profit factor, drawdown, adverse excursion, fee/spread/impact decomposition and sensitivity to parameter perturbation;
 - include no-trade and naive direction baselines;
 - do not use random train/test shuffling for time series.
@@ -68,15 +72,16 @@ If the user's actual fee tier is unknown, do not invent it. Publish a sensitivit
 
 **Reject HYP-001** if any of the following holds:
 
-1. net expectancy is non-positive in at least two of three or more walk-forward OOS folds at the verified fee/cost assumptions;
-2. the block-bootstrap 95% confidence interval for aggregate OOS net expectancy includes zero or is negative;
-3. the apparent edge disappears under a 1.5× measured-cost stress or small pre-registered parameter perturbations;
-4. the conclusion depends on mid-price fills or incomplete/unverified book data.
+1. primary net expectancy is non-positive in at least two of three or more walk-forward OOS folds at the verified fee/cost assumptions;
+2. the primary block-bootstrap 95% confidence interval for aggregate OOS net expectancy includes zero or is negative;
+3. the apparent edge disappears under a 1.5× measured-cost stress;
+4. the conclusion depends on mid-price fills or incomplete/unverified book data;
+5. the primary result is unstable to the pre-registered small perturbation analysis.
 
 A rejected hypothesis is closed. Any new idea must be registered as a new hypothesis with its own fixed features, parameters, costs and stop rule; do not endlessly retune HYP-001.
 
 ## Relationship to the recorder
 
-The recorder is not a prerequisite for the first historical-trades screening, but it is required for validating current book quality, spread/impact assumptions and subsequent replay-based tests. Infrastructure and alpha research proceed in parallel, with separate evidence.
+The recorder is required for validating current book quality, spread/impact assumptions and replay-based tests. Historical trade archives may support an earlier predictive-association screen only after their actual contents and coverage are verified. Infrastructure and alpha research proceed in parallel, with separate evidence.
 
 No private API, credentials, account access, orders, testnet execution or live trading are part of this experiment.
