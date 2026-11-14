@@ -656,3 +656,13 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Author Ledger journal and Analytics/Portfolio projection contracts.
 - [ ] Approve retention/deletion/legal basis, audit custody and declassification rules.
 - [ ] Prove row/field isolation and source-lineage behavior with boundary-observed negative tests.
+
+## Risk projection / reservation concurrency proof
+
+- [x] Align ADR-008, IF-002, REF-EXEC-002 and OD-09 on the Risk-owned scope-state serialization point.
+- [x] Require idempotent Risk projection ingestion for Ledger/venue/external exposure updates; no cross-service writes to Risk state.
+- [x] Require deterministic all-scope ordering, atomic account/child reservations and fail-closed missing/stale source evidence.
+- [x] Add negative/concurrency tests for projection/reservation races, duplicate/reordered events, idempotency collisions, 40001/40P01, ambiguous commit and missing scope state.
+- [ ] Execute on exact PostgreSQL 18 patch with service-role separation, fault injection and observed lock/retry behavior.
+- [ ] Prove backup/restore/PITR, old-primary fencing and recovery before any failover selection.
+- [ ] Keep PostgreSQL as G1 evaluation target only until proof and security/operational review complete.
