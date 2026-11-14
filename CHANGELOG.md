@@ -324,3 +324,8 @@ The then-current branch head `e15e47f9512bc07a1f6534a4f41b0d27d7d42578` passed G
 - Reaffirmed protected Risk/reservation, command/egress, Ledger, recovery/halt and credential boundaries; optional modules receive no direct authority over them.
 - Added a source-grounded data inventory, cross-cutting contract checklist, open findings and G0D/G1 gates.
 - Updated architecture index, project checklist, status and roadmap. Design traceability only; no executable schema, grant, policy engine, runtime, dependency or production integration added.
+
+
+### Exact-head regression evidence for NX-ARCH-REVIEW-004 — 2026-11-14
+
+Exact branch HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed GitHub Actions [#43613212116](https://github.com/PandaGarry/NEXUS/actions/runs/43613212116): Python 3.11/3.12/3.13, 13 isolated suites / 237 tests per runtime, 711 successful executions. This is Python reference-model regression only; it does not execute the new traceability artifact, capability policy, domain APIs, grants, module isolation, Rust or venue behavior. No capability or runtime was activated.
