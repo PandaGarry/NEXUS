@@ -82,8 +82,11 @@ Required behavior:
 | Revocation event delivered to some but not all workers | Affected worker may serve only within explicitly approved low-risk window; missed hard deadline means quarantine | Deny at stale worker | Deny at stale worker | Halt/dispatch boundaries require independent current epoch check; stale dispatcher isolated |
 | Audit sink unavailable | Low-risk read may be policy-limited only if security review explicitly permits; otherwise deny | Deny for privileged or restricted operations | Deny | Protected actions follow their own durable audit requirements; no silent loss |
 | Workload identity/secret revocation cannot be confirmed | Stop module admission and isolate affected workload | Deny | Deny | No failover to a stale signer/egress process; CREATE remains blocked until positive fencing/reconciliation |
+| HEGC process unavailable | Low-risk reads follow independent policy | Deny privileged/restricted operations | Deny | No new EgressBoundaryAuthorization grant; halt request may remain pending; gate-committed attempts remain in-flight/reserved until socket initiation is observed or sender is fenced; do not report fully enforced HALTED |
+| HEGC authoritative store unavailable/uncertain | No effect on unrelated reads | Deny | Deny | Egress denies all new final gates; no cached-epoch soft allow; halt remains pending until durable epoch commit and boundary acknowledgements/isolation |
+| HEGC integrity/workload identity compromised | Quarantine affected control-plane trust domain | Deny | Deny | Egress independently verifies Risk approval/reservation and fails closed on uncertain control state; isolate HEGC and positively fence stale Egress/control processes before any recovery |
 
-No optional module or entitlement service may become a synchronous dependency of Risk, command acceptance, dispatcher or Trusted Egress. Protected execution must enforce its own halt epoch, current reservation, approval consumption, RecoveryBarrier and egress fencing.
+No optional module or entitlement service may become a synchronous dependency of Risk, command acceptance, dispatcher or Trusted Egress. Protected execution must enforce its own halt epoch, current reservation, approval consumption, RecoveryBarrier and egress fencing. HEGC is the sole control-plane serialization authority for halt/final-gate records; it has no venue credentials or socket, and Egress has no direct write access to those records.
 
 ## 6. Data freshness and RecoveryBarrier — do not use a global TTL
 
