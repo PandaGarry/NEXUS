@@ -1258,7 +1258,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** exact code/test HEAD passed Python reference CI. Later commits add one fail-closed epoch-boundary assertion and documentation; no HEGC or production egress runtime exists.
 
-## 18.72 HaltEgressGate 18-case code/test-head CI — 2026-11-14
+## 18.73 HaltEgressGate 18-case code/test-head CI — 2026-11-14
 
 - [x] Fix duplicate halt requests during store outage so they do not downgrade an already committed HALTING/HALTED epoch.
 - [x] Assert sender fencing retains the reservation while socket initiation remains unobserved and outcome remains UNKNOWN.
@@ -1271,3 +1271,21 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove the same ordering with PostgreSQL transactions, concurrent processes, instrumented sockets and independently verified process/host/network fences.
 
 **Disposition:** exact code/test head passed; PR #16 head `09775625327c74cc31f27f18b0280e89bee4878d` contains only documentation changes after it. No production concurrency or fencing proof is established.
+
+
+## 18.74 HEGC one-use grant consumption and exact code/test-head CI — 2026-11-14
+
+- [x] Add explicit GATE_COMMITTED → GRANT_CONSUMED → SOCKET_INITIATED transitions to the test-only oracle.
+- [x] Test single-use grant consumption and denial of a second consume.
+- [x] Test lost consume response: same attempt remains consumed/in-flight; no replacement permit or blind resend.
+- [x] Test consume-store outage fails closed and does not authorize socket initiation.
+- [x] Test already-consumed grant across halt/store outage; socket initiation must be observed or sender fenced before HALTED acknowledgement.
+- [x] Fix stale test expectations exposed by workflow #43618969753.
+- [x] Verify exact code/test HEAD 9d618131ac9951e23c589491b2fb1039f6dc1d86 on [workflow #43619080626](https://github.com/PandaGarry/NEXUS/actions/runs/43619080626).
+- [x] Pass 13 isolated suites / 260 tests on each of Python 3.11, 3.12 and 3.13 (780 successful executions total).
+- [x] Confirm egress-fencing passes 34 tests, including 21 HaltEgressGate cases; inspect all three job logs.
+- [ ] Prove ambiguous consume status resolution, durable grant idempotency and Egress process-incarnation binding against the HEGC service/database.
+- [ ] Prove PostgreSQL SSI plus an enforced shared scope-generation/guard gives the required real-time commit-order semantics; SERIALIZABLE alone is insufficient evidence.
+- [ ] Prove actual socket initiation, process/host/network fencing and venue reconciliation.
+
+**Disposition:** corrected reference tests pass on all supported Python runtimes. HEGC, durable grant store, common commit-order guard, production Egress and external fencing remain unimplemented.
