@@ -188,3 +188,10 @@
 - Distinguished implemented decimal/rational and numeric-wire reference APIs from financial fixture operation labels that do not yet have callable reference implementations/adapters.
 - Kept instrument-spec operation migration deferred and clarified that non-numeric rejection classes require reviewed operation-aware mapping, never exception-message parsing.
 - Documentation and audit refinement only; no fixture migration, schema validator, runner, Rust source or production numeric profile added.
+
+### Audit correction — financial and numeric reference coverage (2026-11-14)
+
+- Corrected the earlier NX-ARCH-005 audit statement: spot, linear and inverse financial math paths have executable reference coverage through `domain_types.py` / `instrument_units.py` and the financial fixture suite.
+- Identified partial-fill weighted-average aggregation as tested but inline-only; extraction to a reusable pure oracle remains follow-up work.
+- Clarified arbitrary-precision oracle versus explicit bounded numeric wrapper, candidate resource-limit mapping, and malformed API input versus mathematical inexactness.
+- Documentation correction only; no production numeric profile or Rust implementation added.
