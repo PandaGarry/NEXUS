@@ -74,6 +74,24 @@ A transition is accepted only when the account scope, authority epoch, command I
 
 The old worker may later return an ACK or timeout. That response is recorded as stale-epoch evidence only. It cannot restore its send capability or overwrite the current command state.
 
+### 4.4 Recommended implementation decomposition (PROPOSED; OD-09 remains open)
+
+The following decomposition is the recommended starting point for G1 design. It deliberately avoids a distributed transaction across Risk, Command and Egress. It is not a selected database, broker, cloud provider or production topology.
+
+1. **Risk reservation transaction — Risk-owned authority.** In one serializable/linearizable logical transaction, validate the current exposure/scope versions, idempotency key and fencing versions; commit every required account-scope reservation and the durable request/result record; only after commit may Risk return an approval capability. A retry with the same request ID and digest returns the original reservation result. A request-ID/digest mismatch is a hard conflict. Multi-scope partial commit must never authorize.
+2. **Command acceptance transaction — Command Coordinator-owned authority.** Independently validate the capability's account/scope, command digest, reservation identity/version, policy/exposure/spec versions, halt epoch and expiry. In one local atomic transaction, consume the single-use nonce/approval and persist the immutable canonical command, reservation reference and outbox row. If the commit result is ambiguous to the caller, recover by the stable command/request identity and read the committed state; never issue a second command or consume a second reservation to "fix" uncertainty.
+3. **Attempt transaction — dispatcher/control-plane authority.** Claim an outbox item with a monotonic account-scoped epoch/fence and persist a unique attempt plus the conservative DISPATCH_OUTCOME_UNKNOWN marker before asking Egress to transmit. A stale claimant may append observations but cannot mutate authoritative state after epoch/version change.
+4. **Send boundary — Egress-owned authority.** Egress receives only a persisted command/attempt reference, loads the canonical payload from the authoritative store, validates all bound authorization and eligibility evidence, and is the only component holding credentials and the venue socket. The dispatcher/adapter cannot submit arbitrary payload bytes or open a parallel venue connection.
+5. **Authority transfer — external fence plus reconciliation.** A new egress generation is not granted merely because a lease expired or a database epoch advanced. The old egress identity/host/network path must be positively revoked or externally fenced, then all possibly-sent attempts reconciled before CREATE resumes.
+
+**Transaction boundary conclusion:** Risk reservation and Command acceptance are two ordered, separately durable commits, not one distributed ACID transaction. The capability is the hand-off between them. The only atomicity required at Command acceptance is single-use capability consumption together with command + reservation reference + outbox persistence. Risk capacity remains held independently until authoritative venue/ledger reconciliation permits a terminal transfer or release. This preserves fail-closed recovery without requiring a cross-service two-phase commit.
+
+**Capability implementation remains undecided:** an opaque server-side handle or a signed envelope may be evaluated. Whichever is selected must provide command-digest binding, scope and version binding, expiry, unique single-use identity, revocation/invalidation semantics and durable replay prevention. Cryptographic algorithm, canonical serialization and key custody remain OD-08/security decisions; no signature scheme is selected here.
+
+**Egress topology recommendation:** prefer one account-scoped credential-owning egress boundary with workers lacking venue credentials and direct venue routes. The egress boundary must own the actual socket/send operation; a proxy that only checks an epoch and then hands bytes to a stale credential-bearing worker does not close the race. Takeover requires independently controlled revocation of the old egress process identity or host/network path and positive evidence of revocation. If the selected infrastructure cannot prove that property during partition or control-plane outage, remain HALTED. Active-active egress for one account is excluded until an equivalent single-writer and revocation proof exists.
+
+**Open selection:** authoritative database/isolation, workload identity, host-fencing mechanism, network enforcement point, egress availability topology and operator break-glass remain OD-09/OD-10/OD-12 and deployment/security review items. This recommendation does not close those decisions.
+
 ## 5. Critical failure behavior
 
 | Failure | Required behavior |
