@@ -32,14 +32,24 @@ class HaltEgressGateTests(unittest.TestCase):
             self.gate.acknowledge_halt()
         self.assertEqual(self.gate.attempts["paused"].phase, AttemptPhase.GATE_COMMITTED)
 
-    def test_positive_sender_fence_allows_ack_without_socket_write(self):
+    def test_positive_sender_fence_allows_ack_but_retains_unknown_outcome(self):
         self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7)
         self.gate.request_halt(reason="operator halt")
-        self.gate.fence_unstarted_sender(attempt_id="paused", receipt="test-fence-receipt")
+        self.gate.fence_sender(attempt_id="paused", receipt="test-fence-receipt")
         self.gate.acknowledge_halt()
+        self.assertEqual(self.gate.phase, HaltPhase.HALTED)
         with self.assertRaises(GateDenied):
             self.gate.initiate_socket_write(attempt_id="paused")
-        self.assertEqual(self.gate.reconciliation_required(), ())
+        self.assertEqual(self.gate.attempts["paused"].phase, AttemptPhase.SENDER_FENCED_UNKNOWN)
+        self.assertEqual(self.gate.reconciliation_required(), ("paused",))
+
+    def test_sender_fence_does_not_prove_no_prior_socket_side_effect(self):
+        self.gate.authorize_attempt(attempt_id="possibly-sent", observed_epoch=7)
+        self.gate.request_halt(reason="operator halt")
+        self.gate.fence_sender(attempt_id="possibly-sent", receipt="host-fence-receipt")
+        self.gate.acknowledge_halt()
+        # No initiation report was received, so the conservative outcome remains unknown.
+        self.assertIn("possibly-sent", self.gate.reconciliation_required())
 
     def test_halt_blocks_new_gate_commits_while_existing_gate_commit_remains_in_flight(self):
         self.gate.authorize_attempt(attempt_id="old", observed_epoch=7)
