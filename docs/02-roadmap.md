@@ -23,6 +23,8 @@
 - [ ] Закрыть NX-ARCH-REVIEW-001 WP-A..WP-E: canonical command/approval, exposure/reservations, Execution↔Ledger handoff, freshness/recovery, emergency operations.
   - [x] WP-A design draft: NX-IF-001 published and readback verified.
   - [ ] WP-A acceptance: owner/security decisions, canonicalization/digest selection, cross-language golden vectors and conformance tests.
+  - [x] WP-B design draft: NX-IF-002 published; exclusive buckets, reservation lifecycle, atomic concurrency and failure matrix specified.
+  - [ ] WP-B acceptance: owner decisions, persistence/transaction design, schema conformance, concurrency and fault-injection evidence.
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
 - [ ] Выполнить end-to-end contract review и зафиксировать owner decisions до выбора реализации.
 
