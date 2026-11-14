@@ -349,3 +349,14 @@ These are architectural readiness items, not commitments to ship all listed prod
 - [ ] Select one low-risk first-party read-model module for a non-production G1 prototype only after G0D approval.
 
 No executable registry, plugin loader, module runtime, third-party code execution or new dependency is approved by this design increment.
+
+
+### NX-ARCH-008 regression verification
+
+
+### NX-ARCH-008 exact-head regression verification — 2026-11-14
+
+- Exact branch HEAD `b1d3201a1fe1706909218943f5464eba43ea1041` passed GitHub Actions [#43611030968](https://github.com/PandaGarry/NEXUS/actions/runs/43611030968).
+- All three jobs completed successfully: Python 3.11, 3.12 and 3.13; 13 isolated reference-model suites / 237 tests per runtime; 711 successful test executions total.
+- This verifies the existing Python reference-model regression workflow at that exact documentation head. It does **not** test NX-ARCH-008's proposed registry, schema, identity, grant issuance, module isolation, secret handling, database permissions, network/egress enforcement, Rust, venue behavior or live-trading safety.
+- The exact-head CI result is regression evidence only; NX-ARCH-008 remains PROPOSED / DESIGN ONLY and G0D/G1 remain open.
