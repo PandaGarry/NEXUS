@@ -38,6 +38,7 @@
 - Official synchronization requires consecutive `u` within a session, discarding a delta whose `seq` decreases, discarding deltas older than the REST snapshot `seq`, and matching both `seq` and `u` before applying subsequent deltas.
 - `u=1` is a reinitialization signal. `seq` is monotonic but not necessarily consecutive.
 - Full-depth stream and REST snapshot exclude RPI orders.
+- Public historical trade archive: the official `public.bybit.com/trading/BTCUSDT/` directory lists daily CSVs beginning 2020-03-25; the listing inspected did not establish current completeness/freshness. Bybit Learn says downloadable historical public data may include order-book snapshots, but no official L2 archive path/schema/depth/date range has been validated by NEXUS. A third-party downloader points to `quote-saver.bycsi.com/orderbook/linear`; treat it as an unverified discovery lead, not official completeness or license evidence.
 - Bybit API Terms & Conditions (support page last updated 2026-10-20) grant a limited revocable API license for development/testing/support (Section 5.1), prohibit API/Service Data availability or performance benchmarking (6.6), prohibit repackaging/reselling Service Data (6.7), and prohibit commercial exploitation (6.9). Section 2.3 says API use requires API-key identity verification; applicability to technically unauthenticated public market-data endpoints requires clarification. NEXUS therefore keeps raw data private and gates future automated live capture pending explicit terms review.
 - NEXUS run #10 captured 8,149 public trade messages, 2,998 full-depth delta messages, 29 pong replies and 1 subscription acknowledgement = 11,177 records exactly. Independent inspection found zero malformed lines and zero raw SHA-256 mismatches. One connection generation was observed.
 
@@ -45,6 +46,9 @@ Official sources:
 - Full-depth WS and synchronization: https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob
 - Full-depth REST snapshot: https://bybit-exchange.github.io/docs/v5/market/full-ob
 - Trade channel: https://bybit-exchange.github.io/docs/v5/websocket/public/trade
+- Historical BTCUSDT trade listing: https://public.bybit.com/trading/BTCUSDT/
+- Bybit Learn historical market-data note: https://www.bybit.com/en/learn/bybit-guide/how-to-create-a-bybit-api-key
+- Unverified third-party L2 archive lead: https://github.com/Anton495/bybit-data-downloader
 - API Terms & Conditions: https://www.bybit.com/en/help-center/article/API-Terms?category=ae1012f19fad1c184e
 - API agreement PDF: https://www.bybit.com/common-static/compliance/legal/BYBIT/df1923006718fbba8ba70d7d762b9866.pdf
 
@@ -97,7 +101,7 @@ The following remain UNKNOWN until exact jurisdiction, account type, product fam
 | Spot eligibility | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Perpetual swap eligibility | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Dated futures / expiry semantics | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
-| Historical trade archive coverage / start date | UNKNOWN | UNKNOWN | YES — Spot Time & Sales from each pair's first trade through 2026-09-30 | YES — tick-level trades from 2021-09 | UNKNOWN | UNKNOWN |
+| Historical trade archive coverage / start date | YES — public BTCUSDT daily CSV listing begins 2020-03-25; current freshness/completeness unverified | UNKNOWN | YES — Spot Time & Sales from each pair's first trade through 2026-09-30 | YES — tick-level trades from 2021-09 | UNKNOWN | UNKNOWN |
 | Historical L2 archive coverage | UNKNOWN | UNKNOWN | UNKNOWN — no L2 shown in Time & Sales archive | YES — high-resolution L2 from 2023-03 | UNKNOWN | UNKNOWN |
 | Private order/fill/account streams | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | REST reconciliation for unknown order outcome | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
