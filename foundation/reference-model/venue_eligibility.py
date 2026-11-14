@@ -55,12 +55,25 @@ class EvidenceItem:
     reviewer_ref: Optional[str] = None
 
     def __post_init__(self):
-        if not self.key or not self.scope_digest:
-            raise ValueError("evidence key and scope_digest are required")
-        if self.observed_at_ms < 0:
-            raise ValueError("observed_at_ms must be non-negative")
-        if self.expires_at_ms is not None and self.expires_at_ms < 0:
-            raise ValueError("expires_at_ms must be non-negative")
+        if not isinstance(self.key, str) or not self.key.strip():
+            raise ValueError("evidence key is required")
+        if not isinstance(self.status, EvidenceStatus):
+            raise TypeError("status must be an EvidenceStatus")
+        if not isinstance(self.scope_digest, str) or not self.scope_digest:
+            raise ValueError("scope_digest is required")
+        if isinstance(self.observed_at_ms, bool) or not isinstance(self.observed_at_ms, int) or self.observed_at_ms < 0:
+            raise ValueError("observed_at_ms must be a non-negative integer")
+        if self.expires_at_ms is not None and (
+            isinstance(self.expires_at_ms, bool) or not isinstance(self.expires_at_ms, int)
+            or self.expires_at_ms < 0
+        ):
+            raise ValueError("expires_at_ms must be a non-negative integer")
+        if self.expires_at_ms is not None and self.expires_at_ms <= self.observed_at_ms:
+            raise ValueError("evidence expiry must follow observation time")
+        if self.source_ref is not None and not isinstance(self.source_ref, str):
+            raise TypeError("source_ref must be a string or None")
+        if self.reviewer_ref is not None and not isinstance(self.reviewer_ref, str):
+            raise TypeError("reviewer_ref must be a string or None")
 
 
 @dataclass(frozen=True)
@@ -75,12 +88,31 @@ class VenueEligibilityRecord:
     owner_approved_revision: Optional[int] = None
 
     def __post_init__(self):
-        if not self.record_id or not self.scope_digest:
-            raise ValueError("record_id and scope_digest are required")
-        if self.revision < 1 or self.created_at_ms < 0:
-            raise ValueError("revision must be positive and created_at_ms non-negative")
-        if self.expires_at_ms is not None and self.expires_at_ms < 0:
-            raise ValueError("expires_at_ms must be non-negative")
+        if not isinstance(self.record_id, str) or not self.record_id:
+            raise ValueError("record_id is required")
+        if not isinstance(self.scope_digest, str) or not self.scope_digest:
+            raise ValueError("scope_digest is required")
+        if not isinstance(self.mode, ActivationMode):
+            raise TypeError("mode must be an ActivationMode")
+        if isinstance(self.revision, bool) or not isinstance(self.revision, int) or self.revision < 1:
+            raise ValueError("revision must be a positive integer")
+        if isinstance(self.created_at_ms, bool) or not isinstance(self.created_at_ms, int) or self.created_at_ms < 0:
+            raise ValueError("created_at_ms must be a non-negative integer")
+        if self.expires_at_ms is not None and (
+            isinstance(self.expires_at_ms, bool) or not isinstance(self.expires_at_ms, int)
+            or self.expires_at_ms <= self.created_at_ms
+        ):
+            raise ValueError("record expiry must be an integer after creation")
+        if not isinstance(self.evidence, tuple) or any(
+            not isinstance(item, EvidenceItem) for item in self.evidence
+        ):
+            raise TypeError("evidence must be a tuple of EvidenceItem")
+        if self.owner_approved_revision is not None and (
+            isinstance(self.owner_approved_revision, bool)
+            or not isinstance(self.owner_approved_revision, int)
+            or self.owner_approved_revision < 1
+        ):
+            raise ValueError("owner_approved_revision must be a positive integer or None")
         keys = [item.key for item in self.evidence]
         if len(keys) != len(set(keys)):
             raise ValueError("duplicate evidence keys are forbidden")
@@ -96,16 +128,35 @@ class EligibilityPolicy:
     require_owner_approval: bool
 
     def __post_init__(self):
+        if not isinstance(self.required_evidence, tuple) or any(
+            not isinstance(key, str) or not key for key in self.required_evidence
+        ):
+            raise TypeError("required_evidence must be a tuple of non-empty strings")
+        if not isinstance(self.reviewer_required_evidence, tuple) or any(
+            not isinstance(key, str) or not key for key in self.reviewer_required_evidence
+        ):
+            raise TypeError("reviewer_required_evidence must be a tuple of non-empty strings")
         if len(self.required_evidence) != len(set(self.required_evidence)):
             raise ValueError("duplicate required evidence keys")
+        if len(self.reviewer_required_evidence) != len(set(self.reviewer_required_evidence)):
+            raise ValueError("duplicate reviewer-required evidence keys")
         if not set(self.reviewer_required_evidence).issubset(self.required_evidence):
             raise ValueError("reviewer-required keys must also be required")
+        if not isinstance(self.max_age_ms, tuple) or any(
+            not isinstance(pair, tuple) or len(pair) != 2
+            or not isinstance(pair[0], str) or not pair[0]
+            or isinstance(pair[1], bool) or not isinstance(pair[1], int)
+            for pair in self.max_age_ms
+        ):
+            raise TypeError("max_age_ms must be a tuple of (key, integer) pairs")
         if len(dict(self.max_age_ms)) != len(self.max_age_ms):
             raise ValueError("duplicate max-age keys")
         if any(age < 0 for _, age in self.max_age_ms):
             raise ValueError("max-age values must be non-negative")
         if not set(dict(self.max_age_ms)).issubset(self.required_evidence):
             raise ValueError("max-age keys must be required evidence")
+        if not isinstance(self.require_owner_approval, bool):
+            raise TypeError("require_owner_approval must be boolean")
 
 
 @dataclass(frozen=True)
@@ -138,8 +189,14 @@ def evaluate_eligibility(
     This is a deterministic test oracle, not a production authorization boundary.
     Callers must supply the complete policy and a trusted clock.
     """
-    if now_ms < 0 or not expected_scope_digest:
-        raise ValueError("trusted non-negative time and expected scope are required")
+    if isinstance(now_ms, bool) or not isinstance(now_ms, int) or now_ms < 0:
+        raise ValueError("now_ms must be a non-negative integer")
+    if not isinstance(expected_scope_digest, str) or not expected_scope_digest:
+        raise ValueError("expected_scope_digest is required")
+    if not isinstance(requested_mode, ActivationMode):
+        raise TypeError("requested_mode must be an ActivationMode")
+    if not isinstance(policy, EligibilityPolicy):
+        raise TypeError("policy must be an EligibilityPolicy")
     if record is None:
         return _deny(DenialReason.NO_RECORD, None, requested_mode)
     if record.mode == ActivationMode.REVOKED:
