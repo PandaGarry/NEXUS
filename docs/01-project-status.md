@@ -769,3 +769,10 @@ NX-ARCH-REVIEW-009 now defines the proposed production lifecycle for an independ
 ## Authorization-catalog manifest admission reference — 2026-11-14
 
 Added a test-only Python logical manifest model under `foundation/reference-model/auth-catalog`. It validates the exact v1 field set, explicit bounded scope (no wildcards), supported object classes, duplicate semantic identities, deny-rule uniqueness, digest shape, validity interval and exact environment/database/migration context. Admission preconditions fail closed for unverified signature/approval, unavailable revocation state, context mismatch, sequence gaps/rollback, predecessor mismatch and expired/not-yet-valid manifests. The model is wired into the Python 3.11–3.13 reference workflow. It is not a CBOR parser, cryptographic verifier, trusted ledger, PostgreSQL observer or production deployment gate. CI evidence is pending for the new HEAD.
+
+
+## Authorization-catalog manifest admission reference — CI close-out — 2026-11-14
+
+Python reference workflow [#43633125568](https://github.com/PandaGarry/NEXUS/actions/runs/43633125568) passed on exact code/test HEAD c80d781ce7c9f2b4a015fa79f8e2c403709439d7: 287 tests on each of Python 3.11, 3.12 and 3.13 (861 successful executions), including 23 auth-catalog manifest admission tests per runtime. PostgreSQL HEGC workflow [#43633125536](https://github.com/PandaGarry/NEXUS/actions/runs/43633125536) passed 12/12. These are reference/fixture tests only; no production authorization is implied.
+
+The logical model covers exact v1 fields, explicit scope, semantic identity uniqueness, deny-rule IDs, timestamp/digest shape, context binding, externally supplied signature/approval/revocation preconditions and monotonic sequence/predecessor checks. It is not a CBOR parser, cryptographic verifier, external trust ledger, PostgreSQL observer or deployment gate. G0D/G1 remain open; live trading remains NOT AUTHORIZED.
