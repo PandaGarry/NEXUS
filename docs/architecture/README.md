@@ -43,3 +43,5 @@ ADR, подготовленные в обсуждении, не считаютс
 - [NX-REF-DOMAIN-003 — Dimensional Financial Types Reference Model](NX-REF-DOMAIN-003-dimensional-financial-types-reference-model.md) — test-only exact-decimal value types; production integration remains blocked.
 
 - [NX-REF-DOMAIN-004 — Instrument Quantity Unit Semantics](NX-REF-DOMAIN-004-instrument-quantity-unit-semantics.md) — explicit version-pinned unit mapping for spot, linear and inverse contracts; QUANTO and inverse base exposure remain blocked.
+
+- [NX-REF-DOMAIN-005 — Exact Rational Division & Explicit Quantization](NX-REF-DOMAIN-005-exact-rational-division-and-quantization.md) — reduced rational intermediate results and explicit rounding modes; test-only.
