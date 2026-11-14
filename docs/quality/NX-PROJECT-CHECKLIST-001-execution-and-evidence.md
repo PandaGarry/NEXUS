@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE — living execution register  
 **Snapshot:** 2026-11-14  
-**Branch:** `foundation/instrument-spec-reference-v0`  
+**Branch:** `foundation/financial-operation-contract-v0`  
 **Scope:** NEXUS v1 foundation, documentation close-out, safe reference work and readiness-controlled implementation.
 
 This checklist is the operational index for the next actions. It does not replace ADRs, specifications, owner decisions or readiness gates. Each checked item must point to a durable artifact or commit-specific evidence. A document being published is not the same as a decision being accepted; a test passing in a reference model is not production verification.
