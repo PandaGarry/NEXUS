@@ -253,10 +253,6 @@ class GatewayTests(unittest.TestCase):
                 return "venue-order-stale-worker"
 
         stale_adapter = PausedBeforeNetworkSend()
-        stale_store = SQLiteOutbox(self.path)
-        stale_gateway = CommandGateway(stale_store, stale_adapter, verification_key=KEY,
-                                       clock=lambda: self.now,
-                                       current_halt_epoch=lambda _account: self.epoch)
         recovery_store = SQLiteOutbox(self.path)
         recovery_gateway = CommandGateway(recovery_store, FakeVenueAdapter(),
                                           verification_key=KEY, clock=lambda: self.now,
@@ -265,10 +261,16 @@ class GatewayTests(unittest.TestCase):
         outcomes = []
 
         def stale_dispatch():
+            stale_store = SQLiteOutbox(self.path)
+            stale_gateway = CommandGateway(stale_store, stale_adapter, verification_key=KEY,
+                                           clock=lambda: self.now,
+                                           current_halt_epoch=lambda _account: self.epoch)
             try:
                 outcomes.append(stale_gateway.dispatch("cmd-001"))
             except Exception as exc:
                 outcomes.append(f"{type(exc).__name__}: {exc}")
+            finally:
+                stale_store.close()
 
         worker = threading.Thread(target=stale_dispatch)
         worker.start()
@@ -283,7 +285,6 @@ class GatewayTests(unittest.TestCase):
         finally:
             release_adapter.set()
             worker.join(timeout=5)
-            stale_store.close()
             recovery_store.close()
 
         self.assertFalse(worker.is_alive())
