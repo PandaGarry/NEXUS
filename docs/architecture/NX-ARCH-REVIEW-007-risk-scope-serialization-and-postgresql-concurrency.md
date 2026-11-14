@@ -179,6 +179,10 @@ PostgreSQL documentation supports the transaction/error semantics above; it does
 - If the exact bound vector is stale, incomplete, contradictory, outside a configured drift bound or the policy is unconfigured, Egress denies send. Risk must perform a new evaluation and reservation; it must not mutate an existing approval in place.
 - The interface schema and exact version-vector representation remain future source-owner contract work; this review does not invent an executable schema or numeric thresholds.
 
+### Risk aggregate guard versus HEGC commit-order guard
+
+The Risk-owned scope-state row protects the economic invariant that concurrent reservations and discrete exposure-projection changes cannot over-allocate shared capacity. The HEGC gate-validation guard protects a different real-time invariant: every invalidating update to the complete HEGC read set that commits before the final grant must be visible to that grant. Do not assume the Risk scope-state row alone proves HEGC commit order. Reuse is acceptable only if every invalidating writer (Risk reservation/release, Command consumption/revocation, eligibility, valuation-evidence manifest, dispatcher fence and halt-state writer) participates in the same enforced guard protocol atomically, before any protected read/write, with no direct-DML bypass. Otherwise use a separately owned coordination guard. The exact guard owner, procedure and grants remain a G1 qualification item; see NX-RESEARCH-012 §4.2.
+
 ## 10. Gate disposition
 
 - Risk-owned scope-state serialization is the selected G1 evaluation design.
