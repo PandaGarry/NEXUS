@@ -26,12 +26,19 @@ This primary configuration remains unchanged. A change to venue, product family,
 | Bybit V5 | Linear USDT contracts | BTCUSDT | Primary confirmatory | Public raw smoke exists; synchronized L2 and historical archive coverage remain unverified |
 | Bybit V5 | Linear USDT contracts | ETHUSDT, SOLUSDT | Exploratory instrument robustness only | Not yet captured or qualified |
 | Bybit V5 | Spot | BTCUSDT, ETHUSDT | Exploratory spot-vs-derivative comparison | Not yet captured or qualified; do not pool with linear contracts |
-| Kraken Spot WS v2 | Spot | BTC/USD, ETH/USD | Cross-venue exploratory replication candidate | Protocol docs reviewed; recorder deferred until Bybit M2; archive and terms qualification open |
+| Kraken Spot WS v2 | Spot | XBT/USD, ETH/USD | Cross-venue exploratory replication candidate | Full Spot Time & Sales archive documented through 2026-09-30; WS docs reviewed; historical side semantics and data-use terms remain open; no historical L2 evidence |
 | Coinbase Advanced Trade | Spot | BTC-USD, ETH-USD | Alternative cross-venue exploratory replication candidate | Protocol qualification not complete |
 | OKX | Spot / USDT perpetual | BTC-USDT, ETH-USDT; BTC-USDT-SWAP, ETH-USDT-SWAP | Discovery backlog | Not qualified; exact API/product evidence required |
 | Binance | Spot / USDⓈ-M perpetual | BTCUSDT, ETHUSDT | Discovery backlog | Not qualified; exact API/product evidence required |
 
 These are candidates, not assertions that the feeds, archives, account access or products are available to the owner. Candidate inclusion does not imply recommendation, eligibility or permission to redistribute data.
+
+### Kraken historical-data note (checked 2026-11-15)
+
+Kraken publishes complete Spot Time & Sales data for each pair from its first trade through 2026-09-30. The CSV schema is `timestamp, price, volume, type, order_type, misc, trade_id`; the complete archive is split into approximately 2 GB parts with published SHA-256 checksums. This is useful for exploratory trade-flow work on XBT/USD and ETH/USD, but it is not historical L2. The historical `type` values (`b`/`s`) must be verified against WS v2 taker-side semantics before using them as signed taker flow. Historical data availability does not establish redistribution rights or account eligibility.
+
+Official source: https://support.kraken.com/in/articles/360047543791-downloadable-historical-market-data-time-and-sales-
+
 
 ## 3. Comparability and statistical rules
 
