@@ -13,7 +13,8 @@ The arbitrary-precision oracle remains unchanged as the mathematical source of e
 
 NumericLimits requires explicit integer budgets. Input/digit/intermediate budgets must be positive; max_scale and max_power10_exponent may be zero (integer-only/no-expansion profiles):
 
-- max_input_chars
+- max_input_chars (raw decimal text)
+- max_wire_chars (canonical encoded scalar input/output)
 - max_coefficient_digits
 - max_scale
 - max_rational_numerator_digits
@@ -33,7 +34,7 @@ BoundedNumericContext provides:
 - exact compare and positive-step divisibility with bounded alignment;
 - exact rational-to-decimal conversion only for terminating values;
 - explicit rational quantization with target-scale and intermediate-growth checks;
-- bounded canonical decimal/rational wire parsing and serialization, both constrained by the configured character budget.
+- bounded canonical decimal/rational wire parsing and serialization, constrained by a separate max_wire_chars budget (distinct from raw decimal max_input_chars).
 
 All admitted arithmetic delegates to the arbitrary-precision oracle only after preflight checks. The wrapper does not silently round.
 
