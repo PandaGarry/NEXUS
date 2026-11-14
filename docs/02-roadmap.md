@@ -844,3 +844,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Pass 13 suites / 239 tests on Python 3.11–3.13 (717 successful executions).
 - [x] Inspect logs for failures and deprecated Node.js runtime warnings; none found.
 - [ ] Continue separate implementation gates for signing, halt store, egress fencing, PostgreSQL 18.7 and Rust conformance.
+
+## Halt / final Egress reference oracle
+
+- [x] Add test-only sequential state-machine model for halt/gate commit ordering.
+- [x] Cover halt-first, gate-first, paused process, positive sender fence, control-store outage and post-send reconciliation.
+- [ ] Verify 11 new tests on Python 3.11/3.12/3.13 at exact branch HEAD.
+- [ ] Replace model assumptions with actual PostgreSQL shared-row/conditional-update proof and instrumented socket-boundary fault injection.
+- [ ] Prove external process/host/network fencing independently of the old Egress workload.
