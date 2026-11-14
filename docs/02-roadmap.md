@@ -14,7 +14,7 @@
 - [ ] Зафиксировать дефекты, неизвестные свойства и ограничения.
 
 ## Phase 1 — Core Architecture (Blocked)
-- [ ] Утвердить NX-ADR-001 Unified Market Event Contract.
+- [ ] Утвердить NX-ADR-001 Unified Market Event Contract. (Draft published; owner review and schema conformance design review required.)
 - [ ] Утвердить NX-ADR-002 Execution Integrity & Reconciliation. (ADR drafted; owner review required.)
 - [ ] Утвердить NX-ADR-003 Simulation Fidelity & Strategy Validation. (ADR drafted; owner review required.)
 - [ ] Утвердить NX-ADR-004 Market Data Recovery State Machine.
