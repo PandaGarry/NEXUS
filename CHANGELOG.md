@@ -444,3 +444,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - No test failures or Node.js 20 / `punycode` deprecation warnings.
 - Verified the exact pinned checkout v7.0.1 and setup-python v7.1.0 action manifests both use Node 24.
 - Evidence remains limited to Python reference models and action runtime; no Rust, CBOR/COSE, PostgreSQL, Trusted Egress or live behavior was exercised.
+
+### COSE pre-verification trust boundary tightened — 2026-11-14
+
+- Token-supplied kid/alg/issuer/audience are explicitly untrusted until signature verification.
+- Key lookup is local, bounded and registry-backed; remote key discovery from token fields is forbidden.
+- Signed issuer/audience must match locally expected context after verification; ambiguity, stale generation and revocation fail closed.
+- Verification material is public OKP/Ed25519 only (32-byte public key, no private d outside Risk); signatures must be 64 bytes.
+- No signer/verifier or key provider was implemented or selected.
