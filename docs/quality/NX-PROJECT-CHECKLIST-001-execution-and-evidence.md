@@ -813,3 +813,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Add cross-language adversarial COSE vectors for issuer/audience substitution, malicious key URLs, ambiguous kid, stale/revoked registry, malformed key/signature and private-key exposure.
 
 **Disposition:** exact-head Python reference regression passed; it does not exercise the proposed COSE verifier or key registry. OD-08/G0D/G1 remain open for implementation and security review.
+
+## 18.36 Exact-head CI after COSE key-resolution and protected-header profile refinement — 2026-11-14
+
+- [x] Verify branch HEAD `88fcb30068507d85fb35802ca5d2195fd528c000` with [workflow #43616054657](https://github.com/PandaGarry/NEXUS/actions/runs/43616054657).
+- [x] Python 3.11, 3.12 and 3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
+- [x] Inspect all three job logs: no failures or Node.js 20 / `punycode` deprecation warnings.
+- [x] Confirm the protected COSE header is narrowed to deterministic map labels 1 (alg=-19) and 4 (kid), with empty unprotected map, and local registry-bound key selection.
+- [ ] Add cross-language COSE positive/negative vectors and prove exact protected-header bytes, Sig_structure, external AAD and signature verification.
+- [ ] Keep the current CI result scoped to Python reference models; it does not validate the COSE profile implementation or key registry.
+
+**Disposition:** exact-head Python reference regression passed. COSE signing/verifying and G0D/G1 security evidence remain unimplemented.
