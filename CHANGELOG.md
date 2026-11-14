@@ -276,3 +276,12 @@ Published NX-RESEARCH-010. PostgreSQL, OpenTelemetry Collector, OpenBao, NATS Je
 ### Exact-head reference CI for modular architecture documentation increment — 2026-11-14
 
 The then-current branch head `e15e47f9512bc07a1f6534a4f41b0d27d7d42578` passed GitHub Actions [#43608583358](https://github.com/PandaGarry/NEXUS/actions/runs/43608583358). Python 3.11, 3.12 and 3.13 jobs all succeeded; each ran 13 isolated reference suites / 237 tests (711 successful executions total). This verifies existing Python reference-model regression only. It does not test NX-ARCH-006 module isolation, identity/authentication, database boundaries, secret handling, runtime integration, egress fencing or live trading.
+
+
+### Added — Platform extensibility and entitlement foundation proposal (2026-11-14)
+
+- Added NX-ARCH-007 with a candidate long-term product-domain taxonomy and modular platform extension principles.
+- Separated product capability, commercial entitlement and security authorization; payment status, plans and feature flags cannot grant Risk/Ledger/venue/egress authority.
+- Specified stable feature identifiers, auditable entitlement grants, subscription lifecycle, replay-safe billing event processing, product quotas distinct from trading Risk limits, downgrade/data-retention behavior and compatibility rules.
+- Preserved multi-tenancy, public SaaS, paid plans, payment providers, registration and commercial launch as future gated decisions, not v1 commitments.
+- Updated architecture index, checklist, project status and roadmap. Design only; no payment integration, subscription service, tenant runtime, module or product feature implemented.
