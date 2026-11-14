@@ -1,5 +1,7 @@
 import unittest
 import json
+import random
+from fractions import Fraction
 from pathlib import Path
 
 from nexus_decimal import (
@@ -93,6 +95,51 @@ class ExactDecimalTests(unittest.TestCase):
                 else:
                     self.fail(f"unsupported golden vector operation: {op}")
                 self.assertEqual(actual, case["expected"])
+
+
+    def test_deterministic_exact_arithmetic_properties(self):
+        rng = random.Random(20261114)
+
+        def literal(coefficient: int, scale: int) -> str:
+            sign = "-" if coefficient < 0 else ""
+            digits = str(abs(coefficient))
+            if scale == 0:
+                return sign + digits
+            digits = digits.rjust(scale + 1, "0")
+            return sign + digits[:-scale] + "." + digits[-scale:]
+
+        def fraction(value: ExactDecimal) -> Fraction:
+            return Fraction(value.coefficient, 10 ** value.scale)
+
+        for index in range(1000):
+            left_text = literal(rng.randint(-(10 ** 25), 10 ** 25), rng.randint(0, 18))
+            right_text = literal(rng.randint(-(10 ** 25), 10 ** 25), rng.randint(0, 18))
+            left, right = self.d(left_text), self.d(right_text)
+            left_f, right_f = Fraction(left_text), Fraction(right_text)
+
+            with self.subTest(property_case=index):
+                self.assertEqual(fraction(left + right), left_f + right_f)
+                self.assertEqual(fraction(left - right), left_f - right_f)
+                self.assertEqual(fraction(left * right), left_f * right_f)
+                self.assertEqual(left.compare(right), (left_f > right_f) - (left_f < right_f))
+                self.assertEqual(self.d(str(left)), left)
+                self.assertEqual(self.d(str(right)), right)
+
+                positive_step = ExactDecimal(abs(right.coefficient) or 1, right.scale)
+                step_f = fraction(positive_step)
+                self.assertEqual(left.is_multiple_of(positive_step),
+                                 (left_f / step_f).denominator == 1)
+
+                target_scale = rng.randint(0, 18)
+                if target_scale >= left.scale:
+                    self.assertEqual(fraction(left.quantize_exact(target_scale)), left_f)
+                else:
+                    divisor = 10 ** (left.scale - target_scale)
+                    if left.coefficient % divisor == 0:
+                        self.assertEqual(fraction(left.quantize_exact(target_scale)), left_f)
+                    else:
+                        with self.assertRaises(InexactQuantization):
+                            left.quantize_exact(target_scale)
 
 
 if __name__ == "__main__":
