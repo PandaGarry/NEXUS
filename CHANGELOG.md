@@ -4,10 +4,10 @@
 
 ## Unreleased
 
-### Added — Instrument quantity-unit semantics reference (test-only; CI pending)
+### Added — Instrument quantity-unit semantics reference (test-only; CI verified)
 - Added `InstrumentUnitModel`, explicitly bound to an immutable `InstrumentSpec` version, for spot base-asset quantities, linear contract counts and inverse contract counts.
 - Linear multiplier is typed as base-asset units per contract; inverse multiplier is typed as quote-asset units per contract. Inverse base exposure and QUANTO remain explicitly blocked.
-- Added a dedicated Python 3.11–3.13 conformance suite; exact-head CI pending. No production venue mapping or order authority is implied.
+- Added a dedicated 16-test Python 3.11–3.13 conformance suite. Run [#43593795698](https://github.com/PandaGarry/NEXUS/actions/runs/43593795698) passed exact HEAD `ba8df9def72bff82625669bc236430bb8d21592d`: seven isolated suites, 109 tests per runtime and 327 matrix executions. No production venue mapping or order authority is implied.
 
 
 ### Added — Dimensional financial types reference (test-only; CI verified)
