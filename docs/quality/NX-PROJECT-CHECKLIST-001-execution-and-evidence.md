@@ -467,3 +467,19 @@ Disposition: research-only. No package, service, broker, database, vault or depl
 - [ ] Do not implement public registration, third-party plugin loading, production identity, or module runtime before owner/security gate approval.
 
 **Disposition:** documentation/design only. No package, identity provider, plugin framework, database, service, public user account or live capability was installed or enabled. NX-ARCH-006 does not pass G0D/G1 by publication.
+
+
+## 18.9 Platform extensibility and commercial entitlement foundation (PROPOSED)
+
+- [x] Publish NX-ARCH-007 candidate product-domain taxonomy and extensibility principles without treating candidate capabilities as delivery commitments.
+- [x] Separate product capability, commercial entitlement and security authorization decision planes; subscription/payment/feature flags cannot grant Risk, Ledger, venue or egress authority.
+- [x] Define stable namespaced feature identifiers, auditable entitlement grants, subscription lifecycle, webhook replay/deduplication, quota separation and downgrade/data-retention principles.
+- [x] Define versioned module contracts, compatibility/deprecation/rollback, optional-module failure isolation and no arbitrary public plugin marketplace.
+- [x] Preserve multi-tenancy and public SaaS as future gated decisions, not implicit v1 scope.
+- [ ] Cross-review NX-ARCH-007 against NX-ARCH-001..006, NX-SEC-001, NX-IF-001..005 and NX-OWNER-DECISIONS-001.
+- [ ] Define the first controlled module catalog schema and ownership/data-classification registry; validate dependency graph and contract compatibility rules.
+- [ ] Add adversarial tests for forged plan claims, stale/revoked entitlements, replayed/out-of-order billing webhooks, downgrade, quota bypass, tenant confusion and billing-service outage.
+- [ ] Ensure order dispatch/Risk/egress paths have no synchronous dependency on billing, learning, analytics, notifications or payment providers.
+- [ ] Obtain separate owner/legal/security approval before public registration, paid plans, payment integration, teams/multi-tenancy or commercial launch.
+
+**Disposition:** strategic design only. No subscription, price, payment integration, entitlement service, tenant, public account, feature flag or commercial promise was created. NX-ARCH-007 publication passes no implementation or launch gate.
