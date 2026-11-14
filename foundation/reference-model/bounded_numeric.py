@@ -41,17 +41,20 @@ class NumericLimits:
     max_power10_exponent: int
 
     def __post_init__(self) -> None:
-        for name, value in (
+        positive_limits = (
             ("max_input_chars", self.max_input_chars),
             ("max_coefficient_digits", self.max_coefficient_digits),
-            ("max_scale", self.max_scale),
             ("max_rational_numerator_digits", self.max_rational_numerator_digits),
             ("max_rational_denominator_digits", self.max_rational_denominator_digits),
             ("max_intermediate_digits", self.max_intermediate_digits),
-            ("max_power10_exponent", self.max_power10_exponent),
-        ):
+        )
+        for name, value in positive_limits:
             if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
                 raise ValueError(f"{name} must be a positive integer")
+        for name, value in (("max_scale", self.max_scale),
+                            ("max_power10_exponent", self.max_power10_exponent)):
+            if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+                raise ValueError(f"{name} must be a non-negative integer")
         if self.max_intermediate_digits < max(
             self.max_coefficient_digits,
             self.max_rational_numerator_digits,
