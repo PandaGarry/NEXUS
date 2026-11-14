@@ -744,3 +744,14 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Run cross-language COSE positive/negative byte vectors after G0D readiness.
 - [ ] Test manifest missing/stale/gap/correction/revocation and source-update races between approval and dispatch.
 - [ ] Prove private-key isolation and Egress no-fetch behavior at instrumented process/network boundaries.
+
+## PostgreSQL 18.7 G1 patch qualification
+
+- [x] Select 18.7 as the exact G1 evaluation patch, not a production deployment version.
+- [x] Review official release notes for security fixes, index-corruption/REINDEX and incremental-backup caveats.
+- [x] Require fresh full backup as the G1 backup/PITR base; do not trust pre-18.7 incremental backup chains.
+- [x] Prohibit extensions, C extensions, dblink and replication subscriptions in the initial G1 harness.
+- [x] Require base-table service roles; RLS/updatable views are not sole authorization boundaries; runtime has no DDL/extension/superuser/replication privileges.
+- [ ] Pin exact vendor package/image digest, build provenance, host platform and configuration.
+- [ ] Review each 18.7 REINDEX item against actual schema/indexes and prove restore/PITR.
+- [ ] Requalify the newest supported 18.x patch before any later deployment decision.
