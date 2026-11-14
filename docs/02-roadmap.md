@@ -922,3 +922,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Deny send on lost/indeterminate consume response; no new attempt or second permit.
 - [x] Require reservation retention, sender fencing and reconciliation when consume committed but socket initiation is unconfirmed.
 - [ ] Prove grant replay prevention and lost-response semantics against the real HEGC/PostgreSQL transaction boundary.
+
+
+## HEGC one-use grant consumption and commit-order proof
+
+- [x] Add explicit GATE_COMMITTED → GRANT_CONSUMED → SOCKET_INITIATED test-only state transitions; only positive consume permits one socket attempt.
+- [x] Cover lost consume response, repeated consumption, consume-store outage, sender fencing and reconciliation without blind resend.
+- [x] Pass code/test HEAD 9d618131ac9951e23c589491b2fb1039f6dc1d86 on workflow #43619080626: 13 suites / 260 tests on Python 3.11–3.13 (780 executions); egress-fencing 34 tests / 21 HaltEgressGate cases.
+- [ ] Prove PostgreSQL SERIALIZABLE participation plus an enforced common per-scope generation/guard that provides the required commit-order property; SSI alone is not treated as strict serializability.
+- [ ] Prove idempotent durable grant status resolution, process incarnation fencing, socket-initiation evidence and recovery against a real PostgreSQL 18.7 harness.
