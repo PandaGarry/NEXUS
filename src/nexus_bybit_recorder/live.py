@@ -120,7 +120,7 @@ async def record_public(
                                         snapshot_task.cancel()
                                         try:
                                             await snapshot_task
-                                        except asyncio.CancelledError:
+                                        except (asyncio.CancelledError, Exception):
                                             pass
                                     snapshot_task = _snapshot_fetch_task(normalized_symbol, testnet)
 
