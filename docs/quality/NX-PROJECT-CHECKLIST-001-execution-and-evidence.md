@@ -879,6 +879,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Require multi-scope account/child reservation to update every pre-provisioned scope-state record in deterministic canonical scope-ID order and commit all reservations/totals/idempotency state atomically.
 - [x] Specify fail-closed behavior for missing scope rows, stale/incomplete source watermarks and unresolved primary/commit authority.
 - [x] Specify same request identity + same digest replay behavior and different digest conflict behavior.
+- [x] Clarify that an absent row is not proof of rollback while the original transaction may still be in flight; only same-identity/digest retry may arbitrate through the unique constraint, otherwise halt.
 - [x] Specify whole-transaction bounded retry for PostgreSQL SQLSTATE 40001 / 40P01; no statement-only retry or stale snapshot reuse.
 - [x] Cross-check PostgreSQL 18 SERIALIZABLE, application-level consistency, explicit locking, serialization failure and ON CONFLICT semantics against official documentation.
 - [ ] Build adversarial concurrency tests: simultaneous capacity race; projection update racing reservation; overlapping parent/child scopes; duplicate/reordered projection event; missing scope row; idempotency collision; 40001/40P01 retry; lost commit response; stale/incomplete watermark.
