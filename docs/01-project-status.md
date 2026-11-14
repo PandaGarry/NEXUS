@@ -451,3 +451,9 @@ NX-ADR-008 and NX-RESEARCH-011 now explicitly treat all token-supplied metadata�
 ## COSE_Sign1 serialization profile — 2026-11-14
 
 NX-ADR-008 and NX-RESEARCH-011 now define one exact wire representation: untagged embedded-payload four-element COSE_Sign1; protected header has only alg=-19 and bounded byte-string kid; unprotected map is empty; capability claims are a single NEXUS deterministic-CBOR payload. The verifier preserves exact protected-header and payload bytes, constructs Sig_structure using RFC 9052 §9 deterministic encoding and rejects detached/tagged/extra-header alternatives. This removes representation ambiguity from the design; no implementation has been selected or tested yet.
+
+## COSE key-resolution boundary and exact-head verification — 2026-11-14
+
+NX-ADR-008 and NX-RESEARCH-011 now require token-supplied `kid`, `alg`, issuer and audience to remain untrusted until signature verification. Candidate lookup is bounded to a local versioned registry; token-directed remote key retrieval is forbidden. Local expected issuer/audience/algorithm/purpose govern candidate selection, and signed claims must match that local context after verification. Only public OKP/Ed25519 verification material (32-byte public key) is exposed to Execution; private key material remains within Risk; signature length is 64 bytes. This is a design requirement, not an implemented verifier.
+
+The exact branch HEAD `6fefd9a44ff2f272b6516265d10f41c46a13cf7a` passed [workflow #43615911362](https://github.com/PandaGarry/NEXUS/actions/runs/43615911362): Python 3.11/3.12/3.13 each passed 13 isolated reference suites / 239 tests (717 successful executions total). No test failures or Node.js 20 / `punycode` warnings. The run does not exercise COSE, Rust, PostgreSQL, Trusted Egress, venues or live trading.
