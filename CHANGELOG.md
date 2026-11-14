@@ -638,3 +638,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Egress cannot acknowledge a new halt epoch while a paused pre-halt gate-authorized attempt could still resume and initiate a write.
 - Clarified that full HALTED acknowledgement prevents new stale/queued send initiation but does not recall requests already initiated or guarantee no bytes after the wall-clock halt-request time.
 - No runtime, transport fence or fault-injection test was implemented; evidence remains open.
+
+### Halt / final Trusted Egress gate race contract clarified — 2026-11-14
+
+- Required halt-epoch transition and final EgressBoundaryAuthorization to serialize on the same authoritative halt-state generation.
+- Defined halt-wins (deny) and gate-wins (in-flight, retain reservation, reconcile) outcomes.
+- Required Egress to track gate-committed attempts until socket initiation or positive sender fencing before acknowledging the newer halt epoch.
+- Clarified that no stale/queued attempt may newly initiate after boundary acknowledgement, but bytes already sent cannot be recalled.
+- Separated Risk Engine outage from halt-store outage: independent Control Plane can commit halt while store is available; uncertain store blocks Egress authorization and fully-enforced HALTED status.
+- No runtime, halt store or external fence implemented; race/fault proof remains open.
