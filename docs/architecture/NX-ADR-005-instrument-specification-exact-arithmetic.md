@@ -9,7 +9,7 @@
 
 A symbol and price decimal count are not a trading specification. Spot assets, linear contracts, inverse contracts, quanto contracts, options and venue-specific perpetuals can share similar symbols while having different quantity units, multipliers, settlement currencies, precision and P&L formulas.
 
-The source audit found that Tradoor's shared `Product` model stores market identity, base/quote, kind, optional native symbol, `price_decimals` and display statistics. It does not store authoritative lot/quantity filters, min notional, contract multiplier, settlement, linear/inverse semantics or margin tiers. Venue parsers often extract only price precision. Order Flow conversion helpers cover selected venues and contain fallback assumptions. The Hyperliquid parser currently derives `price_decimals` from `szDecimals` (size precision), a semantic mismatch that must be fixed before that model is reused.
+The source audit found that Tradoor's shared `Product` model stores market identity, base/quote, kind, optional native symbol, `price_decimals` and display statistics. It does not store authoritative lot/quantity filters, min notional, contract multiplier, settlement, linear/inverse semantics or margin tiers. Venue parsers often extract only price precision. Order Flow conversion helpers cover selected venues and contain fallback assumptions. The Hyperliquid parser derives the maximum price decimal places from `szDecimals`, consistent with the venue's documented perp price rule (`6 - szDecimals` plus a five-significant-figures limit). The shared Product model still cannot express the complete rule or independent quantity step; it must not be treated as a full order specification.
 
 Financial correctness cannot rely on binary floating-point as the canonical representation. Floating-point remains acceptable for visualization or explicitly approximate analytics, never as the single source of truth for order validation, balances, fees, margin or P&L.
 
@@ -119,7 +119,7 @@ Public market-data catalogue endpoints are not assumed to contain all private/ac
 8. Historical order/fill/ledger events retain the spec version used at the time.
 9. Metadata refresh handles pagination, stale data, schema changes, delisting and temporary venue outages.
 10. Missing multiplier, settlement currency, tick or lot data cannot silently default to 1/0 or be considered tradable.
-11. A Hyperliquid fixture demonstrates that size precision is not assigned to price precision.
+11. A Hyperliquid fixture demonstrates the documented `5 significant figures` and `MAX_DECIMALS - szDecimals` price rule, while quantity precision remains separately enforced.
 12. No live trading is enabled solely because public symbol discovery succeeds.
 
 ## Open decisions for owner review
