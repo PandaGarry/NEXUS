@@ -119,7 +119,7 @@ The table is a bounded starting catalog for first-party product domains. IDs are
 | `nexus.learning.progress.write` | Learning & Knowledge | Update own progress within learning domain | PERSONAL | Learning | No entitlements or account permissions |
 | `nexus.notification.publish` | Notifications & Collaboration | Publish an approved template/event to consented destinations | PERSONAL / INTERNAL | Notifications, bounded workflows | No secret-bearing arbitrary payloads |
 | `nexus.billing.usage.read` | Billing & Entitlements | Read minimum subject-scoped usage aggregate | PERSONAL / INTERNAL | Billing UI, Administration case scope | No payment credentials or financial account data |
-| `nexus.billing.subscription.manage` | Billing & Entitlements | Submit subscription lifecycle request through billing owner | PERSONAL | Billing UI/API only | No trading authority or entitlement self-issuance |
+| `nexus.billing.subscription.manage` | Billing & Entitlements | Submit a user-authorized subscription-change intent to the billing owner; billing owner alone validates provider state and commits entitlement lifecycle | PERSONAL | Billing UI/API only | No direct entitlement write, client plan claim, payment-secret access or trading authority |
 
 ### 5.1 Protected capabilities are not module-grantable
 
@@ -131,7 +131,7 @@ The following are deliberately absent from the optional-module catalog and must 
 - Venue credential retrieval, signing authority, direct venue sockets and production key management.
 - Operator break-glass, dual-control override and production deployment authority.
 
-A client or approved API integration may submit a user-originated command to the NEXUS public command contract, but the command coordinator and Risk domain must independently validate user identity, account scope, current state, risk approval, idempotency, durable reservation and all existing execution gates. Such a request path is not a reusable module capability and never permits bypass.
+A client or approved API integration may submit a user-originated command to the NEXUS public command contract, but the command coordinator and Risk domain must independently validate user identity, account scope, current state, risk approval, idempotency, durable reservation and all existing execution gates. Such a request path is not a reusable module capability and never permits bypass. Likewise, `nexus.billing.subscription.manage` is only a request-intent operation: it cannot create, sign, activate, extend or revoke an entitlement record. The billing owner processes verified provider events/reconciliation and is the sole writer of entitlement state. No synchronous billing call is permitted from Risk, command acceptance, dispatch or Trusted Egress.
 
 ## 6. Mapping matrix — module, capability, owner and negative test
 
