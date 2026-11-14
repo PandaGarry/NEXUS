@@ -1455,6 +1455,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Pass 8 tests on exact code/test HEAD 614f22f3bbff879d91c040eb73511a90fe7d32ef, [PostgreSQL workflow #43628329933](https://github.com/PandaGarry/NEXUS/actions/runs/43628329933).
 - [x] Pass Python reference-model workflow [#43628329956](https://github.com/PandaGarry/NEXUS/actions/runs/43628329956): 13 suites / 264 tests on Python 3.11, 3.12 and 3.13 (792 executions).
 - [x] Inspect both workflows' job logs; no test failures, ResourceWarnings or deprecation warnings.
+- [x] Re-run both workflows on documentation-synchronized HEAD 806832a2a15ea25376408c7d27cde409438451ce: [PostgreSQL #43628569042](https://github.com/PandaGarry/NEXUS/actions/runs/43628569042) passed 8/8; [Python #43628569028](https://github.com/PandaGarry/NEXUS/actions/runs/43628569028) passed 264 tests on each supported Python runtime.
 - [x] Investigate prior harness regressions #43621620302 and #43622000189; correct and verify subsequent exact code/test heads.
 - [ ] Guard service-principal and authorization-map mutations with a reviewed protocol; test their races against HEGC and source writers.
 - [ ] Expand RLS adversarial matrix to policy composition, restrictive policies, owner/role edge cases and covert-channel analysis.

@@ -141,3 +141,12 @@ The following tests are required before implementation acceptance:
 - [ ] Obtain independent security review of SECURITY DEFINER code before any production deployment.
 
 **Disposition:** architecture boundary and candidate controls are specified. No production schema, function, role, connection or runtime is implemented; only a disposable test fixture exists. G0D/G1 remain open; production/live execution is not authorized. Owner decisions OD-08, OD-09, OD-10 and OD-12 remain open where they concern key custody, storage/isolation, recovery objectives and break-glass operations.
+
+
+## 9. PostgreSQL references
+
+- [PostgreSQL 18 — Row Security Policies](https://www.postgresql.org/docs/18/ddl-rowsecurity.html): table-owner bypass behavior, FORCE ROW LEVEL SECURITY, policy evaluation and security-definer use in policy expressions.
+- [PostgreSQL 18 — CREATE POLICY](https://www.postgresql.org/docs/18/sql-createpolicy.html): command-specific policies and USING / WITH CHECK semantics.
+- [PostgreSQL 18 — System Information Functions](https://www.postgresql.org/docs/18/functions-info.html): distinction between session_user and current_user, including SECURITY DEFINER behavior.
+
+These references support the test-fixture design only; they do not establish production qualification.
