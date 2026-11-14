@@ -247,7 +247,7 @@ The halt transition is owned by the independently authorized emergency Control P
 
 - If the halt-epoch transaction commits before the EgressBoundaryAuthorization transaction, the final gate MUST observe the newer epoch and deny the attempt. No socket-write initiation is permitted for that attempt.
 - If the EgressBoundaryAuthorization transaction commits first, that attempt is logically **dispatch-committed / in-flight** at that commit, even if the process is descheduled before the socket-write call. A later halt cannot retroactively revoke that already committed one-time authorization. The attempt remains potentially sent, its full conservative reservation remains held, and it MUST be reconciled. No claim is made that a halt request prevents every network byte from being emitted after the wall-clock time of the halt request.
-- The Egress boundary MUST track every gate-committed attempt until socket-write initiation is observed or the old Egress process/host/path is positively fenced. It MUST NOT acknowledge the new halt epoch while an earlier gate-committed attempt could still resume and initiate a socket write. If the attempt cannot be drained or its sender cannot be positively fenced, the boundary is not acknowledged and the scope cannot be reported HALTED as fully enforced.
+- The Egress boundary MUST track every gate-committed attempt until socket-write initiation is observed or the old Egress process/host/path is positively fenced. It MUST NOT acknowledge the new halt epoch while an earlier gate-committed attempt could still resume and initiate a socket write. If the attempt cannot be drained or its sender cannot be positively fenced, the boundary is not acknowledged and the scope cannot be reported HALTED as fully enforced. Positive sender fencing proves only that the old sender cannot initiate a future write; it does NOT prove that no socket side effect occurred before fencing. If no trusted socket-initiation report exists, retain the attempt as OUTCOME_UNKNOWN, keep its full conservative reservation and require venue reconciliation. Fencing alone MUST NOT classify it DEFINITELY_NOT_SENT or release exposure.
 - Once every boundary has acknowledged the new epoch or has been positively isolated, no stale or queued attempt may initiate a new socket write. Venue processing/acceptance of a request already initiated before that acknowledgement remains an in-flight external effect and is handled by reconciliation; halt does not recall bytes already sent or cancel venue orders.
 
 This defines the linearization order, not an exactly-once network guarantee. If a future operational requirement demands that no socket-write initiation occur after the halt transaction commits even for an earlier gate-committed attempt, the transport/egress architecture must provide a stronger independently fenced cancellation/serialization mechanism and prove it under process pause, host partition and crash tests; PostgreSQL transaction ordering alone cannot make that claim.
@@ -423,6 +423,9 @@ At minimum, test:
 41. socket write is initiated before boundary acknowledgement but venue accepts/reports the order after acknowledgement; order remains potentially live and is reconciled without blind resend;
 42. instrumented actual socket/network boundary proves no stale or queued attempt can initiate a write after the boundary's halt acknowledgement.
 
+43. old Egress sender is positively fenced but socket-initiation report is missing; attempt remains OUTCOME_UNKNOWN and reservation remains held until venue reconciliation;
+44. sender is fenced after a possible socket write but before initiation report; fencing prevents future writes but cannot prove the prior attempt was not sent; no blind resend or reservation release;
+
 ## 12. Acceptance criteria
 
 1. HaltState is durable, scoped, monotonic and protected against stale writers/epochs.
@@ -451,6 +454,7 @@ At minimum, test:
 24. Protective-order behavior is explicit and cannot be silently overridden by cancel-all.
 25. Emergency rate-limit prioritization never violates venue limits or suppresses reconciliation evidence.
 26. Audit reconstructs every halt, command, target selection, approval, dispatch, fill, reconciliation and resume decision.
+27. Positive sender fencing without trusted proof of no prior socket side effect MUST preserve OUTCOME_UNKNOWN and reservation until reconciliation; fencing is not DEFINITELY_NOT_SENT evidence.
 27. Failure scenarios cover race, partition, stale epoch, partial cancel, ambiguous result, position-mode mismatch and Risk outage.
 28. No implementation, CI, adapter certification, runtime or production-readiness pass is claimed without evidence.
 29. Halt epoch and final EgressBoundaryAuthorization serialize against the same authoritative halt-state record/generation; both lock-order outcomes are tested.
