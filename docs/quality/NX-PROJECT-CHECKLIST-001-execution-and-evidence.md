@@ -385,6 +385,15 @@ The exact decimal oracle is arbitrary precision; `BoundedNumericContext` wraps i
 
 ### 18.3 Cross-contract pre-egress ordering clarification — 2026-11-14
 
+### 18.4 Reservation/dispatch finding disposition refresh — 2026-11-14
+
+- [x] Refresh NX-ARCH-REVIEW-001 F-02 to distinguish the original documentation gap from the subsequently published NX-IF-001 / NX-IF-002 / NX-ADR-002 design ordering.
+- [x] Record the design-level sequence: reservation durable before approval; single-use approval consumption atomic with command/outbox commit; reservation retained through ambiguous outcome.
+- [ ] Owner acceptance, concrete transaction/isolation selection, crash/replay/concurrency proof, reservation lifecycle evidence and independently enforced egress-fence proof remain open.
+
+**Disposition:** F-02 is partially resolved as a documentation/design contract only. No runtime transaction, distributed atomicity or egress guarantee is claimed.
+
+
 - [x] Clarify IF-002 so the durable pre-egress attempt marker is committed before any external network side effect.
 - [x] Explicitly state that the marker moves exposure to `DISPATCH_OUTCOME_UNKNOWN` but is not proof that bytes were sent.
 - [x] Preserve the full conservative reservation until authoritative outcome/reconciliation; align review note with ADR-002, IF-001, IF-003, IF-004 and IF-005.
