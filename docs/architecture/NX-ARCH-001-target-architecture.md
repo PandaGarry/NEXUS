@@ -358,7 +358,7 @@ Cancel/close semantics during degraded states must be separately specified per v
 - NX-RESEARCH-001: simulation landscape and fidelity limitations.
 - NX-RESEARCH-002: Tradoor market-data, order-flow, paper execution, venue metadata and licensing findings.
 
-NX-ADR-001 (Unified Market Event Contract) is still missing from the branch and remains a prerequisite to finalize canonical event schemas. NX-ADR-006 and detailed specs for Order Flow, Quant, Execution, Risk and Ledger remain outstanding.
+NX-ADR-001 (Unified Market Event Contract) is present in the repository as PROPOSED. It remains subject to owner review and conformance evidence before canonical event schemas are frozen. NX-ADR-006 and detailed specs for Order Flow, Quant, Execution, Risk and Ledger remain outstanding.
 
 ## 11. Owner decisions required before implementation
 
