@@ -242,7 +242,7 @@ For multiple scopes, either one atomic transaction covers all affected scopes or
 
 - Repeated identical reservation request IDs return the original committed result; they do not create additional capacity consumption.
 - Reuse of a request ID with a different command digest or scope is rejected as an idempotency conflict.
-- A crash after reservation commit but before approval response is recovered by reading the durable request/result; it MUST NOT reserve again.
+- A crash after reservation commit but before approval response is recovered by reading the durable request/result; it MUST NOT reserve again. If no committed row is visible while the original transaction may still be in flight, absence is not proof of rollback; any retry uses the same request ID/digest so the unique constraint arbitrates, otherwise the scope remains halted until outcome is known.
 - A crash after approval issuance but before dispatch leaves the reservation active until dispatch state is proven or expiry is safely established.
 - A stale writer, duplicate event or lower fencing token cannot overwrite a newer reservation/snapshot state.
 - Reservation and approval IDs are never reused.
