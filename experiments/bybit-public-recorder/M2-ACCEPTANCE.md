@@ -7,6 +7,16 @@
 
 This checklist is a release gate, not a claim that M2 is implemented. Every checked item must link to a commit, CI run, fixture, raw journal or reproducible report.
 
+## Terms and data-use gate (must pass before further live captures or raw-data publication)
+
+- [ ] Review the current [Bybit API Terms & Conditions](https://www.bybit.com/en/help-center/article/API-Terms?category=ae1012f19fad1c184e) (support page last updated 2026-10-20) and the linked [API agreement PDF](https://www.bybit.com/common-static/compliance/legal/BYBIT/df1923006718fbba8ba70d7d762b9866.pdf).
+- [ ] Obtain a clear interpretation of Section 2.3 (API-key identity verification) for unauthenticated public market-data endpoints; technical no-key reachability is not a legal determination.
+- [ ] Keep all public-feed checks strictly as development/conformance tests. Section 6.6 prohibits using the API or Service Data to monitor availability/performance/functionality for benchmarking purposes; do not publish uptime or latency benchmarks from these runs.
+- [ ] Do not repackage/resell API or Service Data (Section 6.7) or commercially exploit the APIs (Section 6.9). Any future commercial/public NEXUS use requires separate review/permission.
+- [ ] Keep raw exchange frames private; do not commit or redistribute them until retention, derived-data and redistribution rights are explicitly reviewed.
+- [ ] Automated live smoke is gated by repository variable `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true`; leave it unset until this gate is documented as approved.
+
+
 ## Implementation progress (2026-11-15)
 
 - [x] Added a public REST full-depth snapshot client and response validator in `src/nexus_bybit_recorder/snapshot.py`.
