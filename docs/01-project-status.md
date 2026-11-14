@@ -368,3 +368,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Verified stacked PR graph: #13 head `bb6400502640818fd5eba8a93eb3ae8dc54581d2` is #14 base; #14 head `ab6976933cb4de9b5320b73531034d02edc53907` is #16 base. The #16 base is intentional and must not be retargeted to the default branch or merged ahead of its parents.
 - All three PRs remain Draft/open/unmerged. PR #16 remains 28 changed files / 3,730 additions / 55 deletions and 205 commits beyond PR #14's head. Its scope/reviewability needs a dependency-aware disposition; no automatic merge or stack rewrite was performed.
 - Evidence boundary: this is Python reference-model CI, not Rust, production transaction isolation, external egress fencing, venue integration or live-safety evidence. G0D/G1 remain BLOCKED; live trading NOT AUTHORIZED.
+
+
+## Numeric wire resource-boundary hardening — 2026-11-14
+
+- Hardened the test-only numeric wire parser against short-encoded but extreme decimal scales and interpreter integer-string conversion ceilings.
+- Added optional max_scale; default scale ceiling is the caller's max_chars budget. Oversized integer conversion failures map to stable NUMERIC.RESOURCE_LIMIT.
+- Added regression coverage for decimal/rational oversized integers and scale-budget failures.
+- Exact code/test HEAD b0fb99d4505ba5eb405788fee8ce447f28437479 passed [GitHub Actions #43614612130](https://github.com/PandaGarry/NEXUS/actions/runs/43614612130): 13 isolated suites / 239 tests per Python 3.11, 3.12 and 3.13; 717 successful executions total.
+- This is reference-only hardening. No production numeric limits, normalized fixture schema/runner, Rust implementation or live execution path was added; G0D/G1 remain open.
