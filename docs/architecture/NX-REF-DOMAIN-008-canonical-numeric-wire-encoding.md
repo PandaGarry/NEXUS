@@ -31,7 +31,7 @@ Example: nxr1:1:300 represents exactly 1/300.
 
 ## 4. Parser requirements
 
-Parsers require a caller-supplied positive max_chars and reject oversized input before splitting or integer conversion. They reject unsupported versions, extra/missing fields, non-canonical integer forms, negative/zero denominators, non-reduced rationals and non-normalized decimal coefficient/scale pairs.
+Parsers require a caller-supplied positive max_chars and reject oversized input before splitting or integer conversion. BoundedNumericContext uses the separate max_wire_chars budget for encoded input and output; raw decimal literals use max_input_chars. They reject unsupported versions, extra/missing fields, non-canonical integer forms, negative/zero denominators, non-reduced rationals and non-normalized decimal coefficient/scale pairs.
 
 BoundedNumericContext integrates these parsers with its mandatory max_input_chars, coefficient, scale and rational digit budgets.
 
