@@ -11,7 +11,7 @@
 | Tradoor audit | In Progress | Source pass обновлён до HEAD 6ab3877; funding/private execution capability audit добавлен в NX-RESEARCH-002. Полная per-venue сертификация, instrument metadata и runtime verification остаются открыты |
 | Exchange capabilities matrix | Incomplete | Trade/book/OI/liquidation первично просмотрены; per-channel matrix и UNKNOWN поля ещё не закрыты |
 | Simulation fidelity | In Progress | Tradoor paper-модель недостаточна для реалистичного исполнения |
-| Runtime verification | Partial / limited | 10 reference-model unit tests and 10,000 randomized exact-arithmetic checks passed in an isolated local directory using exact fetched files; PR #10 has no returned GitHub Actions runs; no production runtime/CI PASS claimed |
+| Runtime verification | Partial / reference-only | Exact-decimal and gateway reference suites passed in GitHub Actions on Python 3.11–3.13 at prior revisions; current split-brain counterexample and corrected worker-thread fixture await fresh CI. No production runtime, distributed fencing or exchange-adapter verification claimed |
 | Security threat model | Drafted / Proposed | NX-SEC-001 сохранён; owner review, deployment-specific analysis и security verification не выполнены |
 | Exact arithmetic / instrument specs | ADR proposed / implementation not started | NX-ADR-005 drafted; требует owner review и последующих golden tests. Блокер реализации сохраняется |
 | Unified market event contract | PROPOSED | NX-ADR-001 опубликован; owner review и conformance design review требуются |
@@ -83,7 +83,7 @@
 
 ## Command gateway reference slice (2026-11-14)
 
-- NX-REF-EXEC-001 and `foundation/reference-model/execution-gateway/` add a test-only Python/SQLite model for CREATE command authorization, payload-bound approval, active reservation consumption, durable local outbox persistence, dispatch marker, and conservative ambiguous-outcome recovery.
+- NX-REF-EXEC-002 proposes account-scoped authority epochs, credential/network isolation, independently enforced old-egress fencing, stale-epoch state-mutation rejection and a fail-closed takeover sequence. It is a design proposal, not an implemented fence.\n- NX-REF-EXEC-001 and `foundation/reference-model/execution-gateway/` add a test-only Python/SQLite model for CREATE command authorization, payload-bound approval, active reservation consumption, durable local outbox persistence, dispatch marker, and conservative ambiguous-outcome recovery.
 - The suite now contains 21 deterministic tests. The prior GitHub Actions run [#43588971888](https://github.com/PandaGarry/NEXUS/actions/runs/43588971888) passed the preceding 20-test gateway revision on Python 3.11, 3.12 and 3.13; the new split-brain counterexample has not yet been CI-verified. Two independent-connection tests cover local SQLite races. A new adversarial counterexample deliberately proves a stale worker can resume after recovery, send a command, and overwrite OUTCOME_UNKNOWN with a late ACK. This is a known unsafe behavior, not a passing safety property. A new fenced egress authority is required before production.
 - Scope is intentionally narrow: fake adapter only; no production signer, production database, fenced egress authority, cross-host leases/fencing, complete Risk calculation, ledger posting, venue reconciliation, or real exchange integration.
 - A fresh local container clone attempt failed because the environment could not resolve github.com; CI supplies the checked-in-source verification for this exact HEAD.
