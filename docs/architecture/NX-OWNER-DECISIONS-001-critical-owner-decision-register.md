@@ -154,7 +154,8 @@ The owner subsequently instructed the technical lead to perform the deeper proje
 
 ### OD-09 — Persistence and transaction ownership
 
-- **G1 baseline:** PostgreSQL 18 is the leading evaluation target, using one logical primary, separate service-owned schemas/roles and no shared application superuser.
+- **G1 baseline:** PostgreSQL 18.7 is the exact G1 evaluation patch, using one logical primary, separate service-owned schemas/roles and no shared application superuser. Requalify the latest supported 18.x minor before any later evaluation/deployment; 18.7 is not a permanent production pin.
+- **18.7 release controls:** no unreviewed/C-language extensions, no dblink or untrusted replication subscriptions, authoritative writes to base tables only, fresh full backup for backup/PITR qualification, and release-note-driven REINDEX review. Package provenance/digest and platform remain open.
 - **Transaction model:** Risk reservation, Command approval-consumption/outbox and Ledger inbox/journal posting are separate local ACID transactions with explicit durable handoff and reconciliation. No distributed ACID transaction and no broker as source of truth.
 - **Risk concurrency:** evaluate SERIALIZABLE plus deterministic scope-row locking, unique idempotency constraints and state-version guards; retry the entire transaction on serialization failure within a finite budget. Unknown commit is reconciled by durable identity, never blindly retried.
 - **Serialization point:** Risk owns the derived exposure projection, source watermarks, scope-state version and reservation totals. Risk projection updates and reservations update the same Risk-owned scope-state record; Ledger remains journal owner and cannot write Risk state directly. All applicable pre-provisioned scope rows are processed in deterministic scope-ID order and all-scope reservations commit atomically.
