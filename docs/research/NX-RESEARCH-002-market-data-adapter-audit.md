@@ -119,7 +119,7 @@ The server collector has 11 perpetual venues: Binance, Bybit, OKX, Bitget, Gate,
 
 ### Funding
 
-The inspected server module registry has `open_interest` and `liquidations` but no funding module. The training simulator's funding settlement does not establish live funding-rate collection. Funding-rate channels, historical funding, next funding time, rate units and instrument-specific settlement semantics remain **UNKNOWN** and require a dedicated source search before the capability matrix can be marked.
+The inspected server module registry has `open_interest` and `liquidations` but no funding collector module. The training simulator's funding settlement does not establish live funding-rate collection. Official APIs do expose funding data for at least Bybit (historical `fundingRate` + timestamp and per-instrument funding interval) and Hyperliquid (current funding in `metaAndAssetCtxs`, historical `fundingHistory`, and predicted funding). This confirms exchange-side public capability, not Tradoor application integration. Tradoor funding collection/normalization remains **NOT OBSERVED / UNKNOWN** in the inspected application code; other venues still require dedicated endpoint-by-endpoint research.
 
 ## 7. Instrument metadata and quantity normalization
 
@@ -139,6 +139,25 @@ This is an analytics/display conversion path, not a canonical instrument-specifi
 Additional arithmetic observation: the inspected catalogue parser, OI parser and browser book/print structures use floating-point numbers. Decimal precision cannot be reconstructed reliably after arbitrary binary-float operations. NEXUS needs versioned exact tick/lot/contract metadata and integer tick/lot or fixed-point values from ingestion through risk and execution.
 
 **Evidence:** [Product model](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/catalog.rs#L7-L75), [Binance metadata extraction](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/crates/venues/src/binance.rs#L160-L195), [Order Flow contract-size conversion](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/lib/orderflow.ts#L391-L430), [Deribit size conversion](https://github.com/tradoor-terminal/tradoor/blob/39a1826816f973ff46c15a848ad1cbe3be7b1dc8/web/src/engine/orderflow-venues.ts#L130-L152).
+
+### Per-venue metadata parser coverage (source-level summary)
+
+| Venue family | Fields retained by Tradoor Product parser | Key rule fields omitted from Product |
+|---|---|---|
+| Binance Spot/Perp | tick decimal count derived from PRICE_FILTER.tickSize | LOT_SIZE step/min/max, min notional, price bounds, order types, margin asset/contract details |
+| Bybit Spot/Linear Perp | tick decimal count from priceFilter.tickSize; symbol/base/quote | lotSizeFilter qtyStep/min/max/minNotional, leverageFilter, fundingInterval, settleCoin |
+| OKX Spot/Linear SWAP | tick decimal count from tickSz; filters linear USDT/USDC swaps | lotSz/minSz/max sizes, ctVal/ctMult, ctValCcy, leverage and risk tiers |
+| Deribit Perp | tick decimal count from tick_size; base/quote | contract size, amount step/minimum, settlement and margin rules |
+| Gate Spot/Perp | spot precision or order_price_round precision | amount precision, quanto multiplier and min contract/risk rules |
+| Bitget Spot/Perp | pricePrecision/pricePlace | quantity step/minimum, contract value, settlement/margin constraints |
+| Kraken Spot/Perp | pair_decimals or tickSize precision | lot decimals/minimum and complete contract/settlement rules |
+| HTX Spot/Perp | tpp or price_tick precision | amount precision, contract_size, minimum volume and margin rules |
+| Lighter Perp | price_decimals | quantity step/precision and full market trading constraints |
+| Hyperliquid Perp | max price decimal places derived from 6 − szDecimals | five-significant-figure rule, separate size step and margin tiers are not represented in Product |
+| Coinbase Spot | quote_increment-derived price decimals | base_increment, minimum size/funds and maximum size |
+| Bitfinex Spot/Perp | no explicit tick; source comments describe five significant figures | exact price/amount steps and contract/margin constraints |
+
+The omitted-field list is a parser-to-Product comparison, not a claim that the exchange API lacks those fields. Official endpoint documentation confirms several omitted fields exist. Exact mapping and semantics must be validated with venue documentation and captured fixtures before any adapter is approved for execution.
 
 ### Hyperliquid precision semantics — correction after official-doc verification
 
