@@ -596,3 +596,18 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - Python 3.11, 3.12 and 3.13 jobs all completed successfully. Each runtime executed 13 isolated reference-model suites and 237 tests; 711 successful test executions total.
 - This verifies the existing Python reference-model regression workflow only. It does not execute NX-ARCH-REVIEW-004's traceability matrix, proposed capabilities, new domain contracts, schema/grants, authorization service, module runtime/isolation, field-level data controls, Rust or venue integration.
 - NX-ARCH-REVIEW-004 is a design traceability artifact; domain-owner/security acceptance, field-level classification/retention, revocation objectives and boundary-observed G1 evidence remain open. No capability is approved or active.
+
+
+## 18.19 Revocation, freshness and control-plane outage objectives
+
+- [x] Reconcile NX-ARCH-008/009 revocation rules with NX-IF-004 freshness/recovery and NX-IF-005 halt propagation.
+- [x] Explicitly separate authorization freshness, source-data freshness, control propagation and RecoveryBarrier readiness.
+- [x] Publish NX-ARCH-REVIEW-005 with candidate cache/revocation profiles, in-flight cancellation semantics and a control-plane outage matrix.
+- [x] Preserve per-source/per-scope/per-operation freshness; do not define a global TTL or invent venue thresholds.
+- [x] Define required measurement dimensions and actual process/DB/secret/network boundary evidence.
+- [ ] Obtain owner/security acceptance of authorization cache, revocation, cancellation and hard-containment objectives.
+- [ ] Obtain source-owner/OD-10 approval of freshness, completeness, retention, clock uncertainty, retry, RTO and RPO values.
+- [ ] Obtain OD-12 approval of halt propagation deadline, operator roles, dual control and containment path.
+- [ ] Measure and fault-inject stale-worker, process-pause, partition, secret-revocation and external-egress fencing before G1/G3.
+
+**Disposition:** proposed engineering baseline only. Numeric values in NX-ARCH-REVIEW-005 are not accepted SLOs or production guarantees. No runtime control was implemented.
