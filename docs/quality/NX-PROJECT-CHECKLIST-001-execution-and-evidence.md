@@ -722,16 +722,6 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 **Disposition:** exact tested SHA passed. This evidence is regression-only; G0D/G1 implementation gates remain open.
 
 
-## 18.30 Post-sync exact-head verification — 2026-11-14
-
-- [x] Verify post-normalization branch HEAD `9e9035033da77d958601cb6b69128e13e2551a0d` with GitHub Actions [#43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737).
-- [x] All 3 Python runtime jobs passed; 13 isolated suites / 239 tests per Python 3.11, 3.12 and 3.13 (717 successful executions).
-- [x] Confirm no Node.js 20 or punycode deprecation warnings in any job log.
-- [x] Confirm current PR #16 snapshot: 265 commits beyond base, 32 changed files, 4,467 additions and 72 deletions; PR remains Draft/open/unmerged.
-- [ ] Do not claim this matrix verifies Rust, PostgreSQL, COSE signing, Trusted Egress, venue or live behavior.
-
-The exact-head workflow above verifies the current normalized documentation tree plus the existing Python reference suites. The last code change remains the numeric-wire resource hardening at b0fb99d; no production runtime has been introduced.
-
 ## 18.29 Verified full stacked ancestry and current exact-head CI — 2026-11-14
 
 - [x] Verify the direct PR chain by exact base/head SHA equality: #1 → #2 → #3 → #4 → #5 → #6 → #7 → #9 → #10 → #11 → #12 → #13 → #14 → #16.
@@ -744,6 +734,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Split broad PR scope only if a clean dependency-aware decomposition can be created without corrupting the stacked ancestry.
 
 **Disposition:** PR ancestry is correct and intentionally stacked. PR #16 remains Draft/open/unmerged. CI is Python reference-only and does not close G0D/G1 or establish Rust, persistence, egress or live readiness.
+
+## 18.30 Post-sync exact-head verification — 2026-11-14
+
+- [x] Verify post-normalization branch HEAD `9e9035033da77d958601cb6b69128e13e2551a0d` with GitHub Actions [#43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737).
+- [x] All 3 Python runtime jobs passed; 13 isolated suites / 239 tests per Python 3.11, 3.12 and 3.13 (717 successful executions).
+- [x] Confirm no Node.js 20 or punycode deprecation warnings in any job log.
+- [x] Confirm current PR #16 snapshot: 265 commits beyond base, 32 changed files, 4,467 additions and 72 deletions; PR remains Draft/open/unmerged.
+- [ ] Do not claim this matrix verifies Rust, PostgreSQL, COSE signing, Trusted Egress, venue or live behavior.
+
+The exact-head workflow above verifies the current normalized documentation tree plus the existing Python reference suites. The last code change remains the numeric-wire resource hardening at b0fb99d; no production runtime has been introduced.
 
 ## 18.31 CBOR / COSE implementation library qualification — 2026-11-14
 
@@ -758,3 +758,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep all libraries uninstalled/unselected until G0D and OD-08 security review.
 
 **Disposition:** NX-RESEARCH-011 published. No dependency, Rust workspace, CBOR parser, COSE signer/verifier, key or runtime was added. G0D/G1 remain open.
+
+## 18.32 Final exact-head verification after NX-RESEARCH-011 and OD-08 profile refinement — 2026-11-14
+
+- [x] Verify branch HEAD `1bb2192e6746e0f86659f006ef204990adc81188` with workflow [#43615753905](https://github.com/PandaGarry/NEXUS/actions/runs/43615753905).
+- [x] Python 3.11, 3.12 and 3.13 all passed 13 isolated suites / 239 tests per runtime; 717 successful test executions total.
+- [x] Inspect all three logs; no test failures and no Node.js 20 / `punycode` deprecation warnings.
+- [x] Record that NX-RESEARCH-011 and the ASCII command-map-key refinement are documentation/design-only; no dependency or parser was added.
+- [ ] Keep G0D/G1 library, strict-validator, cross-language, cryptographic and runtime gates open.
+
+**Disposition:** exact synchronized branch-head Python reference regression passed. It does not exercise Rust, CBOR/COSE libraries, PostgreSQL, Trusted Egress, external fencing, venues or live trading.
