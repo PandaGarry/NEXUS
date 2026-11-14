@@ -255,3 +255,13 @@ No production mapping or normalized wire contract is approved by this audit.
 
 
 - [x] Close the reference API type-check gap in `ExactDecimal.is_multiple_of`; malformed step types now produce explicit `TypeError` and have a regression test. No numeric semantics changed.
+
+
+## Pre-egress boundary wording closure — 2026-11-14
+
+- [x] Make the IF-002 attempt-marker-before-network ordering explicit and align it with ADR-002.
+- [x] State that `DISPATCH_OUTCOME_UNKNOWN` is entered before the external side effect and does not assert that bytes were sent.
+- [ ] Prove durable commit ordering, stale-worker fencing and final trusted-egress validation in the selected implementation.
+- [ ] Fault-inject crashes before marker, after marker/before socket write, during write, after venue acceptance/before response, and after response/before persistence.
+
+Documentation ambiguity closed; implementation proof remains a separate gate.
