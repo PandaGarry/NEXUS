@@ -1169,9 +1169,10 @@ The exact-head workflow above verifies the current normalized documentation tree
 ## 18.66 Test-only halt / final Egress gate reference oracle — 2026-11-14
 
 - [x] Add `halt_egress_gate.py` as a pure test-only state-machine oracle; no production imports or dependencies.
-- [x] Add 11 tests for halt-first denial, gate-first in-flight ordering, paused-process acknowledgement blocking, positive sender fencing, single-use attempt identity, halt-store outage and post-socket reconciliation.
+- [x] Add 13 tests for halt-first denial, gate-first in-flight ordering, paused-process acknowledgement blocking, positive sender fencing, single-use attempt identity, halt-store outage and post-socket reconciliation.
+- [x] Treat a sender fence without trusted socket-initiation evidence as OUTCOME_UNKNOWN; retain reservation and reconciliation obligation.
 - [x] Ensure a gate-committed attempt remains eligible to initiate while halt is propagating, but prevents HALTED acknowledgement until socket initiation is observed or sender is positively fenced.
-- [x] Ensure a socket-initiated attempt remains a reconciliation obligation after HALTED acknowledgement.
+- [x] Ensure both socket-initiated attempts and fenced attempts without a trusted initiation report remain reconciliation obligations after HALTED acknowledgement.
 - [x] Document that sequential oracle tests do not prove real database linearizability, process/host/network fencing or socket behavior.
 - [x] Run the expanded egress-fencing suite on Python 3.11/3.12/3.13; exact PR-head CI passed (250 tests/runtime, 750 total) on workflow #43618215618.
 - [ ] Implement actual shared-row/conditional-update ordering and fault-inject both commit orders, process pause, store outage and positive fence at the real Egress boundary.
@@ -1200,3 +1201,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Qualify the HEGC workload identity, service role, audit trail and independent recovery/fencing before any deployment.
 
 **Disposition:** logical authority and retry contract documented in NX-ADR-008 / NX-IF-001 / NX-IF-005 / NX-REF-EXEC-002. No HEGC runtime or database schema implemented.
+
+## 18.69 Sender-fence versus definitely-not-sent semantic correction — 2026-11-14
+
+- [x] Identify that external process/host fencing proves no future send authority, not that a prior socket side effect did not occur.
+- [x] Replace the model's `FENCED_NOT_SENT` state with `SENDER_FENCED_UNKNOWN`.
+- [x] Keep fenced-without-initiation-report attempts in the reconciliation-required set.
+- [x] Add a regression test proving sender fencing cannot erase an unknown prior socket side effect.
+- [ ] Verify the revised model suite on Python 3.11/3.12/3.13 at exact HEAD.
+- [ ] Prove trusted socket-initiation evidence, fence attestation and reconciliation at the actual Egress boundary; never release reservation from fence receipt alone.
+
+**Disposition:** reference model now distinguishes "cannot send again" from "definitely did not send". Production evidence remains open.
