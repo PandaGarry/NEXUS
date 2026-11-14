@@ -4,10 +4,10 @@
 
 ## Unreleased
 
-### Added — Exact rational division and explicit quantization (test-only; CI pending)
+### Added — Exact rational division and explicit quantization (test-only; CI verified)
 - `ExactDecimal.divide_exact` returns a reduced `ExactRational`; division by zero fails closed and no rounding is implicit.
 - Added exact terminating-decimal conversion and explicit quantization modes: UNNECESSARY, DOWN, UP, FLOOR, CEILING, HALF_UP and HALF_EVEN.
-- Added 1,000 deterministic rational property cases, language-neutral division vectors and a dedicated Python 3.11–3.13 CI step. Operation-specific financial rounding policies remain unapproved.
+- Added 1,000 deterministic rational property cases, language-neutral division vectors and a dedicated Python 3.11–3.13 CI step. Run [#43594118145](https://github.com/PandaGarry/NEXUS/actions/runs/43594118145) passed exact PR HEAD `a46b49a2cbb7a5960ce483f93a736a3fbc945554`: eight isolated suites, 127 tests per runtime / 381 matrix executions. Operation-specific financial rounding policies remain unapproved.
 
 
 ### Added — Instrument quantity-unit semantics reference (test-only; CI verified)
