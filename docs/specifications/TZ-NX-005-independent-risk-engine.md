@@ -476,3 +476,8 @@ Risk consumes the proposed [NX-IF-003 — Execution Event & Ledger Posting Contr
 This is a requirements proposal only. No Risk Engine, policy registry, exposure calculator, approval signer, risk reservation, kill-switch controller or risk conformance suite has been implemented or tested in NEXUS. No account limits have been configured. No live trading is authorized.
 
 **Prototype Readiness remains BLOCKED.**
+
+
+## WP-D — Evidence evaluation and recovery gating
+
+Risk MUST evaluate a versioned StateEvidenceVector and operation-specific EvidenceRequirementSet/FreshnessPolicy under [NX-IF-004](../architecture/NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md). Risk-increasing authorization is blocked when mandatory evidence is missing, UNKNOWN, stale, invalid, unsynchronized, incomplete, quarantined or outside configured policy. RecoveryBarrier is scoped and generation/fencing protected; a global service-health flag is insufficient. Exposure snapshots and reservations remain conservative through ambiguous Execution/Ledger/venue state. No numeric freshness threshold or retry budget is implied; unconfigured mandatory policy blocks authorization.
