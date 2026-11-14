@@ -117,6 +117,16 @@ The production design MUST:
 
 A local cached flag, process lease or caller-side check is not a security boundary. This requirement reuses the same stale-worker/egress-fencing principle already identified in the execution reference work.
 
+### 6.2 Dispatch/suspension linearization
+
+The reference model NX-REF-VENUE-002 makes the required ordering explicit:
+- if a dispatch obtains the trusted egress serialization point first, that side effect is ordered before the suspension epoch change; suspension must wait for the bounded send attempt to resolve or become OUTCOME_UNKNOWN;
+- if suspension advances the epoch first, a command bound to the prior epoch is rejected before any adapter call;
+- ambiguous send outcomes remain OUTCOME_UNKNOWN and are reconciled, never blindly resent;
+- an already accepted venue order is not assumed cancelled by eligibility suspension.
+
+The test-only model uses a process-local lock across the adapter callback solely to make the ordering deterministic. This is not a production recommendation. Production needs durable egress state, a dedicated credential-holding boundary, bounded network operations, cross-process fencing and crash recovery. A local mutex cannot fence a stale process or another host.
+
 ## 7. Suspensions and emergency operations
 
 Suspension is not permission to continue trading under a different label.
