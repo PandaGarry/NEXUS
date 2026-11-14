@@ -45,7 +45,7 @@ BoundedNumericContext integrates these parsers with its mandatory max_input_char
 
 ## 6. Verification
 
-Round-trip and negative tests cover version mismatch, malformed shape, leading zeros, explicit plus, negative zero, invalid denominator, unreduced fractions, non-normalized decimal values and mandatory input-size budgets. CI runs Python 3.11–3.13. Cross-language vectors and signature/canonical-command integration remain open.
+Round-trip and negative tests plus language-neutral vectors in numeric-wire-golden-v1.json cover decimal/rational values, values beyond JavaScript's safe integer range, version mismatch, malformed shape, leading zeros, explicit plus, negative zero, invalid denominator, unreduced fractions, non-normalized decimal values and mandatory input-size budgets. CI runs Python 3.11–3.13. Cross-language vectors and signature/canonical-command integration remain open.
 
 
-**CI evidence:** PR run [#43594861745](https://github.com/PandaGarry/NEXUS/actions/runs/43594861745) passed exact PR HEAD `2c0135f1205a27f070b0b6a835aa3c19e904e540` on Python 3.11–3.13. The numeric wire suite ran 10 tests per runtime; the complete matrix ran 166 tests per runtime / 498 test executions. This is reference-only; cross-language adoption remains open.
+**CI evidence:** PR run [#43594861745](https://github.com/PandaGarry/NEXUS/actions/runs/43594861745) passed exact PR HEAD `2c0135f1205a27f070b0b6a835aa3c19e904e540` on Python 3.11–3.13. The numeric wire suite ran 11 tests per runtime; the complete matrix ran 166 tests per runtime / 498 test executions. This is reference-only; cross-language adoption remains open.
