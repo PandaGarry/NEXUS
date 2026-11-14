@@ -136,3 +136,10 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 - Official Binance Spot, OKX and Bybit documentation is used only to demonstrate venue/product differences; no venue is selected or qualified.
 - All venue/account formulas and owner accounting policies remain BLOCKED/OWNER-DECISION as applicable. No calculator, Risk/Ledger implementation, venue adapter, credentials, orders or live capability was added.
 - Prototype readiness remains BLOCKED; live trading remains NOT AUTHORIZED.
+
+## Venue-neutral financial math fixture increment (2026-11-14)
+
+- NX-REF-DOMAIN-010 and `financial-math-golden-v1.json` add synthetic, non-authorizing exact vectors for spot notional, explicitly mapped linear contract exposure/notional, inverse rational base exposure and partial-fill weighted-average arithmetic.
+- New test suite checks selected outputs independently with standard-library `fractions.Fraction`; non-terminating inverse exposure remains rational and exact decimal conversion fails closed.
+- CI now includes the new suite on Python 3.11, 3.12 and 3.13. Exact-head result is pending.
+- This is mathematical reference evidence only. It does not qualify venue multipliers, reporting scope, fees, funding, P&L, margin, liquidation, FX or accounting. G0/G1 and live-trading restrictions are unchanged.
