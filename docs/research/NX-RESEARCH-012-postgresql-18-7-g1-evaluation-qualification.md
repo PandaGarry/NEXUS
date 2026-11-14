@@ -62,7 +62,7 @@ G1 requirements:
 
 - Authoritative Risk/Command/Ledger writes target base tables through narrowly scoped service roles; auto-updatable views are not write APIs.
 - Row-level security, if later used, is defense-in-depth and is not the only tenant/service isolation boundary. Prove base-table grants and cross-role access independently, including ON CONFLICT paths.
-- Database role grants, schema ownership and SECURITY DEFINER functions require explicit review; no shared application superuser. Runtime roles receive no SUPERUSER, CREATEDB, CREATEROLE, REPLICATION, BYPASSRLS or schema/extension DDL privileges.
+- Database role grants, schema ownership and SECURITY DEFINER functions require explicit review; no shared application superuser. Runtime roles receive no SUPERUSER, CREATEDB, CREATEROLE, REPLICATION, BYPASSRLS, pg_read_all_data, pg_write_all_data, pg_read_server_files, pg_write_server_files or pg_execute_server_program privileges; they cannot SET ROLE to schema owners and have no schema/extension DDL privileges.
 - Do not install or enable `dblink`, replication subscriptions, untrusted extensions or dynamic extension/script execution in the initial G1 environment.
 - C-language extensions are excluded; any later C extension must be rebuilt and requalified for PostgreSQL 18.7 and the current server patch.
 - Do not restore untrusted `pg_restore` archives or treat backup manifests as trusted input. All imports are bounded, validated and performed by a narrowly scoped process.
