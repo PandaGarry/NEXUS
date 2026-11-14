@@ -381,3 +381,7 @@ This is a proposed interface contract only. No NEXUS Execution event schema, out
 ## WP-D evidence and recovery composition
 
 Execution delivery, Ledger inbox commit, journal posting, projection application and venue reconciliation MUST publish distinct source watermarks and quality/recovery evidence consumable by [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md). A successful outbox delivery or inbox acknowledgement alone does not make the Ledger projection current or reconciled. RecoveryBarrier MUST restore durable inbox/outbox and journal state, reconcile private venue evidence, drain pending events idempotently, rebuild projections, then permit Risk exposure reconstruction. Pending fills remain in the conservative WP-B bucket until the matching posting/projection/reconciliation evidence is proven. This is a proposed contract link; no implementation is claimed.
+
+## Related financial-operation and valuation contract
+
+[NX-REF-DOMAIN-009 — Operation-Specific Financial Rounding & Valuation Contract](NX-REF-DOMAIN-009-operation-specific-financial-rounding-valuation-contract.md) specifies the broader boundaries for actual versus estimated fees, funding, realized/unrealized P&L, FX, margin, liquidation and journal rounding. NX-IF-003 remains PROPOSED; NX-REF-DOMAIN-009 does not resolve owner accounting decisions or provide posting implementation/conformance evidence.
