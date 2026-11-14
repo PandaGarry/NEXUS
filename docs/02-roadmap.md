@@ -1105,3 +1105,15 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Implement production catalog extraction/effective privilege evaluation, deployment TOCTOU controls and post-startup drift response.
 
 **Disposition:** the reference model tests admission logic only. Boolean verification inputs are test seams, not cryptographic proof. No production authorization is granted.
+
+
+## Authorization-catalog manifest admission reference — verification evidence — 2026-11-14
+
+- [x] Logical v1 manifest validation and fail-closed admission preconditions implemented in `foundation/reference-model/auth-catalog`.
+- [x] 23 isolated tests passed on Python 3.11, 3.12 and 3.13; 287 total reference tests per runtime / 861 successful executions in workflow [#43633125568](https://github.com/PandaGarry/NEXUS/actions/runs/43633125568).
+- [x] PostgreSQL HEGC regression workflow [#43633125536](https://github.com/PandaGarry/NEXUS/actions/runs/43633125536) passed 12/12 on the same code/test HEAD.
+- [ ] Strict deterministic-CBOR raw-byte validator and cross-language golden vectors remain open.
+- [ ] COSE_Sign1/Ed25519 verification, trust-root/key lifecycle, independent approval and revocation service remain open.
+- [ ] PostgreSQL catalog extraction, complete effective-privilege coverage, deployment TOCTOU control and continuous drift enforcement remain open.
+
+**Disposition:** reference-model CI passed; production manifest and deployment authorization are not implemented.
