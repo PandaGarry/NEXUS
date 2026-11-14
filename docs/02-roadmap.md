@@ -826,7 +826,7 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 
 - [x] Add explicit race matrix cases 36–42 to NX-IF-005.
 - [x] Align acceptance criteria with the final egress authorization linearization point and distinguish Risk outage from halt-store outage.
-- [x] Verify exact PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` on workflow #43618215618: 251 tests/runtime, 753 executions, including the 11-test HaltEgressGate oracle.
+- [x] Verify code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` on workflow #43618694545: 255 tests/runtime, 765 executions; 24 egress-fencing tests including 16 HaltEgressGate cases.
 - [ ] Re-run CI after any further final documentation/code synchronization.
 - [ ] Implement only after G0D/G1 gates: instrumented halt/Egress race tests, actual socket boundary, external process/host/network fencing and recovery evidence.
 
@@ -886,5 +886,14 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Treat positive sender fencing as prevention of future writes only.
 - [x] Keep an attempt OUTCOME_UNKNOWN and reservation held when no trusted socket-initiation report exists.
 - [x] Prohibit DEFINITELY_NOT_SENT classification or reservation release from fence evidence alone.
-- [ ] Verify the revised 12-test oracle on all supported Python runtimes.
+- [x] Verify the expanded 16-test HaltEgressGate oracle on Python 3.11/3.12/3.13 (included in 24 egress-fencing tests; 255 total tests/runtime, 765 executions; workflow #43618694545).
 - [ ] Prove initiation reports, external fence attestation and venue reconciliation at the real Egress boundary.
+
+
+## Sender-fence semantic correction and exact-head reference CI
+
+- [x] Preserve OUTCOME_UNKNOWN after a positive sender fence when no trusted socket-initiation evidence exists; retain reservation and reconciliation obligation.
+- [x] Extend the HaltEgressGate oracle to 16 cases, including pending-halt/store recovery, repeated halt idempotency and epoch exhaustion.
+- [x] Pass exact code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` on workflow #43618694545: 13 suites / 255 tests on each of Python 3.11, 3.12 and 3.13.
+- [ ] Prove the same properties with real PostgreSQL concurrency, independent process/host/network fencing and instrumented socket initiation.
+
