@@ -735,3 +735,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Test update-before-gate vs update-after-gate ordering for valuation correction, halt and venue eligibility.
 - [ ] Inject crash after final authorization commit but before socket write; recover as potentially sent and reconcile.
 - [ ] Inject crash during/after socket write; verify no blind retry and inspect actual instrumented egress boundary.
+
+## Risk approval / COSE / valuation-manifest conformance
+
+- [x] Synchronize NX-IF-001 with exact COSE_Sign1 profile and immutable valuation_input_vector_id/version.
+- [x] Require local bounded key resolution; reject token-directed remote key discovery and ambiguous candidates.
+- [x] Require persisted Risk evidence-manifest validation at Egress with no remote source calls.
+- [ ] Run cross-language COSE positive/negative byte vectors after G0D readiness.
+- [ ] Test manifest missing/stale/gap/correction/revocation and source-update races between approval and dispatch.
+- [ ] Prove private-key isolation and Egress no-fetch behavior at instrumented process/network boundaries.
