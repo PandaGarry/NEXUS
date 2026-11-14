@@ -185,3 +185,14 @@ This checklist does not authorize:
 - QUANTO is explicitly unsupported; inverse base exposure remains blocked until exact division and rounding/precision policy exist.
 - Venue `quantity_unit` remains opaque: quantity kind and multiplier dimension are caller-declared, never inferred from a string.
 - Dedicated 16-test suite and CI workflow step added. GitHub Actions run [#43593795698](https://github.com/PandaGarry/NEXUS/actions/runs/43593795698) passed exact HEAD `ba8df9def72bff82625669bc236430bb8d21592d` on Python 3.11–3.13: 109 tests per runtime / 327 matrix executions across seven isolated suites.
+
+
+## 11. Exact rational division and quantization increment
+
+- Added `ExactRational` reduced numerator/positive-denominator representation.
+- Decimal division returns an exact rational and never silently truncates or rounds; division by zero is rejected.
+- Exact conversion to finite decimal succeeds only for denominators containing factors 2 and/or 5.
+- Quantization requires an explicit `RoundingMode`; seven modes are covered for positive and negative inputs.
+- Added 1,000 deterministic rational quantization property cases and language-neutral division golden vectors.
+- Dedicated CI suite added; exact-head CI evidence pending.
+- No operation-specific trading/accounting rounding policy is approved.
