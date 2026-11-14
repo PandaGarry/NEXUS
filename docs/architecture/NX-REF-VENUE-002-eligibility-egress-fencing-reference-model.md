@@ -51,6 +51,7 @@ The 'test_venue_egress_fencing.py' suite contains 19 deterministic tests:
 - concurrent send/suspend ordering;
 - post-suspension dispatch denial;
 - monotonic epoch and immutable scope;
+- same-record revision monotonicity and reactivation only with a new record revision;
 - invalid clock, type confusion and invalid adapter inputs.
 
 ## Exact-head CI evidence
