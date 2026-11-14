@@ -217,6 +217,7 @@ First-venue selection remains BLOCKED; no live trading is authorized.
 - [x] Classify legacy fixture migration paths and identify where rejection classes or expected behavior require reference-derived review.
 - [x] Specify initial operation identifiers, typed result forms and reference exception mapping; resolve numeric-wire's catch-all error limitation with typed subclasses and stable error classes.
 - [ ] Review and approve operation registry and stable error mappings before schema/runner implementation.
+- [x] Define strict JSON ingestion and fixture identity requirements, including duplicate-key rejection and raw-byte SHA-256 evidence.
 - [ ] Owner review and approval of fixture contract and error taxonomy.
 - [ ] Migrate legacy fixture suites through explicit, tested converters; preserve v1 files unchanged.
 - [ ] Implement deterministic Python runner and machine-readable report.
