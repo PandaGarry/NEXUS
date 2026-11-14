@@ -431,3 +431,7 @@ Current PR #16 head `9e9035033da77d958601cb6b69128e13e2551a0d` passed [workflow 
 ## CBOR / COSE library qualification — NX-RESEARCH-011
 
 Published [NX-RESEARCH-011](research/NX-RESEARCH-011-cbor-cose-library-qualification.md). Rust `cbor2` 1.1.6 is a candidate for RFC 8949 core deterministic encoding and raw-byte preservation but does not provide the complete strict NEXUS ingress gate by itself. `cbor-core` 0.10.1 is not a drop-in protocol codec because it targets a draft profile, uses length-first ordering and has an unstable API. `coset` 0.4.2 is the leading COSE_Sign1 structure candidate for test-only evaluation (alg=-19 and original protected-header preservation), while `cose2`'s bundled Ed25519 provider uses deprecated alg=-8. Python `pycose` is not selected as a reference oracle. No dependency or runtime was added; exact strict-parser, cross-language vector, provenance, SBOM and fuzz qualification remain open G0D/G1 work.
+
+## CBOR command-key profile refinement — 2026-11-14
+
+NX-ADR-008 and OD-08 now restrict command map keys to schema-defined ASCII text field names. User-provided identifiers and Unicode text remain values, subject to strict UTF-8 and no implicit Unicode normalization. This reduces key-alias and schema ambiguity; it does not replace raw-byte deterministic validation. No parser implementation or dependency was added.
