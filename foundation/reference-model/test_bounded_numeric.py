@@ -99,6 +99,10 @@ class BoundedNumericTests(unittest.TestCase):
             small.serialize_decimal_wire(d("123"))
         with self.assertRaises(NumericLimitExceeded):
             small.parse_decimal_wire(serialize_decimal(d("123")))
+        with self.assertRaisesRegex(NumericLimitExceeded, "output"):
+            small.serialize_rational_wire(ExactRational(123, 1))
+        with self.assertRaises(NumericLimitExceeded):
+            small.parse_rational_wire(serialize_rational(ExactRational(123, 1)))
 
     def test_compare_and_step_validation_are_bounded(self):
         ctx = context()
