@@ -7,6 +7,8 @@ separately approved policy.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
+from math import gcd
 import re
 
 
@@ -24,6 +26,26 @@ class InexactQuantization(DecimalValueError):
 
 class InvalidStep(DecimalValueError):
     pass
+
+
+class DivisionByZero(DecimalValueError):
+    pass
+
+
+class InexactDivision(DecimalValueError):
+    pass
+
+
+class RoundingMode(str, Enum):
+    """Explicit quotient rounding policy; no implicit default is provided."""
+
+    UNNECESSARY = "UNNECESSARY"
+    DOWN = "DOWN"          # toward zero
+    UP = "UP"              # away from zero
+    FLOOR = "FLOOR"        # toward negative infinity
+    CEILING = "CEILING"    # toward positive infinity
+    HALF_UP = "HALF_UP"    # ties away from zero
+    HALF_EVEN = "HALF_EVEN"  # ties to even
 
 
 _PATTERN = re.compile(r"^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$")
@@ -102,8 +124,20 @@ class ExactDecimal:
         return ExactDecimal(self.coefficient * other.coefficient, self.scale + other.scale)
 
     def compare(self, other: "ExactDecimal") -> int:
+        if not isinstance(other, ExactDecimal):
+            raise TypeError("other must be ExactDecimal")
         left, right, _ = self._aligned(other)
         return (left > right) - (left < right)
+
+    def divide_exact(self, other: "ExactDecimal") -> "ExactRational":
+        """Return an exact reduced rational; never rounds or truncates."""
+        if not isinstance(other, ExactDecimal):
+            raise TypeError("other must be ExactDecimal")
+        if other.coefficient == 0:
+            raise DivisionByZero("division by zero")
+        numerator = self.coefficient * _pow10(other.scale)
+        denominator = other.coefficient * _pow10(self.scale)
+        return ExactRational(numerator, denominator)
 
     def quantize_exact(self, target_scale: int) -> "ExactDecimal":
         """Represent at target scale only if no information is discarded."""
@@ -123,3 +157,79 @@ class ExactDecimal:
             raise InvalidStep("step must be positive")
         left, right, _ = self._aligned(step)
         return left % right == 0
+
+
+
+@dataclass(frozen=True, slots=True)
+class ExactRational:
+    """Reduced exact rational used for intermediate division results."""
+
+    numerator: int
+    denominator: int
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.numerator, int) or isinstance(self.numerator, bool):
+            raise TypeError("numerator must be an integer")
+        if not isinstance(self.denominator, int) or isinstance(self.denominator, bool):
+            raise TypeError("denominator must be an integer")
+        if self.denominator == 0:
+            raise DivisionByZero("rational denominator cannot be zero")
+        numerator, denominator = self.numerator, self.denominator
+        if denominator < 0:
+            numerator, denominator = -numerator, -denominator
+        divisor = gcd(abs(numerator), denominator)
+        object.__setattr__(self, "numerator", numerator // divisor)
+        object.__setattr__(self, "denominator", denominator // divisor)
+
+    def to_decimal_exact(self) -> ExactDecimal:
+        """Convert only when the reduced denominator has factors 2 and/or 5."""
+        remainder = self.denominator
+        twos = fives = 0
+        while remainder % 2 == 0:
+            remainder //= 2
+            twos += 1
+        while remainder % 5 == 0:
+            remainder //= 5
+            fives += 1
+        if remainder != 1:
+            raise InexactDivision(
+                "rational has a non-terminating base-10 expansion; choose an explicit quantization policy"
+            )
+        scale = max(twos, fives)
+        coefficient = self.numerator * (2 ** (scale - twos)) * (5 ** (scale - fives))
+        return ExactDecimal(coefficient, scale)
+
+    def quantize(self, target_scale: int, rounding: RoundingMode) -> ExactDecimal:
+        """Quantize at an explicit scale and explicit rounding mode."""
+        if not isinstance(target_scale, int) or isinstance(target_scale, bool) or target_scale < 0:
+            raise ValueError("target_scale must be a non-negative integer")
+        if not isinstance(rounding, RoundingMode):
+            raise TypeError("rounding must be an explicit RoundingMode")
+        scaled_numerator = self.numerator * _pow10(target_scale)
+        sign = -1 if scaled_numerator < 0 else 1
+        quotient, remainder = divmod(abs(scaled_numerator), self.denominator)
+        if remainder:
+            if rounding is RoundingMode.UNNECESSARY:
+                raise InexactDivision("quantization would discard a non-zero remainder")
+            increment = False
+            if rounding is RoundingMode.UP:
+                increment = True
+            elif rounding is RoundingMode.DOWN:
+                increment = False
+            elif rounding is RoundingMode.CEILING:
+                increment = sign > 0
+            elif rounding is RoundingMode.FLOOR:
+                increment = sign < 0
+            elif rounding in (RoundingMode.HALF_UP, RoundingMode.HALF_EVEN):
+                doubled = remainder * 2
+                if doubled > self.denominator:
+                    increment = True
+                elif doubled < self.denominator:
+                    increment = False
+                elif rounding is RoundingMode.HALF_UP:
+                    increment = True
+                else:
+                    increment = quotient % 2 == 1
+            if increment:
+                quotient += 1
+        return ExactDecimal(sign * quotient, target_scale)
