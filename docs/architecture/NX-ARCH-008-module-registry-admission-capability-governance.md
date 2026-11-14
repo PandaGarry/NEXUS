@@ -443,4 +443,7 @@ These decisions must be linked to NX-OWNER-DECISIONS-001 or a successor decision
 **PROPOSED / DESIGN ONLY.** No module registry, manifest validator, signing service, grant issuer, module runtime, sandbox, deployment platform, plugin marketplace, commercial plan or external integration is implemented or approved. The permission matrix is a proposed policy baseline, not an executable ACL. Existing G0D/G1 blockers and the explicit owner-approval requirement for PR merge remain unchanged.
 
 
-**Cross-review note (2026-11-14):** NX-ARCH-REVIEW-002 confirms design-level alignment with NX-ARCH-001/006/007 and NX-SEC-001 after clarifying that T4 is a protection classification only; Risk, Command, Ledger and Trusted Egress remain distinct authorities/workloads. Findings F-03..F-08 remain open; no acceptance or runtime verification is implied.
+**Cross-review note (2026-11-14):** NX-ARCH-REVIEW-002, NX-ARCH-009 confirms design-level alignment with NX-ARCH-001/006/007 and NX-SEC-001 after clarifying that T4 is a protection classification only; Risk, Command, Ledger and Trusted Egress remain distinct authorities/workloads. Findings F-03..F-08 remain open; no acceptance or runtime verification is implied.
+
+
+**Capability catalog companion (2026-11-14):** See [NX-ARCH-009](NX-ARCH-009-capability-catalog-authorization-contracts.md) for the proposed canonical capability definition, scope grammar, data classification, initial owner mapping and adversarial CAP test plan. Catalog entries are proposals only; no active grant or runtime is implied.
