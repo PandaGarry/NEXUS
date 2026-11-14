@@ -26,7 +26,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Test exact-decimal oracle
         working-directory: foundation/reference-model
-        run: python -m unittest -v
+        run: python -m unittest -v test_nexus_decimal.py
       - name: Test execution-gateway reference slice
         working-directory: foundation/reference-model/execution-gateway
         run: python -m unittest -v
