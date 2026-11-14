@@ -667,3 +667,15 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Implement and fault-test the real process/host/network Trusted Egress fence before G1/G3 readiness claims.
 
 **Disposition:** technical direction selected for G1 evaluation under delegated authority. No database, key, secret manager, cloud, venue, credentials, production deployment or live capability is installed/selected/authorized. Owner-only risk, accounting, venue, legal and production decisions remain open.
+
+## 18.22 COSE algorithm identifier standards correction — 2026-11-14
+
+- [x] Cross-check NX-ADR-008 signing profile against current IETF COSE algorithm registry and RFC 9864 (published October 2025).
+- [x] Replace polymorphic COSE EdDSA identifier (-8) with fully specified COSE Ed25519 identifier (-19).
+- [x] Specify COSE key constraints (OKP / Ed25519) and reject Ed448, deprecated polymorphic -8, algorithm substitution and key/algorithm mismatch.
+- [x] Clarify that protected `kid` is an integrity-protected lookup hint, not an authentication factor or uniqueness guarantee.
+- [x] Require issuer/algorithm/purpose/status/generation-bound key resolution and fail-closed rejection of ambiguous eligible key matches.
+- [ ] Add Python/Rust COSE vectors for alg=-19 and negative vectors for -8, wrong curve, key mismatch, issuer/audience mismatch, revoked/retired key and ambiguous kid.
+- [ ] Qualify exact COSE implementations and verify RFC 9864 interoperability before any signer/verifier implementation or key custody decision.
+
+**Disposition:** standards correction applied to the G1 design baseline. No COSE library, key, signer, verifier or runtime has been added. Key custody and production signing remain gated.
