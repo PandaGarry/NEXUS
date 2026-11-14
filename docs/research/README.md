@@ -18,6 +18,9 @@
 - [NX-RESEARCH-001 — Simulation systems landscape](NX-RESEARCH-001-simulation-landscape.md)
 - [NX-RESEARCH-002 — Tradoor market-data adapter audit](NX-RESEARCH-002-market-data-adapter-audit.md)
   - Confirmed Hyperliquid adapter mismatch: `szDecimals` is assigned to `price_decimals`; per-venue metadata coverage summary added.
+- [NX-RESEARCH-003 — First-Venue Shortlist](NX-RESEARCH-003-first-venue-shortlist.md) — preliminary official-docs comparison of Coinbase and Kraken; no venue selected pending actual jurisdiction, product and account eligibility.
+- [NX-RESEARCH-006 — Reference Platform Fit Assessment](NX-RESEARCH-006-reference-platform-fit-assessment.md) — NautilusTrader remains leading candidate, not selected; targeted source review only.
+- [NX-RESEARCH-007 — NautilusTrader v2 Release Baseline Review](NX-RESEARCH-007-nautilus-v2-release-baseline.md) — v2.0.0rc9 is test-only; stable v2 and exact-source re-audit are required before selection.
 
 ## Evidence labels
 - CONFIRMED — непосредственно подтверждено исходником или тестом.
@@ -25,4 +28,3 @@
 - CLAIMED — заявлено документацией, но независимо не подтверждено.
 - UNKNOWN — доказательств недостаточно.
 - NOT TESTED — runtime/CI/test не запускался в этой проверке.
-- [NX-RESEARCH-003 — First-Venue Shortlist](NX-RESEARCH-003-first-venue-shortlist.md) — preliminary official-documentation comparison of Coinbase and Kraken; no venue selected pending actual jurisdiction, product and account eligibility.
