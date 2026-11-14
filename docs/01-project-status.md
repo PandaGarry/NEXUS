@@ -89,5 +89,5 @@
 - PR #1–#9 remain open Draft PRs and unmerged at this status snapshot. PR #8 and #9 are sibling branches; #9 does not include #8.
 - Repository branch `docs/personal-product-profile` contains documentation only; no NEXUS root source workspace/build system was found. This is consistent with the current discovery phase.
 - NX-ARCH-003 defines the first exact-decimal conformance slice without prematurely selecting production language, bounds or rounding policy.
-- Added a dependency-free Python exact-decimal reference oracle. Local verification: `python -m unittest -v`, 9 tests passed. This is reference-model evidence only, not production runtime or Rust/WASM verification.
+- Added a dependency-free Python exact-decimal reference oracle and language-neutral golden vectors v1.0.0 (15 vectors). Local verification: `python -m unittest -v`, 10 tests passed against the checked-in reference-model content. This is reference-model evidence only, not production runtime or Rust/WASM verification.
 - Prototype Readiness remains BLOCKED. No exchange account connection, credentials, orders, live trading, production deployment or risk-limit changes occurred.
