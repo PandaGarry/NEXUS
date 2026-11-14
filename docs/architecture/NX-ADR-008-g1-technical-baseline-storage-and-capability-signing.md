@@ -26,7 +26,7 @@ This ADR selects bounded G1 evaluation defaults. It does not select a cloud, dat
 | Canonical command bytes | RFC 8949 core deterministic CBOR with a strict NEXUS profile | Exact encoder/decoder libraries and versions; golden vectors; implementation |
 | Command digest | SHA-256 over a NEXUS command-domain separator and deterministic command bytes | Exact versioned digest envelope and test vectors |
 | Risk approval envelope | COSE_Sign1, fully specified COSE Ed25519 algorithm (-19, RFC 9864), protected algorithm and key identifier | Provider/HSM support, key custody, lifecycle, security review and jurisdictional qualification |
-| Persistence candidate | PostgreSQL 18, one logical primary, service-owned schemas and roles | Exact patch version, deployment, backup/restore, isolation and failure proof |
+| Persistence candidate | PostgreSQL 18.7 G1 evaluation patch, one logical primary, service-owned schemas and roles | Package provenance/digest, deployment, backup/restore, isolation and failure proof |
 | Transactions | Separate Risk, Command and Ledger local ACID transactions; no distributed transaction | Isolation/locking implementation and crash/concurrency evidence |
 | Messaging | Transactional outbox/inbox in the owning database; no broker initially | Add a broker only after measured fan-out/replay need |
 | Freshness/recovery | Source-specific EvidenceRequirementSet and FreshnessPolicy; no global TTL | Venue-specific thresholds, retention, clock uncertainty, RTO/RPO |
@@ -112,7 +112,7 @@ Approval consumption is atomic with the Command-owned command/outbox commit. The
 
 ### 5.1 Database candidate
 
-Select **PostgreSQL 18 as the leading G1 persistence evaluation target**, not as an installed or production-selected dependency.
+Select **PostgreSQL 18.7 as the exact G1 persistence evaluation patch**, not as an installed or production-selected dependency. It was the latest supported PostgreSQL 18 minor release on 2026-11-14. Requalify the latest supported 18.x patch before every later evaluation/deployment decision; do not freeze 18.7 as a permanent production version. See [NX-RESEARCH-012](../research/NX-RESEARCH-012-postgresql-18-7-g1-evaluation-qualification.md) for release-note caveats and G1 controls.
 
 Initial G1 topology:
 - one logical primary;
@@ -230,7 +230,7 @@ The identity provider and step-up mechanism are not selected. This baseline deli
 - CBOR decoder strictness, duplicate-key detection and resource limits need cross-language tests.
 - Exact Python/Rust libraries, versions, build provenance and licenses are not selected.
 - Ed25519 support, RFC 9864 alg=-19 interoperability, non-exportable key custody, issuer-scoped key lookup and ambiguous-kid rejection must be proven for the eventual provider.
-- PostgreSQL 18 exact patch, host, replication, backup and restore topology remain unselected.
+- PostgreSQL 18.7 is selected only as the G1 evaluation patch. Exact package/image provenance, host, replication, backup and restore topology remain unselected.
 - Transaction isolation, concurrency, ambiguous commit, crash/restart and actual egress-boundary fault tests remain mandatory.
 - Source-specific freshness thresholds, data retention, RTO/RPO and operator identity details remain open.
 - Venue/legal eligibility, accounting policy, numeric Risk limits and production/live authorization remain outside this ADR.
@@ -267,11 +267,13 @@ No runtime dependency, database, key, credential, venue, order or production dep
 - RFC 9864 — fully specified COSE Ed25519 algorithm (-19); deprecates polymorphic EdDSA (-8): https://www.rfc-editor.org/rfc/rfc9864.html
 - RFC 8032 — EdDSA / Ed25519: https://www.rfc-editor.org/rfc/rfc8032.html
 - NIST FIPS 186-5 — Digital Signature Standard: https://csrc.nist.gov/pubs/fips/186-5/final
-- PostgreSQL 18 transaction isolation: https://www.postgresql.org/docs/18/sql-set-transaction.html
+- PostgreSQL 18.7 release notes and migration caveats: https://www.postgresql.org/docs/18/release-18-7.html
+- PostgreSQL 18.7 transaction isolation: https://www.postgresql.org/docs/18/sql-set-transaction.html
 - PostgreSQL serialization failure handling: https://www.postgresql.org/docs/18/mvcc-serialization-failure-handling.html
 - PostgreSQL 18 application-level consistency and explicit locking: https://www.postgresql.org/docs/18/applevel-consistency.html
 - PostgreSQL 18 INSERT / ON CONFLICT uniqueness and concurrency: https://www.postgresql.org/docs/18/sql-insert.html
 - PostgreSQL high availability and synchronous replication: https://www.postgresql.org/docs/18/high-availability.html
 - PostgreSQL failover and old-primary fencing: https://www.postgresql.org/docs/18/warm-standby-failover.html
+- NX-RESEARCH-012 — PostgreSQL 18.7 G1 evaluation qualification: ../research/NX-RESEARCH-012-postgresql-18-7-g1-evaluation-qualification.md
 
 **Final disposition:** G1 technical baseline selected for design and qualification. Production technology selection, security/operational acceptance and all live capabilities remain gated.
