@@ -66,22 +66,21 @@ class HaltEgressGate:
     def request_halt(self, *, reason: str) -> int | None:
         """Commit halt epoch, or leave a pending request if the store is unavailable."""
         self._require_text(reason, "halt reason")
-        self.halt_reason = reason
-        if not self.store_available:
-            if self.phase is HaltPhase.ACTIVE:
-                self.phase = HaltPhase.HALT_PENDING
-                return None
+        # One active halt episode keeps its original cause. Repeated requests
+        # are idempotent; additional causes belong in separate audit events.
+        if self.phase is not HaltPhase.ACTIVE:
             if self.phase is HaltPhase.HALT_PENDING:
                 return None
-            # A previously committed/acknowledged epoch is not downgraded by
-            # a later store outage or duplicate halt request.
             return self.epoch
-        if self.phase is HaltPhase.ACTIVE:
-            if self.epoch >= MAX_HALT_EPOCH:
-                self.phase = HaltPhase.HALT_PENDING
-                return None
-            self.epoch += 1
-            self.phase = HaltPhase.HALTING
+        self.halt_reason = reason
+        if not self.store_available:
+            self.phase = HaltPhase.HALT_PENDING
+            return None
+        if self.epoch >= MAX_HALT_EPOCH:
+            self.phase = HaltPhase.HALT_PENDING
+            return None
+        self.epoch += 1
+        self.phase = HaltPhase.HALTING
         return self.epoch
 
     def commit_pending_halt(self) -> int:
