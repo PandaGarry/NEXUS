@@ -4,6 +4,14 @@
 
 ## Unreleased
 
+### Added — HEGC runtime privilege and restrictive RLS qualification (2026-11-14)
+
+- Expanded the disposable PostgreSQL 18.7 fixture to 11 tests with runtime-role privilege-escalation denials and restrictive RLS policy composition.
+- Exact code/test HEAD `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf` passed PostgreSQL workflow [#43629845855](https://github.com/PandaGarry/NEXUS/actions/runs/43629845855) (11/11) and Python workflow [#43629845861](https://github.com/PandaGarry/NEXUS/actions/runs/43629845861) (264 tests per Python 3.11/3.12/3.13 runtime; 792 executions).
+- Documentation-synchronized HEAD `e78f3b7c95939d13de18842567d56c4c314c3e6c` passed PostgreSQL [#43629988964](https://github.com/PandaGarry/NEXUS/actions/runs/43629988964) (11/11) and Python [#43629988969](https://github.com/PandaGarry/NEXUS/actions/runs/43629988969) (264 tests/runtime).
+- DBA/superuser authorization-catalog changes remain a separate unqualified control plane; production RLS, migration drift detection, crash/restore and Egress fencing are not implemented.
+
+
 ### Added — PostgreSQL 18.7 HEGC guard qualification harness (test-only; CI verified)
 
 - Added a disposable SQL fixture with separate HEGC/writer logins, NOLOGIN SECURITY DEFINER owners, root-first common guard acquisition, complete scope-set validation and canonical child lock ordering.
