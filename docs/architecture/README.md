@@ -57,3 +57,5 @@ ADR, подготовленные в обсуждении, не считаютс
 - [NX-REF-DOMAIN-009 — Operation-Specific Financial Rounding & Valuation Contract](NX-REF-DOMAIN-009-operation-specific-financial-rounding-valuation-contract.md) — Proposed design contract; enumerates rounding/valuation boundaries for tick/lot, fees, funding, P&L, margin, liquidation, FX and Ledger; venue/owner qualification remains blocked.
 
 - [NX-REF-DOMAIN-010 — Venue-Neutral Financial Math Golden Fixtures](NX-REF-DOMAIN-010-venue-neutral-financial-math-golden-fixtures.md) — Test-only hand-derived dimensional identities for spot, explicitly mapped linear/inverse contract arithmetic and partial-fill weighted-average math; non-authorizing and not venue/account qualification.
+
+- [NX-ARCH-004 — Rust Execution & Cross-Language Conformance Boundary](NX-ARCH-004-rust-execution-cross-language-conformance.md) — Proposed; defines candidate Rust domain/execution boundaries, language-neutral fixtures, adapter trust limits and egress requirements. Documentation only; no Rust workspace or production implementation.
