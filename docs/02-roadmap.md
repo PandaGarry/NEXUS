@@ -318,3 +318,6 @@ No module adoption or runtime integration is implied by this research increment.
 - [ ] Implement one safe module prototype only after G0D/G1 approval and explicit authorization; public registration and live capability remain separately gated.
 
 Publication is design progress, not implementation or security certification.
+
+
+**NX-ARCH-006 verification note (2026-11-14):** the documentation increment's exact branch head `e15e47f9512bc07a1f6534a4f41b0d27d7d42578` passed workflow [#43608583358](https://github.com/PandaGarry/NEXUS/actions/runs/43608583358): 237 existing Python reference-model tests on each of Python 3.11/3.12/3.13 (711 executions). This is regression evidence only; no module runtime, identity, storage isolation, secret boundary or network-egress behavior is tested. Subsequent documentation-only synchronization commits are not covered by that exact-head run.
