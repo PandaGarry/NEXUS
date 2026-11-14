@@ -7,7 +7,7 @@ This report assesses the Russian regulatory environment, domestic exchange candi
 
 ## Executive disposition
 
-Do not select a foreign venue or enable live trading yet. The owner is a Russian citizen residing in the Russian Federation; formal statutory residency, account-specific KYC, broker qualification and product eligibility must be evidenced separately.
+Do not select a foreign venue or enable live trading yet. This report evaluates an RF-resident natural-person scenario. Statutory residency, nationality/KYC, account-specific eligibility, broker qualification and product eligibility are separate variables that must be evidenced independently. No personal identifiers, account details or address information are recorded in this public research artifact.
 
 Three lanes remain distinct:
 
