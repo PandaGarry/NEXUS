@@ -4,6 +4,14 @@
 
 ## Unreleased
 
+### Added — Capability catalog and authorization contract model (2026-11-14)
+
+- Added NX-ARCH-009 defining platform-owned capability identities/versions, ownership and enforcement authority, typed scopes, data classifications and request-time decision semantics.
+- Proposed an initial first-party capability catalog and mapped module consumers to owner services, scope rules and negative tests.
+- Explicitly excluded protected financial mutation and Trusted Egress from optional-module grants; separated workload grants from commercial entitlements and user authorization.
+- Added revocation/cache/outage, audit/privacy requirements and 18 adversarial CAP scenarios.
+- Synchronized architecture index, checklist, status and roadmap. Design only; no executable schema, policy engine, grant, permission, module runtime or dependency created.
+
 ### Added — Module governance cross-architecture review (2026-11-14)
 
 - Added NX-ARCH-REVIEW-002, reviewing NX-ARCH-001/006/007/008, NX-SEC-001, NX-IF-001..005 and NX-OWNER-DECISIONS-001.
