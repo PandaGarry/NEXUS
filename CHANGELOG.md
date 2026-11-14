@@ -692,14 +692,14 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 
 ### Test-only halt / final Egress gate reference oracle — 2026-11-14
 
-- Added `HaltEgressGate` sequential state-machine oracle and 11 tests covering both logical commit orders, paused sender acknowledgement blocking, positive sender fencing, single-use attempt IDs, control-store outage and reconciliation after socket initiation.
+- Added `HaltEgressGate` sequential state-machine oracle and 12 tests covering both logical commit orders, paused sender acknowledgement blocking, positive sender fencing, single-use attempt IDs, control-store outage and reconciliation after socket initiation.
 - Linked the oracle to NX-IF-005 / NX-REF-EXEC-002 and documented its strict limitation: it does not prove database linearizability, durable state, real process/socket behavior or external network fencing.
 - Exact-head CI for the expanded test matrix remains pending.
 
 ### Halt / final Egress gate oracle CI — 2026-11-14
 
 - The test-only `HaltEgressGate` oracle and 11 new tests passed at SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1`, [workflow #43618215618](https://github.com/PandaGarry/NEXUS/actions/runs/43618215618).
-- Python 3.11/3.12/3.13 each passed 250 tests (750 successful executions); the egress-fencing package ran 24 tests/runtime.
+- Python 3.11/3.12/3.13 each passed 250 tests (750 successful executions); the egress-fencing package is expected to run 25 tests/runtime.
 - All logs were clean of test failures and Node.js 20 / `punycode` deprecation warnings.
 - This is sequential reference-model evidence only; no durable halt store, database lock proof, socket, process fence or network enforcement was tested.
 
