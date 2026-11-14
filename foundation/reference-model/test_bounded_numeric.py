@@ -99,15 +99,15 @@ class BoundedNumericTests(unittest.TestCase):
         self.assertEqual(context().subtract(d("100"), d("0.01")), d("99.99"))
 
     def test_multiply_rejects_scale_growth(self):
-        ctx = context(max_scale=8)
+        ctx = context(max_scale=7)
         with self.assertRaisesRegex(NumericLimitExceeded, "scale"):
             ctx.multiply(d("0.0001"), d("0.0001"))
 
     def test_multiply_rejects_intermediate_growth(self):
         ctx = context(max_intermediate_digits=16, max_rational_numerator_digits=8,
-                      max_rational_denominator_digits=8, max_coefficient_digits=8)
+                      max_rational_denominator_digits=8, max_coefficient_digits=12)
         with self.assertRaisesRegex(NumericLimitExceeded, "intermediate"):
-            ctx.multiply(d("99999999"), d("99999999"))
+            ctx.multiply(d("999999999"), d("999999999"))
 
     def test_divide_exact_within_budget(self):
         self.assertEqual(context().divide_exact(d("1"), d("3")), ExactRational(1, 3))
@@ -141,8 +141,8 @@ class BoundedNumericTests(unittest.TestCase):
             context(max_scale=4).quantize_rational(ExactRational(1, 3), 5, RoundingMode.DOWN)
 
     def test_rational_quantize_preflights_intermediate(self):
-        ctx = context(max_intermediate_digits=16, max_rational_numerator_digits=8,
-                      max_rational_denominator_digits=8, max_coefficient_digits=8)
+        ctx = context(max_scale=12, max_intermediate_digits=16, max_rational_numerator_digits=8,
+                      max_rational_denominator_digits=8, max_coefficient_digits=12)
         with self.assertRaisesRegex(NumericLimitExceeded, "intermediate"):
             ctx.quantize_rational(ExactRational(12345678, 7), 10, RoundingMode.DOWN)
 
