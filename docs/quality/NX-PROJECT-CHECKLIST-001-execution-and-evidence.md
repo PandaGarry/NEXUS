@@ -731,3 +731,16 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Do not claim this matrix verifies Rust, PostgreSQL, COSE signing, Trusted Egress, venue or live behavior.
 
 The exact-head workflow above verifies the current normalized documentation tree plus the existing Python reference suites. The last code change remains the numeric-wire resource hardening at b0fb99d; no production runtime has been introduced.
+
+## 18.29 Verified full stacked ancestry and current exact-head CI — 2026-11-14
+
+- [x] Verify the direct PR chain by exact base/head SHA equality: #1 → #2 → #3 → #4 → #5 → #6 → #7 → #9 → #10 → #11 → #12 → #13 → #14 → #16.
+- [x] Verify PR #8 is a parallel branch based on PR #7, not an ancestor of #16.
+- [x] Confirm all PRs in the direct chain are currently open, Draft and unmerged; PR #16's base is exactly PR #14's head.
+- [x] Verify current branch HEAD `9e9035033da77d958601cb6b69128e13e2551a0d` with [workflow #43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737).
+- [x] Confirm Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
+- [x] Inspect all three logs: no failures and no Node.js 20 / `punycode` deprecation warnings.
+- [ ] Preserve parent-first review/integration; do not retarget or merge PR #16 independently.
+- [ ] Split broad PR scope only if a clean dependency-aware decomposition can be created without corrupting the stacked ancestry.
+
+**Disposition:** PR ancestry is correct and intentionally stacked. PR #16 remains Draft/open/unmerged. CI is Python reference-only and does not close G0D/G1 or establish Rust, persistence, egress or live readiness.
