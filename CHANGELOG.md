@@ -7,7 +7,7 @@
 ### Added — Instrument specification reference slice (stacked Draft PR; CI verified)
 - Added immutable venue-neutral instrument snapshots with explicit identity, market/contract/lifecycle types, provenance and timestamps.
 - Added exact tick-size, quantity-step, min/max quantity and minimum-notional checks; UNKNOWN metadata fails closed and NOT_APPLICABLE must be explicit.
-- Added a synthetic fixture and 17 focused tests. Exact implementation HEAD `255ea79f3253b6ba7cbffeab0c5d2d030b4afa5c` passed GitHub Actions run [#43592403363](https://github.com/PandaGarry/NEXUS/actions/runs/43592403363) on Python 3.11–3.13. This evidence is code-test-only; derivative validation, spot quote-quantity semantics, venue adapters, registry persistence, freshness policy, contract formulas and production order authority are explicitly out of scope.
+- Added a synthetic fixture and 17 focused tests. Exact implementation HEAD `b8eee65facd3f62d351c803844005c41ddd245b5` passed GitHub Actions run [#43592403363](https://github.com/PandaGarry/NEXUS/actions/runs/43592403363) on Python 3.11–3.13. This evidence is code-test-only; derivative validation, spot quote-quantity semantics, venue adapters, registry persistence, freshness policy, contract formulas and production order authority are explicitly out of scope.
 
 
 ### Fixed — Serialized recovery ownership
