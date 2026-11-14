@@ -195,3 +195,11 @@
 - Identified partial-fill weighted-average aggregation as tested but inline-only; extraction to a reusable pure oracle remains follow-up work.
 - Clarified arbitrary-precision oracle versus explicit bounded numeric wrapper, candidate resource-limit mapping, and malformed API input versus mathematical inexactness.
 - Documentation correction only; no production numeric profile or Rust implementation added.
+
+
+### Added — typed partial-fill aggregation reference operation (2026-11-14)
+
+- Extracted weighted-average partial-fill arithmetic into `financial_aggregation.aggregate_partial_fills`.
+- Returns typed base-asset quantity, quote notional and an exact rational weighted-average price; does not silently round non-terminating results.
+- Updated golden-vector and seeded permutation/partition tests to use the named callable; added empty-input, dimension-mismatch and non-terminating-average tests.
+- Updated NX-ARCH-005 audit, reference README, checklist, roadmap and project status. This is a test-only arithmetic oracle, not venue fill validation or production financial policy. Normalized fixture/schema/runner work remains owner-review gated.
