@@ -724,11 +724,11 @@ Code/test HEAD `fbccb65e3c75cbaf7081f6d1f6e02095fd53d8ee` passed workflow #43620
 
 ## PostgreSQL 18.7 HEGC guard qualification harness — 2026-11-14
 
-Added a disposable test-only SQL fixture and GitHub Actions job for the proposed common HEGC/source-writer guard protocol. Exact code/test HEAD 614f22f3bbff879d91c040eb73511a90fe7d32ef passed [PostgreSQL workflow #43628329933](https://github.com/PandaGarry/NEXUS/actions/runs/43628329933): eight tests passed, including writer-first and HEGC-first races, scope-membership addition/deactivation under the common root guard, forced RLS, concurrent duplicate-attempt retry and lost post-COMMIT client-response recovery. Stale waiters receive SQLSTATE 40001 and proceed only after a whole-transaction retry. The fixture also checks EXECUTE-only service access, direct-DML denial, role isolation, search_path/temp-object spoofing, GUC identity spoofing and canonical scope-set validation.
+Added a disposable test-only SQL fixture and GitHub Actions job for the proposed common HEGC/source-writer guard protocol. Exact code/test HEAD b1b39dee3eddea3503d785fe54d9306013529eb9 passed [PostgreSQL workflow #43628823064](https://github.com/PandaGarry/NEXUS/actions/runs/43628823064): nine tests passed, including writer-first and HEGC-first races, scope-membership addition/deactivation, service-principal revocation under the common root guard, forced RLS, concurrent duplicate-attempt retry and lost post-COMMIT client-response recovery. Stale waiters receive SQLSTATE 40001 and proceed only after a whole-transaction retry. The fixture also checks EXECUTE-only service access, direct-DML denial, role isolation, search_path/temp-object spoofing, GUC identity spoofing and canonical scope-set validation.
 
-Python reference-model workflow [#43628329956](https://github.com/PandaGarry/NEXUS/actions/runs/43628329956) passed 13 suites / 264 tests on Python 3.11, 3.12 and 3.13 (792 executions). Both workflow logs were inspected; no test failures, ResourceWarnings or deprecation warnings remained.
+Python reference-model workflow [#43628823097](https://github.com/PandaGarry/NEXUS/actions/runs/43628823097) passed 13 suites / 264 tests on Python 3.11, 3.12 and 3.13 (792 executions). Both workflow logs were inspected; no test failures, ResourceWarnings or deprecation warnings remained.
 
-This is evidence for the fixture only. Production schema, service-principal mutation protocol, production RLS, full source-writer participation, crash/restore, full uncertain-COMMIT recovery, Egress process/socket fencing and production readiness remain open. No live execution is authorized.
+This is evidence for the fixture only. Production schema, out-of-band role/ACL mutation protocol, production RLS, full source-writer participation, crash/restore, full uncertain-COMMIT recovery, Egress process/socket fencing and production readiness remain open. No live execution is authorized.
 
 ## Public product communications — 2026-11-14
 

@@ -1012,11 +1012,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Exercise root-first guard acquisition, authoritative scope completeness and canonical child lock order.
 - [x] Prove writer-first and HEGC-first wait/retry behavior with real sessions and SQLSTATE 40001.
 - [x] Add guarded scope activation/deactivation; prove a concurrent membership addition serializes with gate and stale callers must retry with the expanded authoritative scope set.
+- [x] Add guarded service-principal activation/revocation; prove revocation serializes with gate, stale transactions receive 40001, and a full retry is denied after authority is revoked.
 - [x] Enable and FORCE RLS on fixture source table; exercise session_user/account-bound HEGC and writer policies.
 - [x] Verify runtime ACL closure, no direct DML/helper invocation, no SET ROLE, no search_path/temp-object or custom-GUC identity spoofing.
 - [x] Verify exact grant retry, changed-binding conflict, concurrent duplicate retry and lost post-COMMIT response recovery.
-- [x] Pass 8 PostgreSQL tests on exact code/test HEAD 614f22f3bbff879d91c040eb73511a90fe7d32ef, workflow #43628329933; Python workflow #43628329956 passed 264 tests per Python 3.11/3.12/3.13 runtime.
-- [ ] Guard service-principal/authorization-map changes and test their concurrency against gate and writers.
+- [x] Pass 9 PostgreSQL tests on exact code/test HEAD b1b39dee3eddea3503d785fe54d9306013529eb9, workflow #43628823064; Python workflow #43628823097 passed 264 tests per Python 3.11/3.12/3.13 runtime.
+- [ ] Qualify out-of-band role grants/revocations, ACL/default-privilege drift and every production authorization-catalog writer.
 - [ ] Expand RLS adversarial tests, policy composition, function overload/PUBLIC EXECUTE and role graph/catalog checks.
 - [ ] Qualify crash/restore, backup/PITR, failover and true uncertain-COMMIT recovery.
 - [ ] Pin PostgreSQL image digest/provenance and complete independent security review.

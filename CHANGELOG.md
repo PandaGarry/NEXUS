@@ -858,3 +858,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Defined concise, user-oriented public release notes and publication gates.
 - Kept internal engineering records separate from public updates; Telegram/MAX, VK and other community channels remain a later-stage launch item.
 - No public channel or production availability is implied.
+
+
+### Guarded service-principal revocation race qualification — 2026-11-14
+
+- Added a membership-admin-only SECURITY DEFINER entrypoint to activate/revoke HEGC and writer service-principal mappings under the same root-first guard.
+- Proved a concurrent revocation blocks a stale gate; the stale transaction receives SQLSTATE 40001 and, after full retry, fails closed with 42501. Self-revocation is rejected.
+- PostgreSQL workflow #43628823064 passed 9 tests on PostgreSQL 18.7. Python workflow #43628823097 passed 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions).
+- Out-of-band role/ACL changes and production authorization-catalog mutation paths remain unqualified.
+

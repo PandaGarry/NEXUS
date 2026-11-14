@@ -1449,15 +1449,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Validate complete active scope membership and canonical UUID-byte child order.
 - [x] Add a membership-administration entrypoint for scope activation/deactivation; it validates the complete pre-change set and acquires the common root/child guards before mutation.
 - [x] Prove concurrent scope addition vs gate: stale gate waits, receives SQLSTATE 40001, retries the full transaction with the expanded scope set and succeeds; deactivation invalidates the old set.
+- [x] Guard service-principal activation/revocation with the same root-first guard; prove revocation races force SQLSTATE 40001 and the stale gate is denied with 42501 after full retry. Reject self-revocation.
 - [x] Enable and FORCE RLS on the fixture source table; test session_user/account-bound HEGC SELECT and writer SELECT/UPDATE policies.
 - [x] Verify runtime ACL closure, no direct DML, no helper invocation, no SET ROLE, no search_path/temp-object or custom-GUC identity spoofing.
 - [x] Verify exact-attempt retry, changed-binding conflict, concurrent duplicate-attempt retry and lost post-COMMIT response recovery.
-- [x] Pass 8 tests on exact code/test HEAD 614f22f3bbff879d91c040eb73511a90fe7d32ef, [PostgreSQL workflow #43628329933](https://github.com/PandaGarry/NEXUS/actions/runs/43628329933).
-- [x] Pass Python reference-model workflow [#43628329956](https://github.com/PandaGarry/NEXUS/actions/runs/43628329956): 13 suites / 264 tests on Python 3.11, 3.12 and 3.13 (792 executions).
+- [x] Pass 9 tests on exact code/test HEAD b1b39dee3eddea3503d785fe54d9306013529eb9, [PostgreSQL workflow #43628823064](https://github.com/PandaGarry/NEXUS/actions/runs/43628823064).
+- [x] Pass Python reference-model workflow [#43628823097](https://github.com/PandaGarry/NEXUS/actions/runs/43628823097): 13 suites / 264 tests on Python 3.11, 3.12 and 3.13 (792 executions).
 - [x] Inspect both workflows' job logs; no test failures, ResourceWarnings or deprecation warnings.
 - [x] Re-run both workflows on documentation-synchronized HEAD 806832a2a15ea25376408c7d27cde409438451ce: [PostgreSQL #43628569042](https://github.com/PandaGarry/NEXUS/actions/runs/43628569042) passed 8/8; [Python #43628569028](https://github.com/PandaGarry/NEXUS/actions/runs/43628569028) passed 264 tests on each supported Python runtime.
 - [x] Investigate prior harness regressions #43621620302 and #43622000189; correct and verify subsequent exact code/test heads.
-- [ ] Guard service-principal and authorization-map mutations with a reviewed protocol; test their races against HEGC and source writers.
+- [ ] Qualify out-of-band role grants/revocations, ACL/default-privilege drift and every production authorization-catalog writer against the guard protocol.
 - [ ] Expand RLS adversarial matrix to policy composition, restrictive policies, owner/role edge cases and covert-channel analysis.
 - [ ] Test function overloads, PUBLIC/default privileges, ACL drift and role graph from catalogs.
 - [ ] Qualify crash/restore, backup/PITR, failover and true uncertain-COMMIT recovery.
