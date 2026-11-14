@@ -1077,3 +1077,17 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Use Python `hashlib.sha256` over deterministic JSONB catalog snapshot text instead of MD5.
 - [x] Verify exact code/test HEAD `d9c7bf5fddf68792ed565fecbcef83b73dab11a7`: PostgreSQL #43631854964 passed 12/12; Python #43631854995 passed 264/runtime on 3.11/3.12/3.13 (792 executions).
 - [ ] Continue production manifest signing, approval, immutable audit and deployment fail-closed design; fixture SHA-256 is not a production attestation.
+
+
+## Production authorization-catalog manifest lifecycle — NX-ARCH-REVIEW-009
+
+- [x] Define a bounded candidate manifest lifecycle: exact environment/database/migration binding, semantic object identities, explicit expected-absence rules and independent approval/signing/audit roles.
+- [x] Specify fail-closed signature/context/freshness validation, consistent catalog observation, exact comparison and external evidence custody.
+- [x] Define post-startup drift response, DBA/superuser emergency reconciliation and the separate active-session/process/network fencing requirement.
+- [x] Enumerate catalog coverage gaps beyond the disposable fixture, including extensions/languages, event triggers, cluster settings and external control-plane identity.
+- [ ] Approve the wire schema, deterministic-CBOR profile, trust roots, signer/key custody, approval threshold and immutable audit provider.
+- [ ] Implement and cross-language qualify the manifest generator/verifier and complete catalog coverage for the supported PostgreSQL version.
+- [ ] Prove concurrent-DDL snapshot consistency, deployment TOCTOU closure, post-startup drift detection, DBA control-plane governance and restore/PITR anti-rollback.
+- [ ] Complete independent security review and owner acceptance before any production gate is considered.
+
+**Disposition:** NX-ARCH-REVIEW-009 is design-only. The SHA-256 fixture fingerprint is not a signed production attestation or deployment control. G0D/G1 remain open; live trading remains NOT AUTHORIZED.
