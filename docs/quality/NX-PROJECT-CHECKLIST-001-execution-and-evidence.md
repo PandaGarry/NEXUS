@@ -277,7 +277,7 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [ ] Confirm qualified-investor status and T-Invest product/API eligibility using authenticated account evidence; no orders.
 - [ ] Confirm T-Invest Lab crypto service and API availability in writing.
 - [x] Add test-only NX-REF-VENUE-001 conformance evaluator and 28 fail-closed tests; exact-head CI run 43598506837 passed 210 tests/runtime on Python 3.11/3.12/3.13.
-- [x] Add NX-REF-VENUE-002 test-only dispatch/suspension race model and 21 tests; run 43598800464 passed 229 tests/runtime across Python 3.11/3.12/3.13.
+- [x] Add NX-REF-VENUE-002 test-only dispatch/suspension race model and 21 tests; run 43599182263 passed 231 tests/runtime across Python 3.11/3.12/3.13.
 - [ ] Design production evidence authentication/signing, trusted time, persistence, distributed revocation, cross-process egress fencing, reviewer roles and crash recovery before implementation.
 
 **Disposition:** FIRST VENUE BLOCKED. No venue selected, no account/API credentials connected, no orders/transfers/deposits/withdrawals, and no live trading authorized. All foreign venues remain RESEARCH_ONLY.
