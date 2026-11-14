@@ -1,0 +1,38 @@
+name: Reference model conformance
+
+on:
+  push:
+    branches:
+      - foundation/domain-kernel-reference-v0
+    paths:
+      - "foundation/reference-model/**"
+      - ".github/workflows/reference-model.yml"
+  pull_request:
+    paths:
+      - "foundation/reference-model/**"
+      - ".github/workflows/reference-model.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-reference-models:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Test exact-decimal oracle
+        working-directory: foundation/reference-model
+        run: python -m unittest -v
+      - name: Test execution-gateway reference slice
+        working-directory: foundation/reference-model/execution-gateway
+        run: python -m unittest -v
