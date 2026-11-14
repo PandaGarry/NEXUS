@@ -105,7 +105,7 @@ Each specification defines local recovery, but not the system-wide recovery barr
 
 ## 4. Proposed normative interface set
 
-The following contracts are required before implementation. WP-A now has a proposed design artifact; the remaining contracts are still to be designed:
+The following contracts are required before implementation. WP-A, WP-B and WP-C now have proposed design artifacts; WP-D and WP-E remain to be designed:
 
 1. **CanonicalTradeCommand v1** — proposed in [NX-IF-001](NX-IF-001-canonical-trade-command-risk-approval-contract.md); not accepted, implemented or conformance-tested.
 2. **StateEvidenceVector v1** — provenance, freshness, quality, watermarks and version lineage for every risk input.
@@ -113,7 +113,7 @@ The following contracts are required before implementation. WP-A now has a propo
 4. **RiskReservation v1** — proposed in [NX-IF-002](NX-IF-002-exposure-snapshot-risk-reservation-contract.md); durable lifecycle, atomic multi-scope capacity reservation, fencing, conservative expiry and evidence-based release. Not accepted or implemented.
 5. **RiskApprovalCapability v1** — signature over command digest, scope, spec/policy versions, exposure snapshot/reservation version, halt epoch, nonce, issue/expiry and one-time consumption.
 6. **ExecutionOutcomeEvent v1** — durable command/order/fill/cancel/reject/unknown transitions with native evidence and deduplication scope.
-7. **FinancialPostingEvent v1** — idempotent Ledger input linked to authoritative execution/account event evidence and posting-rule version.
+7. **ExecutionEvent / LedgerPosting v1** — proposed in [NX-IF-003](NX-IF-003-execution-event-ledger-posting-contract.md); canonical fill identity, durable outbox/inbox, atomic journal posting, corrections and projection watermark handoff. Not accepted, implemented or conformance-tested.
 8. **ReconciliationStatus v1** — per-scope watermarks, discrepancies, quarantine and explicit release evidence.
 9. **HaltState v1** — monotonic scoped halt generation and controlled resume protocol.
 
@@ -138,7 +138,7 @@ These are proposed design artifacts, not existing implemented schemas.
 |---|---|---|
 | WP-A Command & approval contracts | NX-IF-001 design draft exists | Owner/security decisions, canonicalization/digest selection, golden vectors and conformance evidence remain open |
 | WP-B Exposure & reservation | NX-IF-002 design draft published | Owner decisions, persistence/transaction design, schema conformance and concurrency/fault evidence remain open |
-| WP-C Execution ↔ Ledger | Durable event handoff, fill identity, posting idempotency | Event ownership, inbox/outbox contracts, replay and duplicate/correction tests |
+| WP-C Execution ↔ Ledger | [NX-IF-003](NX-IF-003-execution-event-ledger-posting-contract.md) design draft exists | Owner accounting decisions, schema/transaction selection, golden accounting fixtures, inbox/outbox conformance, replay and fault evidence remain open |
 | WP-D Freshness & recovery | Evidence vector, watermarks, quarantine, startup barrier | Per-scope state model, fault scenarios, explicit recovery gates |
 | WP-E Emergency operations | Halt/cancel/amend/reduce/close semantics | Venue capability matrix, operator authorization, race and failure tests |
 
@@ -157,11 +157,11 @@ No numeric risk limits are invented. UNCONFIGURED remains a hard block for live 
 
 ## 8. Review disposition and verification limits
 
-**Disposition: BLOCKED. WP-A (NX-IF-001) and WP-B (NX-IF-002) design drafts published; both require owner/security review and conformance evidence. WP-C through WP-E design closure remains outstanding.**
+**Disposition: BLOCKED. WP-A (NX-IF-001), WP-B (NX-IF-002) and WP-C (NX-IF-003) design drafts published; all require owner/security/accounting review and conformance evidence. WP-D and WP-E design closure remains outstanding.**
 
 Verified in this review:
 - all reviewed source documents were fetched from the named branch;
-- the six specifications and five ADRs exist in the branch;
+- the six specifications, five ADRs and proposed NX-IF-001..003 contracts exist in the branch;
 - the latest known commit referenced for this review was fetched and its message/diff inspected.
 
 Not verified:
