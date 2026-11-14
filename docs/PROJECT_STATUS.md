@@ -1,64 +1,58 @@
 # NEXUS — project status and evidence register
 
 **Last reviewed:** 2026-11-15  
-**Status vocabulary:** Proposed / In Progress / Verified / Blocked / Deferred
+**Default branch:** `main`  
+**Project stage:** early engineering / research prototype; not production  
+**Status vocabulary:** `IN_PROGRESS`, `TESTED`, `ACCEPTED`, `BLOCKED`
 
-This is a dated evidence snapshot. Every status is scoped to the cited commit, CI run or source. A passing test or public connection is not production certification.
+A status is valid only for the exact commit, test, artifact or dated source linked in its evidence. `TESTED` is not `ACCEPTED`; unit CI is not live-exchange proof; a public endpoint is not account eligibility.
 
-## Repository / integration status
+## Current decision summary
 
-| Item | Status | Evidence / limitation (checked 2026-11-15) |
+| Workstream | Status | Current truth / evidence |
 |---|---|---|
-| Public repository and review access | Verified | [Repository](https://github.com/PandaGarry/NEXUS); default branch `main` |
-| Main branch project overview | In Progress | [PR #20](https://github.com/PandaGarry/NEXUS/pull/20) remains open and unmerged; review-hub proposal is not on `main` (checked 2026-11-15) |
-| Legacy architecture/documentation chain | In Progress | [Open PR list](https://github.com/PandaGarry/NEXUS/pulls); each PR must be checked for current base/head before relying on it |
-| Independent recorder spike | In Progress | [PR #19](https://github.com/PandaGarry/NEXUS/pull/19), head `1e33e34539e4a4dc9a09e890d9edd152a8e8a06b`, based directly on `main`, Draft/open |
-| Recorder unit CI | Verified | [Run 43643265811](https://github.com/PandaGarry/NEXUS/actions/runs/43643265811) passed Python 3.11/3.12/3.13 on code revision `12ef58ad7c4b50210d9fa0e9f310628a61068504`; later PR #19 commits in this review changed documentation only |
-| Live public exchange capture | Verified — first 10-minute smoke only | [Run #10](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666); artifact [14131465205](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666/artifacts/14131465205), expires 2026-11-28. It is not M1 or production certification |
-| Published frame accounting | Verified / reconciled | Original artifact #10 independently classified 2026-11-15: 8,149 trades + 2,998 book deltas + 29 pong replies + 1 subscription acknowledgement = 11,177; zero malformed/non-JSON/other records, zero SHA-256 mismatches |
-| Live order-book reconstruction | Implemented in prototype; live proof pending | [PR #19](https://github.com/PandaGarry/NEXUS/pull/19) now fetches and journals the public REST full-depth snapshot, bridges buffered WS deltas at exact `u` + `seq`, invalidates on reset/gap/disconnect and supports journal replay. [Run 43642980172](https://github.com/PandaGarry/NEXUS/actions/runs/43642980172) was cancelled before capture completed; future live smoke is gated pending Bybit API terms review; M2 remains NOT ACCEPTED |
-| M2 acceptance | In progress / not accepted | [M2 acceptance checklist](https://github.com/PandaGarry/NEXUS/blob/prototype/bybit-public-data-recorder-python-v0/experiments/bybit-public-recorder/M2-ACCEPTANCE.md); implementation exists, but live synchronized-book proof, reconnect/fault injection and acceptance evidence remain open; target 2026-11-28 |
-| Historical L2 coverage | Partially documented; archive validation open | OKX official portal advertises high-resolution L2 from 2023-03; no sample archive has yet been downloaded/validated. Bybit historical L2 coverage remains unverified by NEXUS |
-| Alpha profitability | Unknown / not claimed | [HYP-001 preregistration](https://github.com/PandaGarry/NEXUS/blob/prototype/bybit-public-data-recorder-python-v0/experiments/bybit-public-recorder/NX-EXP-001-alpha-trade-flow-imbalance.md); no alpha result exists |
-| Production exchange selection | Blocked | Exact owner/account/product eligibility and venue selection remain unresolved; public endpoint reachability is not eligibility |
-| Live order execution | Not implemented / not authorized | PR #19 contains no private API, credentials, order dispatch or live trading |
+| Public project landing page | IN_PROGRESS | PR [#20](https://github.com/PandaGarry/NEXUS/pull/20) contains the review hub and README replacement; not merged |
+| Bybit public recorder | IN_PROGRESS | PR [#19](https://github.com/PandaGarry/NEXUS/pull/19), Python research prototype only; no private API, credentials or orders |
+| Recorder unit/integration tests | TESTED | [CI 43644001404](https://github.com/PandaGarry/NEXUS/actions/runs/43644001404) passed Python 3.11/3.12/3.13 at code head `1afaa21953aa369d634dd2c224f2495709bbdfd6`; includes mocked WS → REST snapshot → LIVE_VALID → replay. This is mocked integration, not exchange-live proof |
+| First public-feed capture | TESTED | [Run 43637091666](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666): 11,177 records in ~10 minutes; 8,149 trades + 2,998 book deltas + 29 pong + 1 subscription ACK. All records classified; no malformed lines or SHA-256 mismatches |
+| Live synchronized order book / M2 | IN_PROGRESS | Snapshot bridge, journaling, synchronizer and replay implemented in #19. No successful live synchronized-book evidence yet; M2 is NOT ACCEPTED |
+| Bybit data-use gate | BLOCKED | Terms interpretation for unauthenticated public-feed capture and retention is unresolved. Automated live smoke remains gated by `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true`. Raw frames stay private |
+| HYP-001 research | IN_PROGRESS | Confirmatory primary is frozen in [NX-EXP-001](https://github.com/PandaGarry/NEXUS/blob/prototype/bybit-public-data-recorder-python-v0/experiments/bybit-public-recorder/NX-EXP-001-alpha-trade-flow-imbalance.md); no profitability result is claimed |
+| Second venue adapter | BLOCKED | Protocol/terms research may continue; implementation waits until Bybit M2 is accepted |
+| Venue/account selection | BLOCKED | No exchange/product/account eligibility is selected or inferred |
+| Risk / execution runtime | BLOCKED | Design/reference models are not production Risk Engine, Execution Gateway or order dispatch |
+| Live trading | BLOCKED | Not implemented and not authorized |
 
-## Current engineering evidence
+## Active work and next sequence
 
-### PR #19 — public-data recorder spike
+1. **Keep #19 and #20 as the only primary active PRs.** Review #20 first as the public documentation landing page; reconcile its README with #19 before integration. No automatic merge.
+2. **Continue M2 in parallel with bounded documentation cleanup.** Do not create a new audit phase that blocks engineering.
+3. **Close the Bybit terms question** before another live capture or raw-data publication. Do not treat technical reachability as permission.
+4. **Strengthen M2 evidence:** independent protocol review; controlled disconnect/reconnect; injected `u=1` and update-ID gap; replay of a real permitted session; compare a fresh REST snapshot with the local book over a defined observation window and documented tolerance.
+5. **Keep research venue-neutral.** Kraken Spot is a protocol contrast; OKX is a historical-L2 research candidate but its personal/non-commercial restrictions make it unsuitable to assume as a future commercial data source. Evaluate commercial data licensing as a separate matrix dimension.
+6. **After M2 acceptance**, implement one materially different second adapter (candidate selected from evidence and eligibility), then define only the shared contracts justified by both.
 
-- Code and tests are in [PR #19](https://github.com/PandaGarry/NEXUS/pull/19), current head `0f2de4fa8a57b3296d3701e3a0f0ff2d7a79d66b`.
-- [Unit CI run 43643265811](https://github.com/PandaGarry/NEXUS/actions/runs/43643265811) passed Python 3.11, 3.12 and 3.13 on code revision `12ef58ad7c4b50210d9fa0e9f310628a61068504`; the subsequent PR #19 commits in the current head changed documentation only.
-- [Live smoke run 43637091666](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666) captured 11,177 journal records over approximately 10 minutes. Exact classification: 8,149 trade-topic + 2,998 orderbook-topic + 29 pong replies (`op=ping`, `ret_msg=pong`) + 1 subscription acknowledgement = 11,177. The count discrepancy is closed.
-- The prior artifact inspection reported 11,177 valid JSONL lines, no malformed lines, no missing SHA-256 values and no digest mismatches. Integrity and frame classification are separate checks.
-- Artifact [14131465205](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666/artifacts/14131465205) expires 2026-11-28. The ZIP was downloaded into the current working session for inspection, but a user-controlled durable private copy is still required. Do not publish raw exchange frames until terms and redistribution rights are reviewed.
-- The first full-depth orderbook messages were `type=delta`. The live CLI still does not fetch REST snapshots or expose a synchronized book.
-- GitHub-hosted runner region is suitable for public protocol reachability/capture checks only. Its timing is not a production latency benchmark.
-- SHA-256 stored beside a frame detects accidental corruption relative to the stored digest; it is not tamper-proof evidence.
+## Evidence snapshot
 
-### M2 — next engineering gate
+- First capture artifact [14131465205](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666/artifacts/14131465205) expires **2026-11-28**. The original artifact has been inspected in this workstream, but a durable private copy under the owner's control is still required. Do not assume a temporary inspection copy is preserved.
+- Recorder CI [43644001404](https://github.com/PandaGarry/NEXUS/actions/runs/43644001404) is the current cited passing test evidence for #19; verify the latest branch head and rerun CI after code changes.
+- Cancelled live run [43642980172](https://github.com/PandaGarry/NEXUS/actions/runs/43642980172) is not live proof.
+- Hosted GitHub runner timing is not a production latency benchmark.
+- SHA-256 stored beside a frame detects accidental corruption relative to that digest; it is not tamper-proof evidence.
 
-- The exact checklist is [M2-ACCEPTANCE.md](https://github.com/PandaGarry/NEXUS/blob/prototype/bybit-public-data-recorder-python-v0/experiments/bybit-public-recorder/M2-ACCEPTANCE.md). REST snapshot fetch, validation, journal, live synchronizer and deterministic replay are implemented; unit CI passed all three Python versions. Live proof, fault injection and reconnect acceptance remain open.
-- Official Bybit contract: [full-depth WebSocket](https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob) is delta-only and requires [full-depth REST snapshot](https://bybit-exchange.github.io/docs/v5/market/full-ob); the bridge must align exact `seq` and `u`.
-- Required fail-closed cases include update-ID gap, `u=1`, disconnect/reconnect, malformed event, wrong symbol, crossed book and buffer overflow.
-- No downstream consumer may see a valid book until the REST snapshot and buffered deltas are synchronized.
-- Bybit API Terms (updated 2026-10-20) restrict benchmarking, repackaging/resale and commercial exploitation; Section 2.3 API-key applicability to unauthenticated public endpoints needs clarification. Raw data remain private and future live smoke is gated by `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true`.
+## PR consolidation policy
 
-### Research
+- Target: normally two active PRs — one integration/implementation PR and one independent docs/research PR. A third is allowed only for a genuinely independent urgent change.
+- Stacked PRs are not merged or retargeted out of order. First map each branch's base, head, unique diff and dependencies.
+- For every old PR, choose exactly one disposition: `integrate`, `cherry-pick specific assets`, `superseded/close`, or `defer with reason`.
+- Preserve valuable tests/specifications before closing a branch. Do not merge a large architecture chain merely to reduce the PR count.
+- No merge, branch deletion, force-push or default-branch change without explicit owner approval.
 
-- HYP-001 primary configuration is fixed: 5-second notional imbalance, absolute threshold 0.20, 3-second horizon. The remaining 17 combinations are exploratory and require Holm–Bonferroni correction for grid-wide inference.
-- The candidate instrument/venue universe is registered in [RESEARCH-UNIVERSE.md](https://github.com/PandaGarry/NEXUS/blob/prototype/bybit-public-data-recorder-python-v0/experiments/bybit-public-recorder/RESEARCH-UNIVERSE.md), separately from the frozen confirmatory primary. Kraken Spot has historical Time & Sales through 2026-09-30 but no L2 evidence; OKX advertises tick trades since 2021-09 and high-resolution L2 since 2023-03; Binance publishes raw trades/aggTrades but only coarse percentage-band `bookDepth`, and its dataset terms prohibit live proprietary execution. OKX archive samples, historical side semantics, account eligibility and restrictive personal-use terms still require validation.
-- No positive alpha is claimed. Historical trade archives and any historical L2 coverage must be inspected before deciding what can be concluded.
+## Documentation and evidence rules
 
-## Immediate priorities
-
-1. Preserve a user-controlled private copy of artifact #10 before its 2026-11-28 expiry; the count discrepancy is already resolved.
-2. Resolve the Bybit API terms gate, then run an approved integrated M2 smoke and demonstrate disconnect/reconnect, injected `u=1` and update-ID gap recovery.
-3. Continue bounded Kraken Spot protocol/terms research, including exact CRC32 string construction, the top-10-only validation boundary and the historical Time & Sales terms; defer a second recorder until Bybit M2 is accepted.
-4. Define the HYP-001 instrument/venue research universe without changing its frozen primary configuration.
-5. Only after two materially different adapters are actually examined, define the smallest shared market-data contracts.
-6. Keep venue/account selection blocked until exact product and eligibility are verified.
-
-## Evidence discipline
-
-A check mark requires an artifact, test result, official source, review or explicit owner decision. Every status must include a checked date and a link to its proof. A document draft is not an accepted architecture decision. A passing unit test is not a live protocol test. A public feed connection is not proof of account eligibility.
+- Update this file in the same PR as any material change to code, tests, architecture, scope, status, risk or milestone.
+- Every status row has a date and evidence link. If proof is missing, keep `IN_PROGRESS` or `BLOCKED`.
+- Keep detailed acceptance checklists next to the relevant work package; do not duplicate them here.
+- Record durable architecture decisions in [ADR index](ADR_INDEX.md); record threats and mitigations in [risk register](RISK_REGISTER.md).
+- Every PR description states purpose, scope, tests/evidence, limitations, docs updated, remaining work and whether it changes behavior.
+- Review this register at each PR update and before any merge/release. Never silently move a target date or promote a status.
