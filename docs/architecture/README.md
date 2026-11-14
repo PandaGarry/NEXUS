@@ -105,3 +105,7 @@ See [NX-ARCH-008](NX-ARCH-008-module-registry-admission-capability-governance.md
 - [NX-ARCH-REVIEW-005 — Revocation, Freshness & Control-Plane Outage Objectives](NX-ARCH-REVIEW-005-revocation-freshness-outage-objectives.md) — Proposed measurable authorization freshness/revocation profiles, in-flight cancellation, outage matrix, source-specific freshness and halt/egress measurement. All numeric targets are candidates only; OD-10/12 and owner/security acceptance remain open.
 
 - **NX-ARCH-REVIEW-005 exact-head CI:** `97a1819527bf6b1973793b12a084ef8cd0dee776` passed workflow [#43613493976](https://github.com/PandaGarry/NEXUS/actions/runs/43613493976), 13 Python reference-model suites / 237 tests on each of Python 3.11/3.12/3.13 (711 executions). This does not test the proposed revocation/freshness objectives or runtime isolation.
+
+### G1 CBOR / COSE implementation qualification — NX-RESEARCH-011
+
+See [NX-RESEARCH-011](../research/NX-RESEARCH-011-cbor-cose-library-qualification.md). Rust `cbor2` is a candidate deterministic encoder/raw-value library but is not a strict ingress decoder by itself; `cbor-core` has profile/API caveats; `coset` is a candidate COSE structure layer with custom crypto; `cose2`'s bundled Ed25519 provider uses deprecated alg=-8. No crate is approved or installed; exact byte-level and cross-language qualification remains a G0D/G1 gate.
