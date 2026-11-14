@@ -257,3 +257,11 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - Push run [#43596630780](https://github.com/PandaGarry/NEXUS/actions/runs/43596630780) passed exact commit `af7949f183389c25fa6ce5c4ac3648c1dd4ae851` on Python 3.11/3.12/3.13.
 - Each runtime: 179 tests across 11 isolated suites, including 7 new financial math fixture tests.
 - All three jobs completed successfully. This is test-only Python reference evidence; a fresh run on the final PR head is required after documentation close-out.
+
+### 15.2 Expanded deterministic property evidence
+
+- [x] Add 250 seeded spot-notional products checked against `fractions.Fraction`.
+- [x] Add 200 seeded partial-fill permutation/partition invariance cases.
+- [x] Add 200 seeded inverse exposure identity cases.
+- [x] GitHub Actions run [#43596851904](https://github.com/PandaGarry/NEXUS/actions/runs/43596851904) passed exact code/test commit `0f0b44e927aacf67d6f7a5678b160b3e3c6088e0`: 182 tests per runtime on Python 3.11/3.12/3.13; all three jobs successful.
+- [ ] Cross-language conformance remains deferred until production language/runtime and resource limits are approved.
