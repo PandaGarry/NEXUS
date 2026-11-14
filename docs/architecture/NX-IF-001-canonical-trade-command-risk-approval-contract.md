@@ -148,13 +148,13 @@ Before hashing:
 7. Include schema ID and version in the canonical bytes.
 8. Exclude transport headers, signatures, mutable delivery attempts and non-semantic tracing metadata only if the schema explicitly identifies them as outside the command payload. All execution-affecting fields remain included.
 
-The selected canonical serialization standard/library is an implementation decision. It MUST be pinned by version and backed by cross-language test vectors before implementation. Do not assume ordinary JSON serialization is canonical.
+G1 canonical-byte baseline is selected in NX-ADR-008: RFC 8949 core deterministic CBOR under the strict NEXUS profile. The exact encoder/decoder library and version remain an implementation qualification item and MUST be pinned and backed by cross-language golden vectors. Ordinary JSON serialization is not canonical.
 
 ### 5.2 Digest
 
 `command_digest = HASH(domain_separator || canonical_command_bytes)`
 
-The domain separator MUST be unique to NEXUS canonical trade commands and include the major schema version. The hash algorithm is an owner/security architecture decision; it must be collision-resistant and pinned before production.
+The domain separator MUST be unique to NEXUS canonical trade commands and include the major schema version. G1 digest baseline is SHA-256 with a fixed NEXUS command-domain separator. The exact versioned digest envelope and cross-language vectors remain mandatory before implementation; production security review remains open.
 
 The digest is calculated over the complete immutable CanonicalTradeCommand payload. Approval metadata is not embedded into the command digest, avoiding a circular dependency.
 
@@ -306,7 +306,7 @@ Reason codes are machine-stable; human-readable explanations may evolve independ
 - AI and Strategy have no permission to issue or consume approval capabilities.
 - Operator-originated commands require authenticated actor identity, role and audit context; privileged scopes may require dual control per owner policy.
 
-Cryptographic algorithm, signature envelope standard, key custody provider and rotation policy remain explicit owner/security decisions. No custom cryptography.
+G1 capability-signature baseline is COSE_Sign1 with EdDSA / Ed25519, selected in NX-ADR-008. Exact vetted library/version, non-exportable key custody provider, key ceremony, rotation/revocation operations and jurisdictional/security approval remain open. No custom cryptography.
 
 ## 12. Contract state transitions
 
@@ -374,8 +374,8 @@ Golden vectors MUST include canonical input, expected canonical bytes, digest al
 ## 16. Open owner decisions
 
 1. Initial venue/account mode and supported command types for v1.
-2. Cryptographic signature envelope and algorithm, key custody and rotation.
-3. Canonical serialization standard/library and digest algorithm.
+2. Exact COSE/Ed25519 implementation library, non-exportable key custody provider, key ceremony and rotation/revocation operations.
+3. Exact deterministic-CBOR implementation/library version and cross-language golden vectors for the selected SHA-256 domain-separated digest.
 4. Maximum approval lifetime and clock-skew tolerance.
 5. Internal account-reference and operator identity model.
 6. Whether v1 supports only one venue/account per command (recommended) or multi-leg atomic intents (defer unless required).
@@ -417,3 +417,9 @@ RiskApprovalCapability MUST reference the immutable StateEvidenceVector ID/versi
 ## WP-E emergency command authorization
 
 The command types already enumerated by this contract MUST use the operation-class policy and emergency authorization rules in [NX-IF-005](NX-IF-005-emergency-operations-halt-risk-reduction-contract.md). CANCEL, CLOSE, REDUCE_ONLY and CANCEL_ALL are not implicit bypasses and are not presumed risk-reducing. Every emergency command remains a separate immutable CanonicalTradeCommand bound to its exact payload digest, account/scope, current halt epoch, target-set digest where applicable, instrument-spec version, StateEvidenceVector, RecoveryBarrier and policy. A halt activation is a control-plane action and does not mint an order approval. Resume requires privileged authorization and cannot be represented as a trade command.
+
+
+## G1 technical baseline alignment — NX-ADR-008
+
+The delegated G1 baseline is RFC 8949 restricted deterministic CBOR for canonical command bytes, SHA-256 with a fixed NEXUS command-domain separator for the digest, and COSE_Sign1 EdDSA/Ed25519 for RiskApprovalCapability. This is a technical design selection only. It does not select a key custody provider, authorize a signer/runtime, or close production Security/jurisdictional review. See [NX-ADR-008](NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md).
+
