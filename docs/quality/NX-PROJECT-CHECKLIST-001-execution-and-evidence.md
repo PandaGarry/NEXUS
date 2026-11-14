@@ -791,3 +791,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Verify selected COSE libraries preserve raw protected-header bytes and reject untrusted header/claim misuse without network key discovery.
 
 **Disposition:** protocol trust boundary tightened in NX-ADR-008 and NX-RESEARCH-011. No COSE implementation, key or runtime added; G0D/OD-08 remain open.
+
+## 18.34 COSE_Sign1 exact wire profile — 2026-11-14
+
+- [x] Pin the NEXUS COSE object to an untagged, embedded-payload, four-element COSE_Sign1 array.
+- [x] Require exactly two protected-header labels: alg (1) = -19 and non-empty bounded byte-string kid (4); unprotected map is empty.
+- [x] Require capability claims as one NEXUS restricted deterministic-CBOR map inside payload bstr; validate original bytes before typed claim use.
+- [x] Preserve the received protected-header bstr and construct Sig_structure using RFC 9052 §9 deterministic encoding.
+- [x] Reject tag 18, detached/null payload, extra protected parameters, non-empty unprotected headers, duplicate/colliding labels and alternate COSE message types.
+- [ ] Add byte-exact cross-language vectors for protected-header bstr, payload bstr, Sig_structure, Ed25519 signature and all rejection cases.
+- [ ] Prove selected library preserves original protected bytes and does not silently accept or normalize profile violations.
+
+**Disposition:** exact wire profile is now specified in NX-ADR-008 / NX-RESEARCH-011. No library or cryptographic runtime approved; G0D/OD-08 remain open.
