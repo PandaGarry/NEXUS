@@ -166,3 +166,10 @@ The following tests are required before implementation acceptance:
 - [PostgreSQL 18 — System Information Functions](https://www.postgresql.org/docs/18/functions-info.html): distinction between session_user and current_user, including SECURITY DEFINER behavior.
 
 These references support the test-fixture design only; they do not establish production qualification.
+
+
+### 5.2.1 Disposable catalog-drift regression evidence — 2026-11-14
+
+The PostgreSQL 18.7 test fixture now fingerprints a bounded `nexus_*` catalog surface covering role attributes/memberships, schema and relation ownership/ACLs, RLS enable/force flags, function identity/owner/SECURITY mode/configuration/ACLs, policy definitions/roles and default privileges. Regression tests mutate and restore a runtime role's CREATEROLE attribute, PUBLIC EXECUTE on the HEGC entrypoint, SECURITY DEFINER/INVOKER mode and a trusted-schema function inventory entry. Exact code/test HEAD `f815c351a709ff169996e3f0e451da73651a142c` passed PostgreSQL 18.7 workflow [#43631662692](https://github.com/PandaGarry/NEXUS) (12/12) and Python workflow [#43631662864](https://github.com/PandaGarry/NEXUS) (264 tests on each of 3.11/3.12/3.13; 792 executions).
+
+This demonstrates only that the disposable fixture's bounded catalog fingerprint detects these deliberately introduced mutations and recognizes exact restoration. It is not yet an approved production manifest, signed attestation, deployment gate or continuous drift monitor. Production catalog coverage, canonical manifest format, signing/trust roots, version-controlled approval, independent storage/audit custody, fail-closed deployment comparison, DBA/migration change orchestration, emergency reconciliation and live-session termination remain unimplemented and OPEN.
