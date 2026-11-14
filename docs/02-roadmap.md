@@ -4,7 +4,7 @@
 
 ## Phase 0 — Foundation Audit (In Progress)
 - [ ] Зафиксировать baseline commit и структуру Tradoor.
-- [ ] Завершить аудит exchange adapters и capabilities matrix.
+- [ ] Завершить аудит exchange adapters и capabilities matrix. (Initial Tradoor source pass recorded in NX-RESEARCH-002; private/funding and full instrument rules remain UNKNOWN.)
 - [ ] Проверить ingestion, recorder, backfill, migrations и persistence.
 - [ ] Проверить тесты, CI, dependency tree и лицензии.
 - [ ] Проверить auth/session/security и построить threat model.
