@@ -96,6 +96,30 @@ A snapshot MUST distinguish at least COMPLETE, DEGRADED, STALE, INCOMPLETE, UNSY
 
 A snapshot is immutable once published. Corrections create a new version with lineage to the prior snapshot and the correction evidence. Versions MUST be monotonic within a risk scope; stale writers MUST be fenced out.
 
+### 3.4 ValuationInputVector — immutable valuation evidence
+
+A Risk evaluation MUST reference an immutable ValuationInputVector whenever the selected policy requires mark, index, FX, fee, collateral or other external valuation inputs. The vector is a versioned evidence object, not a mutable "latest price" pointer and not an exposure bucket.
+
+Minimum logical identity and provenance:
+
+- valuation_input_vector_id and monotonic version;
+- risk_scope_id, instrument identity and immutable instrument_spec_version where applicable;
+- calculation/model version and policy_bundle_id/version;
+- creation/as-of time and vector completeness/quality status;
+- source-entry set, each bound to source owner/domain and source snapshot ID/version/digest;
+- exact source value with explicit currency/unit and exact decimal/rational representation; binary floating point is forbidden for financial values;
+- source event time, receive time, source sequence/cursor/watermark and clock-quality/uncertainty evidence;
+- source-specific FreshnessPolicy ID/version and correction/revocation lineage;
+- opaque evidence references/digests, not copied raw venue payloads or credentials.
+
+Source entries cover only the dimensions required by the applicable policy, such as mark price, index price, FX conversion, fee schedule and collateral valuation. Missing, contradictory, incomplete, stale, corrected/revoked or unbounded inputs remain UNKNOWN/INVALID; they MUST NOT be replaced with zero or an assumed default.
+
+The vector is immutable after publication. A new market/index/FX/fee/collateral observation creates a new vector version; it does not mutate the vector already referenced by a reservation or approval. A correction/revocation marks the prior vector invalid through an auditable source-owner event and requires Risk re-evaluation. A newer monotonic tick alone does not invalidate an older vector while that vector remains within its source-specific freshness, clock-uncertainty, quality and policy-defined drift bounds; a policy may explicitly require the latest version.
+
+ExposureSnapshot, RiskReservation and RiskApprovalCapability MUST bind to the same valuation_input_vector_id/version. The capability also binds to the StateEvidenceVector/FreshnessPolicy evidence used to assess its sources. Trusted Egress re-reads the exact immutable vector and validates it against the signed references and current source-specific policy immediately before send. Egress MUST NOT substitute a newer vector or rebind an approval. If the bound vector is no longer valid, Egress refuses the send and Risk must establish a safe new evaluation/reservation/approval path.
+
+This is a semantic contract only. The physical schema, storage owner, wire encoding and exact source adapters remain unselected; no distributed transaction with external market-data or valuation sources is implied.
+
 ## 4. Exposure bucket ownership
 
 ### 4.1 Exclusive bucket set
