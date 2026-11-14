@@ -1281,9 +1281,9 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Test consume-store outage fails closed and does not authorize socket initiation.
 - [x] Test already-consumed grant across halt/store outage; socket initiation must be observed or sender fenced before HALTED acknowledgement.
 - [x] Fix stale test expectations exposed by workflow #43618969753.
-- [x] Verify exact code/test HEAD fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8 on [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619080626).
-- [x] Pass 13 isolated suites / 262 tests on each of Python 3.11, 3.12 and 3.13 (786 successful executions total).
-- [x] Confirm egress-fencing passes 36 tests, including 23 HaltEgressGate cases; inspect all three job logs.
+- [x] Verify exact code/test HEAD 9d618131ac9951e23c589491b2fb1039f6dc1d86 on [workflow #43619080626](https://github.com/PandaGarry/NEXUS/actions/runs/43619080626).
+- [x] Pass 13 isolated suites / 260 tests on each of Python 3.11, 3.12 and 3.13 (780 successful executions total).
+- [x] Confirm egress-fencing passes 34 tests, including 21 HaltEgressGate cases; inspect all three job logs.
 - [ ] Prove ambiguous consume status resolution, durable grant idempotency and Egress process-incarnation binding against the HEGC service/database.
 - [ ] Prove PostgreSQL SSI plus an enforced shared scope-generation/guard gives the required real-time commit-order semantics; SERIALIZABLE alone is insufficient evidence.
 - [ ] Prove actual socket initiation, process/host/network fencing and venue reconciliation.
