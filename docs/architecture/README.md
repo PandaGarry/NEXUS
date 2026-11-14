@@ -16,7 +16,7 @@
 | [NX-SEC-001](../security/NX-SEC-001-threat-model-credential-isolation.md) | Threat Model / Credential Isolation | Proposed |
 | [NX-ARCH-001](NX-ARCH-001-target-architecture.md) | Target Architecture & Deployment Topology | Proposed |
 | [NX-ARCH-003](NX-ARCH-003-domain-kernel-numeric-model.md) | Domain Kernel & Exact Numeric Model | Proposed |
-| [NX-ARCH-006](NX-ARCH-006-modular-product-boundaries-and-trust-isolation.md) | Modular Product Boundaries, Extension Contracts & Trust Isolation | Proposed — design only; no runtime module or public registration approved |
+| [NX-ARCH-006](NX-ARCH-006-modular-product-boundaries-and-trust-isolation.md) | Modular Product Boundaries, Extension Contracts & Trust Isolation | Proposed — design only; no runtime module or public registration approved |\n| [NX-ARCH-007](NX-ARCH-007-platform-extensibility-and-entitlements.md) | Platform Extensibility, Product Capabilities & Entitlement Model | Proposed — strategic design only; no commercial or entitlement runtime approved |\n| [NX-ARCH-008](NX-ARCH-008-module-registry-admission-capability-governance.md) | Module Registry, Admission & Capability Governance | Proposed — design only; no executable registry, module runtime or grants approved |
 
 ## Architecture reviews and foundation design
 - [NX-PROJECT-CHECKLIST-001 — Project Execution and Evidence Checklist](../quality/NX-PROJECT-CHECKLIST-001-execution-and-evidence.md) — Active living checklist with G0D D1–D8 status, engineering workstreams, evidence requirements and explicit non-authorizations.
@@ -78,3 +78,4 @@ See [NX-ARCH-006](NX-ARCH-006-modular-product-boundaries-and-trust-isolation.md)
 ### Platform extensibility and commercial entitlements (2026-11-14)
 
 See [NX-ARCH-007](NX-ARCH-007-platform-extensibility-and-entitlements.md). Defines the future product-domain portfolio, stable feature identifiers, entitlement lifecycle, quota model, contract compatibility, multi-tenancy readiness gates and the strict separation between product availability, commercial entitlement and security authorization. No plans, prices, payment provider, public SaaS or tenant runtime are selected.
+\n\n### Module registry and admission governance (2026-11-14)\n\nSee [NX-ARCH-008](NX-ARCH-008-module-registry-admission-capability-governance.md). Defines immutable module/artifact identity, registry-controlled lifecycle, trust tiers, manifest declarations versus independently issued grants, request-time authorization, proposed data-access matrix, dependency/contract rules, revocation and 20 adversarial qualification scenarios. Design only; no executable registry, permission service, sandbox or runtime is selected or implemented.\n
