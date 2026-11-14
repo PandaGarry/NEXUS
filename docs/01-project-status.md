@@ -510,3 +510,8 @@ Branch HEAD `e7c5461ae7ccea4f29fc77461db91d44566aba36` passed [workflow #4361690
 ## Numeric-wire parser resource determinism — 2026-11-14
 
 The Python reference numeric-wire parser now enforces a fixed 512-decimal-digit limit for every integer field (decimal coefficient/scale and rational numerator/denominator), separately from the overall max_chars limit. Oversized values fail as NUMERIC.RESOURCE_LIMIT before interpreter integer conversion. Regression tests cover 512-digit acceptance and 513-digit rejection. This removes normal acceptance dependence on Python's configurable integer-string conversion threshold. The value is a reference parser resource budget only—not a production numeric profile, financial limit or Risk policy. Rust parity remains open.
+## Risk scope root guard and valuation-input boundary — 2026-11-14
+
+NX-ADR-008 §5.3, NX-IF-002 §6.4, NX-ARCH-REVIEW-007 and OD-09 now require the account/root scope-state record in every v1 reservation and projection transaction; after acquiring the complete lock set, the transaction rechecks the root scope_config_version and recomputes the scope set if it changed. Market/index/FX/fee/collateral inputs remain immutable versioned snapshots bound to the reservation and signed capability. Market-data ticks do not rewrite scope-state rows; stale or policy-invalid valuation inputs block dispatch. This avoids turning each price tick into a serialized write while preserving the exact valuation basis used by Risk.
+
+No market-data valuation service, schema or runtime was implemented; source freshness and dispatch-time invalidation still require conformance proof.
