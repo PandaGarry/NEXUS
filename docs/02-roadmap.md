@@ -481,3 +481,11 @@ This hardening is confined to the Python reference oracle; it does not define pr
 - [ ] Prove Trusted Egress fencing at the actual network boundary before any live-readiness consideration.
 
 Selection establishes a G1 design direction only. It does not authorize dependency installation, production deployment, real credentials or live trading.
+
+## COSE Ed25519 interoperability gate
+
+- [x] Update NX-ADR-008 from polymorphic COSE EdDSA (-8) to fully specified COSE Ed25519 (-19) per RFC 9864.
+- [x] Define key type/curve constraints and reject deprecated -8, Ed448 and key/algorithm mismatch.
+- [x] Treat protected `kid` as a lookup hint only; require issuer- and purpose-bound registry resolution with ambiguity rejection.
+- [ ] Add deterministic Python/Rust COSE vectors and negative tests for algorithm, curve, issuer, audience, key status and ambiguous key ID.
+- [ ] Qualify exact COSE libraries, provider/HSM support and key lifecycle before implementing signing or verification.
