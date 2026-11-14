@@ -25,3 +25,8 @@ The `signature_verified`, `approval_verified` and `revocation_state_available` a
 This model validates a logical object before wire serialization. It must not be used to parse or authorize attacker-supplied CBOR bytes. The selected wire profile remains the one in NX-ADR-008 and NX-RESEARCH-011; a separate raw-byte validator and cross-language golden vectors are mandatory.
 
 No production manifest is generated or accepted by this reference slice. No database, credentials, keys, venue connectivity or trading capability are involved.
+
+
+## CI evidence
+
+Python workflow [#43633125568](https://github.com/PandaGarry/NEXUS/actions/runs/43633125568) passed exact code/test HEAD `c80d781ce7c9f2b4a015fa79f8e2c403709439d7` on Python 3.11, 3.12 and 3.13: 23 tests per runtime. The complete workflow ran 287 tests per runtime. PostgreSQL HEGC workflow [#43633125536](https://github.com/PandaGarry/NEXUS/actions/runs/43633125536) passed 12/12. These runs establish reference-model/fixture CI only.
