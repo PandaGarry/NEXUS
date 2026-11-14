@@ -15,7 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:18.7
+        # Docker Official Image multi-platform index digest, verified 2026-11-14.
+        # linux/amd64 child manifest: sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452.
+        image: postgres:18.7@sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
