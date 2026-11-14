@@ -397,7 +397,14 @@ At minimum, test:
 32. AI-generated halt request attempts to directly mutate HaltState;
 33. protective-order cancellation increases worst-case loss and is rejected;
 34. external/manual order is discovered during emergency workflow;
-35. emergency order outcome remains UNKNOWN and no blind resend occurs.
+35. emergency order outcome remains UNKNOWN and no blind resend occurs;
+36. halt epoch commits before the final EgressBoundaryAuthorization gate; the gate observes the new generation and denies with zero socket-write initiation;
+37. EgressBoundaryAuthorization commits before halt epoch; attempt becomes gate-committed/in-flight and remains reserved until socket-write initiation is observed or sender is positively fenced;
+38. Egress process is paused after gate commit but before socket write; halt cannot be acknowledged while that process could resume and initiate the write;
+39. process/host/network fencing is unavailable or unproven; the boundary remains unacknowledged and the scope cannot be reported HALTED as fully enforced;
+40. halt control store is unavailable or authority is uncertain; Egress denies new final gates and the halt request remains pending rather than claiming successful enforcement;
+41. socket write is initiated before boundary acknowledgement but venue accepts/reports the order after acknowledgement; order remains potentially live and is reconciled without blind resend;
+42. instrumented actual socket/network boundary proves no stale or queued attempt can initiate a write after the boundary's halt acknowledgement.
 
 ## 12. Acceptance criteria
 
@@ -429,6 +436,11 @@ At minimum, test:
 26. Audit reconstructs every halt, command, target selection, approval, dispatch, fill, reconciliation and resume decision.
 27. Failure scenarios cover race, partition, stale epoch, partial cancel, ambiguous result, position-mode mismatch and Risk outage.
 28. No implementation, CI, adapter certification, runtime or production-readiness pass is claimed without evidence.
+29. Halt epoch and final EgressBoundaryAuthorization serialize against the same authoritative halt-state record/generation; both lock-order outcomes are tested.
+30. A gate-committed attempt paused before socket write prevents halt acknowledgement until the write is observed or the old sender is positively fenced.
+31. A missing/uncertain halt store or unproven external fence denies new sends and prevents a false HALTED acknowledgement.
+32. An already initiated socket write may be accepted by the venue after halt acknowledgement; it remains potentially live, reserved and subject to reconciliation.
+33. Tests observe the actual socket/network boundary, not only a database flag or mock adapter call.
 
 ## 13. Open owner decisions
 
