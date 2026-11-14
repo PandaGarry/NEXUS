@@ -532,3 +532,20 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Do not infer acceptance, implementation readiness or security certification from the cross-review.
 
 **Disposition:** design cross-review complete; acceptance not granted. No runtime or dependency selected. See [NX-ARCH-REVIEW-002](../architecture/NX-ARCH-REVIEW-002-module-governance-cross-review.md).
+
+
+## 18.14 Capability catalog and authorization contract model
+
+- [x] Publish NX-ARCH-009 with platform-owned capability definitions, stable identifiers/versioning and explicit owner/enforcement authority.
+- [x] Separate capability definitions, module declarations, workload grants, user entitlements, user authorization and request-time domain authorization.
+- [x] Define typed resource-scope grammar, field/data classifications and fail-closed handling for unknown/ambiguous scopes.
+- [x] Propose initial first-party capability catalog and map each candidate to owner, scope, data class, consumer and negative test.
+- [x] Explicitly exclude Risk mutation, reservations, command/outbox, Ledger posting, halt/recovery, credentials and Trusted Egress from optional-module grants.
+- [x] Define authorization decision fields, revocation/cache/outage requirements, audit constraints and 18 adversarial CAP scenarios.
+- [ ] Cross-review NX-ARCH-009 against NX-ARCH-006/007/008, NX-SEC-001, NX-IF-001..005 and owner decisions; resolve any policy/contract mismatch.
+- [ ] Obtain domain-owner and security approval for each capability definition, scope grammar and data classification.
+- [ ] Map every accepted capability to an existing or newly approved contract, API boundary, audit event, data owner and executable deny test.
+- [ ] Define field-level classification, retention/legal basis, revocation propagation objective and cache freshness before G1.
+- [ ] Implement schema/validator/policy only after G0D acceptance and applicable OD decisions; do not treat this design publication as an implementation gate.
+
+**Disposition:** proposed design only. No executable schema, policy engine, grant issuer, permission, module activation or dependency was created.
