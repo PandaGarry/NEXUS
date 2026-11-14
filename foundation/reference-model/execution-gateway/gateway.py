@@ -147,6 +147,13 @@ class SQLiteOutbox:
             state TEXT NOT NULL, attempt INTEGER NOT NULL DEFAULT 0,
             venue_reference TEXT, outcome TEXT
         );
+        CREATE TABLE IF NOT EXISTS venue_observations (
+            observation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            command_id TEXT NOT NULL,
+            observation_type TEXT NOT NULL,
+            venue_reference TEXT NOT NULL,
+            authority_epoch INTEGER NOT NULL
+        );
         """)
 
     def add_reservation(self, reservation_id: str, command_id: str) -> None:
@@ -248,8 +255,18 @@ class CommandGateway:
         if crash_after_venue_accept:
             # The venue may have accepted the command, but the ACK is not durable.
             raise InjectedCrash("crash after venue acceptance, before ACK persistence")
-        db.execute("UPDATE commands SET state=?,venue_reference=?,outcome=? WHERE command_id=?",
-                   (CommandState.ACKNOWLEDGED.value, result, "ACCEPTED_NOT_FILLED", command_id))
+        cursor = db.execute(
+            "UPDATE commands SET state=?,venue_reference=?,outcome=? "
+            "WHERE command_id=? AND state=? AND halt_epoch=?",
+            (CommandState.ACKNOWLEDGED.value, result, "ACCEPTED_NOT_FILLED",
+             command_id, CommandState.DISPATCHING.value, halt_epoch))
+        if cursor.rowcount != 1:
+            # A recovered or superseded command cannot be overwritten by a late worker response.
+            db.execute(
+                "INSERT INTO venue_observations(command_id,observation_type,venue_reference,authority_epoch) "
+                "VALUES(?,?,?,?)",
+                (command_id, "LATE_ACK_STALE_STATE", result, halt_epoch))
+            return "STALE_RESPONSE_RECORDED"
         return CommandState.ACKNOWLEDGED.value
 
     def recover_after_restart(self) -> list[str]:
