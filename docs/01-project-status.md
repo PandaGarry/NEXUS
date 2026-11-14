@@ -117,4 +117,4 @@ NX-REF-DOMAIN-004 adds a test-only, explicit mapping between instrument specific
 
 ### Exact division reference increment
 
-NX-REF-DOMAIN-005 adds reduced rational division, exact terminating-decimal conversion and explicitly selected quantization modes. The dedicated suite and 1,000 deterministic rational property cases are in CI; current-head verification pending. No production or operation-specific rounding policy is approved.
+NX-REF-DOMAIN-005 adds reduced rational division, exact terminating-decimal conversion and explicitly selected quantization modes. The dedicated 18-test suite and 1,000 deterministic rational property cases passed GitHub Actions run #43594118145 on exact PR HEAD `a46b49a2cbb7a5960ce483f93a736a3fbc945554` across Python 3.11–3.13 (127 tests per runtime / 381 matrix executions). No production or operation-specific rounding policy is approved.
