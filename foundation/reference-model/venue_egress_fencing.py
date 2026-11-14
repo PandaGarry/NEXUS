@@ -112,6 +112,9 @@ class EligibilityEgressAuthority:
                 raise ValueError("scope identity cannot change within an authority")
             if new_snapshot.epoch <= self._snapshot.epoch:
                 raise ValueError("eligibility epoch must increase monotonically")
+            if (new_snapshot.record_id == self._snapshot.record_id
+                    and new_snapshot.revision <= self._snapshot.revision):
+                raise ValueError("record revision must increase when record identity is unchanged")
             self._snapshot = new_snapshot
             return self._snapshot
 
