@@ -103,6 +103,51 @@ class HaltEgressGateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.gate.request_halt(reason=" ")
 
+    def test_gate_committed_attempt_survives_pending_halt_store_outage(self):
+        self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7)
+        self.gate.store_available = False
+        self.assertIsNone(self.gate.request_halt(reason="store outage"))
+        self.assertEqual(self.gate.phase, HaltPhase.HALT_PENDING)
+        with self.assertRaises(GateDenied):
+            self.gate.acknowledge_halt()
+        # The already gate-committed sender may still initiate while halt is pending.
+        self.gate.initiate_socket_write(attempt_id="paused")
+        self.gate.store_available = True
+        self.assertEqual(self.gate.commit_pending_halt(), 8)
+        self.gate.acknowledge_halt()
+        self.assertEqual(self.gate.phase, HaltPhase.HALTED)
+        self.assertEqual(self.gate.reconciliation_required(), ("paused",))
+
+    def test_pending_halt_can_fence_gate_committed_attempt_before_store_recovers(self):
+        self.gate.authorize_attempt(attempt_id="paused", observed_epoch=7)
+        self.gate.store_available = False
+        self.assertIsNone(self.gate.request_halt(reason="store outage"))
+        self.gate.fence_sender(attempt_id="paused", receipt="independent-fence-receipt")
+        with self.assertRaises(GateDenied):
+            self.gate.acknowledge_halt()
+        self.gate.store_available = True
+        self.assertEqual(self.gate.commit_pending_halt(), 8)
+        self.gate.acknowledge_halt()
+        self.assertEqual(self.gate.phase, HaltPhase.HALTED)
+        self.assertEqual(self.gate.reconciliation_required(), ("paused",))
+
+    def test_repeated_halt_request_does_not_advance_epoch_twice(self):
+        self.assertEqual(self.gate.request_halt(reason="operator halt"), 8)
+        self.assertEqual(self.gate.request_halt(reason="repeated request"), 8)
+        self.assertEqual(self.gate.epoch, 8)
+        self.assertEqual(self.gate.phase, HaltPhase.HALTING)
+
+    def test_halt_epoch_exhaustion_fails_closed(self):
+        from halt_egress_gate import MAX_HALT_EPOCH
+
+        gate = HaltEgressGate(epoch=MAX_HALT_EPOCH)
+        self.assertIsNone(gate.request_halt(reason="epoch exhausted"))
+        self.assertEqual(gate.phase, HaltPhase.HALT_PENDING)
+        with self.assertRaisesRegex(GateDenied, "epoch exhausted"):
+            gate.commit_pending_halt()
+        with self.assertRaises(GateDenied):
+            gate.authorize_attempt(attempt_id="blocked", observed_epoch=MAX_HALT_EPOCH)
+
 
 if __name__ == "__main__":
     unittest.main()
