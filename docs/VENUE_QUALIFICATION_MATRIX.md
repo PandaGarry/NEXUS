@@ -77,6 +77,18 @@ Official sources:
 - API terms / prior permission for certain commercial public-data uses: https://docs-legacy.kraken.com/api/docs/guides/global-intro/
 - Global Terms: https://www.kraken.com/legal/global-terms
 
+### Binance Public Data evidence
+
+- The official Binance Public Data repository documents daily/monthly Spot and USD-M/COIN-M Futures archives. Raw `trades` and `aggTrades` include trade IDs, price, quantity, timestamps and `isBuyerMaker`; `aggTrades` compresses same-price/same-taker-side fills within 100 ms. Prefer raw `trades` for HYP-001 when complete archives exist.
+- Spot timestamps are microseconds from 2025-01-01 onward; Futures examples use milliseconds. Timestamp-unit changes must be handled explicitly.
+- Futures `bookDepth` is not a per-level order book: the official repository's issue #447 explains it as cumulative depth and notional at percentage bands from mid-price. It cannot reconstruct BBO, spread or price-level queue depth.
+- Binance Vision Dataset Terms v1.0 (2026-08-26) license data under CC BY-NC-SA 4.0 for non-commercial use. Permitted use includes personal non-production historical backtesting; live proprietary trading execution, automated commercial order generation and commercial trading products are expressly prohibited. Non-commercial derivative redistribution requires attribution and the identical ShareAlike license.
+
+Official sources:
+- Data archive schema: https://github.com/binance/binance-public-data
+- Dataset terms: https://github.com/binance/binance-public-data/blob/master/TERMS_AND_CONDITIONS.md
+- `bookDepth` meaning: https://github.com/binance/binance-public-data/issues/447
+- `aggTrades` and `isBuyerMaker` semantics: https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Compressed-Aggregate-Trades-List
 ### OKX V5 evidence
 
 - The official historical-data portal lists tick-level trades from September 2021, high-resolution L2 from March 2023, perpetual funding rates from March 2022 and candlesticks from July 2023.
