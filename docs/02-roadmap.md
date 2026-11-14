@@ -190,5 +190,5 @@ First-venue selection remains BLOCKED; no live trading is authorized.
 
 - [x] Verify venue eligibility reference suite and complete reference matrix: 210 tests/runtime on Python 3.11/3.12/3.13; 630 successful executions at PR #14 SHA `8c7eed6ac781a40c81652da08ff3207f4d46bc6d` (run 43598444584).
 
-- [x] Add test-only eligibility egress fencing reference and 19 concurrency/ordering tests; CI passed 229 tests/runtime on Python 3.11/3.12/3.13 (687 executions) at SHA `ccbf9e86b86a366fb99c55f5d23deccd5755e5f9`, run 43598800464.
+- [x] Add test-only eligibility egress fencing reference and 21 concurrency/ordering tests; CI passed 229 tests/runtime on Python 3.11/3.12/3.13 (687 executions) at SHA `ccbf9e86b86a366fb99c55f5d23deccd5755e5f9`, run 43598800464.
 - [ ] Design and verify production cross-process egress fencing, durable dispatch state, bounded network timeouts and crash recovery.
