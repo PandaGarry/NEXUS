@@ -19,6 +19,7 @@
 | Quant & Strategy Engine specification | PROPOSED | ТЗ-NX-003 опубликовано; research protocol, runtime, feature registry и стратегии не реализованы/не проверены |
 | Autonomous Execution Engine specification | PROPOSED | ТЗ-NX-004 опубликовано; private adapters, durable outbox, reconciliation, vault/signer и runtime tests не реализованы/не проверены |
 | Independent Risk Engine specification | PROPOSED | ТЗ-NX-005 опубликовано; policy registry, exposure calculator, approval signer, reservations, kill-switch controller и conformance tests не реализованы/не проверены |
+| Portfolio & Financial Ledger specification | PROPOSED | ТЗ-NX-006 опубликовано; journal, posting engine, accounting projections, reconciliation, replay and restore tests не реализованы/не проверены |
 | Target architecture | PROPOSED | NX-ARCH-001 опубликован; owner review и согласование TBD deployment decisions требуются |
 | Prototype readiness | BLOCKED | Не начинать прототипирование |
 
@@ -35,6 +36,7 @@
 - [ТЗ-NX-003 — Quant & Strategy Engine](specifications/TZ-NX-003-quant-strategy-engine.md) — strategy artifacts, DecisionContext/TradeIntent, research governance, simulation fidelity and promotion gates; implementation NOT STARTED
 - [ТЗ-NX-004 — Autonomous Execution Engine](specifications/TZ-NX-004-autonomous-execution-engine.md) — durable command/outbox, order lifecycle, ambiguity handling, private events, reconciliation, kill switch and credential isolation; implementation NOT STARTED
 - [ТЗ-NX-005 — Independent Risk Engine](specifications/TZ-NX-005-independent-risk-engine.md) — deterministic pre-trade authorization, exposure and limit evaluation, reservations, signed approvals, continuous monitoring and halt controls; implementation NOT STARTED
+- [ТЗ-NX-006 — Portfolio & Financial Ledger](specifications/TZ-NX-006-portfolio-financial-ledger.md) — immutable journal, exact accounting, positions, balances, P&L, fees/funding, reconciliation, snapshots and deterministic replay; implementation NOT STARTED
 - [NX-SEC-001 — Threat Model & Credential Isolation](security/NX-SEC-001-threat-model-credential-isolation.md)
 
 Эти документы сохранены и повторно прочитаны из GitHub; они не утверждены владельцем и не являются реализацией.
