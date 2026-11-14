@@ -764,3 +764,8 @@ Replaced the fixture fingerprint's MD5 with Python `hashlib.sha256` over determi
 ## Production authorization-catalog manifest lifecycle — 2026-11-14
 
 NX-ARCH-REVIEW-009 now defines the proposed production lifecycle for an independently approved and signed PostgreSQL authorization-catalog manifest: context binding, semantic inventory, canonicalization/signature constraints, separated approval/signing/audit roles, fail-closed deployment verification, post-startup drift response and emergency reconciliation. It also enumerates the broader catalog surfaces that the current disposable fixture does not yet cover. This is a design artifact only; no production manifest, signer, key custody, verifier, drift monitor or deployment gate exists. G0D/G1 remain open; live trading remains NOT AUTHORIZED.
+
+
+## Authorization-catalog manifest admission reference — 2026-11-14
+
+Added a test-only Python logical manifest model under `foundation/reference-model/auth-catalog`. It validates the exact v1 field set, explicit bounded scope (no wildcards), supported object classes, duplicate semantic identities, deny-rule uniqueness, digest shape, validity interval and exact environment/database/migration context. Admission preconditions fail closed for unverified signature/approval, unavailable revocation state, context mismatch, sequence gaps/rollback, predecessor mismatch and expired/not-yet-valid manifests. The model is wired into the Python 3.11–3.13 reference workflow. It is not a CBOR parser, cryptographic verifier, trusted ledger, PostgreSQL observer or production deployment gate. CI evidence is pending for the new HEAD.
