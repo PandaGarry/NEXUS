@@ -41,7 +41,7 @@
 ADR, подготовленные в обсуждении, не считаются опубликованными или принятыми до появления полного документа в репозитории и review. Interface contracts также требуют owner/security review и conformance evidence.
 
 - [NX-REF-EXEC-001 — Command Gateway Reference Conformance Slice](NX-REF-EXEC-001-command-gateway-reference-conformance.md) — Experimental Python/SQLite reference model; includes explicit stale-worker split-brain counterexample; fake adapter only; not production implementation.
-- [NX-REF-EXEC-002 — Dispatcher Authority Transfer and Egress Fencing](NX-REF-EXEC-002-dispatcher-authority-transfer-egress-fencing.md) — Proposed design for account-scoped authority transfer, independently enforced egress revocation, stale-state mutation rejection and fail-closed recovery; a separate test-only control-plane state-machine model checks transition ordering but does not implement network fencing.
+- [NX-REF-EXEC-002 — Dispatcher Authority Transfer and Egress Fencing](NX-REF-EXEC-002-dispatcher-authority-transfer-egress-fencing.md) — Proposed design with recommended Risk/Command/Egress transaction decomposition, takeover fencing protocol and crash-point fault-injection matrix; no production database, network fence or credential boundary is selected or implemented.
 
 - [NX-REF-DOMAIN-003 — Dimensional Financial Types Reference Model](NX-REF-DOMAIN-003-dimensional-financial-types-reference-model.md) — test-only exact-decimal value types; production integration remains blocked.
 
