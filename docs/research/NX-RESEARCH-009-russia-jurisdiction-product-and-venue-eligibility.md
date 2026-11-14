@@ -61,7 +61,9 @@ The [Bank of Russia participant record](https://www.cbr.ru/finorg/foinfo/?ogrn=1
 - depository license 045-14135-000100 from 2022-05-20;
 - dealer license 045-14087-010000 from 2020-06-17.
 
-This is a high-priority domestic investigation because the owner already uses T-Bank personally. It does not prove the crypto service is publicly available, that spot trading has a public API, or that the service exposes order book, depth, trades, streaming fills, order placement/cancellation or history.
+This is a high-priority domestic investigation for the T-Bank route. It does not prove the crypto service is publicly available, that spot trading has a public API, or that the service exposes order book, depth, trades, streaming fills, order placement/cancellation or history.
+
+**Additional due-diligence note:** the same CBR participant/decisions record lists orders dated 2026-09-28 and 2026-10-06 requiring suspension of order placement and trades on organized trading on behalf of certain individual clients under Federal Law No. 224-FZ. The published record describes client-specific measures; it is not an operator-wide suspension and does not state that the crypto-exchange activity right was withdrawn. This is not a disqualification finding, but the broker's compliance controls, scope of those measures and current status should be included in due diligence.
 
 The statutory definition of an organization exchanging digital currencies includes principal dealing in its own name and account outside organized trading; CBR registration must not be mistaken for an exchange-style limit order book.
 
