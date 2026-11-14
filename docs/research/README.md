@@ -34,3 +34,5 @@
 - [NX-RESEARCH-010 — Open-Source Component Qualification](NX-RESEARCH-010-open-source-component-qualification.md) — candidate shortlist for PostgreSQL, OpenTelemetry, OpenBao, NATS JetStream, Cilium and Temporal; no dependency adoption approved.
 
 - [NX-RESEARCH-011 — CBOR / COSE Library Qualification](NX-RESEARCH-011-cbor-cose-library-qualification.md) — evaluates Rust CBOR/COSE candidates against RFC 8949 core deterministic encoding and RFC 9864 alg=-19; no library or runtime dependency approved.
+
+- [NX-RESEARCH-012 — PostgreSQL 18.7 G1 Evaluation Qualification](NX-RESEARCH-012-postgresql-18-7-g1-evaluation-qualification.md) — selects 18.7 as the exact G1 test target and records the November 12, 2026 security/bugfix release caveats; no database or production deployment approved.
