@@ -2,7 +2,7 @@
 
 **Status:** PROPOSED — canonical design contract only; no executable schema, policy engine, authorization service or module grants are approved  
 **Date:** 2026-11-14  
-**Related:** NX-ARCH-001, NX-ARCH-006, NX-ARCH-007, NX-ARCH-008, NX-ARCH-REVIEW-002, NX-SEC-001, NX-OWNER-DECISIONS-001  
+**Related:** NX-ARCH-001, NX-ARCH-006, NX-ARCH-007, NX-ARCH-008, NX-ARCH-REVIEW-002, NX-ARCH-REVIEW-003, NX-SEC-001, NX-OWNER-DECISIONS-001  
 **Purpose:** Turn the broad module permission matrix into a platform-owned, versioned capability catalog whose entries can be mapped to a contract owner, data scope, enforcement point, audit record and negative test without granting modules ambient or self-declared authority.
 
 ## 1. Executive decisions proposed
@@ -254,3 +254,6 @@ Tests must observe authoritative persisted state and the actual API, DB, process
 **PROPOSED / DESIGN ONLY.** This document provides a canonical design contract and a proposed initial catalog. It does not define an executable JSON Schema, API route, database schema, authorization engine or active permission. It selects no vendor, dependency, cryptographic algorithm or deployment technology. No grant is issued, no module is activated and no protected core authority is delegated.
 
 NX-ARCH-009 does not close G0D/G1 or any owner decision. It is a companion to NX-ARCH-008; its catalog entries remain proposals until domain owners and security review accept them.
+
+
+**Cross-review note (2026-11-14):** NX-ARCH-REVIEW-003 records design-level alignment and the billing-intent clarification. CAP-R-02..09 and CAP-19..26 remain open requirements; no capability ID or permission is approved/active.
