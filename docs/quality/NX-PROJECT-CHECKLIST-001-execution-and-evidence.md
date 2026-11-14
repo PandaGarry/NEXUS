@@ -951,3 +951,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Decide whether the future production wire profile needs a different bound; do not infer this reference-model bound as a production financial limit.
 
 **Disposition:** Python reference parser now has deterministic integer-digit resource behavior. Cross-language fixture parity remains open; this does not establish production numeric policy.
+
+## 18.26 Immutable valuation-input vector and dispatch-time race control — 2026-11-14
+
+- [x] Separate source-owned mark/index/FX/fee/collateral snapshots from Risk's PostgreSQL scope-state serialization records.
+- [x] State explicitly that source snapshots are not assumed to share the Risk database transaction or a distributed transaction.
+- [x] Bind Risk reservation and approval to an immutable version vector with source identity, value/digest, completeness/watermark and freshness evidence.
+- [x] Require Trusted Egress to revalidate the exact bound vector against versioned source-specific freshness and configured drift/admissibility policy immediately before send.
+- [x] Prohibit silently replacing the approval's valuation inputs when a newer source snapshot arrives; require a new Risk evaluation/reservation if the old vector is no longer admissible.
+- [ ] Define the source-owner interface schema and cross-source snapshot-coherence contract without inventing fields before source contracts are approved.
+- [ ] Add race tests: source update during reservation, update after approval/before dispatch, missing watermark, contradictory vector, stale mark, drift-bound breach and unconfigured policy.
+- [ ] Keep numeric freshness/drift thresholds owner/domain-controlled; no universal defaults.
+
+**Disposition:** design boundary clarified across NX-ADR-008, NX-IF-002 and NX-ARCH-REVIEW-007. No valuation service, schema or dispatch runtime implemented.
