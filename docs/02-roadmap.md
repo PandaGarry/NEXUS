@@ -986,3 +986,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Pass 263 tests per Python 3.11/3.12/3.13 runtime (789 executions); egress-fencing 37 tests / HaltEgressGate 24.
 - [x] Inspect all three job logs; no failures or deprecated Node.js 20 / `punycode` warnings.
 - [ ] Implement the G1 HEGC database entrypoints, guard and role boundaries only after the multi-connection proof plan is accepted and tested.
+
+## HEGC database privilege-boundary qualification
+
+- [x] Complete NX-ARCH-REVIEW-008 design cross-review.
+- [x] Specify EXECUTE-only runtime roles, NOLOGIN SECURITY DEFINER owners, session_user identity and per-generation Egress principal.
+- [x] Define adversarial function privilege, search_path, role membership, RLS, identity and direct-DML bypass tests.
+- [ ] Implement no SQL function or role until G1 approval gates are satisfied.
+- [ ] Run PostgreSQL 18.7 multi-connection and adversarial privilege tests; require independent security review.
