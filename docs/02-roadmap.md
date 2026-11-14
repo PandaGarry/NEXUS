@@ -717,3 +717,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Run fresh-full-backup restore/PITR, crash recovery and index integrity checks.
 - [ ] Run transaction/concurrency and role-separation tests on the exact patch.
 - [ ] Requalify latest supported 18.x minor before any deployment decision; 18.7 is not a permanent production pin.
+
+## Persisted valuation evidence manifest at Trusted Egress
+
+- [x] Define immutable ValuationInputVector and bind its exact ID/version through ExposureSnapshot, RiskReservation and RiskApprovalCapability.
+- [x] Require Trusted Egress to read persisted Risk evidence manifest and consumed source watermark/correction status.
+- [x] Keep source service calls and replacement market/FX/fee/collateral fetches off the dispatch path.
+- [x] Deny send when manifest is missing, stale, incomplete, has watermark gaps or cannot prove admissibility.
+- [ ] Define ingestion lag/correction invalidation objective and measurement.
+- [ ] Add race/fault tests for source updates and corrections between approval and send.
