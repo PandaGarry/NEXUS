@@ -293,3 +293,15 @@ The active architecture track now compares database transaction models and Trust
 - GitHub Actions run [#43606550889](https://github.com/PandaGarry/NEXUS/actions/runs/43606550889) completed successfully on that exact head.
 - Three jobs passed: Python 3.11, 3.12 and 3.13. Each executed 13 isolated reference-model suites with counts 11, 24, 13, 17, 12, 16, 18, 18, 32, 12, 15, 28 and 21 = 237 tests per runtime; 711 successful test executions total.
 - This CI run verifies the existing Python reference-model suites at the exact documentation-analysis head. It does not test the newly documented transaction alternatives, database isolation, production egress topology, external host/network fencing, Rust, venue behavior or live safety.
+
+
+### Open-source component qualification — 2026-11-14
+
+- [x] Publish NX-RESEARCH-010 with candidate matrix and module authority exclusions.
+- [ ] Define G0D dependency governance: immutable pins, license/transitive review, SBOM, provenance, vulnerability scanning and reproducible builds.
+- [ ] Evaluate PostgreSQL on exact pinned version against Risk reservations, Command outbox, Ledger journal and recovery invariants before OD-09 selection.
+- [ ] Define OpenTelemetry instrumentation/redaction contract before deploying a collector.
+- [ ] Compare OpenBao with managed KMS/HSM only after Egress/deployment threat model is stable.
+- [ ] Revisit NATS, Cilium and Temporal only when workload/deployment requirements justify them.
+
+No module adoption or runtime integration is implied by this research increment.
