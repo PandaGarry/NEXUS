@@ -834,3 +834,18 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Do not infer that this Python-only run validates the COSE parser, signer, verifier or key registry.
 
 **Disposition:** exact-head reference-model regression passed; cryptographic implementation and G0D/OD-08 evidence remain open.
+
+## 18.38 Current exact-head regression and full PR-chain verification — 2026-11-14
+
+- [x] Verify PR #16 branch HEAD `8d2c2f404782b718f1a3a422bb0ce918bb6b922d` with GitHub Actions [#43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308).
+- [x] Python 3.11, 3.12 and 3.13 all passed 13 isolated suites / 239 tests per runtime; 717 successful executions total.
+- [x] Inspect all three job logs: no test failures, Node.js 20 deprecation or `punycode` warnings.
+- [x] Re-fetch PR #1–#14 and #16 metadata; verify exact child-base / parent-head SHA equality for #1 → #2 → #3 → #4 → #5 → #6 → #7 → #9 → #10 → #11 → #12 → #13 → #14 → #16.
+- [x] Verify PR #8 is a parallel branch based on PR #7 and not in PR #16's direct ancestry.
+- [x] Confirm every PR in the direct ancestry is currently open, Draft and unmerged; PR #16 remains based on PR #14's exact head.
+- [x] Record current PR #16 snapshot: 33 changed files, 4,937 additions, 72 deletions and 322 commits in the stacked comparison (includes parent history).
+- [x] Update PR #16 title/body with current scope, exact-head evidence, COSE profile and non-authorizations.
+- [ ] Preserve parent-first review/integration; do not retarget, merge or rewrite the stack automatically.
+- [ ] Keep this CI evidence scoped to Python reference models; it does not verify Rust, CBOR/COSE implementation, PostgreSQL, external fencing, Trusted Egress, venues or live execution.
+
+**Disposition:** branch ancestry is valid and deliberately stacked; all direct-chain PRs remain Draft. Exact-head Python reference CI passed. PR #16 remains open/Draft/unmerged; no owner approval for merge or production/live action is implied.
