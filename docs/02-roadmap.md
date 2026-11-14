@@ -599,3 +599,9 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Verify `6fefd9a44ff2f272b6516265d10f41c46a13cf7a` on [workflow #43615911362](https://github.com/PandaGarry/NEXUS/actions/runs/43615911362).
 - [x] Pass 13 suites / 239 tests on Python 3.11, 3.12 and 3.13 (717 executions).
 - [ ] Keep this Python-only evidence separate from COSE/Rust/persistence/egress/venue qualification.
+
+## Exact-head regression after COSE profile refinement
+
+- [x] Verify `88fcb30068507d85fb35802ca5d2195fd528c000` on [workflow #43616054657](https://github.com/PandaGarry/NEXUS/actions/runs/43616054657).
+- [x] Pass 13 suites / 239 tests on each Python 3.11/3.12/3.13 runtime (717 executions).
+- [ ] Add and execute the actual cross-language COSE profile tests; current Python CI does not validate signature or key-registry behavior.
