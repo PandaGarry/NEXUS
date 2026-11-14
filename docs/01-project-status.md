@@ -695,3 +695,14 @@ NX-RESEARCH-012 and NX-SEC-001 now explicitly note that a standalone SECURITY DE
 - [ ] Prove HEGC per-scope commit-order guard, first-statement entrypoint enforcement and actual PostgreSQL 18.7 concurrency behavior.
 
 **Disposition:** exact code/test HEAD passed reference CI. Idempotent grant behavior is test-only; no HEGC database, guard function or production Egress exists.
+
+
+## HEGC idempotent grant issuance and guard-entrypoint security refinement — 2026-11-14
+
+- The test-only HaltEgressGate oracle now binds each attempt ID to an immutable authorization digest. An exact retry returns the original attempt/grant record, including after the halt epoch advances; changed digest or epoch under the same ID conflicts and cannot mint a replacement grant.
+- Exact code/test HEAD `c2350f7807587e0428b760890f6fdba09ba60f60` passed [workflow #43619636403](https://github.com/PandaGarry/NEXUS/actions/runs/43619636403): 13 isolated suites / **263 tests** on Python 3.11, 3.12 and 3.13 (**789 successful executions**); egress-fencing passed **37 tests**, including **24 HaltEgressGate tests**. All three job logs were inspected; no failures or deprecation warnings.
+- PostgreSQL design review now distinguishes the internal scope-guard helper from the callable HEGC transaction entrypoint. A helper alone cannot prevent protected reads before guard acquisition; HEGC must expose only an EXECUTE-only gate entrypoint whose internal first operation acquires guards, performs validation reads and persists the grant in one outer transaction. Domain writes likewise use reviewed guarded procedures; application roles have no direct bypass.
+- SECURITY DEFINER caller authorization must rely on a dedicated authenticated `session_user` per workload and explicit scope authorization; `current_user` changes to the definer owner. Shared DB logins, SET ROLE impersonation and caller-supplied identity/GUC values are not accepted evidence. Complete affected-scope membership must be proven under the root/account guard.
+- [ ] Prove the HEGC entrypoint, internal guard helper, authenticated service identity, complete scope-set derivation, all source-writer procedures and database privilege closure in a PostgreSQL 18.7 multi-connection harness.
+
+**Disposition:** exact Python reference CI passed. HEGC, database procedures, guard table/function, PostgreSQL integration harness and production socket/process fencing remain unimplemented.
