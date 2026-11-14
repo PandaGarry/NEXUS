@@ -630,3 +630,5 @@ The test-only Python state-machine oracle now covers both commit orders, pause-a
 - [ ] Keep real PostgreSQL serialization, HEGC service/roles, trusted socket-initiation observation, process/host/network fencing and venue reconciliation as independent G1 evidence gates.
 
 **Disposition:** exact code/test HEAD passed Python reference CI. This is not production concurrency, socket, network-fencing or live-trading evidence.
+
+The current test-only halt/Egress oracle has 18 state-machine tests, including pending-halt/store-recovery races, duplicate halt requests during outage and after HALTED, sender fencing, repeated halt idempotency and signed-64-bit epoch exhaustion. Exact code HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` passed workflow [#43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 suites / 255 tests per Python 3.11/3.12/3.13 runtime (765 successful executions). The tests are sequential reference-model checks, not proof of concurrent PostgreSQL linearizability, HEGC implementation, socket behavior or external fencing.
