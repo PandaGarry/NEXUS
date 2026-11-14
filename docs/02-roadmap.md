@@ -1004,3 +1004,16 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Verify 264 tests/runtime (792 total), egress-fencing 38 tests / HaltEgressGate 25 on exact branch-head workflow #43620613920.
 - [ ] Qualify actual HTTP/WebSocket libraries, proxy/mesh configuration and partial-write/response-loss behavior.
 - [ ] Instrument the sole socket-owning Egress boundary and prove no alternate send path.
+
+
+## PostgreSQL HEGC guard — first real multi-connection qualification
+
+- [x] Create disposable PostgreSQL 18.7 fixture with NOLOGIN definer roles and distinct HEGC/writer logins.
+- [x] Exercise root-first guard acquisition, authoritative scope completeness and canonical child lock order.
+- [x] Prove writer-first and HEGC-first wait/retry behavior with two real sessions and SQLSTATE 40001.
+- [x] Verify runtime ACL closure, no direct DML, no helper invocation, no SET ROLE, no search_path/temp-object or custom-GUC identity spoofing.
+- [x] Verify exact grant retry and changed-binding conflict.
+- [x] Pass 5 tests on exact code/test HEAD 972ae546e432448ae995dee868b21194756b14e1, PostgreSQL workflow #43621246827; Python reference workflow #43621246829 also passed.
+- [ ] Extend to concurrent duplicate attempts, ambiguous commit, scope-membership mutation, RLS, function overload/PUBLIC EXECUTE and crash recovery.
+- [ ] Pin server image digest/provenance and complete independent security review.
+- [ ] Keep the fixture strictly separate from production migrations and services; no production authorization follows from these tests.

@@ -1440,3 +1440,19 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Qualify the actual venue transport stack for hidden retries, redirects, proxy replay and partial-write behavior.
 
 **Disposition:** Python reference model prevents a second logical send from the same consumed grant. No production transport is selected or verified.
+
+
+## 18.85 PostgreSQL 18.7 HEGC guard qualification harness — 2026-11-14
+
+- [x] Add an isolated disposable SQL fixture with distinct NOLOGIN definer roles, separate HEGC/writer logins and a private common guard helper.
+- [x] Enforce root/account guard as the first protected database operation; bind authenticated session_user authorization into that same root-guard UPDATE.
+- [x] Validate complete active scope membership after root acquisition and lock child guards in canonical UUID-byte order.
+- [x] Revoke runtime direct source/control-table access and helper execution; test direct DML, SET ROLE, temp/search_path spoofing and custom-GUC identity spoofing.
+- [x] Verify exact-attempt retry returns the same grant and changed binding conflicts.
+- [x] Run two real multi-connection PostgreSQL 18.7 races: writer-first and HEGC-first; both stale waiters receive SQLSTATE 40001 and succeed only after whole-transaction retry.
+- [x] Verify exact code/test HEAD 972ae546e432448ae995dee868b21194756b14e1 on workflow #43621246827: 5 tests passed; inspect logs and remove Python ResourceWarnings.
+- [x] Verify Python reference-model workflow #43621246829 passed on the same code/test HEAD.
+- [ ] Add concurrent duplicate-attempt/ambiguous-commit tests, scope-membership mutation races, RLS/function-overload/PUBLIC-EXECUTE adversarial tests and crash recovery.
+- [ ] Pin and record PostgreSQL image digest/build provenance; obtain independent database security review before any production design acceptance.
+
+**Disposition:** this qualifies the isolated fixture's guard/role protocol only. It does not implement or qualify production HEGC, NEXUS database schemas, service identities, Egress or live execution.

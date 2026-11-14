@@ -720,3 +720,10 @@ Added a design cross-review for the EXECUTE-only HEGC runtime, separate NOLOGIN 
 The HaltEgressGate oracle now rejects a second logical venue-request initiation from the same consumed grant. SOCKET_INITIATED means the first transport write of the logical request, not full delivery or venue acceptance. Automatic HTTP/SDK/proxy/service-mesh retries, redirects and WebSocket reconnect replay for order mutations are disabled by default; any venue-specific exception requires documented endpoint idempotency proof and explicit approval. Partial/uncertain writes remain OUTCOME_UNKNOWN and require reconciliation.
 
 Code/test HEAD `fbccb65e3c75cbaf7081f6d1f6e02095fd53d8ee` passed workflow #43620606806: 264 tests per Python runtime (792 executions), egress-fencing 38 tests / HaltEgressGate 25. Documentation-synchronized branch HEAD `3a8099750dfb562af63901163a123b8849a8d425` also passed [workflow #43620613920](https://github.com/PandaGarry/NEXUS/actions/runs/43620613920) on all three Python versions. Subsequent changes are documentation-only. No venue transport library, socket instrumentation or live adapter is implemented.
+
+
+## PostgreSQL 18.7 HEGC guard qualification harness — 2026-11-14
+
+Added a disposable test-only SQL fixture and GitHub Actions job for the proposed common HEGC/source-writer guard protocol. The exact code/test HEAD 972ae546e432448ae995dee868b21194756b14e1 passed PostgreSQL 18.7 workflow #43621246827: five tests passed, including writer-first and HEGC-first multi-connection races. In both cases, the blocked transaction received SQLSTATE 40001 and succeeded only after a full retry from a fresh transaction. The harness also verifies EXECUTE-only service access, direct DML denial, role isolation, search_path/temp-object spoofing, GUC identity spoofing, complete scope-set validation and exact grant retry binding.
+
+This is evidence for the fixture only. Production schema, service roles, RLS, complete source-writer participation, concurrent duplicate-attempt recovery, crash recovery, Egress process/socket fencing and production readiness remain unimplemented and open.
