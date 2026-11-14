@@ -5,7 +5,7 @@
 ## Unreleased
 
 ### Added — Exact-decimal property verification
-- Added 1,000 deterministic seeded property cases cross-checked against Python's independent rational `fractions.Fraction` representation for add/subtract/multiply/compare, canonical round-trip, step divisibility and exact quantization. GitHub Actions run [#43590253167](https://github.com/PandaGarry/NEXUS/actions/runs/43590253167) passed exact PR HEAD `9529d0fe424e73c5f303bb9780ffe194911f30c6`: 11 decimal and 21 gateway tests on Python 3.11–3.13. This is reference-oracle evidence only.
+- Added 1,000 deterministic seeded property cases cross-checked against Python's independent rational `fractions.Fraction` representation for add/subtract/multiply/compare, canonical round-trip, step divisibility and exact quantization. GitHub Actions run [#43590395882](https://github.com/PandaGarry/NEXUS/actions/runs/43590395882) passed exact PR HEAD `3fb21aa53c9d6c72afcf6761493388f417fcb56b`: 11 decimal and 21 gateway tests on Python 3.11–3.13. This is reference-oracle evidence only.
 
 
 ### Updated — Execution control and evidence baseline
