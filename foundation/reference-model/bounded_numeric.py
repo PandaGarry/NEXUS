@@ -19,8 +19,14 @@ def _digits_upper_bound(value: int) -> int:
     magnitude = abs(value)
     if magnitude == 0:
         return 1
-    # ceil(bit_length * log10(2)); 30103/100000 is a conservative upper bound.
-    return (magnitude.bit_length() * 30103 + 99999) // 100000
+    # Start from a close lower estimate, then correct by exact integer comparison.
+    # This avoids Python's configurable int-to-string digit limit.
+    digits = ((magnitude.bit_length() - 1) * 30103) // 100000 + 1
+    while magnitude >= 10 ** digits:
+        digits += 1
+    while digits > 1 and magnitude < 10 ** (digits - 1):
+        digits -= 1
+    return digits
 
 
 @dataclass(frozen=True, slots=True)
