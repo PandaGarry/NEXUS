@@ -891,3 +891,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Inspected all four job steps/logs. Permission-denied and serialization messages are expected from negative/adversarial assertions; all corresponding jobs completed successfully.
 - The latest branch delta after the pinned-image code/test commit is documentation-only. Production DBA/migration catalog-manifest drift detection, emergency role-change reconciliation, existing-session termination, expanded RLS tests, crash/restore/PITR, true uncertain-COMMIT recovery, signed image provenance/SBOM/vulnerability disposition and independent security review remain open.
 - PR #16 remains Draft and stacked on PR #14. No production deployment or live trading is authorized by these fixture/reference results.
+
+
+### PostgreSQL catalog-drift regression — 2026-11-14
+
+- Added a deterministic disposable PostgreSQL catalog fingerprint covering role attributes/memberships, schema/relation owners and ACLs, RLS flags/policies, function ownership/security mode/configuration/ACLs and default privileges.
+- Added mutation/restore regressions for CREATEROLE escalation, PUBLIC EXECUTE, SECURITY INVOKER and unexpected trusted-schema function inventory.
+- Exact code/test HEAD `f815c351a709ff169996e3f0e451da73651a142c` passed PostgreSQL 18.7 CI 12/12 and Python 3.11/3.12/3.13 matrix 264 tests/runtime (792 executions).
+- Explicitly retained production signed-manifest governance, fail-closed deployment drift enforcement, DBA/migration control plane, emergency reconciliation and session/process/network fencing as OPEN.
