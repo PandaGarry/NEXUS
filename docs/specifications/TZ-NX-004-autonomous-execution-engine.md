@@ -436,3 +436,8 @@ Normalized fills and execution corrections MUST follow [NX-IF-003 — Execution 
 This document is a requirements proposal. No private execution adapter, credential vault, signer, exchange account connection, order placement, reconciliation worker or runtime conformance suite has been implemented or tested in NEXUS. No live trading is authorized.
 
 **Prototype Readiness remains BLOCKED.**
+
+
+## WP-D — Private-stream evidence and recovery barrier
+
+Execution MUST publish private session/stream generation, native sequence/cursor where supported, order/fill watermarks, reconciliation coverage, unresolved outcomes and recovery status as source-owned evidence under [NX-IF-004](../architecture/NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md). On reconnect or restart, unknown dispatch outcomes remain reserved and are reconciled against authoritative venue orders/fills before the affected scope can pass its RecoveryBarrier. Acknowledgement is not fill evidence; a connected private stream is not proof of account completeness. Protocol-specific recovery remains defined by NX-ADR-002 and venue adapter contracts.
