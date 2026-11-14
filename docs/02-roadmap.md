@@ -1008,14 +1008,24 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 
 ## PostgreSQL HEGC guard — first real multi-connection qualification
 
-- [x] Create disposable PostgreSQL 18.7 fixture with NOLOGIN definer roles and distinct HEGC/writer logins.
-- [x] Exercise root-first guard acquisition, authoritative scope completeness and explicit rejection of non-canonical child lock order.
-- [x] Prove writer-first and HEGC-first wait/retry behavior with two real sessions and SQLSTATE 40001.
-- [x] Verify runtime ACL closure, no direct DML, no helper invocation, no SET ROLE, no search_path/temp-object or custom-GUC identity spoofing.
-- [x] Verify exact grant retry, changed-binding conflict and concurrent duplicate-attempt retry to the original grant.
-- [x] Simulate a lost client response after COMMIT and recover the same persisted grant by attempt ID.
-- [x] Pass 7 tests on exact code/test HEAD 7e60164346f25f8f2f58fa4da2a9282fea5a2217, PostgreSQL workflow #43622108660; Python reference workflow #43622108645 passed 264 tests per Python 3.11/3.12/3.13 runtime.
-- [x] Investigate red run #43621620302 and correct the response-loss test to disconnect after COMMIT.
-- [ ] Extend to scope-membership mutation, RLS, function overload/PUBLIC EXECUTE, crash/restore and true uncertain-COMMIT recovery.
-- [ ] Pin server image digest/provenance and complete independent security review.
-- [ ] Keep the fixture strictly separate from production migrations and services; no production authorization follows from these tests.
+- [x] Create disposable PostgreSQL 18.7 fixture with distinct NOLOGIN definer roles and separate HEGC/writer/membership-admin logins.
+- [x] Exercise root-first guard acquisition, authoritative scope completeness and canonical child lock order.
+- [x] Prove writer-first and HEGC-first wait/retry behavior with real sessions and SQLSTATE 40001.
+- [x] Add guarded scope activation/deactivation; prove a concurrent membership addition serializes with gate and stale callers must retry with the expanded authoritative scope set.
+- [x] Enable and FORCE RLS on fixture source table; exercise session_user/account-bound HEGC and writer policies.
+- [x] Verify runtime ACL closure, no direct DML/helper invocation, no SET ROLE, no search_path/temp-object or custom-GUC identity spoofing.
+- [x] Verify exact grant retry, changed-binding conflict, concurrent duplicate retry and lost post-COMMIT response recovery.
+- [x] Pass 8 PostgreSQL tests on exact code/test HEAD 614f22f3bbff879d91c040eb73511a90fe7d32ef, workflow #43628329933; Python workflow #43628329956 passed 264 tests per Python 3.11/3.12/3.13 runtime.
+- [ ] Guard service-principal/authorization-map changes and test their concurrency against gate and writers.
+- [ ] Expand RLS adversarial tests, policy composition, function overload/PUBLIC EXECUTE and role graph/catalog checks.
+- [ ] Qualify crash/restore, backup/PITR, failover and true uncertain-COMMIT recovery.
+- [ ] Pin PostgreSQL image digest/provenance and complete independent security review.
+- [ ] Keep the fixture separate from production migrations/services; no production authorization follows from these tests.
+
+## Public product communications and community launch
+
+- [x] Define a canonical short release-note format for the product platform: user impact, delivered change, fixes, compatibility/action required and material limitations.
+- [x] Establish publication gates: merged and CI-verified change, updated user documentation, security review where relevant, rollback/support readiness and approval.
+- [x] Separate public release notes from internal engineering logs, checklists, security-sensitive implementation details and unverified roadmap claims.
+- [ ] Before launch, approve public product-status vocabulary, support/escalation ownership, moderation/privacy rules and publication permissions.
+- [ ] Launch Telegram/MAX, VK and other channels only after stable product availability and a sustainable support/release process.

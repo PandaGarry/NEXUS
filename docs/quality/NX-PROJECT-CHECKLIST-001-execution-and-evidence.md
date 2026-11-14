@@ -1444,19 +1444,33 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 ## 18.85 PostgreSQL 18.7 HEGC guard qualification harness — 2026-11-14
 
-- [x] Add an isolated disposable SQL fixture with distinct NOLOGIN definer roles, separate HEGC/writer logins and a private common guard helper.
-- [x] Enforce root/account guard as the first protected database operation; bind authenticated session_user authorization into that same root-guard UPDATE.
-- [x] Validate complete active scope membership after root acquisition; explicitly reject incomplete and non-canonical child UUID-byte order.
-- [x] Revoke runtime direct source/control-table access and helper execution; test direct DML, SET ROLE, temp/search_path spoofing and custom-GUC identity spoofing.
-- [x] Verify exact-attempt retry returns the same grant and changed binding conflicts.
-- [x] Run real multi-connection PostgreSQL 18.7 writer-first and HEGC-first races; stale waiters receive SQLSTATE 40001 and succeed only after whole-transaction retry.
-- [x] Verify concurrent duplicate attempt ID forces a full retry and resolves to the original grant.
-- [x] Simulate lost client response after COMMIT; exact retry returns the same committed grant ID.
-- [x] Verify exact code/test HEAD 7e60164346f25f8f2f58fa4da2a9282fea5a2217 on [workflow #43622108660](https://github.com/PandaGarry/NEXUS/actions/runs/43621734616): 7 tests passed on PostgreSQL 18.7; inspect logs and confirm no ResourceWarnings.
-- [x] Verify Python reference-model workflow #43622108645: 13 suites / 264 tests on Python 3.11, 3.12 and 3.13 (792 executions).
-- [x] Investigate red run #43621620302: response-loss fixture slept before COMMIT; move the simulated disconnect after COMMIT and verify corrected exact head.
-- [x] Investigate red run #43622000189: a local variable typo prevented the non-canonical scope-order assertion from executing; correct it and verify exact head 7e60164346f25f8f2f58fa4da2a9282fea5a2217.
-- [ ] Add scope-membership mutation races, RLS/function-overload/PUBLIC-EXECUTE adversarial tests, crash/restore and true uncertain-COMMIT recovery.
-- [ ] Pin and record PostgreSQL image digest/build provenance; obtain independent database security review before any production design acceptance.
+- [x] Add isolated disposable SQL fixture with distinct NOLOGIN definer roles and separate HEGC/writer/membership-admin logins.
+- [x] Enforce root/account guard as the first protected operation and authenticate via session_user in the same guard update.
+- [x] Validate complete active scope membership and canonical UUID-byte child order.
+- [x] Add a membership-administration entrypoint for scope activation/deactivation; it validates the complete pre-change set and acquires the common root/child guards before mutation.
+- [x] Prove concurrent scope addition vs gate: stale gate waits, receives SQLSTATE 40001, retries the full transaction with the expanded scope set and succeeds; deactivation invalidates the old set.
+- [x] Enable and FORCE RLS on the fixture source table; test session_user/account-bound HEGC SELECT and writer SELECT/UPDATE policies.
+- [x] Verify runtime ACL closure, no direct DML, no helper invocation, no SET ROLE, no search_path/temp-object or custom-GUC identity spoofing.
+- [x] Verify exact-attempt retry, changed-binding conflict, concurrent duplicate-attempt retry and lost post-COMMIT response recovery.
+- [x] Pass 8 tests on exact code/test HEAD 614f22f3bbff879d91c040eb73511a90fe7d32ef, [PostgreSQL workflow #43628329933](https://github.com/PandaGarry/NEXUS/actions/runs/43628329933).
+- [x] Pass Python reference-model workflow [#43628329956](https://github.com/PandaGarry/NEXUS/actions/runs/43628329956): 13 suites / 264 tests on Python 3.11, 3.12 and 3.13 (792 executions).
+- [x] Inspect both workflows' job logs; no test failures, ResourceWarnings or deprecation warnings.
+- [x] Investigate prior harness regressions #43621620302 and #43622000189; correct and verify subsequent exact code/test heads.
+- [ ] Guard service-principal and authorization-map mutations with a reviewed protocol; test their races against HEGC and source writers.
+- [ ] Expand RLS adversarial matrix to policy composition, restrictive policies, owner/role edge cases and covert-channel analysis.
+- [ ] Test function overloads, PUBLIC/default privileges, ACL drift and role graph from catalogs.
+- [ ] Qualify crash/restore, backup/PITR, failover and true uncertain-COMMIT recovery.
+- [ ] Pin and record PostgreSQL image digest/build provenance; obtain independent database security review before production design acceptance.
 
-**Disposition:** this qualifies the isolated fixture's guard/role protocol only. It does not implement or qualify production HEGC, NEXUS database schemas, service identities, Egress or live execution.
+**Disposition:** this qualifies only the disposable fixture. Production schema, service identities, RLS policies, HEGC, Egress and live execution remain unimplemented and unauthorized.
+
+## 18.86 Public release communication discipline — 2026-11-14
+
+- [x] Define a canonical public release-note format that translates merged, verified changes into user value and material limitations.
+- [x] Separate internal engineering records from public product updates; never publish raw internal checklists, credentials, infrastructure details or unverified claims.
+- [x] Define release gates: merged change, green CI, updated user-facing documentation, security review where relevant, known limitations and rollback/support readiness.
+- [x] Keep Telegram/MAX, VK and other community channels as a later launch workstream, not an active launch task.
+- [ ] Before first public release, approve public status vocabulary, support/escalation ownership, moderation/privacy policy and publication permissions.
+- [ ] Activate external channels only after stable product availability, an accountable support process and repeatable release-note production exist.
+
+**Disposition:** communication process is documented; no public channels are launched and no product availability is implied.

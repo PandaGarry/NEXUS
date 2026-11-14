@@ -843,3 +843,18 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Disabled automatic retries, redirects, request replay, proxy/service-mesh retries and WebSocket reconnect replay for order mutations by default; venue-specific exceptions require proven endpoint idempotency and explicit approval.
 - Added a regression preventing a second logical request initiation from the same consumed grant.
 - Code/test HEAD `fbccb65e3c75cbaf7081f6d1f6e02095fd53d8ee` passed 264 tests/runtime (792 executions); exact documentation-synchronized branch HEAD `3a8099750dfb562af63901163a123b8849a8d425` passed workflow #43620613920.
+
+
+### Guarded scope-membership mutation and forced RLS fixture qualification — 2026-11-14
+
+- Added a dedicated membership-administration entrypoint that acquires the common root/child guards before scope activation or deactivation.
+- Added a real PostgreSQL 18.7 race: membership addition blocks a stale gate transaction, which receives SQLSTATE 40001 and must retry with the expanded complete scope set.
+- Enabled and forced RLS on the disposable source fixture; HEGC and writer policies bind to authenticated session_user and account metadata.
+- PostgreSQL workflow #43628329933 passed 8 tests. Python reference-model workflow #43628329956 passed 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions).
+- Scope-membership and fixture RLS qualification only; production schemas, authorization-map mutation protocol, RLS policies and services remain unimplemented.
+
+### Public release communication standard — 2026-11-14
+
+- Defined concise, user-oriented public release notes and publication gates.
+- Kept internal engineering records separate from public updates; Telegram/MAX, VK and other community channels remain a later-stage launch item.
+- No public channel or production availability is implied.
