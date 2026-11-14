@@ -124,7 +124,7 @@ Expected values may be strings, booleans, integers for non-financial enumerated 
 The initial proposed class families are:
 
 - `SCHEMA.INVALID`, `SCHEMA.UNSUPPORTED_VERSION`, `SCHEMA.MISSING_REQUIRED_FIELD`;
-- `NUMERIC.INVALID_SYNTAX`, `NUMERIC.INVALID_WIRE`, `NUMERIC.NON_CANONICAL`, `NUMERIC.DIVISION_BY_ZERO`, `NUMERIC.INEXACT_RESULT`, `NUMERIC.INVALID_STEP`, `NUMERIC.OVERFLOW`, `NUMERIC.RESOURCE_LIMIT`;
+- `NUMERIC.INVALID_SYNTAX`, `NUMERIC.INVALID_WIRE`, `NUMERIC.UNSUPPORTED_WIRE_VERSION`, `NUMERIC.NON_CANONICAL`, `NUMERIC.DIVISION_BY_ZERO`, `NUMERIC.INEXACT_RESULT`, `NUMERIC.INVALID_STEP`, `NUMERIC.OVERFLOW`, `NUMERIC.RESOURCE_LIMIT`;
 - `DOMAIN.UNIT_MISMATCH`, `DOMAIN.IDENTITY_MISMATCH`, `DOMAIN.UNSUPPORTED_OPERATION`;
 - `INSTRUMENT.UNKNOWN_SPEC`, `INSTRUMENT.INVALID_RULE`, `INSTRUMENT.STALE_VERSION`;
 - `STATE.INVALID_TRANSITION`, `STATE.STALE_EPOCH`, `STATE.DUPLICATE_IDENTITY`.
@@ -154,13 +154,13 @@ For `rational.divide_exact`, the current legacy vector takes decimal operands `a
 
 The first migration should not add synthetic rejection cases just to populate a taxonomy. A rejection class enters a suite only when a legacy case or a separately reviewed negative vector proves that behavior.
 
-#### Current reference-model exception gap
+#### Reference-model exception mapping and remaining gaps
 
-The existing Python oracle has useful typed exceptions for exact decimal behavior (`InvalidDecimal`, `InexactQuantization`, `InvalidStep`, `DivisionByZero`, `InexactDivision`). These can be mapped at the adapter boundary to the proposed stable classes above without changing their human-readable messages.
+The exact-decimal oracle exposes typed exceptions (`InvalidDecimal`, `InexactQuantization`, `InvalidStep`, `DivisionByZero`, `InexactDivision`). The numeric-wire reference slice now also exposes typed subclasses with stable `error_class` values for malformed shape, unsupported wire version, non-canonical encoding and resource-budget exhaustion. All subclasses remain catch-compatible with the existing `NumericWireError` base class, preserving callers that depend on the old API.
 
-The numeric wire parser is less expressive: all malformed, unsupported-version, non-canonical and over-budget values currently raise one `NumericWireError`. Existing tests assert that broad exception, not a stable subtype/code. Until the reference contract is deliberately refined, all such parser failures can only map to `NUMERIC.INVALID_WIRE`; the runner MUST NOT infer `RESOURCE_LIMIT` versus `NON_CANONICAL` by parsing message text. A future refinement should add a stable machine-readable error code or typed subclasses and tests, while preserving the public fail-closed behavior.
+The normalized adapter MUST read the stable machine-readable class; it MUST NOT parse exception messages. The mapping is covered by a dedicated test in `test_numeric_wire.py`. This is reference-model evidence only and does not establish a production wire parser.
 
-The instrument-spec fixture is a snapshot, not an executable test case. Although the current reference model has exception subclasses, the fixture contains no expected behavior. Do not mark it migrated until dedicated cases and a reviewed mapping from exception classes to stable rejection classes exist.
+The instrument-spec fixture remains a snapshot, not an executable test case. Although the current reference model has exception subclasses, the fixture contains no expected behavior. Do not mark it migrated until dedicated cases and a reviewed mapping from exception classes to stable rejection classes exist.
 
 ## 4. Canonical comparison rules
 
