@@ -53,12 +53,20 @@ Official sources:
 - For checksum construction, parse price and quantity without floating-point precision loss; remove decimal points and leading zeroes from each string; concatenate the top 10 asks in ascending price order, then the top 10 bids in descending price order; compute CRC32 and compare as an unsigned 32-bit integer.
 - Apply all price-level updates in a message before calculating the checksum. Remove zero-quantity levels and truncate to subscribed depth; the feed does not send zero-quantity updates for levels falling out of scope.
 - Trade events include taker side, quantity, price, per-book `trade_id` and RFC3339 timestamp; a message may batch multiple trades.
+- Kraken's downloadable Spot Time & Sales archive covers every public trade for each pair from its first trade through 2026-09-30. Its seven CSV fields are `timestamp, price, volume, type, order_type, misc, trade_id`; the full archive is split into roughly 2 GB parts with published SHA-256 checksums. This is trade history, not L2 history.
+- Do not assume historical CSV `type` (`b`/`s`) has identical aggressor/taker semantics to the WS v2 `side` until that mapping is verified. If it is not equivalent, it cannot be used as signed taker-flow input for HYP-001.
+- The Kraken WS FAQ says public market-data feeds are unauthenticated and current-only; a book snapshot is sent on subscription and a heartbeat arrives at 1 Hz when no other messages arrive.
+- Terms caveat: Kraken's API guide says prior permission is required for certain uses, including non-personal commercial use of data from public endpoints, and directs requests to `marketdata@kraken.com`. The global Terms limit use and third-party distribution of Kraken content. Personal internal research, retention and any later redistribution require separate terms review; no redistribution right is inferred.
 - This is L2, not proof of Spot L3/order-level access.
 
 Official sources:
 - Book L2: https://docs.kraken.com/api/docs/websocket-v2/book
 - Book checksum v2 algorithm: https://docs.kraken.com/exchange/guides/websockets/book-checksum-v2
 - Trades: https://docs.kraken.com/api/docs/websocket-v2/trade
+- Public feed FAQ / heartbeat / current-only scope: https://support.kraken.com/articles/360022326871-kraken-websocket-api-frequently-asked-questions
+- Historical Spot Time & Sales archive: https://support.kraken.com/in/articles/360047543791-downloadable-historical-market-data-time-and-sales-
+- API terms / prior permission for certain commercial public-data uses: https://docs-legacy.kraken.com/api/docs/guides/global-intro/
+- Global Terms: https://www.kraken.com/legal/global-terms
 
 ## 3. Full qualification matrix
 
@@ -71,7 +79,7 @@ The following remain UNKNOWN until exact jurisdiction, account type, product fam
 | Spot eligibility | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Perpetual swap eligibility | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Dated futures / expiry semantics | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
-| Historical trade archive coverage / start date | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| Historical trade archive coverage / start date | UNKNOWN | UNKNOWN | YES — downloadable Spot Time & Sales from each pair's first trade through 2026-09-30 | UNKNOWN | UNKNOWN |
 | Historical L2 archive coverage | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Private order/fill/account streams | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | REST reconciliation for unknown order outcome | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
