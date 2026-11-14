@@ -223,7 +223,7 @@ This is a bounded consistency pass over the relevant authority, command, state, 
 - [ ] Qualified legal review of applicable laws and product classification.
 - [x] Cross-review against NX-IF-001..005, NX-SEC-001 and NX-ADR-002 (bounded documentation review; no blocking contradiction found).
 - [x] Test-only evidence conformance: 28 tests passed on Python 3.11/3.12/3.13.
-- [x] Test-only dispatch/suspension linearization and stale-epoch fencing: 21 tests passed on Python 3.11/3.12/3.13 at PR head `ccbf9e86b86a366fb99c55f5d23deccd5755e5f9` (run 43598800464).
+- [x] Test-only dispatch/suspension linearization and stale-epoch fencing: 21 tests passed on Python 3.11/3.12/3.13 at PR head `a7a369ca9e5683208fbcd43a3fd1de0a8f8c47f1` (run 43599182263).
 - [ ] Production identity/evidence storage, signing, authorization and operator role design.
 
 **Disposition:** PROPOSED. Cross-document consistency review and two test-only reference suites completed. The single-process egress model does not prove production or cross-host fencing. Owner/legal review, authenticated evidence, trusted time, durable state, distributed revocation and production egress enforcement remain open. No API key, order or live capability is authorized. G0/G1 remain blocked.
