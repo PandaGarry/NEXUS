@@ -7,7 +7,7 @@
 - [ ] Завершить аудит exchange adapters и capabilities matrix. (Initial Tradoor source pass recorded in NX-RESEARCH-002; private/funding and full instrument rules remain UNKNOWN.)
 - [ ] Проверить ingestion, recorder, backfill, migrations и persistence.
 - [ ] Проверить тесты, CI, dependency tree и лицензии.
-- [ ] Проверить auth/session/security и построить threat model.
+- [x] Подготовить initial threat model (NX-SEC-001, PROPOSED); [ ] провести deployment-specific review и security verification.
 - [ ] Сравнить HFTBacktest, LEAN и ABIDES по fidelity, replay, latency и queue modeling.
 - [ ] Сопоставить Order Flow формулы с поведенческими эталонами.
 - [ ] Зафиксировать дефекты, неизвестные свойства и ограничения.
@@ -31,8 +31,8 @@
 - [ ] Проверить latency, queue position, partial fills, slippage и adverse selection.
 
 ## Phase 4 — Risk & Execution (Blocked)
-- [ ] Утвердить execution lifecycle и reconciliation.
-- [ ] Утвердить независимый Risk Engine и threat model.
+- [ ] Утвердить NX-ADR-002 Execution Integrity & Reconciliation.
+- [ ] Утвердить независимый Risk Engine и NX-SEC-001 threat model.
 - [ ] Проверить kill switch, limits, secrets, audit и disaster recovery.
 - [ ] Допускать read-only/paper только после прохождения архитектурных gates.
 
