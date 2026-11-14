@@ -128,6 +128,13 @@ class ManifestValidationTests(unittest.TestCase):
             validate_manifest(m)
         self.assertEqual(ctx.exception.code, "MANIFEST.OUT_OF_SCOPE_OBJECT")
 
+    def test_unhashable_inventory_kind_is_rejected_with_stable_error(self):
+        m = valid_manifest()
+        m["inventory"][0]["object_kind"] = ["role"]
+        with self.assertRaises(ManifestValidationError) as ctx:
+            validate_manifest(m)
+        self.assertEqual(ctx.exception.code, "MANIFEST.OUT_OF_SCOPE_OBJECT")
+
     def test_invalid_migration_digest_rejected(self):
         m = valid_manifest()
         m["migration_set_digest"] = "NOT-A-DIGEST"
@@ -187,6 +194,11 @@ class ManifestAdmissionTests(unittest.TestCase):
         result = admitted(last_accepted_digest="d" * 64)
         self.assertFalse(result.accepted)
         self.assertEqual(result.code, "MANIFEST.PREDECESSOR_MISMATCH")
+
+    def test_malformed_external_trust_digest_is_rejected(self):
+        result = admitted(last_accepted_digest="not-a-digest")
+        self.assertFalse(result.accepted)
+        self.assertEqual(result.code, "MANIFEST.INVALID_TRUST_STATE")
 
     def test_expired_manifest_is_fail_closed(self):
         result = admitted(now=datetime(2026, 11, 14, 14, 0, tzinfo=timezone.utc))
