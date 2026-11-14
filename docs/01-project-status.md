@@ -113,4 +113,4 @@
 
 ### Latest domain-kernel work
 
-NX-REF-DOMAIN-004 adds a test-only, explicit mapping between instrument specifications and quantity dimensions. Spot, linear and inverse reference semantics are supported; QUANTO and inverse base exposure remain blocked. Dedicated CI verification pending. No venue is qualified by synthetic fixtures.
+NX-REF-DOMAIN-004 adds a test-only, explicit mapping between instrument specifications and quantity dimensions. Spot, linear and inverse reference semantics are supported; QUANTO and inverse base exposure remain blocked. Dedicated 16-test suite passed in GitHub Actions run #43593795698 on exact HEAD `ba8df9def72bff82625669bc236430bb8d21592d` across Python 3.11–3.13 (109 tests per runtime / 327 matrix executions). No venue is qualified by synthetic fixtures.
