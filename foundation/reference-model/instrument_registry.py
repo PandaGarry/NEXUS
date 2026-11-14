@@ -32,13 +32,14 @@ class Registration(str, Enum):
 
 
 class InstrumentSpecRegistry:
-    __slots__ = ("_history",)
     """Append-only registry for immutable InstrumentSpec snapshots.
 
     This object is deliberately single-process and in-memory. The caller owns
     version assignment. A repeated identical version is idempotent; a repeated
     version with different content is rejected. New versions must increase.
     """
+
+    __slots__ = ("_history",)
 
     def __init__(self) -> None:
         self._history: dict[str, tuple[InstrumentSpec, ...]] = {}
@@ -68,10 +69,14 @@ class InstrumentSpecRegistry:
                 "instrument_id cannot be rebound to another venue/native instrument/market"
             )
 
+        prior_effective_times = [
+            snapshot.effective_at_ms for snapshot in history
+            if snapshot.effective_at_ms is not None
+        ]
         if (
-            latest.effective_at_ms is not None
+            prior_effective_times
             and spec.effective_at_ms is not None
-            and spec.effective_at_ms < latest.effective_at_ms
+            and spec.effective_at_ms < prior_effective_times[-1]
         ):
             raise EffectiveTimeRegression(
                 "known effective_at_ms cannot move backwards across versions"
