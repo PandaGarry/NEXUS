@@ -7,7 +7,7 @@
 
 ## 1. Problem statement
 
-NX-REF-EXEC-001 contains an adversarial counterexample: a dispatcher can pass its final local halt/expiry check, pause before network transmission, lose operational authority while recovery marks its command OUTCOME_UNKNOWN, then resume and send. An earlier model revision also allowed a late ACK to overwrite recovery state; the current conditional state transition rejects that overwrite and records the response as a stale venue observation. The external send race remains unresolved.
+NX-REF-EXEC-001 contains an adversarial counterexample: a dispatcher can pass its final local halt/expiry check, pause before network transmission, lose operational authority while recovery marks its command OUTCOME_UNKNOWN, then resume and send. An earlier model revision also allowed a late ACK to overwrite recovery state; conditional state transitions reject late ACK, stale pre-send rejection and adapter-error writes after recovery, recording stale evidence without overwriting the authoritative state. The external send race remains unresolved.
 
 A database lease, heartbeat, fencing integer, or local token check is not sufficient when the stale process still has venue credentials, an open network route, or direct access to the adapter. The stale process can ignore the token or have already passed the check.
 
@@ -32,7 +32,7 @@ A database lease, heartbeat, fencing integer, or local token check is not suffic
 5. If old-path fencing cannot be proven, account CREATE dispatch remains HALTED. Availability is subordinate to preventing duplicate external effects.
 6. Every command attempt is bound to account scope, authority epoch, command digest, approval, reservation, instrument-spec version, and a unique attempt ID.
 7. State transitions use compare-and-swap against the current authority epoch and expected prior state. A stale epoch cannot overwrite a newer recovery or reconciliation state.
-8. A late response from a stale worker is retained as untrusted evidence for reconciliation; it cannot directly set authoritative ACKNOWLEDGED/FILLED state.
+8. Late ACKs and dispatch errors from a stale worker are retained as untrusted evidence for reconciliation; conditional state transitions prevent them from overwriting authoritative recovery state.
 9. DISPATCHING at takeover becomes OUTCOME_UNKNOWN unless authoritative venue evidence proves a terminal result. It is never blindly resent.
 10. Venue idempotency/client-order IDs are defense in depth only. They do not replace egress fencing and must be qualified per venue/product.
 
@@ -90,7 +90,7 @@ The old worker may later return an ACK or timeout. That response is recorded as 
 
 ## 6. Reference conformance scenarios
 
-A test-only Python control-plane state machine now exists at `foundation/reference-model/egress-fencing/`. Its 13 unit tests cover transition ordering (HALTING → FENCING → FENCED → RECONCILING → READY_TO_GRANT), stale epoch rejection and fail-closed behavior. GitHub Actions run [#43590804814](https://github.com/PandaGarry/NEXUS/actions/runs/43590804814) passed the suite on Python 3.11–3.13 at exact branch HEAD `a7ee5426077005a6135e9f1b6f1c4044cc41d459`. It does not revoke a network route, terminate a host, validate trusted fence attestations or prove actual egress isolation. A passing state-machine test is not a production fence.
+The gateway reference now also conditionally guards stale pre-send and adapter-error state updates after recovery; two new adversarial tests cover those races. The 23-test gateway suite and 13-test handover state machine passed run #43591389103 on Python 3.11–3.13. This still does not fence network egress. A test-only Python control-plane state machine now exists at `foundation/reference-model/egress-fencing/`. Its 13 unit tests cover transition ordering (HALTING → FENCING → FENCED → RECONCILING → READY_TO_GRANT), stale epoch rejection and fail-closed behavior. GitHub Actions run [#43590804814](https://github.com/PandaGarry/NEXUS/actions/runs/43590804814) passed the suite on Python 3.11–3.13 at exact branch HEAD `a7ee5426077005a6135e9f1b6f1c4044cc41d459`. It does not revoke a network route, terminate a host, validate trusted fence attestations or prove actual egress isolation. A passing state-machine test is not a production fence.
 
 A production-grade conformance harness must prove:
 1. A worker paused immediately before egress cannot send after its egress identity is revoked.
