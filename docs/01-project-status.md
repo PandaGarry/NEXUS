@@ -578,11 +578,11 @@ NX-IF-005 and NX-REF-EXEC-002 now require the authoritative halt-epoch transitio
 
 The crash-point matrix now covers both lock orders, paused process, unavailable halt store, external fencing failure and venue acceptance after acknowledgement. This is a proposed linearization contract, not a proven production guarantee. Actual socket/network instrumentation and independent process/host fencing remain unimplemented.
 
-## Halt / Egress race and current verification
+## Prior halt / Egress CI snapshot — superseded 2026-11-14
 
-NX-IF-005 now has explicit adversarial cases 36–42 for both commit orders, pause-after-gate, control-store outage, positive sender fencing, delayed venue acceptance and actual socket-boundary evidence. Its acceptance criteria now distinguish queued commands without final authorization from gate-committed in-flight attempts. The independent emergency Control Plane can commit a halt while Risk is unavailable if the authoritative halt store remains available; store uncertainty blocks Egress authorization and prevents a fully-enforced HALTED claim.
+NX-IF-005 now has explicit adversarial cases 36–42 for both commit orders, pause-after-gate, control-store outage, positive sender fencing, delayed venue acceptance and actual socket-boundary evidence. Its acceptance criteria distinguish queued commands without final authorization from gate-committed in-flight attempts. The independent emergency Control Plane can commit a halt while Risk is unavailable if the authoritative halt store remains available; store uncertainty blocks Egress authorization and prevents a fully-enforced HALTED claim.
 
-Latest verified reference CI: SHA `73841573e4e02b34a0c0363bbbe21155828d0c08`, [workflow #43617906166](https://github.com/PandaGarry/NEXUS/actions/runs/43617906166), Python 3.11/3.12/3.13, 13 suites / 239 tests each, 717 successful executions. Subsequent branch commits are documentation-only and are awaiting exact-head rerun. No Rust, CBOR/COSE runtime, PostgreSQL harness, halt store, Egress transport or external fence is implemented.
+The earlier matrix at SHA `73841573e4e02b34a0c0363bbbe21155828d0c08` passed 239 tests/runtime (717 executions). It was superseded when the 11-test HaltEgressGate reference oracle was added; the later 250-test / 750-execution result is recorded below. No Rust, CBOR/COSE runtime, PostgreSQL harness, halt store, Egress transport or external fence is implemented.
 
 ## Risk signing versus venue signing authority separation — 2026-11-14
 
@@ -596,7 +596,7 @@ This is Python reference-model CI only. It does not implement or verify signing 
 
 ## Test-only halt / final Egress gate reference model
 
-Added `foundation/reference-model/egress-fencing/halt_egress_gate.py` with 11 tests. It models halt-first denial, gate-first in-flight attempts, pause-after-gate acknowledgement blocking, positive sender-fence handling, single-use attempt IDs, halt-store outage and reconciliation obligations after socket initiation. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing. The expanded suite's exact-head CI is pending.
+Added `foundation/reference-model/egress-fencing/halt_egress_gate.py` with 11 tests. It models halt-first denial, gate-first in-flight attempts, pause-after-gate acknowledgement blocking, positive sender-fence handling, single-use attempt IDs, halt-store outage and reconciliation obligations after socket initiation. The model is deliberately sequential and test-only: it does not prove PostgreSQL linearizability, real concurrent scheduling, durable halt state, socket behavior or network fencing. The expanded suite's exact PR-head CI passed below; later documentation synchronization requires a fresh final branch-head run.
 
 ## Exact-head CI including HaltEgressGate reference model — 2026-11-14
 
@@ -604,6 +604,3 @@ PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` passed [workflow #4361821
 
 The new HaltEgressGate is a sequential test-only oracle. It does not prove real PostgreSQL lock ordering, concurrent linearizability, process pause/termination, network route fencing, socket behavior, venue acceptance or production halt safety. No live controls are implemented.
 
-## Halt / final Egress oracle implementation and verification
-
-Added a test-only sequential `HaltEgressGate` model and 11 unit tests in `foundation/reference-model/egress-fencing/`. The expanded egress-fencing suite passed at code/test SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1`, [workflow #43618215618](https://github.com/PandaGarry/NEXUS/actions/runs/43618215618): Python 3.11/3.12/3.13, 250 tests per runtime / 750 successful executions total. The egress-fencing package ran 24 tests per runtime. Logs contain no failures or Node.js 20 / `punycode` deprecation warnings. The new model represents commit ordering sequentially and does not prove database linearizability, durable state, process scheduling, socket behavior or network fencing. Subsequent commits are documentation synchronization only; final branch-head CI is pending.
