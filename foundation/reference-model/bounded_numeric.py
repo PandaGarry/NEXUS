@@ -169,6 +169,42 @@ class BoundedNumericContext:
             raise NumericLimitExceeded("division denominator pre-reduction exceeds rational digit budget")
         return self._check_rational(numerator.divide_exact(denominator))
 
+    def compare(self, left: ExactDecimal, right: ExactDecimal) -> int:
+        self._check_decimal(left, "left")
+        self._check_decimal(right, "right")
+        scale = max(left.scale, right.scale)
+        self._check_power10(scale - left.scale, _digits_upper_bound(left.coefficient), "comparison alignment")
+        self._check_power10(scale - right.scale, _digits_upper_bound(right.coefficient), "comparison alignment")
+        return left.compare(right)
+
+    def is_multiple_of(self, value: ExactDecimal, step: ExactDecimal) -> bool:
+        self._check_decimal(value, "value")
+        self._check_decimal(step, "step")
+        scale = max(value.scale, step.scale)
+        self._check_power10(scale - value.scale, _digits_upper_bound(value.coefficient), "step alignment")
+        self._check_power10(scale - step.scale, _digits_upper_bound(step.coefficient), "step alignment")
+        return value.is_multiple_of(step)
+
+    def to_decimal_exact(self, value: ExactRational) -> ExactDecimal:
+        self._check_rational(value)
+        remainder = value.denominator
+        twos = fives = 0
+        while remainder % 2 == 0:
+            remainder //= 2
+            twos += 1
+        while remainder % 5 == 0:
+            remainder //= 5
+            fives += 1
+        if remainder != 1:
+            # Delegate to the oracle for its stable domain-specific exception.
+            return value.to_decimal_exact()
+        scale = max(twos, fives)
+        if scale > self.limits.max_scale:
+            raise NumericLimitExceeded("exact decimal conversion scale exceeds configured maximum")
+        growth = max(scale - twos, scale - fives)
+        self._check_intermediate(_digits_upper_bound(value.numerator) + growth, "exact decimal conversion")
+        return self._check_decimal(value.to_decimal_exact(), "exact decimal conversion result")
+
     def quantize_rational(
         self, value: ExactRational, target_scale: int, rounding: RoundingMode
     ) -> ExactDecimal:
