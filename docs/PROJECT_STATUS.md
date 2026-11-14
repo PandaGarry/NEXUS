@@ -48,6 +48,20 @@ A status is valid only for the exact commit, test, artifact or dated source link
 - Hosted GitHub runner timing is not a production latency benchmark.
 - SHA-256 stored beside a frame detects accidental corruption relative to that digest; it is not tamper-proof evidence.
 
+## Legacy PR disposition — provisional
+
+The open PR inventory currently contains #1–#17 plus active #19 and #20. Only #19 and #20 are active delivery lanes. The older PRs are parked for review; their branches and review history are preserved, and none is approved for merge.
+
+| PR group | Contents | Current disposition |
+|---|---|---|
+| #1–#9 | Early project charter, architecture/requirements, owner decisions, product profile and banking/venue research | Historical source material. Review for unique owner decisions and research not already represented in #20; do not merge the chain wholesale |
+| #10–#13 | Exact numeric kernel, instrument/domain reference models, financial rounding and venue-neutral golden fixtures | Potentially reusable code/tests. Keep isolated until a concrete product slice needs them; independently review before cherry-pick/integration |
+| #14 | Venue eligibility and egress-fencing reference models plus jurisdiction research | Preserve as a separate eligibility/security workstream; not a dependency of the public recorder |
+| #16 | Large execution/trust/G1 architecture and reference-model suite | Future pre-live design evidence, not production implementation. Do not merge wholesale into the current prototype |
+| #17 | Bybit V5 market-data qualification research | Compare against #19 M2 and #20 venue matrix; extract only unique, source-backed findings |
+
+The consolidation decision for each old PR is one of: integrate selected commits/files, superseded/close while preserving its branch, or defer with a named trigger. Closing old PRs is a separate owner-visible action; no PR has been closed or merged in this pass.
+
 ## PR consolidation policy
 
 - Target: normally two active PRs — one integration/implementation PR and one independent docs/research PR. A third is allowed only for a genuinely independent urgent change.
