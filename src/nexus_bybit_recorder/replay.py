@@ -37,11 +37,16 @@ def summarize(path: str | Path) -> dict:
     control_frames = 0
     non_json_frames = 0
     other_json_frames = 0
+    non_ws_records = 0
     frames = 0
     for record in iter_verified_frames(path):
         frames += 1
         generations.add(int(record["connection_generation"]))
-        record_types[str(record.get("record_type", "unknown"))] += 1
+        record_type = str(record.get("record_type", "unknown"))
+        record_types[record_type] += 1
+        if record_type != "raw_ws_frame":
+            non_ws_records += 1
+            continue
         try:
             payload = json.loads(record["raw_frame"])
         except json.JSONDecodeError:
@@ -63,7 +68,7 @@ def summarize(path: str | Path) -> dict:
             control_frames += 1
         else:
             other_json_frames += 1
-    classified = sum(topics.values()) + control_frames + non_json_frames + other_json_frames
+    classified = sum(topics.values()) + control_frames + non_json_frames + other_json_frames + non_ws_records
     return {
         "frames": frames,
         "connection_generations": len(generations),
@@ -73,6 +78,7 @@ def summarize(path: str | Path) -> dict:
         "control_ops": dict(sorted(control_ops.items())),
         "non_json_frames": non_json_frames,
         "other_json_frames": other_json_frames,
+        "non_ws_records": non_ws_records,
         "classification_total": classified,
         "classification_reconciles": classified == frames,
     }
