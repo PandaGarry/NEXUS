@@ -460,3 +460,17 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Capability payload is a single NEXUS deterministic-CBOR map; exact protected and payload bytes are preserved.
 - Sig_structure uses RFC 9052 §9 deterministic encoding and fixed non-caller-controlled external AAD.
 - No implementation or dependency approved; byte-exact vectors remain required.
+
+### COSE pre-verification key-resolution boundary tightened — 2026-11-14
+
+- Treat token-supplied kid, alg, issuer and audience as untrusted until signature verification.
+- Prohibit token-directed remote key retrieval; candidate lookup is bounded to a local versioned registry and local expected issuer/audience/algorithm/purpose.
+- Require signed claims to match local expected context after verification; require exactly one eligible key or fail closed.
+- Restrict Execution to public OKP/Ed25519 (32-byte public key); private key material remains within Risk; require 64-byte signature.
+- Added corresponding negative-test requirements. No verifier or key registry was implemented.
+
+### Exact-head CI after COSE key-resolution hardening — 2026-11-14
+
+- Exact branch HEAD `6fefd9a44ff2f272b6516265d10f41c46a13cf7a` passed [workflow #43615911362](https://github.com/PandaGarry/NEXUS/actions/runs/43615911362).
+- Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no failures or Node.js 20 / `punycode` warnings.
+- Evidence is Python reference-model regression only, not COSE/Rust/persistence/egress/venue/live proof.
