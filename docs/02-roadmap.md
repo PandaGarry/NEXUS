@@ -803,3 +803,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Distinguish Risk application outage from authoritative halt-store outage; Egress denies if final gate cannot commit.
 - [ ] Fault-inject paused Egress, halt/gate races, crash after gate commit, control-store loss and host/network fencing failure.
 - [ ] Prove the guarantee at the instrumented socket boundary; do not overclaim wall-clock no-bytes-after-halt.
+
+## Halt / Egress adversarial conformance cases
+
+- [x] Add IF-005 cases 36–42 for halt/gate ordering, paused process, fence outage, halt-store outage, late venue acceptance and socket-boundary proof.
+- [ ] Implement test harness for halt-before-gate and gate-before-halt with durable state inspection.
+- [ ] Pause Egress after gate commit; prove no halt acknowledgement until socket initiation or positive sender fencing.
+- [ ] Inject control-store outage and verify final gate denies.
+- [ ] Verify late venue acceptance of a pre-acknowledgement initiated request remains reconciled.
+- [ ] Prove no stale/queued socket initiation after halt acknowledgement using actual instrumented egress boundary.
