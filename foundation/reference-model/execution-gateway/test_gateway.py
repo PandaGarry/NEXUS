@@ -288,13 +288,17 @@ class GatewayTests(unittest.TestCase):
             recovery_store.close()
 
         self.assertFalse(worker.is_alive())
-        # This is an intentional counterexample test: current code is unsafe.
-        # It records that a stale worker can still send and overwrite recovery state.
+        # This is an intentional counterexample test: local state CAS now rejects
+        # the stale ACK, but the old worker still reaches venue egress without a fence.
         self.assertEqual(len(stale_adapter.calls), 1)
-        self.assertEqual(outcomes, ["ACKNOWLEDGED"])
+        self.assertEqual(outcomes, ["STALE_RESPONSE_RECORDED"])
         self.assertEqual(self.store.db.execute(
             "SELECT state FROM commands WHERE command_id='cmd-001'").fetchone()[0],
-            "ACKNOWLEDGED")
+            "OUTCOME_UNKNOWN")
+        self.assertEqual(self.store.db.execute(
+            "SELECT observation_type,venue_reference,authority_epoch "
+            "FROM venue_observations WHERE command_id='cmd-001'").fetchone(),
+            ("LATE_ACK_STALE_STATE", "venue-order-stale-worker", 4))
 
     def test_duplicate_approval_and_command_replay_rejected(self):
         self.gateway.persist_approved(self.cmd, self.approval)
