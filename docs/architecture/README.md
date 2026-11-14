@@ -31,3 +31,5 @@
 - [NX-OWNER-DECISIONS-001 — Critical Owner Decision Register](NX-OWNER-DECISIONS-001-critical-owner-decision-register.md) — Proposed; OD-01..OD-15 grouped by G0–G3 readiness gates; no owner decisions are assumed accepted.
 
 ADR, подготовленные в обсуждении, не считаются опубликованными или принятыми до появления полного документа в репозитории и review. Interface contracts также требуют owner/security review и conformance evidence.
+
+- [NX-REF-EXEC-001 — Command Gateway Reference Conformance Slice](NX-REF-EXEC-001-command-gateway-reference-conformance.md) — Experimental Python/SQLite reference model; 17 deterministic tests; fake adapter only; not production implementation.
