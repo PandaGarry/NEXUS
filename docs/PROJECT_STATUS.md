@@ -11,6 +11,7 @@ A status is valid only for the exact commit, test, artifact or dated source link
 
 | Workstream | Status | Current truth / evidence |
 |---|---|---|
+| Main branch protection | BLOCKED | Last repository audit (2026-11-15) found `main` unprotected and no repository rulesets; re-check GitHub settings and configure PR-only main, force-push block and required CI before relying on this control |
 | Public project landing page | IN_PROGRESS | PR [#20](https://github.com/PandaGarry/NEXUS/pull/20) contains the review hub and README replacement; not merged |
 | Bybit public recorder | IN_PROGRESS | PR [#19](https://github.com/PandaGarry/NEXUS/pull/19), Python research prototype only; no private API, credentials or orders |
 | Recorder unit/integration tests | TESTED | [CI 43644001404](https://github.com/PandaGarry/NEXUS/actions/runs/43644001404) passed Python 3.11/3.12/3.13 at code head `1afaa21953aa369d634dd2c224f2495709bbdfd6`; includes mocked WS → REST snapshot → LIVE_VALID → replay. This is mocked integration, not exchange-live proof |
@@ -31,6 +32,13 @@ A status is valid only for the exact commit, test, artifact or dated source link
 4. **Strengthen M2 evidence:** independent protocol review; controlled disconnect/reconnect; injected `u=1` and update-ID gap; replay of a real permitted session; compare a fresh REST snapshot with the local book over a defined observation window and documented tolerance.
 5. **Keep research venue-neutral.** Kraken Spot is a protocol contrast; OKX is a historical-L2 research candidate but its personal/non-commercial restrictions make it unsuitable to assume as a future commercial data source. Evaluate commercial data licensing as a separate matrix dimension.
 6. **After M2 acceptance**, implement one materially different second adapter (candidate selected from evidence and eligibility), then define only the shared contracts justified by both.
+
+## Governance documents
+
+- [AI agent rules](../AGENTS.md) — required workflow, permissions and collaboration boundaries.
+- [Security baseline](../SECURITY.md) — controls by readiness level and minimum threat model.
+- [ADR index](ADR_INDEX.md) — durable engineering decisions.
+- [Risk register](RISK_REGISTER.md) — active risks and evidence needed to close them.
 
 ## Evidence snapshot
 
