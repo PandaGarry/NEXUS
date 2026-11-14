@@ -214,7 +214,7 @@ class FinancialMathFixtureTests(unittest.TestCase):
             reordered = aggregate(shuffled)
 
             first_qty, first_price = fills[0]
-            half_qty = D(first_qty.coefficient // 2, first_qty.scale)
+            half_qty = first_qty * D.parse("0.5")
             partitioned = [(half_qty, first_price), (half_qty, first_price)] + fills[1:]
             split_result = aggregate(partitioned)
 
