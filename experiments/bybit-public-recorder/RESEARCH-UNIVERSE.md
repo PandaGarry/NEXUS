@@ -65,11 +65,12 @@ OKX is a research candidate, not a venue recommendation or authorization. Archiv
 The official Bybit Learn guide says downloadable historical public market data can include order-book snapshots, K-lines, trades and funding rates, and links to the public data portal. The accessible public directory currently exposes `trading/`, `spot/`, `kline_for_metatrader4/`, `premium_index/` and `spot_index/`; the `trading/BTCUSDT/` listing contains daily CSV files beginning 2020-03-25 and, in the listing inspected, extends through 2025-11-16. This verifies a public BTCUSDT trade-archive listing, not a current complete archive through today.
 
 Important caveats:
-- The accessible public directory does not expose an obvious order-book archive path. Although the Bybit Learn guide mentions order-book snapshots, NEXUS has not located or validated an actual L2 archive file, schema, depth or date range. Historical L2 remains UNKNOWN.
+- The accessible `public.bybit.com` directory does not expose an obvious order-book archive path. Although the Bybit Learn guide mentions order-book snapshots, NEXUS has not located or validated an official L2 archive manifest, file schema, depth or date range. A third-party downloader points to `quote-saver.bycsi.com/orderbook/linear`, but its author explicitly says it is unaffiliated with Bybit; treat this only as a discovery lead, not evidence of completeness or license. Historical L2 remains UNKNOWN until a sample and official terms are verified.
 - Before using the trade CSV for HYP-001, download a permitted sample privately and verify timestamp precision, trade IDs, taker-side semantics, duplicate handling, row ordering, missing days and schema changes. Do not infer semantics from filenames.
 - The directory listing is not proof that every day is complete or that the archive is current. No raw archive data is committed to the repository.
 
 Sources:
+- Third-party archive discovery lead (not an official Bybit source): https://github.com/Anton495/bybit-data-downloader
 - Bybit Learn guide: https://www.bybit.com/en/learn/bybit-guide/how-to-create-a-bybit-api-key (historical data description and public portal link)
 - Public Bybit data root: https://public.bybit.com/
 - BTCUSDT trade archive listing: https://public.bybit.com/trading/BTCUSDT/
