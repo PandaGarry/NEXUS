@@ -358,8 +358,23 @@ NX-ADR-001 (Unified Market Event Contract) is still missing from the branch and 
 
 ## 11. Owner decisions required before implementation
 
-1. Initial venues and market types (perpetuals, spot, options if ever in scope).
-2. Initial account model: single-user/single-account versus multiple exchange accounts and subaccounts.
+### 11.1 Accepted v1 scope constraints (owner-directed, 2026-11-14)
+
+The owner delegated conservative technical baseline choices to the technical lead. The following constraints are accepted for the v1 architecture baseline and are also recorded in [NX-OWNER-DECISIONS-001](NX-OWNER-DECISIONS-001-critical-owner-decision-register.md):
+
+1. **One venue and one dedicated account/subaccount.** No multi-venue execution, cross-venue collateral or portfolio-wide cross-venue aggregation in v1.
+2. **Account/subaccount risk boundary.** This is the initial authoritative hard-limit, exposure and reservation scope. Strategy/instrument limits may be narrower child constraints. Unconfigured parent scopes fail closed.
+3. **Server-authoritative autonomous runtime.** Market data, execution, Risk, Ledger and recovery run independently of client sessions.
+4. **One shared backend and authoritative state for Desktop + Web.** Both are clients, not separate trading systems; closing both clients does not stop autonomous execution.
+
+These decisions reduce the first-release failure domain. They do not choose a venue, product family, account mode, deployment provider/region, storage technology, numeric risk limits or production availability objectives.
+
+### 11.2 Remaining decisions
+
+
+
+1. Initial venue and market type. Select only after jurisdiction/account eligibility and official API/capability evidence; options remain out of v1 scope unless separately approved.
+2. Exact dedicated account/subaccount model, account mode and operator identity model for the selected venue.
 3. Deployment ownership and target environment (self-hosted, cloud, hybrid), region and availability expectations.
 4. Recovery objectives (RPO/RTO), data retention and backup policy.
 5. Initial data scale: symbols, depth, event throughput, replay horizon and expected concurrent charts/clients.
@@ -368,7 +383,7 @@ NX-ADR-001 (Unified Market Event Contract) is still missing from the branch and 
 8. Whether any external users/tenants are in scope; current proposal assumes a personal system and does not design multi-tenant isolation as a requirement.
 9. Priority between fastest first safe paper release and broader venue coverage.
 
-These decisions are deliberately not guessed. They affect deployment sizing, operational cost and detailed acceptance criteria, but do not invalidate the safety boundaries above.
+Remaining decisions are deliberately not guessed. They affect deployment sizing, operational cost and detailed acceptance criteria, but do not invalidate the accepted v1 safety boundaries above.
 
 ## 12. Acceptance criteria for architecture review
 
