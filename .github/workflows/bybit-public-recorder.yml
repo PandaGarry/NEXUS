@@ -9,6 +9,10 @@ on:
       - ".github/workflows/bybit-public-recorder.yml"
   push:
     branches: ["prototype/bybit-public-data-recorder-python-v0"]
+    paths:
+      - "src/nexus_bybit_recorder/**"
+      - "tests/**"
+      - "pyproject.toml"
 
 permissions:
   contents: read
