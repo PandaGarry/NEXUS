@@ -45,3 +45,6 @@ jobs:
       - name: Test instrument quantity unit models
         working-directory: foundation/reference-model
         run: python -m unittest -v test_instrument_units.py
+      - name: Test exact rational division and explicit quantization
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_exact_division.py
