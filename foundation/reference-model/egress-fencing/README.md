@@ -22,6 +22,8 @@ A separate `HaltEgressGate` oracle models the final EgressBoundaryAuthorization 
 - socket-initiated attempts remain reconciliation obligations after HALTED acknowledgement;
 - authoritative halt-store outage blocks new final gates and leaves a request pending rather than claiming HALTED.
 
+The `HaltEgressGate` oracle currently has 18 tests; together with 13 authority-handover tests, this package runs 31 tests. It also checks signed 64-bit halt-epoch bounds and that duplicate halt requests during a store outage do not downgrade a previously committed/acknowledged epoch.
+
 The model uses sequential method calls to represent the two commit orders. It does not prove database lock semantics or real concurrent linearizability. A positive sender-fence fixture never classifies an attempt as DEFINITELY_NOT_SENT; reconciliation and reservation retention remain mandatory when socket initiation was not authoritatively observed.
 
 Run:
