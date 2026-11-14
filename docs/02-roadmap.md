@@ -645,3 +645,14 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Implement a disposable G1 test harness only after G0D/OD-08/OD-09 acceptance; do not add production schema/runtime yet.
 - [ ] Prove concurrent reservation and projection-update races, duplicate delivery, idempotency collisions, serialization/deadlock retry and ambiguous commit on the exact PostgreSQL patch.
 - [ ] Prove service-role boundaries and recovery/backup/PITR plus old-primary fencing before any failover decision.
+
+## Field-level data lineage and projection governance
+
+- [x] Complete NX-ARCH-REVIEW-006 source-grounded inventory of fields in NX-IF-001..005 and NX-SEC-001.
+- [x] Propose classification and owner boundaries for sensitive command, risk, execution, ledger, evidence, recovery and halt data.
+- [x] Define future projection constraints for Analytics, Portfolio, Notifications, Strategy, Demo, Learning and Billing.
+- [x] Identify missing Ledger journal-leg schema and prohibit inventing fields.
+- [ ] Obtain source-owner/security acceptance for field-level classification and allowed projections.
+- [ ] Author Ledger journal and Analytics/Portfolio projection contracts.
+- [ ] Approve retention/deletion/legal basis, audit custody and declassification rules.
+- [ ] Prove row/field isolation and source-lineage behavior with boundary-observed negative tests.
