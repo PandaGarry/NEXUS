@@ -350,3 +350,9 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - Clarified that instrument-spec validation remains deferred as a normalized executable operation.
 - Recorded that numeric-wire classes are machine-readable; decimal/domain mappings outside the explicit typed classes still require operation-aware review. `NumericLimitExceeded` requires reviewed mapping to `NUMERIC.RESOURCE_LIMIT`; `DimensionMismatch` must not be classified by parsing exception text.
 - No fixture schema, validator, runner, Rust code or production numeric profile was created. NX-ARCH-005 remains PROPOSED and owner-review gated.
+
+## Financial reference-surface audit correction (2026-11-14)
+
+The earlier NX-ARCH-005 cross-review note incorrectly stated that linear-contract and inverse-exposure callable references were absent. A second direct inspection of `instrument_units.py` and `test_financial_math_fixtures.py` supersedes that statement: spot (`Price.notional_for`), linear (`InstrumentUnitModel.linear_base_exposure` / `linear_notional`) and inverse (`inverse_quote_notional` / `inverse_base_exposure`) paths have executable reference coverage. Inverse exposure remains rational. Partial-fill weighted-average aggregation is tested, including permutation/partition invariance, but is currently inline in the test module and should be extracted as a named pure oracle before becoming a reusable normalized operation.
+
+The exact decimal oracle is arbitrary precision; `BoundedNumericContext` wraps it with mandatory explicit synthetic `NumericLimits`. Map `NumericLimitExceeded` by exception type to the candidate `NUMERIC.RESOURCE_LIMIT`, never by message text. Keep malformed API arguments (e.g. negative/boolean quantization scale or invalid rounding mode) separate from valid mathematical inexactness. No production numeric profile is implied.
