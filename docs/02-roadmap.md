@@ -1009,12 +1009,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 ## PostgreSQL HEGC guard — first real multi-connection qualification
 
 - [x] Create disposable PostgreSQL 18.7 fixture with NOLOGIN definer roles and distinct HEGC/writer logins.
-- [x] Exercise root-first guard acquisition, authoritative scope completeness and canonical child lock order.
+- [x] Exercise root-first guard acquisition, authoritative scope completeness and explicit rejection of non-canonical child lock order.
 - [x] Prove writer-first and HEGC-first wait/retry behavior with two real sessions and SQLSTATE 40001.
 - [x] Verify runtime ACL closure, no direct DML, no helper invocation, no SET ROLE, no search_path/temp-object or custom-GUC identity spoofing.
 - [x] Verify exact grant retry, changed-binding conflict and concurrent duplicate-attempt retry to the original grant.
 - [x] Simulate a lost client response after COMMIT and recover the same persisted grant by attempt ID.
-- [x] Pass 7 tests on exact code/test HEAD 9a38c27e88c441054bd1d9d1d28cadd5f0b62ffd, PostgreSQL workflow #43621734616; Python reference workflow #43621734618 passed 264 tests per Python 3.11/3.12/3.13 runtime.
+- [x] Pass 7 tests on exact code/test HEAD 7e60164346f25f8f2f58fa4da2a9282fea5a2217, PostgreSQL workflow #43622108660; Python reference workflow #43622108645 passed 264 tests per Python 3.11/3.12/3.13 runtime.
 - [x] Investigate red run #43621620302 and correct the response-loss test to disconnect after COMMIT.
 - [ ] Extend to scope-membership mutation, RLS, function overload/PUBLIC EXECUTE, crash/restore and true uncertain-COMMIT recovery.
 - [ ] Pin server image digest/provenance and complete independent security review.

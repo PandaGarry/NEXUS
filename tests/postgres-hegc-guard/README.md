@@ -17,7 +17,7 @@ GitHub Actions runs the same harness with the postgres:18.7 service image in the
 - Separate NOLOGIN / NOINHERIT / NOSUPERUSER / NOBYPASSRLS guard, HEGC-definer and writer-definer roles; distinct HEGC and source-writer login principals.
 - An internal SECURITY DEFINER guard helper. It is not executable by application logins.
 - The root/account guard is the first protected database operation. Caller authentication is part of that same root-guard UPDATE; scope membership is read only after the root guard is acquired.
-- Complete scope-set validation against authoritative fixture membership, mandatory root-first locking and deterministic child UUID-byte ordering.
+- Complete scope-set validation against authoritative fixture membership, mandatory root-first locking and deterministic child UUID-byte ordering; an explicitly permuted child array is rejected.
 - One reviewed HEGC grant entrypoint and one reviewed source-writer entrypoint. Runtime logins have EXECUTE-only access and no direct source/control-table DML.
 - Fixed search paths with pg_temp last, fully qualified relation references, exact-attempt retry identity and changed-binding conflict.
 - Adversarial checks for direct SELECT/UPDATE/INSERT, helper invocation, SET ROLE, temp-object/search_path spoofing and caller-asserted custom-GUC identity.
@@ -37,7 +37,7 @@ These are real PostgreSQL 18.7 multi-connection results, not a sequential Python
 
 ## Verified result
 
-Exact code/test HEAD 9a38c27e88c441054bd1d9d1d28cadd5f0b62ffd passed PostgreSQL workflow #43621734616: **7 tests passed** on PostgreSQL 18.7. The Python reference-model workflow #43621734618 also passed: 13 suites / 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions). Job logs were inspected; no ResourceWarnings or test failures remained.
+Exact code/test HEAD 7e60164346f25f8f2f58fa4da2a9282fea5a2217 passed PostgreSQL workflow #43622108660: **7 tests passed** on PostgreSQL 18.7. The Python reference-model workflow #43622108645 also passed: 13 suites / 264 tests on each of Python 3.11, 3.12 and 3.13 (792 executions). Job logs were inspected; no ResourceWarnings or test failures remained.
 
 The earlier PostgreSQL run #43621620302 correctly exposed a harness orchestration error: the simulated response-loss process slept before COMMIT, so the grant was not visible to the independent observer. The test was corrected to sleep after COMMIT, and the exact corrected head passed.
 

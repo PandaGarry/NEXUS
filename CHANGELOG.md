@@ -6,10 +6,10 @@
 
 ### Added — PostgreSQL 18.7 HEGC guard qualification harness (test-only; CI verified)
 
-- Added a disposable SQL fixture with separate HEGC/writer logins, NOLOGIN SECURITY DEFINER owners, root-first common guard acquisition and complete scope-set validation.
+- Added a disposable SQL fixture with separate HEGC/writer logins, NOLOGIN SECURITY DEFINER owners, root-first common guard acquisition, complete scope-set validation and canonical child lock ordering.
 - Added real two-session writer-first and HEGC-first races. Both stale waiters receive SQLSTATE 40001 and require a whole-transaction retry. Added concurrent duplicate-attempt retry and lost post-COMMIT client-response recovery.
 - Added ACL, direct-DML, SET ROLE, temp/search_path spoofing, custom-GUC identity spoofing and exact grant retry/binding-conflict tests.
-- Exact code/test HEAD 9a38c27e88c441054bd1d9d1d28cadd5f0b62ffd passed PostgreSQL 18.7 workflow #43621734616 (7 tests) and Python reference workflow #43621734618. Fixture only; no production schema, role, service or Egress boundary is implemented.
+- Exact code/test HEAD 7e60164346f25f8f2f58fa4da2a9282fea5a2217 passed PostgreSQL 18.7 workflow #43622108660 (7 tests) and Python reference workflow #43622108645. Fixture only; no production schema, role, service or Egress boundary is implemented.
 
 
 ### Clarified — Execution preflight versus Trusted Egress final authorization (2026-11-14)
