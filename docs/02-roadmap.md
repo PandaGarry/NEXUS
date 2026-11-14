@@ -139,3 +139,5 @@ Phase 0 не означает исследовать все существующ
 - Domain kernel: explicit, version-pinned instrument quantity-unit semantics (NX-REF-DOMAIN-004) added as test-only reference; venue mappings and derivative risk/P&L formulas remain future qualification work.
 
 - Domain kernel: exact rational division and explicit quantization reference (NX-REF-DOMAIN-005) added; financial-operation-specific rounding policies remain a separate decision.
+
+- Inverse contracts: exact rational base exposure reference added; venue-specific contract semantics, P&L, margin and rounding policy remain open.
