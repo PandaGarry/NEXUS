@@ -142,7 +142,7 @@ The following stable operation identifiers are proposed for the first normalized
 | EXACT_NUMERIC | `decimal.compare` | `{"a":"...","b":"..."}` | Integer exactly `-1`, `0` or `1` | No expected rejection in current golden set |
 | EXACT_NUMERIC | `decimal.quantize_exact` | `{"value":"...","scale":N}` | Canonical decimal string | `NUMERIC.INEXACT_RESULT`, invalid scale maps to schema/domain validation pending explicit contract |
 | EXACT_NUMERIC | `decimal.multiple_of` | `{"value":"...","step":"..."}` | Boolean | `NUMERIC.INVALID_STEP` |
-| EXACT_NUMERIC | `rational.divide_exact` | `{"numerator":"...","denominator":"..."}` or decimal operands under a separately named overload | Reduced rational object `{"numerator":"...","denominator":"..."}` | `NUMERIC.DIVISION_BY_ZERO` |
+| EXACT_NUMERIC | `rational.divide_exact` | `{"a":"...","b":"..."}` decimal operands | Reduced rational object `{"numerator":"...","denominator":"..."}` | `NUMERIC.DIVISION_BY_ZERO` |
 | EXACT_NUMERIC | `rational.to_decimal_exact` | Reduced rational object | Canonical decimal string | `NUMERIC.INEXACT_RESULT` |
 | EXACT_NUMERIC | `rational.quantize` | Reduced rational object plus explicit non-negative scale and explicit rounding enum | Canonical decimal string | `NUMERIC.INEXACT_RESULT` for UNNECESSARY mode |
 | EXACT_NUMERIC | `numeric_wire.parse_decimal` | `{"wire":"...","max_chars":N}` | Typed decimal object `{"coefficient":"...","scale":N}` | `NUMERIC.INVALID_WIRE`, `NUMERIC.RESOURCE_LIMIT` |
