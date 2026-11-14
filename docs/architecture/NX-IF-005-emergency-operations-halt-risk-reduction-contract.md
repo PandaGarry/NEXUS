@@ -239,6 +239,18 @@ AI and Strategy may raise a typed halt request/alert with evidence and rationale
 
 Halt activation must be fast and fail-safe. The implementation may propagate asynchronously, but each dispatch boundary must independently check the current epoch before sending. A stale cached epoch is insufficient.
 
+#### 5.2.1 Halt race with the final Trusted Egress gate
+
+The final Trusted Egress send-authorization transaction and the authoritative halt-epoch transition MUST serialize against the **same authoritative halt-state record/generation**. A cached epoch, asynchronous notification or process-local mutex is not sufficient.
+
+- If the halt-epoch transaction commits before the EgressBoundaryAuthorization transaction, the final gate MUST observe the newer epoch and deny the attempt. No socket-write initiation is permitted for that attempt.
+- If the EgressBoundaryAuthorization transaction commits first, that attempt is logically **dispatch-committed / in-flight** at that commit, even if the process is descheduled before the socket-write call. A later halt cannot retroactively revoke that already committed one-time authorization. The attempt remains potentially sent, its full conservative reservation remains held, and it MUST be reconciled. No claim is made that a halt request prevents every network byte from being emitted after the wall-clock time of the halt request.
+- The Egress boundary MUST track every gate-committed attempt until socket-write initiation is observed or the old Egress process/host/path is positively fenced. It MUST NOT acknowledge the new halt epoch while an earlier gate-committed attempt could still resume and initiate a socket write. If the attempt cannot be drained or its sender cannot be positively fenced, the boundary is not acknowledged and the scope cannot be reported HALTED as fully enforced.
+- Once every boundary has acknowledged the new epoch or has been positively isolated, no stale or queued attempt may initiate a new socket write. Venue processing/acceptance of a request already initiated before that acknowledgement remains an in-flight external effect and is handled by reconciliation; halt does not recall bytes already sent or cancel venue orders.
+
+This defines the linearization order, not an exactly-once network guarantee. If a future operational requirement demands that no socket-write initiation occur after the halt transaction commits even for an earlier gate-committed attempt, the transport/egress architecture must provide a stronger independently fenced cancellation/serialization mechanism and prove it under process pause, host partition and crash tests; PostgreSQL transaction ordering alone cannot make that claim.
+
+
 ### 5.3 In-flight and protective orders
 
 Halt does not imply cancel-all. The system classifies open orders into at least:
