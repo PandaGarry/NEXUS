@@ -496,3 +496,14 @@ Selection establishes a G1 design direction only. It does not authorize dependen
 - [x] Restrict command map keys to schema-defined text names; reject duplicate/unknown keys and trailing bytes.
 - [ ] Build adversarial byte vectors for non-shortest encodings, indefinite lengths, unsorted maps, duplicate keys, invalid UTF-8 and resource exhaustion.
 - [ ] Qualify Python and Rust decoders for raw-input visibility and identical rejection behavior before selecting dependencies.
+
+
+## Parent-first PR integration gate
+
+- [x] Verify the full direct PR ancestry #1 -> #2 -> #3 -> #4 -> #5 -> #6 -> #7 -> #9 -> #10 -> #11 -> #12 -> #13 -> #14 -> #16 by exact base/head SHA equality; PR #8 is parallel.
+- [x] Confirm PR #16's immediate base is correctly the PR #14 head.
+- [x] Verify current exact branch HEAD 7914772358d2ee49c87374373bad5c589d0a2905 on Python 3.11/3.12/3.13: 13 suites, 239 tests per runtime, 717 executions.
+- [ ] Complete parent PR reviews and integrate strictly parent-first after each review gate.
+- [ ] Reassess PR #16's 32-file scope and 248-commit history; split only demonstrably independent review units.
+
+No PR merge, base retarget, force-push or branch rewrite is authorized by this checklist update. PR #16 remains Draft until the dependency stack is reviewable and the required owner approval is obtained.
