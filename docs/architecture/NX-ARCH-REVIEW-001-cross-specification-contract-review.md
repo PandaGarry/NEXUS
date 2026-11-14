@@ -146,6 +146,8 @@ No additional broad research is required to close these design gaps; targeted of
 
 ## 7. Owner decisions still required
 
+The consolidated, gate-based owner decision register is [NX-OWNER-DECISIONS-001](NX-OWNER-DECISIONS-001-critical-owner-decision-register.md). It groups the cross-contract decisions into OD-01..OD-15, identifies when each is required (G0–G3), proposes conservative starting points and defines safe behavior while unresolved. The following are the cross-cutting decisions already visible in this review:
+
 1. Initial venue/account-mode shortlist and whether first release is single-account/single-venue.
 2. Whether Risk Engine and Command Coordinator share a transactional store or use a separately specified reservation protocol.
 3. Initial portfolio scope and cross-account collateral aggregation policy.
@@ -153,7 +155,7 @@ No additional broad research is required to close these design gaps; targeted of
 5. Operator roles and dual-control thresholds for halt/resume and manual reconciliation.
 6. Retention and recovery objectives for command, raw evidence, journal and audit stores.
 
-No numeric risk limits are invented. UNCONFIGURED remains a hard block for live risk-increasing activity.
+No numeric risk limits are invented. UNCONFIGURED remains a hard block for live risk-increasing activity. The register is not owner approval; each selected option must be explicitly accepted and reflected in the relevant ADR/specification.
 
 ## 8. Review disposition and verification limits
 
