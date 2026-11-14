@@ -21,7 +21,10 @@ Security is a capital-protection and correctness property. Availability must not
 
 | Asset | Security property | Impact if compromised |
 |---|---|---|
-| Exchange API keys / signing capability | Confidentiality, integrity, least privilege | Unauthorized trading, account exposure |
+| Exchange API credentials / venue signing capability | Confidentiality, integrity, least privilege | Unauthorized venue requests and account exposure |
+| RiskApprovalCapability private signing key | Confidentiality, integrity, non-exportability | Forged Risk authorization or approval replay |
+| EgressBoundaryAuthorization and halt-state generation | Integrity, single-use/replay resistance, availability | Stale or unauthorized socket initiation after halt |
+| Risk evidence manifest / ValuationInputVector | Integrity, provenance, freshness | Approval against stale, substituted or incomplete valuation evidence |
 | User identity, MFA factors, sessions | Authenticity, revocability | Account takeover and privileged action |
 | Risk policies, limits, kill-switch state | Integrity, availability | Unbounded or unsafe trading |
 | Order intents, outbox, exchange IDs | Integrity, durability | Duplicate or lost orders |
@@ -53,7 +56,7 @@ Market data, strategy, AI Orchestrator, Risk Engine, execution, portfolio/ledger
 Risk Engine is independent from strategy and AI. It receives canonical order proposals plus current account, market-data health, instrument rules and exposure state. It returns a short-lived, single-purpose approval bound to immutable command digest, account/instrument scope, reservation version, exact ValuationInputVector ID/version, StateEvidenceVector/FreshnessPolicy evidence, halt epoch, eligibility revision, expiry and policy version. Any payload or bound-evidence mutation invalidates approval.
 
 ### TB-5 — Credential and signing boundary
-Exchange secrets are stored in a dedicated vault/KMS-backed boundary. Only the execution/signing component may request a narrowly scoped signing operation. AI, strategy, clients, analytics, general API services and logs cannot retrieve raw credentials. Prefer signing without exporting long-lived secret material into general application memory where venue protocols permit.
+Risk approval signing and venue request signing are separate authority domains with separate keys, identities and policies. The private key that signs RiskApprovalCapability is held only by the Risk signing authority; Execution and Trusted Egress receive public verification material only and cannot mint or alter Risk approvals. Venue API credentials and venue request-signing capability are held only by Trusted Egress, which owns the actual venue socket. No key is reused across these domains. If a KMS/HSM or vault is later selected, it must enforce separate non-exportable key policies and narrowly scoped workload identities. AI, strategy, clients, analytics, adapters, general API services and logs cannot retrieve either private key or raw venue credentials. Prefer signing without exporting long-lived secret material into general application memory where venue protocols permit. EgressBoundaryAuthorization is a distinct one-use attempt-scoped control record, not a substitute for RiskApprovalCapability or a venue credential.
 
 ### TB-6 — Exchange boundary
 External exchange REST/WebSocket APIs are untrusted networks and external state authorities. Responses may be delayed, duplicated, reordered, malformed, rate-limited or unavailable. Exchange state must be reconciled; transport success is not execution truth.
