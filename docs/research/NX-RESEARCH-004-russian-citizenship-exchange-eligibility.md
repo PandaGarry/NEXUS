@@ -7,9 +7,7 @@
 
 ## 1. Owner context
 
-The owner confirmed Russian citizenship on 2026-11-14 and indicated that Russia is the currently available operating/residence scenario, while lawful remote account opening in another territory would be a plus.
-
-The owner's current tax residence, actual country of residence, any additional citizenship/residence permits, and sanctions status have not been confirmed. Do not infer them from IP or approximate location metadata.
+This research evaluates Russian-citizenship and Russian-residence scenarios as separate KYC and legal variables. It does not determine any individual's statutory residency or tax residency, and it records no personal identifiers, account details or address information. Any applicant's additional citizenship/residence permits and sanctions status must be verified independently; do not infer them from IP or approximate location metadata.
 
 ## 2. Findings
 
@@ -96,3 +94,17 @@ A change of residence does not automatically remove nationality-based restrictio
 This memo summarizes public official material available on 2026-11-14. It does not constitute legal advice, a sanctions-screening result, a KYC pre-approval, or a guarantee of future service. Exchange policies and regional entities may change. Public API documentation proves interface documentation exists, not that a particular customer is eligible to use it.
 
 **Conclusion:** Bybit and OKX remain research candidates only. Neither is qualified for NEXUS v1 until the exact Russian-citizen / genuine-residence scenario is confirmed in writing and product-specific capabilities are verified.
+
+## 8. Superseding regulatory and product update (2026-11-14)
+
+This memo remains useful as a historical review of public exchange KYC, nationality, fiat and regional restrictions, but it is **not sufficient for a live-venue decision** after Federal Law No. 282-FZ entered into force on 2026-09-01.
+
+The current baseline is [NX-RESEARCH-009](NX-RESEARCH-009-russia-jurisdiction-product-and-venue-eligibility.md), which adds:
+- Article 30 / Article 31 / Article 32 requirements and the 2027-07-01 transition;
+- the software-assistance prohibition and unresolved application to privately developed owner-operated software;
+- Bank of Russia treatment of stablecoins and foreign digital instruments;
+- qualified-investor restrictions on MOEX and SPB crypto-index derivatives;
+- T-Invest Lab's CBR registration and the absence of verified public crypto API evidence;
+- a venue eligibility record and a live-adapter activation gate.
+
+Do not rely on this earlier memo's Bybit/OKX observations as permission to trade. Account eligibility and Russian-law compliance are separate gates. No foreign venue is qualified or selected.

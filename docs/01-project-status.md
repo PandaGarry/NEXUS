@@ -145,3 +145,22 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 - This is mathematical reference evidence only. It does not qualify venue multipliers, reporting scope, fees, funding, P&L, margin, liquidation, FX or accounting. G0/G1 and live-trading restrictions are unchanged.
 
 - Expanded fixture verification: 650 deterministic seeded property cases (spot exact product, partial-fill permutation/partition invariance, inverse contract-value identity). GitHub Actions run [#43596851904](https://github.com/PandaGarry/NEXUS/actions/runs/43596851904) passed exact code/test commit `0f0b44e927aacf67d6f7a5678b160b3e3c6088e0`: 182 tests per runtime across Python 3.11, 3.12 and 3.13. This remains bounded test-only evidence, not formal verification or production/venue qualification.
+
+## Russia jurisdiction and first-venue qualification update (2026-11-14)
+
+- Published NX-RESEARCH-009 as the current RF-resident jurisdiction/product eligibility baseline.
+- Law No. 282-FZ entered into force 2026-09-01; Article 30(1)'s resident-intermediary rule enters 2027-07-01. Article 30(2) includes a prohibition on assisting unlawful transactions, including software; its application to private owner-operated NEXUS requires legal review.
+- Bank of Russia FAQ confirms from 2027-07-01 residents transact through Chapter 4 participants, including licensed brokers or CBR-registered crypto-exchange organizations; direct P2P between individuals is not included.
+- CBR record confirms ООО «Т-ИНВЕСТ ЛАБ» has an active right to operate as an organization exchanging digital currencies from 2026-10-06 and holds broker/depository permissions. This does not establish a public crypto API.
+- MOEX crypto-index futures and SPB/T-Invest crypto-index neoassets found are qualified-investor-only; both are cash-settled RUB products, not spot crypto/global USDT perps.
+- Foreign venues remain research-only; Kraken removed from RF v1 shortlist, Coinbase/Bybit/OKX not qualified for the owner's exact account/product/legal route.
+- No venue selected, no API keys connected, no live orders or transfers. A proposed jurisdictional eligibility record is required before any adapter can be LIVE-ELIGIBLE.
+- Directive 7441-U was registered 2026-10-30, published 2026-11-06 and enters into force 2026-11-17. It sets a RUB 300,000 annual cumulative acquisition-value cap for non-qualified residents purchasing through a broker and lists BTC, ETH and USDT as assets that may be admitted to organized trading subject to criteria. The exact applicability of the broker cap to a principal-dealing crypto-exchange organization must be legally confirmed; active buy/re-entry turnover can consume the broker cap.
+
+- Drafted NX-ADR-007 Venue Eligibility & Jurisdictional Activation Gate as PROPOSED: immutable scope-bound evidence record, fail-closed adapter states, independent Risk/Execution authorization, and eligibility-epoch fencing at the trusted egress boundary. Cross-document consistency review against NX-IF-001..005, NX-SEC-001 and NX-ADR-002 found no blocking contradiction. Owner/legal acceptance, production identity/evidence storage, signatures and conformance tests remain open.
+
+- Added NX-REF-VENUE-001 test-only venue eligibility reference model: explicit policy inputs, immutable evidence records, exact scope binding, freshness/expiry checks, reviewer references and owner-approval revision binding. Added 24 deterministic fail-closed tests and a Python 3.11/3.12/3.13 CI step. The suite is not production authorization; exact-head CI is pending.
+
+- Exact-head CI completed for venue eligibility reference model at PR #14 SHA `8c7eed6ac781a40c81652da08ff3207f4d46bc6d`, run 43598444584: 210 tests passed on each of Python 3.11, 3.12 and 3.13 (630 executions total). The 28 venue eligibility tests passed on all three runtimes. This verifies only the test reference model; production eligibility enforcement remains unimplemented.
+
+- Added NX-REF-VENUE-002, a test-only single-process eligibility egress-fencing model. It serializes dispatch with suspension, binds command to exact record/revision/scope/epoch/expiry, consumes command IDs, and preserves OUTCOME_UNKNOWN without blind retry. 21 tests cover stale epoch, scope/revision mismatch, expiry, ambiguous send, concurrent dispatch/suspend ordering and revision-bound reactivation. CI run 43599182263 at SHA `a7a369ca9e5683208fbcd43a3fd1de0a8f8c47f1`: 231 tests passed on each Python 3.11/3.12/3.13 (693 executions). This remains a single-process reference, not production fencing.

@@ -167,5 +167,28 @@ This package validates mathematical identities only; it does not pass financial 
 
 - [x] Cross-review NX-REF-DOMAIN-009 against NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006; no blocking contradiction found, with owner/venue gaps retained.
 - [x] Add venue-neutral exact dimensional math fixtures for spot, explicitly mapped linear/inverse contracts and partial-fill weighted-average arithmetic; initial Python 3.11–3.13 CI passed.
-- [ ] Verify final exact PR head and freeze the bounded mathematical fixture package.
+- [x] Verify final exact PR head and freeze the bounded mathematical fixture package (182 tests per runtime; see NX-REF-DOMAIN-010).
 - [ ] Obtain owner decisions and venue qualification before authoring fee/funding/P&L/margin/liquidation/FX/accounting golden vectors.
+
+### Russia jurisdiction and first-venue qualification gate
+
+- [x] Publish NX-RESEARCH-009 with current Law 282-FZ, Bank of Russia guidance, domestic crypto-exchange registry, MOEX/SPB product eligibility and foreign-venue screening.
+- [x] Pin Bank of Russia Directive 7441-U: effective 2026-11-17; non-qualified broker acquisition cap RUB 300,000/year; BTC, ETH and USDT may be admitted to organized trading subject to criteria. This does not establish that a specific product/API is live.
+- [x] Mark earlier Coinbase/Kraken and Russian-citizenship shortlist memos as historical/superseded for live venue selection.
+- [ ] Confirm owner qualified-investor status directly with the actual broker.
+- [ ] Verify T-Invest API instrument access flags and streaming/order/fill support for exact crypto-index futures/neoassets; no orders.
+- [ ] Obtain written T-Invest Lab confirmation of live spot crypto service, product terms and API availability.
+- [ ] Obtain product-specific legal advice on Articles 30–32 of Law 282-FZ and Article 30(2) software-assistance scope.
+- [x] Draft NX-ADR-007 Venue Eligibility & Jurisdictional Activation Gate; owner/legal acceptance and conformance evidence remain open.
+- [ ] Keep all foreign venues RESEARCH_ONLY until legal, KYC, product and API eligibility are evidenced.
+
+First-venue selection remains BLOCKED; no live trading is authorized.
+
+- [x] Add test-only venue eligibility evidence evaluator and 24 deterministic fail-closed scenarios; exact-head CI verification pending.
+- [ ] Verify the venue eligibility reference suite passes on Python 3.11, 3.12 and 3.13 at the exact PR head.
+- [ ] Keep NX-ADR-007 PROPOSED until owner and qualified legal review are complete.
+
+- [x] Verify venue eligibility reference suite and complete reference matrix: 210 tests/runtime on Python 3.11/3.12/3.13; 630 successful executions at PR #14 SHA `8c7eed6ac781a40c81652da08ff3207f4d46bc6d` (run 43598444584).
+
+- [x] Add test-only eligibility egress fencing reference and 21 concurrency/ordering tests; CI passed 231 tests/runtime on Python 3.11/3.12/3.13 (693 executions) at SHA `a7a369ca9e5683208fbcd43a3fd1de0a8f8c47f1`, run 43599182263.
+- [ ] Design and verify production cross-process egress fencing, durable dispatch state, bounded network timeouts and crash recovery.

@@ -142,3 +142,11 @@
 - Added 650 seeded property cases across spot notional, partial-fill permutation/partition invariance and inverse exposure identity.
 - Exact code/test commit `0f0b44e927aacf67d6f7a5678b160b3e3c6088e0` passed 182 tests per runtime on Python 3.11–3.13 in GitHub Actions run [#43596851904](https://github.com/PandaGarry/NEXUS/actions/runs/43596851904).
 - No production policy or venue/account behavior is inferred from these synthetic tests.
+
+### Added — Russia jurisdiction and venue eligibility research (documentation only)
+- Added NX-RESEARCH-009 with Federal Law No. 282-FZ, CBR guidance, Directive 7441-U, domestic regulated crypto products and foreign venue eligibility.
+- Recorded the 2026-11-17 effective date of Directive 7441-U, RUB 300,000 annual cumulative broker-acquisition cap for non-qualified residents, and BTC/ETH/USDT eligible-admission list; scope for crypto-exchange organizations remains subject to legal interpretation.
+- Added proposed NX-ADR-007 for a scope-bound VenueEligibilityRecord, fail-closed adapter states, separate Risk authorization and trusted-egress eligibility fencing.
+- Added NX-REF-VENUE-001 test-only evidence evaluator and 28 conformance tests.
+- Added NX-REF-VENUE-002 single-process egress fencing reference and 21 race/ordering tests; CI run 43599182263 passed 231 tests/runtime on Python 3.11/3.12/3.13 (693 executions).
+- Updated historical venue research, architecture index, roadmap, project status and checklist. No venue selected, no live capability or production code added.

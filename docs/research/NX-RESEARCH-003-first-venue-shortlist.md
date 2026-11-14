@@ -115,3 +115,14 @@ No account connection, credential handling, order placement, legal advice or liv
 ## 7. Limitations
 
 This is a documentation review, not an API experiment or legal opinion. Web pages may change; account-specific eligibility, API entitlements, current rate limits, feed availability, data retention and actual runtime behavior remain unverified. No source code, tests, builds, benchmarks, credentials, exchange connections or orders were used.
+
+## 8. Superseding owner-jurisdiction update (2026-11-14)
+
+This memo's original Coinbase/Kraken conditional shortlist was drafted before the current RF-resident jurisdiction and Law No. 282-FZ were incorporated into the first-venue decision. It is now **historical capability research, not the active venue shortlist**.
+
+- Kraken is removed from the RF v1 live shortlist based on its current global terms/eligibility restrictions.
+- Coinbase is not qualified for a person currently residing in the Russian Federation; additional residence proof for Russian nationals/residents does not establish RF-resident eligibility.
+- Bybit Global and OKX Global require separate product/entity/account-specific review; no live eligibility is inferred.
+- Domestic MOEX/SPB crypto-index derivatives and the CBR-registered T-Invest Lab path are now in scope.
+
+Use [NX-RESEARCH-009](NX-RESEARCH-009-russia-jurisdiction-product-and-venue-eligibility.md) as the current jurisdiction and product-eligibility baseline. No venue is selected.

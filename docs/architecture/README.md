@@ -10,6 +10,9 @@
 | [NX-ADR-004](NX-ADR-004-market-data-recovery-state-machine.md) | Market Data Recovery State Machine | Proposed |
 | [NX-ADR-005](NX-ADR-005-instrument-specification-exact-arithmetic.md) | Instrument Specification & Exact Arithmetic | Proposed |
 | NX-ADR-006 | Strategy Validation / Research Governance | Deferred — covered by NX-ADR-003 unless a distinct governance decision emerges |
+| [NX-ADR-007](NX-ADR-007-venue-eligibility-jurisdictional-activation-gate.md) | Venue Eligibility & Jurisdictional Activation Gate | Proposed — cross-document review complete; owner/legal review and conformance evidence required |
+| [NX-REF-VENUE-001](NX-REF-VENUE-001-venue-eligibility-evidence-reference-model.md) | Venue Eligibility Evidence Reference Model | Test-only reference; no production authorization |
+| [NX-REF-VENUE-002](NX-REF-VENUE-002-eligibility-egress-fencing-reference-model.md) | Eligibility Egress Fencing Reference Model | Test-only single-process race model; no production fencing |
 | [NX-SEC-001](../security/NX-SEC-001-threat-model-credential-isolation.md) | Threat Model / Credential Isolation | Proposed |
 | [NX-ARCH-001](NX-ARCH-001-target-architecture.md) | Target Architecture & Deployment Topology | Proposed |
 | [NX-ARCH-003](NX-ARCH-003-domain-kernel-numeric-model.md) | Domain Kernel & Exact Numeric Model | Proposed |
