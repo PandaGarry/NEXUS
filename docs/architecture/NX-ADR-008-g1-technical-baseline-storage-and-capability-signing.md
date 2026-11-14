@@ -78,7 +78,8 @@ A schema or canonicalization change that affects bytes requires a new version an
 Use **COSE_Sign1** with the fully specified **COSE Ed25519 algorithm (COSE alg = -19, RFC 9864)** for the G1 capability-signing profile. Do not use the older polymorphic COSE EdDSA identifier (-8): RFC 9864 deprecates polymorphic algorithm identifiers and provides the fully specified Ed25519 replacement.
 
 - The fully specified algorithm identifier (-19) is protected and MUST match the COSE key's algorithm policy; the COSE key MUST be OKP with the Ed25519 curve. Reject polymorphic EdDSA (-8), Ed448, algorithm substitution and key/algorithm mismatch.
-- The key identifier (kid) is protected as an integrity-protected lookup hint and resolved through a versioned key registry. COSE does not define kid as security-critical or guarantee uniqueness: verification MUST NOT trust kid alone. Resolve against issuer, algorithm, key purpose, validity/revocation state and registry generation; require exactly one eligible key or fail closed on ambiguity. The signed payload issuer/audience and key-registry binding remain authoritative.
+- The protected key identifier (kid) is an untrusted lookup hint until signature verification succeeds; COSE does not define it as security-critical or guarantee uniqueness. Resolve only against a bounded local versioned key registry—never fetch keys from token-supplied URLs. Token-supplied issuer/audience values are also untrusted lookup hints, not authority: bind candidate selection to locally configured expected issuer/audience and key purpose, then after signature verification require the signed claims to match that expected context and the registry entry. Require exactly one eligible key or fail closed on ambiguity, stale registry generation, revocation or mismatch.
+- Accept only a public COSE OKP/Ed25519 verification key with a 32-byte public x parameter; reject private d material in Execution or any non-Risk process. Require a 64-byte Ed25519 signature. Key encoding, algorithm and purpose are pinned by local registry policy, not negotiated from the token.
 - The signed payload contains the command digest, command ID, reservation ID, exact account/scope, issuer and audience, issue/not-before/expiry times, policy/spec/exposure versions, halt epoch, capability schema version and a unique approval/nonce identity.
 - COSE external AAD carries a fixed NEXUS protocol-domain context; it is not supplied by Strategy, AI or an untrusted client.
 - Risk's signing key is distinct from every venue API/signing key.
@@ -91,7 +92,7 @@ COSE_Sign1 / fully specified COSE Ed25519 is selected as the protocol baseline, 
 ### 4.2 Signature is not authorization
 
 A valid signature proves integrity and issuer possession only. Before dispatch, NEXUS still MUST verify:
-- capability scope, audience, issuer, expiry and key status;
+- capability scope, audience, issuer, expiry and key status, all checked against locally expected context after signature verification;
 - command digest and immutable payload equality;
 - durable active reservation;
 - durable single-use consumption;
