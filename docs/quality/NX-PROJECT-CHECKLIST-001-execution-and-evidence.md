@@ -1221,8 +1221,8 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Define one active HEGC instance, PostgreSQL 18.7 control-owned schema/role, fail-closed outage and no automatic failover before fencing/grant reconciliation.
 - [x] Add a test-only Python oracle for the two legal halt/gate commit orders, pause-after-gate, positive sender fencing, unknown outcome and halt-store outage.
 - [x] Extend the oracle with pending-halt/store-recovery races, repeated halt idempotency and signed-64-bit halt-epoch exhaustion.
-- [x] Add duplicate halt-request regressions during store outage and after HALTED; the current `test_halt_egress_gate.py` contains 18 state-machine tests.
-- [x] Verify exact PR #16 HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` with workflow [#43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 isolated suites / 255 tests on each of Python 3.11, 3.12 and 3.13; 765 successful executions total.
+- [ ] Add duplicate halt-request regressions during store outage and after HALTED (completed later at code/test SHA `2e94edd73f8933f0d510eed940452316ec5b8832`). At the verified `f1c0` checkpoint the oracle had 16 tests.
+- [x] Verify code/test HEAD `f1c0bd0576bd42058ca2482706533248bcf6069b` with workflow [#43618694545](https://github.com/PandaGarry/NEXUS/actions/runs/43618694545): 13 isolated suites / 255 tests on each Python runtime; the egress-fencing package ran 29 tests (13 authority-handover + 16 halt-gate).
 - [x] Inspect all three runtime logs: no failures, Node.js 20 deprecation or `punycode` warnings.
 - [ ] Prove HEGC role grants, API authentication, one-use grant consumption, workload identity and audit integrity.
 - [ ] Prove actual socket-initiation reporting and independent process/host/network fencing; the Python oracle is sequential and not a production concurrency proof.
@@ -1254,3 +1254,17 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove HEGC SERIALIZABLE participation by all gate-critical writers, role grants, one-use grant consumption and actual process/socket fencing.
 
 **Disposition:** exact code/test HEAD passed Python reference CI. Later commits add one fail-closed epoch-boundary assertion and documentation; no HEGC or production egress runtime exists.
+
+## 18.72 HaltEgressGate 18-case code/test-head CI — 2026-11-14
+
+- [x] Fix duplicate halt requests during store outage so they do not downgrade an already committed HALTING/HALTED epoch.
+- [x] Assert sender fencing retains the reservation while socket initiation remains unobserved and outcome remains UNKNOWN.
+- [x] Add two regressions: duplicate halt request during store outage while HALTING; duplicate request after HALTED during store outage.
+- [x] Verify exact code/test HEAD `2e94edd73f8933f0d510eed940452316ec5b8832` on [workflow #43618796109](https://github.com/PandaGarry/NEXUS/actions/runs/43618796109).
+- [x] Pass 13 suites / 257 tests on Python 3.11, 3.12 and 3.13 (771 successful executions).
+- [x] Confirm egress-fencing package passes 31 tests (13 authority-handover + 18 HaltEgressGate).
+- [x] Inspect all three logs: no test failures or deprecation warnings.
+- [ ] Run a fresh CI on the current documentation-only PR head after synchronization.
+- [ ] Prove the same ordering with PostgreSQL transactions, concurrent processes, instrumented sockets and independently verified process/host/network fences.
+
+**Disposition:** exact code/test head passed; PR #16 head `09775625327c74cc31f27f18b0280e89bee4878d` contains only documentation changes after it. No production concurrency or fencing proof is established.
