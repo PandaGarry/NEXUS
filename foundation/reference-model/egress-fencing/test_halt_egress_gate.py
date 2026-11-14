@@ -144,6 +144,14 @@ class HaltEgressGateTests(unittest.TestCase):
         self.gate.acknowledge_halt()
         self.assertEqual(self.gate.reconciliation_required(), ("one-use",))
 
+    def test_one_consumed_grant_cannot_initiate_two_logical_requests(self):
+        self.gate.authorize_attempt(attempt_id="one-use", observed_epoch=7, binding_digest="digest-one-use")
+        self.gate.consume_grant(attempt_id="one-use")
+        self.gate.initiate_socket_write(attempt_id="one-use")
+        with self.assertRaises(GateDenied):
+            self.gate.initiate_socket_write(attempt_id="one-use")
+        self.assertEqual(self.gate.attempts["one-use"].phase, AttemptPhase.SOCKET_INITIATED)
+
     def test_lost_grant_consumption_response_never_allows_second_send(self):
         self.gate.authorize_attempt(attempt_id="lost-consume", observed_epoch=7, binding_digest="digest-lost-consume")
         self.gate.consume_grant(attempt_id="lost-consume")
