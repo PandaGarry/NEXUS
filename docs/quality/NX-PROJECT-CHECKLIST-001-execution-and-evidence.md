@@ -1339,3 +1339,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep a regression test for each crash/response-loss boundary; do not suppress or downgrade a failing CI result.
 
 **Disposition:** both red runs were investigated and resolved; the corrected exact code/test HEAD passed all three runtimes. No production HEGC behavior is inferred from these reference tests.
+
+## 18.79 HEGC guard first-statement enforcement and least-privilege API — 2026-11-14
+
+- [x] Identify that a standalone SECURITY DEFINER guard function does not itself prevent a caller from performing protected reads before invoking it.
+- [x] Require either one reviewed HEGC transaction entrypoint that acquires the guard before validation reads and grant write, or a DB-enforced transaction API with guard as the first SQL statement.
+- [x] Require every invalidating writer to mutate source state only through guarded procedures; direct DML and advisory-lock bypasses are prohibited.
+- [x] Keep guard owner NOLOGIN/non-superuser, guard-row-only writes, fixed trusted search_path with pg_temp last, schema-qualified names, no dynamic SQL, PUBLIC EXECUTE revoked and caller EXECUTE-only grants.
+- [ ] Test privilege escalation, search_path spoofing, function overloading, temp-object shadowing, caller pre-read, direct DML bypass and procedure bypass.
+- [ ] Verify actual transaction snapshot behavior and commit-order guarantee on PostgreSQL 18.7.
+
+**Disposition:** threat-model and G1 candidate refined; no database function, role, schema or runtime exists.
