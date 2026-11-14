@@ -23,7 +23,7 @@ This review does not approve PostgreSQL for production, a schema, automatic fail
 
 ## 2. Why the common serialization point is necessary
 
-A reservation decision reads current exposure, active reservations and exact immutable valuation-input snapshots, checks all applicable limits, and commits a new reservation. A concurrent Ledger/venue/external-activity projection update can change the exposure against which that decision was made. Market/index/FX updates are separate versioned valuation inputs and MUST NOT rewrite every Risk scope-state row on every market-data tick.
+A reservation decision reads current exposure and active reservations, and binds to exact immutable valuation-input snapshots, checks all applicable limits, and commits a new reservation. A concurrent Ledger/venue/external-activity projection update can change the exposure against which that decision was made. Market/index/FX updates are separate source-owned versioned valuation inputs and MUST NOT rewrite every Risk scope-state row on every market-data tick. They are not assumed to share the Risk PostgreSQL transaction or database.
 
 If those operations update different rows or rely on advisory locks that some writer can omit, both can commit based on stale competing views. The Risk-owned scope-state row is therefore the mandatory serialization point for each scope whose shared capacity invariant is affected.
 
@@ -65,7 +65,7 @@ The actual exposure items, valuation evidence, source events and reservation row
 3. Require every corresponding scope-state row to be pre-provisioned and active. Missing, disabled, duplicate or ambiguous rows fail closed; the hot path never creates them.
 4. Lock all rows in one deterministic order using canonical scope-ID bytes. Do not use locale-sensitive text collation for lock order.
 5. Recheck the root and descendant scope configuration versions and the required source watermark/freshness vector after acquiring locks. A changed root version invalidates the resolved scope set and requires a full retry.
-6. Read the current exposure projection, active reservation aggregates and exact immutable market/index/FX/fee/collateral input snapshots inside the same transaction/snapshot. Do not reuse values calculated before the transaction or before lock acquisition. Bind the reservation and capability to the exact valuation-input version vector and source freshness evidence.
+6. Read the current exposure projection and active reservation aggregates inside the Risk transaction. Bind the evaluation to the exact immutable market/index/FX/fee/collateral version vector supplied by source-owner contracts; do not assume those source snapshots share the Risk database transaction. Require stable snapshot identity, value/digest, completeness/watermark and freshness evidence. Do not reuse exposure or reservation values calculated before lock acquisition. Bind the reservation and capability to the exact valuation-input version vector and source freshness evidence.
 7. Recompute every affected limit with exact arithmetic, including parent/account aggregate limits and child constraints.
 8. If all scopes pass, persist the idempotency identity/result, all reservation rows, updated reservation totals and scope-state versions atomically. If any scope fails, persist no partial reservation.
 9. Commit. Issue the RiskApprovalCapability only after commit is positively confirmed and the result is bound to the canonical command digest, exact reservation state and valuation-input version vector.
@@ -166,6 +166,14 @@ If performance is insufficient, first examine query plans, scope partitioning co
 - INSERT / ON CONFLICT semantics: https://www.postgresql.org/docs/18/sql-insert.html
 
 PostgreSQL documentation supports the transaction/error semantics above; it does not prove NEXUS's implementation or deployment safety.
+
+### Valuation-input consistency and dispatch revalidation
+
+- Market/index/FX/fee/collateral values are source-owned immutable snapshots, not mutable fields read opportunistically during a reservation transaction.
+- The Risk transaction binds to an exact version vector and validates source identity, value/digest, completeness/watermark and freshness evidence. Cross-domain snapshots are not presumed to share a database or distributed transaction.
+- Trusted Egress validates the same bound vector against source-specific freshness and any configured drift/admissibility policy immediately before send. A newer snapshot does not automatically replace the signed approval's inputs.
+- If the exact bound vector is stale, incomplete, contradictory, outside a configured drift bound or the policy is unconfigured, Egress denies send. Risk must perform a new evaluation and reservation; it must not mutate an existing approval in place.
+- The interface schema and exact version-vector representation remain future source-owner contract work; this review does not invent an executable schema or numeric thresholds.
 
 ## 10. Gate disposition
 
