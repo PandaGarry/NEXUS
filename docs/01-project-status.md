@@ -78,13 +78,13 @@
 - The previously inspected develop snapshot `97ecbafd6621241a2222ef5a31cf887c6d96d950` diverges from rc9 (77 commits ahead / 72 behind); source findings must not be transferred between snapshots without re-audit.
 - NX-RESEARCH-008 inspects the exact RC9 execution/risk paths. RC9 documentation and source confirm asynchronous best-effort persistence before dispatch, submit/modify/cancel/query route branches that do not enforce a single universal RiskEngine gate, and process-local dispatched-order state absent after restart.
 - NautilusTrader may remain a test-only candidate for replay and selected capabilities, but it is not approved as NEXUS execution authority. NEXUS must own durable outbox, non-bypassable Risk gateway, ledger and recovery barrier.
-- 10 reference-model tests and 10,000 randomized arithmetic comparisons were run against exact fetched files in an isolated local directory. PR #10 has no returned GitHub Actions runs; no CI PASS or production runtime verification is claimed.
+- 10 reference-model tests and 10,000 randomized arithmetic comparisons were run against exact fetched files in an isolated local directory. At that earlier review point, PR #10 had no returned GitHub Actions runs; later reference-model CI evidence is recorded in the section below.
 
 
 ## Command gateway reference slice (2026-11-14)
 
 - NX-REF-EXEC-001 and `foundation/reference-model/execution-gateway/` add a test-only Python/SQLite model for CREATE command authorization, payload-bound approval, active reservation consumption, durable local outbox persistence, dispatch marker, and conservative ambiguous-outcome recovery.
-- The suite contains 18 deterministic tests. GitHub Actions run [#43588330433](https://github.com/PandaGarry/NEXUS/actions/runs/43588330433) completed successfully on the current exact HEAD `31c99f0b4a0591a41d97afa265145567cf1ddbd3` for Python 3.11, 3.12 and 3.13. Both reference suites passed in all three matrix jobs: 10 exact-decimal tests and 17 gateway tests per runtime.
-- Scope is intentionally narrow: fake adapter only; no production signer, production database, multi-process fencing, complete Risk calculation, ledger posting, venue reconciliation, or real exchange integration.
+- The suite contains 20 deterministic tests. GitHub Actions run [#43588971888](https://github.com/PandaGarry/NEXUS/actions/runs/43588971888) completed successfully on exact HEAD `d22d417da0d11dab5b9bb79298edd379eab46867` for Python 3.11, 3.12 and 3.13. Both reference suites passed in all three matrix jobs: 10 exact-decimal tests and 20 gateway tests per runtime. Two new tests use independent SQLite connections to race approval consumption and command dispatch; this proves local SQLite write serialization only, not distributed fencing.
+- Scope is intentionally narrow: fake adapter only; no production signer, production database, cross-host fencing/leases, complete Risk calculation, ledger posting, venue reconciliation, or real exchange integration.
 - A fresh local container clone attempt failed because the environment could not resolve github.com; CI supplies the checked-in-source verification for this exact HEAD.
 - Prototype Readiness remains BLOCKED. The reference model grants no live permission and does not change any owner risk limits.
