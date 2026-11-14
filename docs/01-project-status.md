@@ -314,3 +314,12 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - No blocking design contradiction remains after two wording clarifications: gateway admission checks versus owning-service authorization; T4 protection tier versus separate protected workload identities/authorities.
 - Retained findings F-03..F-08 as open: executable permission mapping, revocation propagation objectives, registry/signing/workload identity trust roots, actual DB/host/network isolation evidence, first G1 module/resource budgets and operator/support governance.
 - Cross-review is design-level only. No owner decision or gate is closed; no module runtime, registry, security control or dependency is implemented. G0D/G1 remain open.
+
+
+## Capability catalog and authorization contracts — 2026-11-14
+
+- Published [NX-ARCH-009](architecture/NX-ARCH-009-capability-catalog-authorization-contracts.md), turning the broad module matrix into a proposed capability contract model.
+- Defined stable capability IDs/versioning, owner and enforcement authority, typed resource scopes, data classifications, an initial 12-entry candidate catalog, and a module-to-capability/negative-test mapping.
+- Explicitly excluded protected financial operations and Trusted Egress from optional-module grants; documented the request-time authorization sequence and separation from product entitlements.
+- Added revocation/cache/outage requirements, audit/privacy constraints and 18 adversarial CAP scenarios.
+- No executable schema, policy engine, grant issuer, active permission, module runtime or dependency was implemented. Cross-review, domain/security acceptance and G0D/G1 remain open.
