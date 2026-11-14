@@ -261,3 +261,13 @@ Expanded NX-REF-EXEC-002 §4.5 with an evidence-oriented comparison of relationa
 ### Added — Open-source component qualification shortlist (2026-11-14)
 
 Published NX-RESEARCH-010. PostgreSQL, OpenTelemetry Collector, OpenBao, NATS JetStream, Cilium and Temporal are qualified by potential role and gate; NautilusTrader's existing test-only disposition is retained. Established explicit authority exclusions and dependency qualification requirements. Research only: no dependency, package, runtime service, broker, database, vault or deployment topology added.
+
+
+### Added — Modular product boundaries and trust isolation proposal (2026-11-14)
+
+- Added NX-ARCH-006 defining a protected domain core and independently governed product modules behind versioned contracts and deny-by-default admission.
+- Specified workload identities, least-privilege capability grants, signed immutable artifact admission, module data ownership, failure containment, rollback and adversarial verification requirements.
+- Defined Identity & Access as security-critical but non-authoritative for Risk/Ledger/venue egress; proposed Demo and Learning/Wiki as separate bounded domains.
+- Required hard Demo/live separation through distinct account namespace and ledger, simulator-only execution, independent storage permissions and no route to production credentials/live egress.
+- Preferred an initial modular monolith / limited trust-domain split over premature microservices or arbitrary in-process plugin loading.
+- Updated architecture index, living checklist, project status and roadmap. Design only: no service, package, identity provider, plugin framework, database, deployment topology, public registration or live capability added; cross-review and owner/security approval remain open.
