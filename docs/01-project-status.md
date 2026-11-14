@@ -359,3 +359,12 @@ Exact branch HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed GitHub Actio
 ### NX-ARCH-REVIEW-005 exact-head regression evidence — 2026-11-14
 
 Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actions [#43613493976](https://github.com/PandaGarry/NEXUS/actions/runs/43613493976): Python 3.11/3.12/3.13, 13 isolated reference-model suites / 237 tests per runtime (711 successful executions). This verifies existing Python reference-model regression only; it does not test proposed authorization cache/revocation objectives, outage behavior, source freshness, halt propagation, cancellation, actual process/DB/secret/network fencing, Rust or venue integration. Numeric targets in NX-ARCH-REVIEW-005 remain proposals; OD-10/12 and owner/security acceptance remain open.
+
+## CI supply-chain hardening and PR integration graph — 2026-11-14
+
+- CI workflow `.github/workflows/reference-model.yml` now pins `actions/checkout` v7.0.1 to `3d3c42e5aac5ba805825da76410c181273ba90b1` and `actions/setup-python` v7.1.0 to `6d4fd22b20465ccc0f7354476588e8df7c9ca0e0`.
+- Exact action-upgrade HEAD `e35d81cb34aeae1c13e25def0320e8a4a4b649bb` passed [GitHub Actions #43614458632](https://github.com/PandaGarry/NEXUS/actions/runs/43614458632): Python 3.11/3.12/3.13, 13 isolated suites and 237 tests per runtime, 711 successful executions total.
+- Job logs no longer report Node.js 20 deprecation or Node `punycode` deprecation warnings. Direct actions are SHA-pinned; transitive action dependency locking/inventory remains open.
+- Verified stacked PR graph: #13 head `bb6400502640818fd5eba8a93eb3ae8dc54581d2` is #14 base; #14 head `ab6976933cb4de9b5320b73531034d02edc53907` is #16 base. The #16 base is intentional and must not be retargeted to the default branch or merged ahead of its parents.
+- All three PRs remain Draft/open/unmerged. PR #16 remains 28 changed files / 3,730 additions / 55 deletions and 205 commits beyond PR #14's head. Its scope/reviewability needs a dependency-aware disposition; no automatic merge or stack rewrite was performed.
+- Evidence boundary: this is Python reference-model CI, not Rust, production transaction isolation, external egress fencing, venue integration or live-safety evidence. G0D/G1 remain BLOCKED; live trading NOT AUTHORIZED.
