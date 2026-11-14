@@ -47,7 +47,7 @@ This is a dated evidence snapshot. Every status is scoped to the cited commit, C
 ### Research
 
 - HYP-001 primary configuration is fixed: 5-second notional imbalance, absolute threshold 0.20, 3-second horizon. The remaining 17 combinations are exploratory and require Holm–Bonferroni correction for grid-wide inference.
-- The candidate instrument/venue universe is registered in [RESEARCH-UNIVERSE.md](https://github.com/PandaGarry/NEXUS/blob/prototype/bybit-public-data-recorder-python-v0/experiments/bybit-public-recorder/RESEARCH-UNIVERSE.md), separately from the frozen confirmatory primary. Kraken Spot has historical Time & Sales through 2026-09-30 but no L2 evidence; OKX advertises tick trades since 2021-09 and high-resolution L2 since 2023-03. OKX archive samples, historical side semantics, account eligibility and restrictive personal-use terms still require validation.
+- The candidate instrument/venue universe is registered in [RESEARCH-UNIVERSE.md](https://github.com/PandaGarry/NEXUS/blob/prototype/bybit-public-data-recorder-python-v0/experiments/bybit-public-recorder/RESEARCH-UNIVERSE.md), separately from the frozen confirmatory primary. Kraken Spot has historical Time & Sales through 2026-09-30 but no L2 evidence; OKX advertises tick trades since 2021-09 and high-resolution L2 since 2023-03; Binance publishes raw trades/aggTrades but only coarse percentage-band `bookDepth`, and its dataset terms prohibit live proprietary execution. OKX archive samples, historical side semantics, account eligibility and restrictive personal-use terms still require validation.
 - No positive alpha is claimed. Historical trade archives and any historical L2 coverage must be inspected before deciding what can be concluded.
 
 ## Immediate priorities
