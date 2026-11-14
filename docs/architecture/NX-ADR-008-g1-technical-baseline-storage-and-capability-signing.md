@@ -238,7 +238,13 @@ Before implementation:
 - [ ] review the exact CBOR/COSE libraries and versions for Python and Rust;
 - [ ] publish cross-language canonical byte, digest and COSE signature vectors using RFC 9864 COSE Ed25519 alg=-19; include rejection vectors for deprecated alg=-8, wrong curve, algorithm/key mismatch and ambiguous kid;
 - [ ] run duplicate-key, invalid UTF-8, float/tag/indefinite-length, integer-range and resource-exhaustion tests;
-- [ ] prove Risk reservation concurrency, all-scope atomicity, serialization retry and unknown-commit reconciliation on the exact PostgreSQL version;
+- [ ] prove the Risk-owned scope-state serialization point is shared by reservation and exposure-projection updates; test that a concurrent Ledger/venue projection update cannot race a capacity check;
+- [ ] prove all-scope atomicity for account + child constraints, deterministic scope lock order, missing-scope fail-closed behavior and no partial reservation;
+- [ ] prove same-idempotency/same-digest replay returns the original result and same-idempotency/different-digest is rejected under concurrent duplicate requests;
+- [ ] inject SQLSTATE 40001 / 40P01 and prove whole-transaction retry from a fresh snapshot with bounded attempts; verify no stale precomputed exposure is reused;
+- [ ] inject lost commit responses and prove reconciliation by the same durable request identity/digest; unresolved primary/commit authority must keep the scope HALTED;
+- [ ] prove duplicate projection-event delivery cannot double-apply exposure and that stale/incomplete source watermarks block risk-increasing reservations;
+- [ ] run the full reservation/projection concurrency, all-scope atomicity, serialization retry and unknown-commit suite on the exact PostgreSQL patch version;
 - [ ] prove Command single-use consumption/outbox atomicity and Ledger inbox/journal idempotency;
 - [ ] test backup/restore/PITR and fail-closed recovery;
 - [ ] prove stale process/host/network path cannot reach venue egress after fencing;
