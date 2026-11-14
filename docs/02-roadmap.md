@@ -1044,3 +1044,17 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Qualify crash/restore, backup/PITR, failover, true uncertain-COMMIT recovery, image digest/provenance and independent security review.
 
 **Boundary:** all green results are disposable-fixture/reference-model evidence only. No production database schema, HEGC service, Egress transport fence or live trading capability is implemented or authorized.
+
+
+## Latest branch-head evidence refresh — 2026-11-14
+
+- [x] Refresh PR #16 exact branch HEAD: `49cb8ba73bfb9cf61fafba3108cf8ead6d16321b`.
+- [x] Verify PostgreSQL 18.7 disposable fixture workflow [#43630768858](https://github.com/PandaGarry/NEXUS/actions/runs/43630768858): 11/11 tests.
+- [x] Verify Python reference workflow [#43630768860](https://github.com/PandaGarry/NEXUS/actions/runs/43630768860): 264 tests/runtime across Python 3.11/3.12/3.13 (792 executions).
+- [x] Inspect all four jobs and logs; expected negative-test SQL denials/serialization conflicts are not test failures.
+- [x] Confirm subsequent branch delta is documentation-only; do not represent these checks as production or live-trading evidence.
+- [ ] Complete DBA/migration catalog-manifest drift detection, emergency role-change reconciliation and session termination proof.
+- [ ] Expand RLS adversarial matrix and qualify crash/restore, backup/PITR, failover and true uncertain-COMMIT recovery.
+- [ ] Complete signed image provenance, SBOM/vulnerability disposition and independent security review.
+
+**Gate:** PR #16 remains Draft and parent-stacked. G0D/G1 and production readiness remain open; live trading remains NOT AUTHORIZED.
