@@ -137,3 +137,8 @@
 - Added independent rational-oracle assertions, dimension/instrument-identity negative tests and exact non-terminating rational preservation.
 - Added the new test suite to the Python 3.11–3.13 reference workflow.
 - No venue, fee/funding/P&L/margin/liquidation/FX/accounting policy or production rounding rule was selected.
+
+### Expanded — Deterministic financial math property checks
+- Added 650 seeded property cases across spot notional, partial-fill permutation/partition invariance and inverse exposure identity.
+- Exact code/test commit `0f0b44e927aacf67d6f7a5678b160b3e3c6088e0` passed 182 tests per runtime on Python 3.11–3.13 in GitHub Actions run [#43596851904](https://github.com/PandaGarry/NEXUS/actions/runs/43596851904).
+- No production policy or venue/account behavior is inferred from these synthetic tests.
