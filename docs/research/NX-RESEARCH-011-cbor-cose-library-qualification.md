@@ -65,6 +65,10 @@ The selected profile is RFC 9052 COSE_Sign1 with RFC 9864 fully specified COSE E
 - Exactly one eligible key must resolve or verification fails closed on ambiguity, stale registry generation, revocation or mismatch.
 - COSE key must be public OKP / Ed25519, with a 32-byte public x parameter and no private d parameter outside the Risk signer boundary; require a 64-byte Ed25519 signature. Bind the key to alg=-19; reject -8, -53, key/algorithm mismatch and algorithm substitution.
 - External AAD is a fixed, versioned NEXUS domain separator; no caller-controlled or empty-context fallback.
+- The application profile uses exactly the untagged, embedded-payload COSE_Sign1 four-element array; reject tag 18, detached/null payloads, wrong array length and alternative COSE message types.
+- The payload bstr contains exactly one NEXUS restricted deterministic-CBOR capability map. Validate the original payload bytes before typed claim use; do not normalize by decode/re-encode.
+- The protected-header bstr contains exactly deterministic CBOR map labels 1 (alg=-19) and 4 (non-empty bounded byte-string kid); the unprotected map is empty. Reject extra headers, duplicate labels and protected/unprotected collisions.
+- Preserve the exact received protected-header bstr. Construct Sig_structure using RFC 9052 §9 core deterministic encoding; the fixed external AAD is exact bytes and is never caller-controlled.
 - Verify the signature over the received protected-header bstr as received. Never reconstruct different protected-header bytes before signature verification.
 - No unprotected header parameters are permitted in the initial NEXUS profile; reject protected/unprotected collisions and unknown critical parameters.
 - Signature verification does not authorize a command: Risk approval, reservation, single-use consumption, halt epoch, eligibility and egress checks remain separate mandatory gates.
@@ -101,6 +105,8 @@ Before any library is selected, create language-neutral vectors and require iden
 
 ### COSE positive / negative vectors
 - COSE_Sign1 alg=-19, OKP/Ed25519, protected kid and fixed external AAD;
+- exact untagged four-element COSE_Sign1; reject tag 18, detached payload, non-empty unprotected map, extra protected labels and alternate message types;
+- canonical capability-payload bstr, exact protected-header bstr preservation and deterministic RFC 9052 §9 Sig_structure bytes;
 - verify using the exact received protected bstr;
 - reject alg=-8, alg=-53, wrong kty/crv, key/algorithm mismatch and signature corruption;
 - reject missing/unprotected alg, unprotected kid, duplicate/colliding labels and unknown critical headers;
