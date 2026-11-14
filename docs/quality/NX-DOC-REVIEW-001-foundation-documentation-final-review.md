@@ -66,13 +66,15 @@ The reviewed project branch contains documentation and governance artifacts, but
 
 **Required action:** Establish a separately reviewed implementation workspace with reproducible toolchain, dependency policy, CI and test commands before claiming an executable foundation.
 
-### DOC-005 — ADR-006 and architecture synthesis remain open
+### DOC-005 — ADR-006 disposition clarified
 
-The architecture index lists NX-ADR-006 as planned. Strategy validation governance is partially covered by ТЗ-NX-003 and NX-ADR-003, but a concise decision record is still needed if the final architecture depends on specific research/validation governance choices.
+Strategy-validation governance requirements are already captured in NX-ADR-003 (data splits, purging/embargo, walk-forward, multiple-testing accounting, experiment provenance and untouched test discipline) and ТЗ-NX-003. No distinct architecture decision currently justifies a second ADR.
 
-**Required action:** Either publish NX-ADR-006 with a bounded decision scope or explicitly defer it with rationale and a roadmap gate. Do not leave an ambiguous placeholder.
+**Disposition:** DEFER NX-ADR-006. The architecture index and roadmap now state the rationale and reopening condition: create it only if a separate governance decision emerges that is not already owned by NX-ADR-003. This closes the ambiguous placeholder without manufacturing a redundant ADR.
 
 ## 4. Required documentation packages before G0 baseline freeze
+
+The living execution register is [NX-PROJECT-CHECKLIST-001](NX-PROJECT-CHECKLIST-001-execution-and-evidence.md). It tracks the current D1–D8 disposition and ordered technical queue; this review remains the rationale and close-out record.
 
 The following are the remaining material gaps. Each has a bounded deliverable and an exit condition.
 
@@ -97,7 +99,7 @@ The venue and legal eligibility work may remain blocked pending provider confirm
 | Target topology | NX-ARCH-001 | Proposed; needs consistency correction and owner review |
 | Market event semantics | NX-ADR-001; ТЗ-NX-001 | Design present; venue fixtures and conformance evidence absent |
 | Market-data recovery | NX-ADR-004; NX-IF-004 | Design present; protocol fixtures and fault tests absent |
-| Instrument metadata / exact arithmetic | NX-ADR-005 | Requirements present; numeric policy and executable golden vectors incomplete |
+| Instrument metadata / exact arithmetic | NX-ADR-005; NX-ARCH-003; golden-vectors-v1.json | 15 language-neutral vectors and Python reference tests exist; production bounds, dimensions, overflow/rounding and property/cross-language evidence remain incomplete |
 | Execution integrity | NX-ADR-002; NX-IF-001/003/005; ТЗ-NX-004 | Extensive design; no implementation or adapter certification |
 | Risk / exposure | ТЗ-NX-005; NX-IF-001/002/004/005 | Extensive design; numeric limits and owner policy remain open |
 | Ledger / portfolio | ТЗ-NX-006; NX-IF-003 | Design present; chart of accounts and valuation/accounting choices remain open |
