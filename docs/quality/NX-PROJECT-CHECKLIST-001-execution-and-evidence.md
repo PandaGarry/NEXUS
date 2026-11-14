@@ -240,3 +240,14 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - GitHub Actions run [#43596156300](https://github.com/PandaGarry/NEXUS/actions/runs/43596156300) passed exact PR HEAD `546a0e74fa055acba2c2de6694c1ba43f65debf5` on Python 3.11, 3.12 and 3.13.
 - Ten existing reference suites passed on each runtime: 11 exact-decimal, 24 execution-gateway, 13 egress-handover, 17 instrument-specification, 12 instrument-registry, 16 dimensional-types, 18 instrument-units, 18 exact-division, 32 bounded-numeric and 11 numeric-wire tests (172 per runtime / 516 executions).
 - This is regression evidence for pre-existing test-only reference models. It does not test or validate the proposed financial-operation policies, and it is not production/runtime/venue conformance evidence.
+
+## 15. Venue-neutral financial math fixture increment
+
+- [x] Add language-neutral, synthetic exact vectors for spot notional, explicitly mapped linear contract notional, inverse rational base exposure and partial-fill weighted-average arithmetic.
+- [x] Add test-only conformance tests with independent `fractions.Fraction` checks for selected outputs.
+- [x] Preserve repeating inverse exposure as a rational; assert that exact decimal conversion rejects a non-terminating result rather than rounding.
+- [x] Add the suite to the Python 3.11/3.12/3.13 reference workflow.
+- [ ] Verify exact PR-head CI and inspect all test logs.
+- [ ] Add cross-language implementation only after a production-language contract and resource profile are approved.
+
+**Disposition:** TEST-ONLY MATHEMATICAL FIXTURES; no venue/account semantics or production financial policies are qualified. Fees, funding, P&L, margin, liquidation, FX and accounting remain BLOCKED/OWNER-DECISION as defined by NX-REF-DOMAIN-009. G0/G1 unchanged.
