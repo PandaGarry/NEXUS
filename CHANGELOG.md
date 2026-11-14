@@ -749,3 +749,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Python 3.11/3.12/3.13 each passed 257 tests (771 successful executions total); egress-fencing package passed 31 tests, including 18 HaltEgressGate cases.
 - All three job logs show no failures or Node.js 20 / `punycode` deprecation warnings.
 - The later signed-64-bit epoch-exhaustion grant-denial guard requires a fresh exact-head rerun. This remains sequential reference-model evidence, not HEGC/database/socket/network proof.
+
+### HaltEgressGate 18-case hardening and code/test CI — 2026-11-14
+
+- Fixed duplicate halt requests during store outage so they do not downgrade an already committed HALTING/HALTED epoch.
+- Added two regressions for duplicate requests during store outage and after HALTED.
+- Asserted sender-fenced attempts retain their reservation and remain OUTCOME_UNKNOWN until reconciliation; fencing alone is not DEFINITELY_NOT_SENT evidence.
+- HaltEgressGate now has 18 tests; the egress-fencing package has 31 tests.
+- Exact code/test HEAD `2e94edd73f8933f0d510eed940452316ec5b8832` passed workflow [#43618796109](https://github.com/PandaGarry/NEXUS/actions/runs/43618796109): 13 suites / 257 tests on each Python 3.11/3.12/3.13 runtime (771 executions).
+- The sequential oracle still does not prove real DB concurrency, HEGC persistence, socket behavior or external fencing.
