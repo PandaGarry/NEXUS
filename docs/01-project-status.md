@@ -231,3 +231,12 @@ NX-ARCH-REVIEW-001 F-02 was stale in wording: it still described the reservation
 
 
 A targeted review found one ambiguous label in the IF-002 exposure lifecycle table: “marks command as dispatching / sends it” did not make the ordering between the durable attempt marker and network side effect explicit. The row now requires the dispatcher to commit the durable pre-egress marker before any network action. That marker moves exposure to `DISPATCH_OUTCOME_UNKNOWN` and is expressly not evidence that bytes were sent. The conservative reservation remains held until authoritative venue outcome and reconciliation. NX-ARCH-REVIEW-001 records the clarification. This aligns documentation only; production storage, transaction isolation, fencing and egress enforcement remain unimplemented and unverified.
+
+
+## Transaction and egress crash analysis — 2026-11-14
+
+Expanded NX-REF-EXEC-002 with a proposed implementation decomposition and minimum crash-point matrix. The design now separates (1) Risk-owned all-scope reservation commit, (2) Command Coordinator's atomic single-use capability consumption + canonical command/reservation-reference/outbox commit, (3) durable attempt marker, and (4) the credential-owning Egress send boundary. Risk and Command are ordered independent durable commits; no cross-service distributed ACID transaction is assumed. Reservations remain held through uncertain sends and until authoritative reconciliation.
+
+The egress recommendation is one account-scoped credential-owning boundary; ordinary workers and adapters have no direct venue route. A takeover requires positive external revocation/fencing of the old egress path, not lease expiry or a local epoch check. Added crash cases for ambiguous commits, before/during/after socket write, venue acceptance, fill-to-Ledger handoff, halt epoch transfer and incomplete RecoveryBarrier.
+
+**Status:** architecture/test-plan refinement only. OD-08/OD-09/OD-10/OD-12 decisions and concrete provider/database/network/security choices remain open. No runtime, production transaction, trusted fence or venue credential was added. The stale-egress race remains a blocker.
