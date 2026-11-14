@@ -1281,7 +1281,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Test consume-store outage fails closed and does not authorize socket initiation.
 - [x] Test already-consumed grant across halt/store outage; socket initiation must be observed or sender fenced before HALTED acknowledgement.
 - [x] Fix stale test expectations exposed by workflow #43618969753.
-- [x] Verify exact code/test HEAD 9d618131ac9951e23c589491b2fb1039f6dc1d86 on [workflow #43619080626](https://github.com/PandaGarry/NEXUS/actions/runs/43619080626).
+- [x] Verify exact code/test HEAD 9d618131ac9951e23c589491b2fb1039f6dc1d86 on [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619194630).
 - [x] Pass 13 isolated suites / 260 tests on each of Python 3.11, 3.12 and 3.13 (780 successful executions total).
 - [x] Confirm egress-fencing passes 34 tests, including 21 HaltEgressGate cases; inspect all three job logs.
 - [ ] Prove ambiguous consume status resolution, durable grant idempotency and Egress process-incarnation binding against the HEGC service/database.
@@ -1329,3 +1329,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Select physical guard ownership/procedure only after the G1 concurrency harness proves commit order and role grants.
 
 **Disposition:** design correction based on PostgreSQL SSI semantics; no guard table/function/schema/runtime implemented. See NX-RESEARCH-012 §4.2.
+
+## 18.78 Grant-consumption red-CI analysis and recovery — 2026-11-14
+
+- [x] Record failures #43618969753 (SHA `913ef9e`) and #43619038468 (SHA `f9f385d`): two test sequences did not model the newly required GRANT_CONSUMED transition before socket initiation, and one stale assertion expected a sender-fenced attempt to initiate a later socket write.
+- [x] Correct the gate-first/store-outage scenario to consume the already committed grant before the outage, then treat it as in-flight through recovery.
+- [x] Correct sender-fence scenario: fencing prevents any future socket initiation; the attempt remains OUTCOME_UNKNOWN and reconciliation-required.
+- [x] Verify corrected code/test HEAD `fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8` on workflow #43619194630: 262 tests/runtime across Python 3.11/3.12/3.13 (786 executions), egress-fencing 36 tests / HaltEgressGate 23 tests.
+- [ ] Keep a regression test for each crash/response-loss boundary; do not suppress or downgrade a failing CI result.
+
+**Disposition:** both red runs were investigated and resolved; the corrected exact code/test HEAD passed all three runtimes. No production HEGC behavior is inferred from these reference tests.
