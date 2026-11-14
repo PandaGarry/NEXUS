@@ -13,6 +13,8 @@
 - [ ] Сопоставить Order Flow формулы с поведенческими эталонами.
 - [ ] Зафиксировать дефекты, неизвестные свойства и ограничения.
 
+- [x] Prepare bounded first-venue candidate review (NX-RESEARCH-003): Coinbase and Kraken remain conditional candidates; no selection until jurisdiction/product eligibility and exact API capability are verified.
+
 ## Phase 1 — Core Architecture (Blocked)
 
 - [x] Publish bounded WP-A..WP-E interface design drafts (NX-IF-001..005).
