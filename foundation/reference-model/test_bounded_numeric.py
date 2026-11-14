@@ -1,6 +1,6 @@
 import unittest
 
-from nexus_decimal import DivisionByZero, ExactDecimal, ExactRational, RoundingMode
+from nexus_decimal import DivisionByZero, ExactDecimal, ExactRational, InvalidStep, RoundingMode
 from numeric_wire import serialize_decimal, serialize_rational
 from bounded_numeric import BoundedNumericContext, NumericLimitExceeded, NumericLimits, _decimal_digit_count
 
@@ -88,6 +88,8 @@ class BoundedNumericTests(unittest.TestCase):
         self.assertEqual(ctx.compare(d("1.0001"), d("1")), 1)
         self.assertTrue(ctx.is_multiple_of(d("1.25"), d("0.05")))
         self.assertFalse(ctx.is_multiple_of(d("1.23"), d("0.05")))
+        with self.assertRaises(InvalidStep):
+            ctx.is_multiple_of(d("1"), d("0"))
 
     def test_exact_terminating_conversion_is_bounded(self):
         self.assertEqual(context().to_decimal_exact(ExactRational(1, 8)), d("0.125"))
