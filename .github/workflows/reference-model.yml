@@ -4,13 +4,7 @@ on:
   push:
     branches:
       - foundation/domain-kernel-reference-v0
-    paths:
-      - "foundation/reference-model/**"
-      - ".github/workflows/reference-model.yml"
   pull_request:
-    paths:
-      - "foundation/reference-model/**"
-      - ".github/workflows/reference-model.yml"
   workflow_dispatch:
 
 permissions:
