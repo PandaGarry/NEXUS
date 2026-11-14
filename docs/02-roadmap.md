@@ -1058,3 +1058,15 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Complete signed image provenance, SBOM/vulnerability disposition and independent security review.
 
 **Gate:** PR #16 remains Draft and parent-stacked. G0D/G1 and production readiness remain open; live trading remains NOT AUTHORIZED.
+
+
+## PostgreSQL catalog-drift regression — 2026-11-14
+
+- [x] Add deterministic disposable-fixture catalog fingerprint for role attributes/memberships, schema/relation ownership and ACLs, RLS flags/policies, function ownership/security mode/configuration/ACLs and default privileges.
+- [x] Prove fingerprint changes for CREATEROLE escalation, PUBLIC EXECUTE, SECURITY INVOKER and unexpected trusted-schema function inventory; prove exact restoration returns to baseline.
+- [x] Verify PostgreSQL 18.7 workflow #43631662692: 12/12 tests; Python workflow #43631662864: 264 tests/runtime across 3.11/3.12/3.13 (792 executions).
+- [ ] Define approved production manifest schema, canonicalization, signing/trust roots, ownership, approval/review and immutable audit retention.
+- [ ] Implement deployment-time fail-closed catalog comparison against approved manifest for the actual production schema and migration set.
+- [ ] Qualify DBA/migration control plane, emergency change reconciliation and termination/fencing of affected existing sessions/processes.
+
+**Boundary:** fixture fingerprint is regression evidence only; no production drift monitor or deployment gate is implemented.
