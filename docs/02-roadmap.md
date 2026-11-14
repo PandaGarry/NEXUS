@@ -321,3 +321,17 @@ Publication is design progress, not implementation or security certification.
 
 
 **NX-ARCH-006 verification note (2026-11-14):** the documentation increment's exact branch head `e15e47f9512bc07a1f6534a4f41b0d27d7d42578` passed workflow [#43608583358](https://github.com/PandaGarry/NEXUS/actions/runs/43608583358): 237 existing Python reference-model tests on each of Python 3.11/3.12/3.13 (711 executions). This is regression evidence only; no module runtime, identity, storage isolation, secret boundary or network-egress behavior is tested. Subsequent documentation-only synchronization commits are not covered by that exact-head run.
+
+
+## Long-term product platform extensibility (design track)
+
+- [x] Publish NX-ARCH-007 candidate product-domain taxonomy and stable extension principles.
+- [x] Define three independent planes: product capability, commercial entitlement and security authorization.
+- [x] Define entitlement records/lifecycle, replay-safe payment event ingestion, quota separation, downgrade behavior and versioned module compatibility.
+- [ ] Cross-review NX-ARCH-007 against the protected-core and module-boundary architecture and owner decisions.
+- [ ] Draft controlled module catalog and feature registry schemas, ownership/data-classification fields and compatibility policy.
+- [ ] Build adversarial test plans for forged entitlements, replay/out-of-order webhooks, revocation, quota bypass, module failure and billing outage.
+- [ ] Preserve critical-path independence: no billing/payment or non-critical product service in Risk/dispatch/egress synchronous flow.
+- [ ] Only after explicit owner/legal/security approval consider public registration, payment integration, subscriptions, teams, multi-tenancy or commercial launch.
+
+These are architectural readiness items, not commitments to ship all listed product domains.
