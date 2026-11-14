@@ -113,3 +113,7 @@ See [NX-RESEARCH-011](../research/NX-RESEARCH-011-cbor-cose-library-qualificatio
 ### Field-level data lineage and projection governance — NX-ARCH-REVIEW-006
 
 See [NX-ARCH-REVIEW-006](NX-ARCH-REVIEW-006-field-level-data-lineage-and-projection-governance.md). Maps exact fields from NX-IF-001..005 and NX-SEC-001 to proposed data classifications, source owners, projection restrictions and retention gaps. Field classifications remain proposed; no projection API or data-access runtime is approved.
+
+### Risk scope serialization and PostgreSQL concurrency — NX-ARCH-REVIEW-007
+
+See [NX-ARCH-REVIEW-007](NX-ARCH-REVIEW-007-risk-scope-serialization-and-postgresql-concurrency.md). Refines the G1 Risk-owned scope-state serialization protocol with parent/child projection fan-out, scope-config versioning, idempotency 23505 handling, bounded scope fan-out, and a PostgreSQL 18 concurrency/fault-injection matrix. Design only; no schema or runtime is implemented.
