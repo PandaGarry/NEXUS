@@ -162,7 +162,7 @@ No numeric risk limits are invented. UNCONFIGURED remains a hard block for live 
 Verified in this review:
 - all reviewed source documents were fetched from the named branch;
 - the six specifications, five ADRs and proposed NX-IF-001..003 contracts exist in the branch;
-- the latest known commit referenced for this review was fetched and its message/diff inspected.
+- WP-C branch was compared against `docs/wp-b-exposure-reservations`: base `7a44dccf33222f1487832bb6fee0b8b7cd492ce5`, head `8acabe263b110cbcdc431a458c2be80fa048bf1b` at the time of comparison, 10 commits ahead and 0 behind; the file-level diff contained the NX-IF-003 contract and its integration updates.
 
 Not verified:
 - live branch ref SHA through a dedicated Git ref endpoint;
