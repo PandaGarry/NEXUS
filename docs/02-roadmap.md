@@ -852,3 +852,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Verify 11 new tests on Python 3.11/3.12/3.13 at exact branch HEAD.
 - [ ] Replace model assumptions with actual PostgreSQL shared-row/conditional-update proof and instrumented socket-boundary fault injection.
 - [ ] Prove external process/host/network fencing independently of the old Egress workload.
+
+## Halt / final Egress gate reference verification
+
+- [x] Add 11 test-only halt/gate ordering tests.
+- [x] Verify code/test SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1` on workflow #43618215618.
+- [x] Pass Python 3.11/3.12/3.13: 250 tests/runtime, 750 executions; egress-fencing package 24 tests/runtime.
+- [ ] Re-run exact-head CI after documentation synchronization.
+- [ ] Implement and verify actual DB lock ordering, durable halt store and instrumented network boundary only after G1 readiness.
