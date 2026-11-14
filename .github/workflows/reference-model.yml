@@ -36,3 +36,6 @@ jobs:
       - name: Test instrument specification reference
         working-directory: foundation/reference-model
         run: python -m unittest -v test_instrument_spec.py
+      - name: Test instrument registry reference
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_instrument_registry.py
