@@ -141,5 +141,5 @@ NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context wi
 
 - NX-REF-DOMAIN-010 and `financial-math-golden-v1.json` add synthetic, non-authorizing exact vectors for spot notional, explicitly mapped linear contract exposure/notional, inverse rational base exposure and partial-fill weighted-average arithmetic.
 - New test suite checks selected outputs independently with standard-library `fractions.Fraction`; non-terminating inverse exposure remains rational and exact decimal conversion fails closed.
-- CI now includes the new suite on Python 3.11, 3.12 and 3.13. Exact-head result is pending.
+- CI run [#43596710483](https://github.com/PandaGarry/NEXUS/actions/runs/43596710483) passed exact code/test commit `9d0bf48c3ddc66facf408d60b1c64beb971eebb6`: 179 tests on each of Python 3.11, 3.12 and 3.13; all three jobs successful.
 - This is mathematical reference evidence only. It does not qualify venue multipliers, reporting scope, fees, funding, P&L, margin, liquidation, FX or accounting. G0/G1 and live-trading restrictions are unchanged.
