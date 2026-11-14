@@ -1016,7 +1016,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** NX-IF-001/002, NX-ADR-008, NX-ARCH-REVIEW-007 and NX-REF-EXEC-002 now share the same proposed contract. Runtime and security evidence remain open.
 
-## 18.50 PostgreSQL 18.7 security and migration qualification — 2026-11-14
+## 18.53 PostgreSQL 18.7 security and migration qualification — 2026-11-14
 
 - [x] Verify official PostgreSQL 18.7 release date (2026-11-12) and current supported-minor status.
 - [x] Record 52 security fixes and 140+ bug fixes in the official release.
@@ -1030,7 +1030,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** PostgreSQL 18.7 remains a G1 evaluation target only. No database instance, extension, schema or production topology was installed or approved.
 
-## 18.51 Exact-head reference CI after valuation / PostgreSQL qualification — 2026-11-14
+## 18.54 Exact-head reference CI after valuation / PostgreSQL qualification — 2026-11-14
 
 - [x] Verify PR #16 branch HEAD `7fb396df5f3e700adf0ad151c446e38930fdadb0` on [workflow #43617626344](https://github.com/PandaGarry/NEXUS/actions/runs/43617626344).
 - [x] Pass 13 isolated suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 executions).
@@ -1040,7 +1040,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** exact branch-head Python reference CI passed. No production implementation or live authority is implied.
 
-## 18.31 NX-IF-004 alignment with selected G1 profile and Trusted Egress ownership — 2026-11-14
+## 18.55 NX-IF-004 alignment with selected G1 profile and Trusted Egress ownership — 2026-11-14
 
 - [x] Bind RiskApprovalCapability to both StateEvidenceVector and the exact immutable ValuationInputVector ID/version.
 - [x] Move the final compatibility-check authority from generic Execution wording to Trusted Egress at the attempt-scoped send-authorization gate.
@@ -1060,6 +1060,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove source-owned snapshot immutability, vector coherence, manifest freshness and no-fetch behavior at instrumented process/network boundaries after G0D/G1 readiness.
 
 **Disposition:** NX-IF-001/002/004, NX-ADR-008, NX-ARCH-REVIEW-007 and NX-REF-EXEC-002 are aligned at the design level. No runtime or production authorization exists.
+
+
+
+## 18.56 Halt / egress race exact-head documentation synchronization — 2026-11-14
+
+- [x] Synchronize NX-IF-005, NX-ADR-008, NX-ARCH-REVIEW-005 and NX-REF-EXEC-002 on the shared halt/final-egress serialization point.
+- [x] Define both race outcomes and require Egress to drain or positively fence gate-committed attempts before halt acknowledgement.
+- [x] Normalize duplicate checklist section identifiers 18.31, 18.50 and 18.51 to unique 18.53–18.55.
+- [ ] Run exact-head CI after this documentation synchronization and record the resulting SHA/run.
+- [ ] Execute actual halt/gate race tests at the instrumented Egress boundary; documentation synchronization is not runtime proof.
 
 ## 18.57 Halt / final-egress authorization race semantics — 2026-11-14
 
