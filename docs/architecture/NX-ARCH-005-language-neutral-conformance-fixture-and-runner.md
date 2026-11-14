@@ -182,7 +182,7 @@ A language-neutral fixture contract is not portable if runtimes silently parse a
 1. Decode bytes as UTF-8 strictly. Reject invalid UTF-8 and a UTF-8 BOM; do not fall back to a platform code page.
 2. Reject duplicate object member names at every nesting level. A parser's default "first wins" or "last wins" behavior is not acceptable.
 3. Reject non-standard numeric constants such as `NaN`, `Infinity` and `-Infinity`.
-4. Reject JSON floating-point number tokens throughout the fixture contract. Control/count fields use JSON integers; financial/domain quantities, coefficients, numerators, denominators, prices, quantities, scales when not control integers, and other exact values use canonical strings or typed objects. No implementation may parse a JSON float and convert it back to a string.
+4. Reject JSON floating-point number tokens throughout the fixture contract. Control/count/scale fields use JSON integers only where the schema explicitly declares them; financial/domain quantities, coefficients, numerators, denominators, prices and other exact values use canonical strings or typed objects. No implementation may parse a JSON float and convert it back to a string.
 5. JSON integer tokens are limited to the signed 64-bit range for cross-runtime control metadata. Larger exact integers MUST be decimal strings. Booleans remain booleans and MUST NOT be accepted as integers.
 6. Reject unpaired Unicode surrogate code points. Do not apply Unicode normalization to strings or object keys; compare their decoded scalar values exactly.
 7. Reject comments, trailing commas and other non-JSON extensions.
