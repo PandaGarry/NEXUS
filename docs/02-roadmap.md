@@ -785,3 +785,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Prove immutable source snapshots, cross-source vector coherence, watermark/correction continuity and source-specific freshness.
 - [ ] Instrument Trusted Egress and network policy to prove no market/FX/fee/collateral fetch occurs at send time.
 - [ ] Test market-data tick changes, source corrections/revocations and stale manifests between approval and dispatch.
+
+## Halt / final-egress linearization proof
+
+- [x] Define one serialization point shared by authoritative halt-epoch changes and final EgressBoundaryAuthorization.
+- [x] Specify halt-first and gate-first outcomes, including paused-process semantics.
+- [x] Require Egress drain/fence proof before acknowledging a newer halt epoch.
+- [ ] Fault-inject halt-first, gate-first, process pause after gate, crash, partition, sender fence and halt acknowledgement.
+- [ ] Verify no stale sender can initiate a socket write after full halt acknowledgement at the instrumented transport boundary.
+- [ ] Confirm whether the stronger no-socket-initiation-after-halt-commit requirement is required; do not claim it from DB ordering alone.
