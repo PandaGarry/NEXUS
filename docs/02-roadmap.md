@@ -576,3 +576,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Restrict verifier input to public Ed25519 key material and exact key/signature lengths.
 - [ ] Add cross-language positive and adversarial COSE vectors for lookup ambiguity, remote key URL, claim mismatch, stale/revoked registry generation and private-key leakage.
 - [ ] Qualify library behavior for protected-header byte preservation, duplicate headers and strict failure semantics.
+
+## COSE_Sign1 exact-wire conformance
+
+- [x] Define untagged four-element embedded-payload profile with alg=-19 and protected kid only.
+- [x] Define empty unprotected map, canonical payload bstr and exact protected-header preservation.
+- [x] Require RFC 9052 §9 deterministic Sig_structure and fixed external AAD.
+- [ ] Add byte-exact cross-language signing/verifying vectors and negative profile tests.
+- [ ] Prove parser behavior for duplicate labels, protected/unprotected collisions, detached payload, tags and extra parameters.
