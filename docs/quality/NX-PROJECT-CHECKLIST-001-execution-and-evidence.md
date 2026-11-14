@@ -871,7 +871,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** final synchronized branch-head reference regression passed. PR #16 remains Draft/open/unmerged and parent-first integration is required.
 
-## 18.41 Risk-owned reservation serialization and PostgreSQL concurrency proof plan — 2026-11-14
+## 18.42 Risk-owned reservation serialization and PostgreSQL concurrency proof plan — 2026-11-14
 
 - [x] Define a Risk-owned scope-state record as the common serialization point for reservation commits and Risk exposure-projection updates.
 - [x] Preserve Ledger journal ownership; Ledger MUST NOT write Risk-owned projection/scope-state records directly.
@@ -888,7 +888,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** design protocol clarified in NX-ADR-008 §5.3, NX-IF-002 §6.4 and OD-09. No PostgreSQL instance/schema, reservation service or concurrency runtime was implemented. G1 remains gated on exact-version evidence.
 
-## 18.42 Field-level data lineage and projection governance — 2026-11-14
+## 18.43 Field-level data lineage and projection governance — 2026-11-14
 
 - [x] Inspect actual field definitions in NX-IF-001..005 and security asset/trust boundaries in NX-SEC-001.
 - [x] Map TradeIntent, CanonicalTradeCommand, RiskDecision, RiskApprovalCapability, RiskScope, ExposureItem, ExposureSnapshot, RiskReservation, ExecutionEvent, StateEvidenceVector, FreshnessPolicy, RecoveryCase, RecoveryBarrier, HaltState, EmergencyActionPlan and EmergencyCommand fields.
@@ -903,7 +903,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** NX-ARCH-REVIEW-006 published. Field inventory is source-grounded; classifications and retention are proposed, not accepted. No API, schema, database table, grant or runtime was implemented.
 
-## 18.43 Risk reservation concurrency contract synchronization — 2026-11-14
+## 18.44 Risk reservation concurrency contract synchronization — 2026-11-14
 
 - [x] Synchronize NX-ADR-008 §5.3, NX-IF-002 §6.4 / §11, NX-REF-EXEC-002 §4.5 and OD-09 around one Risk-owned scope-state serialization point.
 - [x] Keep Ledger as journal owner; Risk consumes Ledger/venue/external events through idempotent projection inbox transactions.
@@ -915,7 +915,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** design and test obligations synchronized; no database/runtime behavior is implemented or verified. G1 remains gated.
 
-## 18.44 Risk scope serialization and PostgreSQL concurrency review — 2026-11-14
+## 18.45 Risk scope serialization and PostgreSQL concurrency review — 2026-11-14
 
 - [x] Cross-review NX-ADR-008 §5.3–5.4, NX-IF-002 §6.3–7 and OD-09 against PostgreSQL 18 official documentation.
 - [x] Require projection updates to lock/update every affected parent/account and child scope row atomically.
@@ -928,3 +928,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove source completeness and freshness for every exposure-affecting venue/Ledger/manual event before G1 acceptance.
 
 **Disposition:** NX-ARCH-REVIEW-007 published; transaction design refined and synchronized into ADR-008, IF-002 and OD-09. No database, schema, migration or runtime was implemented.
+
+## 18.46 Exact-head CI after Risk scope concurrency review — 2026-11-14
+
+- [x] Verify branch HEAD `e7c5461ae7ccea4f29fc77461db91d44566aba36` with [workflow #43616908979](https://github.com/PandaGarry/NEXUS/actions/runs/43616908979).
+- [x] Python 3.11, 3.12 and 3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
+- [x] Inspect all three logs: no test failures or Node.js 20 / `punycode` deprecation warnings.
+- [x] Confirm NX-ARCH-REVIEW-007 and synchronized ADR-008 / IF-002 / OD-09 changes are design-only; no PostgreSQL schema, instance or runtime exists.
+- [ ] Execute the PostgreSQL 18 concurrency, idempotency, failover and external-fencing proof matrix before G1 acceptance.
+
+**Disposition:** exact-head Python reference regression passed. PostgreSQL concurrency design is refined but not implemented or proven.
