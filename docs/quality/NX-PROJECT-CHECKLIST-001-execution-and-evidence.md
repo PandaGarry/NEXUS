@@ -163,7 +163,7 @@ For every substantive code or architecture change:
 
 - Added `AssetAmount`, `Money`, `Price`, `Notional` and instrument-scoped `ContractCount`, all backed by `ExactDecimal`.
 - Only same-dimension/same-unit addition and subtraction are supported. `Price × matching AssetAmount` yields quote-denominated `Notional`; contract counts cannot be treated as asset quantity.
-- 16 dedicated tests passed in GitHub Actions run [#43593302985](https://github.com/PandaGarry/NEXUS/actions/runs/43593302985) on Python 3.11, 3.12 and 3.13. The workflow runs six isolated suites: 11 decimal, 24 gateway, 13 egress, 17 instrument-spec, 12 registry and 16 dimensional-type tests (93 per runtime; 279 matrix executions).
+- 16 dedicated tests passed in GitHub Actions run [#43593302985](https://github.com/PandaGarry/NEXUS/actions/runs/43593302985) on Python 3.11, 3.12 and 3.13. Historical six-suite evidence only: 11 decimal, 24 gateway, 13 egress, 17 instrument-spec, 12 registry and 16 dimensional-type tests (93 per runtime; 279 matrix executions). The latest seven-suite run also includes 16 instrument-unit tests (109 per runtime; 327 matrix executions).
 - This does not resolve `InstrumentSpec.quantity_unit` mapping, derivative formulas, FX, margin, fees, P&L, production numeric bounds or accounting policy.
 
 ## 9. Explicit non-authorizations
@@ -184,4 +184,4 @@ This checklist does not authorize:
 - Spot maps explicitly to base-asset amount; linear contracts use base-asset units per contract; inverse contracts use quote-asset units per contract.
 - QUANTO is explicitly unsupported; inverse base exposure remains blocked until exact division and rounding/precision policy exist.
 - Venue `quantity_unit` remains opaque: quantity kind and multiplier dimension are caller-declared, never inferred from a string.
-- Dedicated tests and CI workflow step added; current-head CI evidence pending.
+- Dedicated 16-test suite and CI workflow step added. GitHub Actions run [#43593795698](https://github.com/PandaGarry/NEXUS/actions/runs/43593795698) passed exact HEAD `ba8df9def72bff82625669bc236430bb8d21592d` on Python 3.11–3.13: 109 tests per runtime / 327 matrix executions across seven isolated suites.
