@@ -94,7 +94,7 @@ Parent/child membership, account aggregation membership, scope activation, polic
 
 ## 5. Retry, uniqueness and ambiguous-commit semantics
 
-PostgreSQL 18 documentation distinguishes serialization failures, deadlocks and uniqueness errors:
+PostgreSQL 18.7 documentation distinguishes serialization failures, deadlocks and uniqueness errors:
 
 - **40001 (serialization_failure):** abort and retry the whole transaction from a fresh snapshot, with bounded attempts/backoff and full recomputation.
 - **40P01 (deadlock_detected):** abort and retry the whole transaction from a fresh snapshot under the same finite budget. Canonical lock order is the primary deadlock prevention mechanism, not a reason to omit deadlock handling.
@@ -149,7 +149,7 @@ The actual test harness must inspect committed rows, source watermarks, inbox id
 
 A common scope-state row intentionally serializes writes to a shared economic exposure/capacity invariant. This may create contention; it is not free. G1 keeps market-data ticks out of this write path by reading immutable versioned valuation snapshots and binding their version vector to the decision.
 
-G1 must measure, on the exact PostgreSQL 18 patch and realistic data volume:
+G1 must measure, on the exact PostgreSQL 18.7 evaluation patch and realistic data volume:
 
 - reservation/projection throughput and p50/p95/p99 transaction latency;
 - lock wait duration, serialization/deadlock rates and bounded retry exhaustion;
