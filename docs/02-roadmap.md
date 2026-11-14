@@ -466,3 +466,18 @@ The current CI result proves only the checked-in Python reference suites. It doe
 - [ ] Implement the normalized parser/runner and Rust differential conformance only after G0D/G1 readiness gates.
 
 This hardening is confined to the Python reference oracle; it does not define production numeric limits.
+
+
+## G1 technical baseline qualification
+
+- [x] Select deterministic command encoding (RFC 8949 restricted deterministic CBOR), SHA-256 domain-separated digest and COSE_Sign1 EdDSA/Ed25519 capability-signing baseline.
+- [x] Select PostgreSQL 18 as the G1 persistence evaluation target with separate local Risk/Command/Ledger transactions and no automatic failover.
+- [x] Select source-specific freshness/recovery policy and fail-closed unknown handling; no global TTL.
+- [x] Select single-owner halt/resume and conservative emergency-operation defaults; no automatic cancel-all/flatten or offline emergency orders.
+- [ ] Qualify exact implementation libraries, versions, licenses, provenance and Python/Rust golden vectors.
+- [ ] Qualify non-exportable key custody, rotation, revocation and jurisdictional/security compatibility.
+- [ ] Prove PostgreSQL isolation/concurrency, crash/unknown-commit handling, backup/restore/PITR and old-primary fencing.
+- [ ] Obtain numeric source freshness, retention, clock and RTO/RPO decisions from the accountable owner/domain.
+- [ ] Prove Trusted Egress fencing at the actual network boundary before any live-readiness consideration.
+
+Selection establishes a G1 design direction only. It does not authorize dependency installation, production deployment, real credentials or live trading.
