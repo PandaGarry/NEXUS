@@ -1,6 +1,6 @@
 # Bybit M2 acceptance checklist — live REST snapshot + delta synchronization
 
-**Status:** IMPLEMENTATION IN PROGRESS — NOT ACCEPTED  
+**Status:** `IN_PROGRESS` — acceptance criteria remain incomplete  
 **Plan date:** 2026-11-15  
 **Target:** 2026-11-28  
 **Scope:** public market data only; Bybit V5 linear BTCUSDT; no credentials, private endpoints, account access or orders.
