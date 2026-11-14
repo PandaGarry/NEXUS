@@ -146,7 +146,7 @@ If the effect cannot be bounded, classification is UNKNOWN and the command is de
 | CLOSE / close-position | UNKNOWN until evaluated | Position identity/mode, venue close semantics, bounded quantity, pending orders/fills and proof no reversal | May be permitted only with explicit plan and fresh evidence |
 | CANCEL_ALL | UNKNOWN | Immutable bounded target set, per-order protection classification, pagination/completeness and venue capability | Never unbounded or implicit |
 | FLATTEN workflow | Multi-step plan, not a primitive order | Repeated reconcile → calculate residual → authorize bounded reduce → dispatch → reconcile; explicit stop/overshoot rules | Only under a dedicated approved plan |
-| HALT activation | Control-plane action, no trading exposure | Authenticated permitted actor or accepted policy trigger; durable epoch increment and audit | Always available through independent halt path |
+| HALT request / activation | Control-plane action, no trading exposure | Authenticated permitted actor or accepted policy trigger; durable epoch increment and audit | Request is accepted through the independent Control Plane; fully-enforced HALTED requires authoritative durable epoch commit plus boundary acknowledgement/isolation. If the halt store is unavailable/uncertain, Egress denies final authorization and the request remains pending |
 | RESUME | Privileged control-plane action | Recovery gates, reconciled state, current policy, step-up and dual control where required | Never automatic |
 
 This matrix is the conservative default. Owner-approved venue/account-mode policy may narrow or refine it but MUST NOT weaken the system invariants.
