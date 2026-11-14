@@ -1030,9 +1030,9 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** PostgreSQL 18.7 remains a G1 evaluation target only. No database instance, extension, schema or production topology was installed or approved.
 
-## 18.30 Exact-head reference CI after valuation / PostgreSQL qualification — 2026-11-14
+## 18.51 Exact-head reference CI after valuation / PostgreSQL qualification — 2026-11-14
 
-- [x] Verify PR #16 branch HEAD `7fb396df5f3e700adf0ad151c446e38930fdadb0` on [workflow #43617605777](https://github.com/PandaGarry/NEXUS/actions/runs/43617605777).
+- [x] Verify PR #16 branch HEAD `7fb396df5f3e700adf0ad151c446e38930fdadb0` on [workflow #43617626344](https://github.com/PandaGarry/NEXUS/actions/runs/43617626344).
 - [x] Pass 13 isolated suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 executions).
 - [x] Inspect all three job logs: no test failures or Node.js 20 / `punycode` deprecation warnings.
 - [x] Confirm numeric-wire 512-digit acceptance / 513-digit rejection is included in the matrix.
