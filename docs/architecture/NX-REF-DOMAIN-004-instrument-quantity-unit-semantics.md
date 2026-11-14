@@ -34,7 +34,7 @@ Quantity is an instrument-scoped contract count. Contract multiplier means base-
 
 Quantity is an instrument-scoped contract count. Contract multiplier means quote-asset units per contract. Quote notional is exact multiplication and does not require a price.
 
-Inverse base exposure is deliberately blocked: it requires division by price plus an explicit precision/rounding policy. The current ExactDecimal reference oracle has no division operation.
+Inverse base exposure is now represented as `RationalAssetAmount` using exact rational division, without selecting a decimal precision or rounding mode (NX-REF-DOMAIN-006). Conversion to finite decimal remains conditional; quantization requires an explicit caller-supplied mode. This is only a conventional inverse-contract reference formula and requires venue qualification.
 
 ## 4. Explicitly unsupported
 
