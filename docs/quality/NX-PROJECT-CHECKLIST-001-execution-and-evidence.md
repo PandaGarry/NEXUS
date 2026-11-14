@@ -1464,7 +1464,8 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Expand RLS adversarial matrix to owner/role edge cases, policy changes, subqueries and covert-channel analysis.
 - [ ] Test function overloads, PUBLIC/default privileges, ACL drift and role graph from catalogs; test-only runtime denials do not replace production catalog-manifest drift detection.
 - [ ] Qualify crash/restore, backup/PITR, failover and true uncertain-COMMIT recovery.
-- [ ] Pin and record PostgreSQL image digest/build provenance; obtain independent database security review before production design acceptance.
+- [x] Pin Docker Official Image multi-platform index digest `sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b` (linux/amd64 manifest `sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452`); pinned workflow passed 11/11, [#43630438579](https://github.com/PandaGarry/NEXUS/actions/runs/43630438579).
+- [ ] Verify signed image build provenance, SBOM, vulnerability disposition and independent database/image security review before production design acceptance.
 
 **Disposition:** this qualifies only the disposable fixture. Production schema, service identities, RLS policies, HEGC, Egress and live execution remain unimplemented and unauthorized.
 
@@ -1493,3 +1494,13 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 **Disposition:** 11/11 PostgreSQL fixture tests and 264 Python tests per runtime passed on exact code/test SHA `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf`. The tests cover only the disposable fixture and do not prove DBA/cluster-level role-change safety, production RLS correctness or production readiness.
 
+
+## 18.88 PostgreSQL CI image digest pin — 2026-11-14
+
+- [x] Replace mutable `postgres:18.7` service tag with Docker Official Image multi-platform index digest `sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b`.
+- [x] Record linux/amd64 child manifest digest `sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452` and official Docker Hub image-page reference.
+- [x] Verify exact workflow code commit `1844a9964fee667b7d29299a5b75f0f07df5076d`: PostgreSQL [#43630438579](https://github.com/PandaGarry/NEXUS/actions/runs/43630438579) passed 11/11; Python [#43630438570](https://github.com/PandaGarry/NEXUS/actions/runs/43630438570) passed 264 tests per runtime.
+- [ ] Verify signed publisher build provenance, SBOM completeness, vulnerability disposition and independent image review.
+- [ ] Re-run both workflows on the final documentation-synchronized branch head.
+
+**Disposition:** CI image content is digest-pinned and verified against the disposable fixture. Build provenance and production image qualification remain open.
