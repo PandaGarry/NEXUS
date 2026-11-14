@@ -232,9 +232,12 @@ class PostgreSQLGuardHarness(unittest.TestCase):
                 f"{lit(principal)}::name,'nexus_hegc_owner'::name,'MEMBER');"
                 "SELECT has_schema_privilege("
                 f"{lit(principal)},'nexus_hegc','CREATE');"
+                "SELECT has_schema_privilege("
+                f"{lit(principal)},'nexus_hegc','USAGE');"
             )
             self.assertEqual(catalog.returncode, 0, catalog.stderr)
-            self.assertEqual(catalog.stdout.strip().splitlines(), ["f", "f", "f"])
+            catalog_values = catalog.stdout.strip().splitlines()
+            self.assertEqual(catalog_values[:3], ["f", "f", "f"])
 
             forbidden = [
                 "CREATE ROLE nexus_runtime_escalation;",
@@ -261,7 +264,12 @@ class PostgreSQLGuardHarness(unittest.TestCase):
                 "nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text) TO PUBLIC;",
                 user=principal, password=password,
             )
-            self.assertEqual(public_grant.returncode, 0, public_grant.stderr)
+            if catalog_values[3] == "t":
+                # Schema USAGE permits name resolution, but not privilege grant.
+                self.assertEqual(public_grant.returncode, 0, public_grant.stderr)
+            else:
+                self.assertNotEqual(public_grant.returncode, 0)
+                self.assertIn("42501", public_grant.stderr)
             effective_acl = run_sql(
                 "SELECT has_function_privilege('nexus_hegc',"
                 "'nexus_hegc.issue_egress_grant(uuid,uuid[],uuid,text)','EXECUTE'),"
