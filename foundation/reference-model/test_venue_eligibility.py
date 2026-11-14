@@ -148,7 +148,7 @@ class VenueEligibilityReferenceTests(unittest.TestCase):
                             expires=NOW + 1)
         self.assertTrue(decision(record(items=items)).allowed)
         self.assertEqual(decision(record(items=items), now=NOW + 2).reason,
-                         DenialReason.RECORD_EXPIRED)
+                         DenialReason.EVIDENCE_EXPIRED)
 
     def test_max_age_boundary_is_inclusive(self):
         items = list(record().evidence)
