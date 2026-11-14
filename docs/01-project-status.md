@@ -377,3 +377,13 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Added regression coverage for decimal/rational oversized integers and scale-budget failures.
 - Exact code/test HEAD b0fb99d4505ba5eb405788fee8ce447f28437479 passed [GitHub Actions #43614612130](https://github.com/PandaGarry/NEXUS/actions/runs/43614612130): 13 isolated suites / 239 tests per Python 3.11, 3.12 and 3.13; 717 successful executions total.
 - This is reference-only hardening. No production numeric limits, normalized fixture schema/runner, Rust implementation or live execution path was added; G0D/G1 remain open.
+
+
+## G1 technical baseline selected — 2026-11-14
+
+- Published [NX-ADR-008](architecture/NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md) under the owner's expanded delegation to select the safest technical baseline for G1 design/qualification.
+- Canonical command bytes: restricted RFC 8949 deterministic CBOR; SHA-256 domain-separated digest; COSE_Sign1 EdDSA/Ed25519 for RiskApprovalCapability. Exact libraries, key custody and security/jurisdictional review remain gated.
+- Persistence: PostgreSQL 18 is the G1 evaluation target only. Initial topology is one primary, service-owned schemas/roles and separate Risk/Command/Ledger local ACID transactions. No distributed transaction, broker-as-source-of-truth or automatic failover.
+- Freshness/recovery: source-specific EvidenceRequirementSet/FreshnessPolicy, watermarks/completeness, monotonic elapsed-time and fail-closed UNKNOWN; no global TTL. Numeric thresholds and RTO/RPO remain owner/source decisions.
+- Emergency operations: single Owner, step-up resume after READY RecoveryBarrier, no automatic cancel-all/flatten or offline emergency order plan; break-glass containment only.
+- These are G1 design/qualification choices, not production approval. No package, database, key, cloud, venue, credential or runtime was installed/selected for production. G0D/G1 evidence gates remain open; live trading NOT AUTHORIZED.
