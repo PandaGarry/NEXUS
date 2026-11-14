@@ -13,6 +13,7 @@ from nexus_decimal import ExactDecimal as D, ExactRational, InexactDivision
 from domain_types import AssetAmount, ContractCount, DimensionMismatch, Notional, Price
 from instrument_spec import Applicability, ContractType, InstrumentSpec, InstrumentStatus, MarketType
 from instrument_units import InstrumentUnitModel, MultiplierDimension, QuantityKind
+from financial_aggregation import aggregate_partial_fills
 
 
 def d(value):
@@ -157,22 +158,63 @@ class FinancialMathFixtureTests(unittest.TestCase):
 
     def test_partial_fill_aggregation_vector(self):
         case = self.by_id["partial-fill-weighted-average-001"]
-        total_quantity = D.parse("0")
-        total_quote = D.parse("0")
-        for fill in case["inputs"]["fills"]:
-            quantity = D.parse(fill["quantity"]["value"])
-            price = D.parse(fill["price"]["value"])
-            total_quantity = total_quantity + quantity
-            total_quote = total_quote + price * quantity
-        weighted_average = total_quote.divide_exact(total_quantity).to_decimal_exact()
+        fills = [
+            (
+                AssetAmount("BTC", D.parse(fill["quantity"]["value"])),
+                Price("BTC", "USDT", D.parse(fill["price"]["value"])),
+            )
+            for fill in case["inputs"]["fills"]
+        ]
+        aggregate = aggregate_partial_fills(fills)
         expected = case["expected"]
-        self.assertEqual(str(total_quantity), expected["total_quantity"]["value"])
-        self.assertEqual(str(total_quote), expected["total_quote_value"]["value"])
-        self.assertEqual(str(weighted_average), expected["weighted_average_price"]["value"])
-        self.assertEqual(Fraction(total_quote.coefficient, 10 ** total_quote.scale),
-                         Fraction(8125085, 1000))
-        self.assertEqual(Fraction(weighted_average.coefficient, 10 ** weighted_average.scale),
-                         Fraction(1625017, 25))
+        self.assertEqual(str(aggregate.total_quantity.amount), expected["total_quantity"]["value"])
+        self.assertEqual(str(aggregate.total_quote_notional.amount), expected["total_quote_value"]["value"])
+        self.assertEqual(
+            (str(aggregate.weighted_average_price.numerator),
+             str(aggregate.weighted_average_price.denominator)),
+            ("1625017", "25"),
+        )
+        self.assertEqual(
+            Fraction(aggregate.total_quote_notional.amount.coefficient,
+                     10 ** aggregate.total_quote_notional.amount.scale),
+            Fraction(8125085, 1000),
+        )
+        self.assertEqual(
+            Fraction(aggregate.weighted_average_price.numerator,
+                     aggregate.weighted_average_price.denominator),
+            Fraction(1625017, 25),
+        )
+
+    def test_partial_fill_aggregation_rejects_empty_input(self):
+        with self.assertRaises(ValueError):
+            aggregate_partial_fills([])
+
+    def test_partial_fill_aggregation_rejects_base_asset_mismatch(self):
+        fills = [
+            (AssetAmount("BTC", d("1")), Price("BTC", "USDT", d("10"))),
+            (AssetAmount("ETH", d("1")), Price("ETH", "USDT", d("10"))),
+        ]
+        with self.assertRaises(DimensionMismatch):
+            aggregate_partial_fills(fills)
+
+    def test_partial_fill_aggregation_rejects_quote_asset_mismatch(self):
+        fills = [
+            (AssetAmount("BTC", d("1")), Price("BTC", "USDT", d("10"))),
+            (AssetAmount("BTC", d("1")), Price("BTC", "USD", d("10"))),
+        ]
+        with self.assertRaises(DimensionMismatch):
+            aggregate_partial_fills(fills)
+
+    def test_partial_fill_aggregation_preserves_non_terminating_average(self):
+        result = aggregate_partial_fills([
+            (AssetAmount("BTC", d("1")), Price("BTC", "USD", d("1"))),
+            (AssetAmount("BTC", d("2")), Price("BTC", "USD", d("2"))),
+        ])
+        self.assertEqual(
+            Fraction(result.weighted_average_price.numerator,
+                     result.weighted_average_price.denominator),
+            Fraction(5, 3),
+        )
 
 
     def test_spot_notional_matches_fraction_oracle_for_seeded_cases(self):
@@ -201,12 +243,10 @@ class FinancialMathFixtureTests(unittest.TestCase):
                 fills.append((quantity, price_value))
 
             def aggregate(items):
-                quantity_sum = D.parse("0")
-                quote_sum = D.parse("0")
-                for qty, px in items:
-                    quantity_sum = quantity_sum + qty
-                    quote_sum = quote_sum + qty * px
-                return quantity_sum, quote_sum, quote_sum.divide_exact(quantity_sum)
+                return aggregate_partial_fills([
+                    (AssetAmount("BTC", qty), Price("BTC", "USDT", px))
+                    for qty, px in items
+                ])
 
             baseline = aggregate(fills)
             shuffled = list(fills)
@@ -218,14 +258,21 @@ class FinancialMathFixtureTests(unittest.TestCase):
             partitioned = [(half_qty, first_price), (half_qty, first_price)] + fills[1:]
             split_result = aggregate(partitioned)
 
-            expected_quote = Fraction(baseline[1].coefficient, 10 ** baseline[1].scale)
-            expected_quantity = Fraction(baseline[0].coefficient, 10 ** baseline[0].scale)
+            expected_quote = Fraction(
+                baseline.total_quote_notional.amount.coefficient,
+                10 ** baseline.total_quote_notional.amount.scale,
+            )
+            expected_quantity = Fraction(
+                baseline.total_quantity.amount.coefficient,
+                10 ** baseline.total_quantity.amount.scale,
+            )
             expected_average = expected_quote / expected_quantity
             with self.subTest(case=index):
                 self.assertEqual(reordered, baseline)
                 self.assertEqual(split_result, baseline)
                 self.assertEqual(
-                    Fraction(baseline[2].numerator, baseline[2].denominator),
+                    Fraction(baseline.weighted_average_price.numerator,
+                             baseline.weighted_average_price.denominator),
                     expected_average,
                 )
 
