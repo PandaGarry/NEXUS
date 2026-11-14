@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0.0",
+  "suite": "NEXUS_VENUE_NEUTRAL_FINANCIAL_MATH",
+  "authority": "TEST_ONLY_NON_AUTHORIZING",
+  "rounding": "NONE",
+  "provenance": "Synthetic hand-derived mathematical fixtures; not venue/account evidence",
+  "cases": [
+    {
+      "id": "spot-notional-001",
+      "operation": "spot_notional",
+      "inputs": {
+        "quantity": {"value": "0.125", "unit": "BTC"},
+        "price": {"value": "65000.25", "unit": "USDT/BTC"}
+      },
+      "expected": {"notional": {"value": "8125.03125", "unit": "USDT"}}
+    },
+    {
+      "id": "linear-contract-notional-001",
+      "operation": "linear_contract_notional",
+      "inputs": {
+        "contracts": {"value": "12", "unit": "CONTRACT:nexus:demo:BTC-USDT-LINEAR"},
+        "multiplier": {"value": "0.001", "unit": "BTC/CONTRACT"},
+        "price": {"value": "65000.25", "unit": "USDT/BTC"}
+      },
+      "expected": {
+        "base_exposure": {"value": "0.012", "unit": "BTC"},
+        "notional": {"value": "780.003", "unit": "USDT"}
+      }
+    },
+    {
+      "id": "inverse-contract-exposure-001",
+      "operation": "inverse_contract_base_exposure",
+      "inputs": {
+        "contracts": {"value": "100", "unit": "CONTRACT:nexus:demo:BTC-USD-INVERSE"},
+        "multiplier": {"value": "100", "unit": "USD/CONTRACT"},
+        "price": {"value": "65000.25", "unit": "USD/BTC"}
+      },
+      "expected": {
+        "quote_notional": {"value": "10000", "unit": "USD"},
+        "base_exposure": {"numerator": "40000", "denominator": "260001", "unit": "BTC"}
+      }
+    },
+    {
+      "id": "partial-fill-weighted-average-001",
+      "operation": "partial_fill_aggregation_math",
+      "inputs": {
+        "fills": [
+          {"quantity": {"value": "0.04", "unit": "BTC"}, "price": {"value": "65000", "unit": "USDT/BTC"}},
+          {"quantity": {"value": "0.085", "unit": "BTC"}, "price": {"value": "65001", "unit": "USDT/BTC"}}
+        ]
+      },
+      "expected": {
+        "total_quantity": {"value": "0.125", "unit": "BTC"},
+        "total_quote_value": {"value": "8125.085", "unit": "USDT"},
+        "weighted_average_price": {"value": "65000.68", "unit": "USDT/BTC"}
+      },
+      "limitations": [
+        "Pure arithmetic identity only; does not define venue average-price reporting semantics",
+        "Excludes fees, funding, rebates, settlement, inventory matching and realized P&L"
+      ]
+    }
+  ]
+}

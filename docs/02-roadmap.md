@@ -148,9 +148,24 @@ Phase 0 не означает исследовать все существующ
 ### Financial-operation correctness increment
 
 - [x] Publish NX-REF-DOMAIN-009 proposed operation-specific rounding and valuation contract; define universal exactness invariants, policy boundaries, provenance and venue qualification dossier.
-- [ ] Cross-review financial-operation contract against NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006.
+- [x] Cross-review financial-operation contract against NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006; no blocking contradiction found, with owner/venue gaps retained.
 - [ ] Obtain owner decisions for position matching, fee/funding accounting, FX/collateral valuation and journal rounding.
 - [ ] Qualify exact venue/product/account and capture authoritative fee, funding, margin, liquidation and price-source fixtures.
-- [ ] Add independent mathematical golden fixtures only after each formula's universality or venue-specific authority is established.
+- [x] Add bounded venue-neutral mathematical golden fixtures only for explicitly dimensioned identities; venue-specific financial-operation fixtures remain blocked pending authoritative evidence.
 
 No production financial calculator or execution/risk/ledger implementation is authorized by this documentation increment.
+
+### Venue-neutral financial math fixtures
+
+- [x] Publish NX-REF-DOMAIN-010 and language-neutral exact vectors for explicitly dimensioned spot, linear, inverse and partial-fill arithmetic.
+- [x] Add independent rational-oracle checks and negative dimension/identity tests.
+- [x] Add the fixture suite to Python 3.11–3.13 CI.
+- [x] Verify exact code/test commit CI: 179 tests per runtime passed on Python 3.11, 3.12 and 3.13; freeze this bounded fixture package as test-only reference evidence.
+- [ ] Keep fee/funding/P&L/margin/liquidation/FX/accounting fixtures blocked until authoritative venue/account or owner policies exist.
+
+This package validates mathematical identities only; it does not pass financial readiness gates.
+
+- [x] Cross-review NX-REF-DOMAIN-009 against NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006; no blocking contradiction found, with owner/venue gaps retained.
+- [x] Add venue-neutral exact dimensional math fixtures for spot, explicitly mapped linear/inverse contracts and partial-fill weighted-average arithmetic; initial Python 3.11–3.13 CI passed.
+- [ ] Verify final exact PR head and freeze the bounded mathematical fixture package.
+- [ ] Obtain owner decisions and venue qualification before authoring fee/funding/P&L/margin/liquidation/FX/accounting golden vectors.

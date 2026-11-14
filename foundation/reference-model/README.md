@@ -72,3 +72,9 @@ Canonical wire fixtures: `numeric-wire-golden-v1.json` (version 1.0.0) provides 
 
 
 The bounded context separates raw decimal literal input size (`max_input_chars`) from encoded scalar wire size (`max_wire_chars`). Both are mandatory independent budgets.
+
+## Venue-neutral financial math fixtures
+
+Run `python -m unittest -v test_financial_math_fixtures.py` for the synthetic, non-authorizing exact dimensional arithmetic vectors in `financial-math-golden-v1.json`. Coverage is limited to spot notional, explicitly mapped linear contract exposure/notional, explicitly mapped inverse contract rational exposure, and a pure weighted-average identity over a supplied partial-fill set. Selected results are independently checked with Python's `fractions.Fraction`. No venue formulas, fee/funding/P&L/margin/liquidation, accounting or production rounding policy is established. CI executes this suite on Python 3.11–3.13.
+
+The financial math fixture suite also runs 650 deterministic seeded property cases (250 spot notional vs. `Fraction`, 200 partial-fill permutation/partition invariance cases, and 200 inverse contract-value identity cases). Run [#43596851904](https://github.com/PandaGarry/NEXUS/actions/runs/43596851904) passed exact code/test commit `0f0b44e927aacf67d6f7a5678b160b3e3c6088e0` on Python 3.11–3.13: 182 tests per runtime / 546 matrix executions. These checks are bounded test-only evidence, not formal verification or production qualification.
