@@ -1,7 +1,6 @@
 """Test-only reference model for halt / final-egress authorization ordering.
 
-This models a logical commit order only. It does NOT implement database locks,
-a durable halt store, a socket, a network fence, or a production kill switch.
+This models a logical commit order and at-most-one logical venue-request initiation only. SOCKET_INITIATED represents the first transport write, not one OS syscall, full delivery or venue acceptance. It does NOT implement database locks, transport retries, a durable halt store, a socket, a network fence, or a production kill switch.
 A GATE_COMMITTED attempt is in-flight even before socket initiation. Positive
 sender fencing prevents a future write but does not prove that no earlier
 socket side effect occurred; the outcome therefore remains unknown.
