@@ -338,3 +338,8 @@ Exact branch HEAD `f78fc7d006ea475cf596ee2bd8bd65b9a7d37afa` passed GitHub Actio
 - Proposed conservative numeric targets only for low-risk authorization cache and cancellation discussion. They are explicitly not accepted SLOs, production guarantees or defaults.
 - Kept venue/source freshness thresholds, halt deadline, RTO/RPO, OD-10 and OD-12 owner decisions open. No executable policy, cache, revocation service, dependency, secret manager, network fence or runtime added.
 - Updated architecture index, checklist, status, roadmap and changelog.
+
+
+### Exact-head regression evidence for NX-ARCH-REVIEW-005 — 2026-11-14
+
+Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actions [#43613493976](https://github.com/PandaGarry/NEXUS/actions/runs/43613493976): Python 3.11/3.12/3.13, 13 reference-model suites / 237 tests per runtime, 711 successful executions. This does not validate the proposed authorization cache/revocation targets, outage matrix, source freshness, halt propagation, cancellation or runtime isolation. No numeric objective was accepted and no runtime control was implemented.
