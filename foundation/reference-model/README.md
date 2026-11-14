@@ -68,7 +68,7 @@ Run `python -m unittest -v test_bounded_numeric.py` for mandatory caller-supplie
 Latest verified PR matrix: [#43595449902](https://github.com/PandaGarry/NEXUS/actions/runs/43595199511) passed exact PR HEAD `6200bae99e9b7ce865487a40312d0074c0e2a276` on Python 3.11–3.13. Ten isolated suites, 172 tests per runtime / 516 matrix executions; bounded numeric 32 per runtime and numeric wire 11 per runtime. Shared numeric wire vectors are in `numeric-wire-golden-v1.json`.
 
 
-Canonical wire fixtures: `numeric-wire-golden-v1.json` (version 1.0.0) provides language-neutral valid/invalid decimal and rational cases, including integers beyond JavaScript's exact-number range. Run with `python -m unittest -v test_numeric_wire.py`.
+Canonical wire fixtures: `numeric-wire-golden-v1.json` (version 1.0.0) provides language-neutral valid/invalid decimal and rational cases, including integers beyond JavaScript's exact-number range. Run with `python -m unittest -v test_numeric_wire.py`. Parser failures expose stable `error_class` values through catch-compatible `NumericWireError` subclasses (`NUMERIC.INVALID_WIRE`, `NUMERIC.UNSUPPORTED_WIRE_VERSION`, `NUMERIC.NON_CANONICAL`, `NUMERIC.RESOURCE_LIMIT`); callers must not classify failures by parsing exception messages. This remains reference-only.
 
 
 The bounded context separates raw decimal literal input size (`max_input_chars`) from encoded scalar wire size (`max_wire_chars`). Both are mandatory independent budgets.
