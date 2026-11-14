@@ -85,3 +85,5 @@ See [NX-ARCH-007](NX-ARCH-007-platform-extensibility-and-entitlements.md). Defin
 - [NX-ARCH-009 — Capability Catalog & Authorization Contract Model](NX-ARCH-009-capability-catalog-authorization-contracts.md) — Proposed stable capability identifiers, strict scope grammar, data classifications, initial capability catalog, owner/enforcement mapping, request authorization, revocation and adversarial test plan; design only.
 
 - [NX-ARCH-REVIEW-003 — Capability Catalog & Authorization Cross-Review](NX-ARCH-REVIEW-003-capability-authorization-cross-review.md) — Design-level review of NX-ARCH-009; billing-intent semantics corrected; CAP-R-02..09 and CAP-19..26 retained as open requirements.
+
+- [NX-ARCH-REVIEW-004 — Capability-to-Interface Contract Traceability](NX-ARCH-REVIEW-004-capability-to-interface-contract-traceability.md) — Maps all 12 NX-ARCH-009 candidate capabilities against NX-IF-001..005, NX-SEC-001 and owner decisions; identifies missing product-domain contracts, protected boundaries, field-level data gaps and G0D/G1 actions. Design traceability only; acceptance not granted.
