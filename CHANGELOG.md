@@ -540,3 +540,9 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Clarified whole-transaction 40001/40P01 retry and non-generic 23505/23P01 handling.
 - Added a PostgreSQL 18 concurrency/fault-injection matrix and performance proof requirements.
 - Synchronized NX-ADR-008, NX-IF-002 and OD-09. No database, schema, migration or runtime was implemented.
+
+### Exact-head CI after NX-ARCH-REVIEW-007 — 2026-11-14
+
+- Exact branch HEAD `e7c5461ae7ccea4f29fc77461db91d44566aba36` passed [workflow #43616908979](https://github.com/PandaGarry/NEXUS/actions/runs/43616908979).
+- Python 3.11/3.12/3.13 each passed 13 suites / 239 tests (717 successful executions); no failures or Node.js 20 / `punycode` warnings.
+- This is reference-model regression only; no PostgreSQL concurrency harness or production database was exercised.
