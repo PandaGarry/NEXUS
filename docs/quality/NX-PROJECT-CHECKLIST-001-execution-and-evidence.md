@@ -368,3 +368,14 @@ The exact decimal oracle is arbitrary precision; `BoundedNumericContext` wraps i
 **Boundary:** arithmetic over supplied typed values only; no venue fill validation, fees, funding, P&L, accounting or rounding policy. No production code or authorization is added.
 
 - [x] Pin the zero-total-quantity boundary: non-empty signed inputs with zero aggregate quantity raise typed `DivisionByZero`; empty input and malformed argument types remain separate input-contract failures.
+
+
+### 18.2 Reference exception mapping audit — 2026-11-14
+
+- [x] Audit typed numeric, bounded-context, dimensional-domain and financial-aggregation exception surfaces against actual callable implementations.
+- [x] Separate mathematical rejection candidates from malformed API/type/parameter failures; prohibit exception-message parsing.
+- [x] Record candidate mappings for invalid decimal syntax, exactness, division by zero, invalid step, resource limits, unit mismatch and unsupported unit operations in NX-ARCH-005.
+- [ ] Owner approval of the stable rejection taxonomy, including unresolved invalid-domain-value and identity-mismatch cases.
+- [ ] Implement normalized adapters only after the operation registry and rejection taxonomy are approved.
+
+**Disposition:** audit only; proposed mappings are not accepted wire behavior. No schema, validator, runner or production adapter is authorized.
