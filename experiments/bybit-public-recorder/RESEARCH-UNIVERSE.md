@@ -40,6 +40,18 @@ Kraken publishes complete Spot Time & Sales data for each pair from its first tr
 Official source: https://support.kraken.com/in/articles/360047543791-downloadable-historical-market-data-time-and-sales-
 
 
+### Binance Public Data note (checked 2026-11-15)
+
+The official Binance Public Data repository documents daily/monthly Spot and Futures archives:
+- Raw `trades` and aggregated `aggTrades` files include trade IDs, price, quantity, timestamp and `isBuyerMaker`. Spot timestamps are microseconds from 2025-01-01 onward; Futures timestamps are milliseconds in the documented examples. Do not combine timestamp units without explicit normalization.
+- `aggTrades` aggregates fills with the same price and taker side; it is not identical to raw trade prints. Prefer `trades` for the HYP-001 flow calculation when complete files are available.
+- The official repository's issue discussion describes Futures `bookDepth` as cumulative depth/notional at percentage bands from mid-price (e.g. -5% to +5%), not individual price-level L2. It cannot reconstruct BBO, spread or executable queue/depth at each price.
+- The Binance Vision Dataset Terms (version 1.0, updated 2026-08-26) license datasets under CC BY-NC-SA 4.0 for non-commercial use. Permitted use includes personal non-production historical backtesting; the terms expressly prohibit live proprietary trading execution, automated commercial order generation and commercial trading products. Therefore this dataset is not a permissible source for a production NEXUS strategy unless Binance grants a separate written commercial license.
+
+Sources:
+- Official data schema and archives: https://github.com/binance/binance-public-data
+- Official dataset terms: https://github.com/binance/binance-public-data/blob/master/TERMS_AND_CONDITIONS.md
+- Official issue clarifying `bookDepth` percentage-band meaning: https://github.com/binance/binance-public-data/issues/447
 ### OKX historical data and protocol note (checked 2026-11-15)
 
 OKX's official historical-data portal lists tick-level trade history from September 2021, high-resolution L2 from March 2023, perpetual funding rates from March 2022 and candlesticks from July 2023. This makes OKX the strongest currently documented candidate for historical L2 replication of HYP-001, subject to archive inspection and terms.
