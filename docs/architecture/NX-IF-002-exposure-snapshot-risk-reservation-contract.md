@@ -170,7 +170,7 @@ A durable `RiskReservation` contains:
 - account, venue, market type, instrument ID and immutable spec version;
 - policy version and exposure snapshot ID/version;
 - exact reserved dimensions (quantity, notional, margin, fee/cost buffer, collateral impact or other policy-defined dimensions), each with units/currency;
-- conservative valuation assumptions and their evidence/version;
+- conservative valuation assumptions plus the exact immutable market/index/FX/fee/collateral input-version vector and source freshness evidence used for the decision;
 - lifecycle state, state version and fencing token;
 - created/updated/expiry timestamps and expiry policy;
 - actor/service, reason codes, correlation lineage and audit evidence;
@@ -253,11 +253,11 @@ For the G1 evaluation target, [NX-ADR-008 §5.3](NX-ADR-008-g1-technical-baselin
 
 - Risk owns its exposure projection, source watermarks, scope-state version and reservation aggregates. Ledger remains authoritative for journal posting but MUST NOT write Risk-owned scope state directly.
 - Risk applies Ledger/venue/external exposure events through an idempotent Risk inbox. Projection updates and reservation commits update the same Risk-owned scope-state record in local Risk transactions; this is the common serialization point.
-- A multi-scope reservation locks/updates every required pre-provisioned scope-state record in deterministic canonical scope-ID byte order and commits all reservations/capacity totals/idempotency state atomically.
+- A multi-scope reservation always includes the pre-provisioned account/root scope-state row as the scope-configuration guard, then locks/updates every required pre-provisioned scope-state record in deterministic canonical scope-ID byte order and commits all reservations/capacity totals/idempotency state atomically. After locks are acquired, it rechecks the root scope_config_version and recomputes the complete scope set if it changed.
 - Missing/ambiguous scope state or stale/incomplete source watermarks fail closed. Scope records are provisioned before the reservation hot path.
 - PostgreSQL SERIALIZABLE is the G1 default evaluation level, combined with state-version/CAS and unique constraints. SQLSTATE 40001/40P01 requires whole-transaction retry from a fresh snapshot within a finite budget. Ambiguous commit is resolved by the same stable request identity and digest.
-- A projection event MUST update every affected pre-provisioned scope-state row in one Risk transaction, including parent/account aggregates and any child scopes whose projection changes. Child-only projection updates that leave parent totals stale are forbidden.
-- Scope hierarchy/configuration changes use a separate privileged transaction that locks the complete old/new scope set in canonical order and advances scope_config_version atomically. Stale scope-set calculations abort/recompute; missing or unbounded membership fails closed.
+- A discrete economic exposure projection event MUST update every affected pre-provisioned scope-state row in one Risk transaction, including parent/account aggregates and any child scopes whose projection changes. Child-only projection updates that leave parent totals stale are forbidden. Market-data mark/index/FX ticks remain immutable versioned valuation inputs and MUST NOT rewrite every scope-state row per tick; reservations/capabilities bind to the exact valuation-input version vector and freshness evidence. If required valuation inputs become stale or fail the dispatch-time policy, Egress MUST NOT send.
+- Scope hierarchy/configuration changes use a separate privileged transaction that includes the account/root guard, locks the complete old/new scope set in canonical order and advances root/descendant scope_config_version atomically. Stale scope-set calculations abort/recompute; missing or unbounded membership fails closed.
 - The logical scope-state record carries scope_config_version, monotonic scope_state_version, exposure_projection_version, reservation_aggregate_version, source-watermark-vector reference/version, fencing_generation and last_transition_id. This is not an approved physical schema.
 - SQLSTATE 23505 is not a generic retry: only the expected idempotency constraint may be resolved in a new authoritative-primary transaction by comparing the durable request digest; unrelated uniqueness/exclusion errors fail closed.
 - This is a proposed implementation reference, not a selected schema or verified concurrency guarantee. Exact PostgreSQL patch, queries, role grants and test evidence remain open.
