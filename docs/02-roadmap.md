@@ -17,6 +17,8 @@
 
 ## Phase 1 — Core Architecture (Blocked)
 
+- [x] Define proposed personal-first product/deployment profile model (NX-ARCH-002): single-owner closed personal use first; future commercial operation requires a separate legal/security/product review. Owner approval and runtime enforcement remain open.
+
 - [x] Publish bounded WP-A..WP-E interface design drafts (NX-IF-001..005).
 - [x] Consolidate critical owner decisions and readiness dependencies in NX-OWNER-DECISIONS-001.
 - [x] Accept bounded v1 scope: one venue + dedicated account/subaccount; account/subaccount risk boundary; server-side autonomous runtime; shared Desktop+Web backend (OD-01/04/15, owner-directed 2026-11-14).
@@ -79,6 +81,8 @@
 - [ ] Исключить прямой обход AI компонента Risk Engine.
 
 ## Phase 7 — Desktop + Web Production (Blocked)
+- [ ] Progress through PERSONAL_DEV → PERSONAL_TEST → PERSONAL_PRODUCTION only via explicit readiness gates; PERSONAL_PRODUCTION does not itself authorize live trading.
+- [ ] Defer COMMERCIAL profile, multi-tenancy and third-party users to a separately approved business/legal/security work package.
 - [ ] Выбрать desktop shell по benchmark.
 - [ ] Проверить единое состояние, offline/reconnect и multi-device behavior.
 - [ ] Подготовить production observability, backups и deployment runbooks.

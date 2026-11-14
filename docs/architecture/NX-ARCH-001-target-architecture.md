@@ -33,6 +33,10 @@ Desktop and Web are two clients of one backend and one account/portfolio state. 
 - Browser/Desktop state is a view/cache, not the authoritative trading state.
 - No live trading, real credentials, order placement, or risk-limit changes are authorized by this architecture proposal.
 
+## 2.1 Product and deployment profiles
+
+NEXUS v1 is proposed as a closed, single-owner personal-use product before any commercial offering. Deployment/use profiles and their independent capability gates are specified in [NX-ARCH-002 — Product & Deployment Profiles](NX-ARCH-002-product-deployment-profiles.md): PERSONAL_DEV, PERSONAL_TEST, PERSONAL_PRODUCTION and a separately reviewed future COMMERCIAL profile. These profiles do not grant exchange eligibility, override law/provider terms, or authorize live trading. Personal production remains subject to G0–G3, venue/account qualification, security and explicit owner live authorization. The initial scope excludes public signup, third-party accounts/capital, multi-tenancy and public data redistribution.
+
 ## 3. Logical architecture
 
 ### 3.1 Client and access layer
