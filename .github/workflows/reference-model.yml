@@ -30,3 +30,6 @@ jobs:
       - name: Test execution-gateway reference slice
         working-directory: foundation/reference-model/execution-gateway
         run: python -m unittest -v
+      - name: Test egress authority handover reference
+        working-directory: foundation/reference-model/egress-fencing
+        run: python -m unittest -v
