@@ -528,3 +528,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Exact normalized HEAD `9e9035033da77d958601cb6b69128e13e2551a0d` passed workflow [#43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737): 13 suites / 239 tests on each Python 3.11/3.12/3.13 runtime (717 executions).
 - [x] No Node.js 20 or punycode deprecation warnings in the three job logs.
 - [ ] Rust/DB/COSE/Egress/venue conformance remain separate future gates; this matrix does not cover them.
+
+## Stacked integration chain and exact-head regression
+
+- [x] Verify direct PR chain #1→#2→#3→#4→#5→#6→#7→#9→#10→#11→#12→#13→#14→#16 by exact base/head SHA equality.
+- [x] Identify #8 as a parallel branch from #7, not a dependency of #16.
+- [x] Confirm PR #16 correctly targets PR #14's head and all chain PRs remain Draft/open/unmerged.
+- [x] Verify `9e9035033da77d958601cb6b69128e13e2551a0d` on [workflow #43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737): 13 suites / 239 tests on Python 3.11/3.12/3.13 (717 executions).
+- [ ] Integrate only parent-first after bounded review; PR #16 remains Draft.
+- [ ] Keep the CI result scoped to Python reference models; it does not close Rust, database, egress or venue gates.
