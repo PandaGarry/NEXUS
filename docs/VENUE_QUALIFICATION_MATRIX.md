@@ -20,16 +20,18 @@
 ## 2. Evidence-backed public-data snapshot (checked 2026-11-15)
 
 | Public-data capability | Bybit V5 linear | Kraken Spot WS v2 | Coinbase Advanced Trade | OKX V5 |
-|---|---|---|---|
-| Public trades channel documented | YES | YES | UNKNOWN in this snapshot |
-| Trade ID documented | YES — execution ID i | YES — trade_id, unique per book | UNKNOWN |
-| Trade event timestamp documented | YES | YES — RFC3339 | UNKNOWN |
-| L2 book documented | YES — full depth | YES — aggregated L2 | UNKNOWN in this snapshot | YES — 400 levels standard books channel |
-| WS initial book snapshot | NO — full-depth stream is delta-only | YES — snapshot sent by default; can be controlled by subscription | UNKNOWN | YES — full snapshot |
+|---|---|---|---|---|
+| Public trades channel documented | YES | YES | UNKNOWN in this snapshot | YES |
+| Trade ID documented | YES — execution ID `i` | YES — `trade_id`, unique per book | UNKNOWN | YES — `tradeId` |
+| Trade event timestamp documented | YES — milliseconds | YES — RFC3339 | UNKNOWN | YES — milliseconds |
+| L2 book documented | YES — full depth | YES — aggregated L2 | UNKNOWN in this snapshot | YES — 400 levels on standard `books` channel |
+| WS initial book snapshot | NO — full-depth stream is delta-only | YES — snapshot sent by default | UNKNOWN | YES — full snapshot |
 | WS incremental updates | YES — delta-only | YES — update messages | UNKNOWN | YES — every 100 ms on `books` |
-| Continuity evidence documented | YES — update ID u and cross sequence seq | YES — CRC32 checksum over top 10 bids/asks | UNKNOWN | YES — `prevSeqId` + `seqId`; checksum deprecated |
+| Continuity evidence documented | YES — update ID `u` and cross sequence `seq` | YES — CRC32 checksum over top 10 bids/asks | UNKNOWN | YES — `prevSeqId` + `seqId`; checksum deprecated |
 | REST snapshot required for initial book | YES | NO for documented WS snapshot flow | UNKNOWN | NO for documented WS snapshot flow |
 | Public L3 / order-level feed entitlement | UNKNOWN | UNKNOWN for Spot; separate FIX examples show Futures L3 | UNKNOWN | UNKNOWN |
+| Historical trade archive | Public BTCUSDT daily CSV listing from 2020-03-25; completeness/freshness unverified | Spot Time & Sales from each pair's first trade through 2026-09-30 | UNKNOWN | Tick-level trades from 2021-09 |
+| Historical L2 archive | UNKNOWN — official path/schema not validated | UNKNOWN — Time & Sales only; no L2 evidence | UNKNOWN | Portal advertises high-resolution L2 from 2023-03; archive sample not validated |
 | Live public smoke evidence in NEXUS | YES — 10-minute raw capture/replay | NO | NO | NO |
 
 ### Bybit V5 linear evidence
