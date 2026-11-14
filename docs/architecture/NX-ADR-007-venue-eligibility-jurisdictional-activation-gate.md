@@ -226,4 +226,4 @@ This is a bounded consistency pass over the relevant authority, command, state, 
 - [x] Test-only dispatch/suspension linearization and stale-epoch fencing: 19 tests passed on Python 3.11/3.12/3.13 at PR head `ccbf9e86b86a366fb99c55f5d23deccd5755e5f9` (run 43598800464).
 - [ ] Production identity/evidence storage, signing, authorization and operator role design.
 
-**Disposition:** PROPOSED. Cross-document consistency review and test-only reference conformance completed with no blocking contradiction in the reviewed scope. Owner/legal review, production identity/evidence storage, signatures, distributed revocation and egress enforcement remain open. No implementation, API key, order or live capability is authorized. G0/G1 remain blocked.
+**Disposition:** PROPOSED. Cross-document consistency review and two test-only reference suites completed. The single-process egress model does not prove production or cross-host fencing. Owner/legal review, authenticated evidence, trusted time, durable state, distributed revocation and production egress enforcement remain open. No API key, order or live capability is authorized. G0/G1 remain blocked.
