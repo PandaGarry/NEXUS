@@ -10,7 +10,7 @@ from dataclasses import dataclass
 import re
 from typing import TypeVar
 
-from nexus_decimal import ExactDecimal
+from nexus_decimal import ExactDecimal, ExactRational, RoundingMode
 
 
 class DomainTypeError(ValueError):
@@ -86,6 +86,27 @@ class AssetAmount(_SameUnitAmount):
     @property
     def unit(self) -> str:
         return self.asset_code
+
+
+@dataclass(frozen=True, slots=True)
+class RationalAssetAmount:
+    """Exact rational amount of an asset; no decimal rounding is implied."""
+
+    asset_code: str
+    amount: ExactRational
+
+    def __post_init__(self) -> None:
+        _code("asset_code", self.asset_code)
+        if not isinstance(self.amount, ExactRational):
+            raise TypeError("amount must be ExactRational")
+
+    def to_asset_amount_exact(self) -> AssetAmount:
+        """Convert only when the rational has a finite exact base-10 form."""
+        return AssetAmount(self.asset_code, self.amount.to_decimal_exact())
+
+    def quantize(self, target_scale: int, rounding: RoundingMode) -> AssetAmount:
+        """Convert with an explicitly supplied scale and rounding mode."""
+        return AssetAmount(self.asset_code, self.amount.quantize(target_scale, rounding))
 
 
 @dataclass(frozen=True, slots=True)
