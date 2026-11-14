@@ -549,3 +549,18 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Implement schema/validator/policy only after G0D acceptance and applicable OD decisions; do not treat this design publication as an implementation gate.
 
 **Disposition:** proposed design only. No executable schema, policy engine, grant issuer, permission, module activation or dependency was created.
+
+
+## 18.15 Capability catalog cross-review
+
+- [x] Cross-review NX-ARCH-009 against NX-ARCH-006/007/008, NX-ARCH-REVIEW-002, NX-SEC-001 and owner decisions; publish NX-ARCH-REVIEW-003.
+- [x] Constrain billing subscription capability to user-authorized intent submission; Billing owner alone validates provider state and writes entitlement lifecycle.
+- [x] Confirm optional modules receive no Risk, reservation, command/outbox, Ledger, halt/recovery or Trusted Egress capability.
+- [x] Record CAP-R-02..09 covering ID approval semantics, canonical resource binding, field-level projection lineage, contract mapping, revocation objectives, audit custody, incomplete catalog scope and billing/execution decoupling.
+- [x] Extend adversarial plan with CAP-19..26 for parser ambiguity, projection leakage, forged payment claims, webhook replay, generic privilege, audit compromise, billing outage and retired capability replay.
+- [ ] Close CAP-R-02..09 with owner/security decisions and boundary-observed evidence before G0D/G1.
+- [ ] Approve every capability ID, owner, scope, data class, contract and negative test; no candidate row is an active permission.
+- [ ] Define numeric revocation/cache objectives, field-level retention/legal basis and independent audit custody.
+- [ ] Implement no executable schema or policy engine until G0D approval and relevant OD-08/09/10/12 decisions.
+
+**Disposition:** design cross-review complete; acceptance not granted. No permission, grant, runtime or dependency activated.
