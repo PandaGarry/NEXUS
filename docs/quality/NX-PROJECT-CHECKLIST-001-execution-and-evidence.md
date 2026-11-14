@@ -313,3 +313,22 @@ Reviewed NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006 at their exact branc
 - [ ] Obtain owner/architecture/security acceptance; documentation harmonization is not implementation evidence.
 
 **Evidence boundary:** documentation-only closure. No transaction store, signer, dispatcher, network fence, venue adapter or runtime behavior was implemented or tested by this change.
+
+
+## 18. Language-neutral conformance fixture and runner design
+
+**Owning artifact:** [NX-ARCH-005](../architecture/NX-ARCH-005-language-neutral-conformance-fixture-and-runner.md)  
+**Tracking:** GitHub Issue #15  
+**Status:** PROPOSED — design only; no common schema or runner implemented.
+
+- [x] Inventory existing decimal, rational, numeric-wire, financial-math and instrument-spec fixture formats.
+- [x] Verify current repository has no Cargo manifest, Rust toolchain file, Rust source tree or Rust runner; Rust implementation remains gated.
+- [x] Define a proposed common envelope, tagged VALUE/REJECT outcomes, stable error-class families and strict typed comparison rules.
+- [x] Define fixture/suite versioning, migration rules, deterministic runner responsibilities and CI evidence fields.
+- [ ] Owner/architecture review of NX-ARCH-005 and stable rejection taxonomy.
+- [ ] Map all existing v1 fixtures to the normalized envelope without changing legacy files.
+- [ ] Publish and validate a machine-readable schema after dependency-policy review.
+- [ ] Implement a Python-only normalized runner; keep current direct unit tests intact.
+- [ ] Implement Rust runner and differential CI only after G0D/G1 approval.
+
+**Disposition:** design only. Existing fixture files and current Python workflows remain unchanged. No cross-language conformance is claimed.
