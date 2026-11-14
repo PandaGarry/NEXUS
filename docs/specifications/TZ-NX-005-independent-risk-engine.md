@@ -443,6 +443,7 @@ Until these are explicitly decided and approved, affected policy scopes remain U
 ## 21. Dependencies and implementation sequence
 
 - NX-ADR-005 supplies exact instrument/contract arithmetic and immutable spec versions.
+- [NX-IF-002](../architecture/NX-IF-002-exposure-snapshot-risk-reservation-contract.md) defines the proposed authoritative ExposureSnapshot, exclusive bucket ownership, atomic reservations, fencing, lifecycle transitions and recovery semantics; it is a design draft, not an implementation.
 - NX-ADR-004 and ТЗ-NX-001 supply market-data freshness and recovery quality.
 - ТЗ-NX-006 supplies authoritative ledger, equity, P&L, fee and funding facts.
 - ТЗ-NX-003 supplies immutable TradeIntent and strategy identity; it has no risk override.
