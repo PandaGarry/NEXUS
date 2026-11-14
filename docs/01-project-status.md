@@ -18,15 +18,14 @@
 | Professional Order Flow specification | PROPOSED | ТЗ-NX-002 опубликовано; формулы, golden datasets и реализация не проверялись |
 | Quant & Strategy Engine specification | PROPOSED | ТЗ-NX-003 опубликовано; research protocol, runtime, feature registry и стратегии не реализованы/не проверены |
 | Autonomous Execution Engine specification | PROPOSED | ТЗ-NX-004 опубликовано; private adapters, durable outbox, reconciliation, vault/signer и runtime tests не реализованы/не проверены |
+| Independent Risk Engine specification | PROPOSED | ТЗ-NX-005 опубликовано; policy registry, exposure calculator, approval signer, reservations, kill-switch controller и conformance tests не реализованы/не проверены |
 | Target architecture | PROPOSED | NX-ARCH-001 опубликован; owner review и согласование TBD deployment decisions требуются |
 | Prototype readiness | BLOCKED | Не начинать прототипирование |
 
 ## Новые архитектурные артефакты (PROPOSED)
 
 - [NX-ADR-001 — Unified Market Event Contract](architecture/NX-ADR-001-unified-market-event-contract.md) — canonical event envelope, typed payload semantics, exact units, timestamps, provenance, ordering and schema evolution. Design only; no implementation or conformance tests.
-
 - [NX-ARCH-001 — Target Architecture & Deployment Topology](architecture/NX-ARCH-001-target-architecture.md) — logical boundaries, trust model, command/data flows, deployment baseline and owner decisions. Design only; no implementation or runtime verification.
-
 - [NX-ADR-002 — Execution Integrity & Reconciliation](architecture/NX-ADR-002-execution-integrity-reconciliation.md)
 - [NX-ADR-003 — Simulation Fidelity & Strategy Validation](architecture/NX-ADR-003-simulation-fidelity-strategy-validation.md)
 - [NX-ADR-004 — Market Data Recovery State Machine](architecture/NX-ADR-004-market-data-recovery-state-machine.md)
@@ -35,6 +34,7 @@
 - [ТЗ-NX-002 — Professional Order Flow](specifications/TZ-NX-002-professional-order-flow.md) — функциональные требования и критерии корректности; implementation NOT STARTED
 - [ТЗ-NX-003 — Quant & Strategy Engine](specifications/TZ-NX-003-quant-strategy-engine.md) — strategy artifacts, DecisionContext/TradeIntent, research governance, simulation fidelity and promotion gates; implementation NOT STARTED
 - [ТЗ-NX-004 — Autonomous Execution Engine](specifications/TZ-NX-004-autonomous-execution-engine.md) — durable command/outbox, order lifecycle, ambiguity handling, private events, reconciliation, kill switch and credential isolation; implementation NOT STARTED
+- [ТЗ-NX-005 — Independent Risk Engine](specifications/TZ-NX-005-independent-risk-engine.md) — deterministic pre-trade authorization, exposure and limit evaluation, reservations, signed approvals, continuous monitoring and halt controls; implementation NOT STARTED
 - [NX-SEC-001 — Threat Model & Credential Isolation](security/NX-SEC-001-threat-model-credential-isolation.md)
 
 Эти документы сохранены и повторно прочитаны из GitHub; они не утверждены владельцем и не являются реализацией.
