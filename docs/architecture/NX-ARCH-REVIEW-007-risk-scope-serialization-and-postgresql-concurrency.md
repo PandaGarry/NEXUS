@@ -19,7 +19,7 @@ The design is strengthened with seven explicit rules:
 6. Market/index/FX/fee/collateral inputs remain immutable, versioned valuation snapshots bound to the reservation and capability. Market-data ticks MUST NOT rewrite every Risk scope-state row; stale or policy-invalid valuation inputs block dispatch.
 7. The shared scope-state serialization point deliberately trades write concurrency for correctness. G1 must benchmark contention and tail latency at the actual v1 scope fan-out; do not weaken atomicity to improve throughput.
 
-This review does not approve PostgreSQL for production, a schema, automatic failover, or any runtime. PostgreSQL 18 remains the exact-version evaluation target only.
+This review does not approve PostgreSQL for production, a schema, automatic failover, or any runtime. PostgreSQL 18.7 is the exact G1 evaluation patch only; see NX-RESEARCH-012.
 
 ## 2. Why the common serialization point is necessary
 
@@ -182,7 +182,7 @@ PostgreSQL documentation supports the transaction/error semantics above; it does
 ## 10. Gate disposition
 
 - Risk-owned scope-state serialization is the selected G1 evaluation design.
-- PostgreSQL 18 SERIALIZABLE is the default evaluation isolation level, not a production deployment decision.
+- PostgreSQL 18.7 SERIALIZABLE is the default G1 evaluation target, not a production deployment decision.
 - Logical scope-state fields and transaction protocols are design requirements, not an approved physical schema.
 - Scope fan-out, lock plan, role grants, exact PostgreSQL patch, retry budgets, replication, backup/RPO/RTO and old-primary fencing remain to be tested/approved.
 - No database, schema, migration, Risk service, reservation runtime or venue integration was created.
