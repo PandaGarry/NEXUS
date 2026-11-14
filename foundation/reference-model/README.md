@@ -69,3 +69,6 @@ Latest verified PR matrix: [#43595199511](https://github.com/PandaGarry/NEXUS/ac
 
 
 Canonical wire fixtures: `numeric-wire-golden-v1.json` (version 1.0.0) provides language-neutral valid/invalid decimal and rational cases, including integers beyond JavaScript's exact-number range. Run with `python -m unittest -v test_numeric_wire.py`.
+
+
+The bounded context separates raw decimal literal input size (`max_input_chars`) from encoded scalar wire size (`max_wire_chars`). Both are mandatory independent budgets.
