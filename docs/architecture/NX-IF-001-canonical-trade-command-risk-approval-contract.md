@@ -1,0 +1,409 @@
+# NX-IF-001 — Canonical Trade Command & Risk Approval Contract
+
+**Date:** 2026-11-14  
+**Status:** PROPOSED — normative interface draft; not accepted  
+**Work package:** NX-ARCH-REVIEW-001 / WP-A  
+**Applies to:** ТЗ-NX-003, ТЗ-NX-004, ТЗ-NX-005, NX-ADR-002, NX-ADR-005, NX-ARCH-001  
+**Baseline branch:** `docs/project-foundation`  
+**Baseline commit reviewed:** `0a6f0f5700bd24c31e260aba01d12abb6d8eafbf`
+
+## 1. Purpose and scope
+
+Define one interoperable, versioned contract from a strategy/user proposal to an independently authorized execution command.
+
+This interface covers:
+- proposal identity and lineage;
+- canonical command fields and semantic validation;
+- deterministic canonicalization and payload digest;
+- Risk Engine decision and approval capability;
+- independent Execution-side verification;
+- expiry, one-time consumption, replay protection and invalidation;
+- rejection behavior and contract conformance tests.
+
+Out of scope:
+- venue-specific REST/WebSocket wire payloads and signing;
+- risk policy contents and numeric limits;
+- reservation accounting internals (WP-B);
+- distributed persistence/outbox protocol beyond required references (WP-B/WP-C);
+- choice of cryptographic algorithms, serialization library, RPC protocol or database;
+- live trading authorization.
+
+## 2. Normative language and safety invariants
+
+The terms MUST, MUST NOT, SHOULD and MAY are normative.
+
+1. TradeIntent is a proposal, never an executable order.
+2. Only a CanonicalTradeCommand can be evaluated for execution authorization.
+3. RiskApprovalCapability MUST bind to the exact canonical command digest and all required scope/version fields.
+4. Any change to an execution-affecting field MUST produce a different digest and invalidate the previous approval.
+5. Execution MUST independently validate approval authenticity, scope, expiry, current halt epoch, spec/policy compatibility and one-time consumption.
+6. An approval is not an exchange credential and grants no authority to sign arbitrary requests.
+7. Unknown, unsupported, malformed, ambiguous or omitted-required fields MUST reject; they MUST NOT be silently defaulted.
+8. Numeric financial values MUST use exact decimal strings or an equally exact schema representation; binary floating-point is forbidden in canonical command fields.
+9. The canonical command MUST be immutable after creation. Amend/cancel are separate commands referencing the target order.
+10. Idempotency prevents duplicate logical intake; it does not imply exactly-once delivery to an exchange.
+11. No client, AI component or strategy can mint, modify, extend or replay an approval.
+12. The command and approval protocol MUST fail closed when required trust, version or state evidence is unavailable.
+
+## 3. Three-stage object model
+
+### 3.1 TradeIntent — proposal
+
+Owned by ТЗ-NX-003. It expresses desired trading action, not a venue instruction.
+
+Required identity/lineage:
+- `intent_id`: globally unique immutable identifier;
+- `intent_schema_version`;
+- `idempotency_key` and declared scope;
+- `origin`: STRATEGY, AUTHORIZED_OPERATOR or SYSTEM_POLICY;
+- `strategy_artifact_id` and immutable version when origin is STRATEGY;
+- `decision_context_digest`;
+- `created_at`, `not_after`;
+- `target`: desired exposure/action semantics, not yet an executable order;
+- `evidence_refs`: market/account snapshot references and quality metadata.
+
+A TradeIntent MUST NOT contain a Risk Approval, exchange signature or private API credential. Confidence/score is advisory metadata and MUST NOT be interpreted as risk permission.
+
+### 3.2 CanonicalTradeCommand — executable instruction candidate
+
+Owned by ТЗ-NX-004 command intake and canonical command contract. It is created by an authorized command-construction path after validating the proposal and resolving it into a specific order instruction.
+
+It is immutable and versioned. One command represents one logical operation. CREATE, AMEND, CANCEL and emergency/control operations are distinct command types; they MUST NOT be encoded as mutations of an existing command.
+
+### 3.3 RiskApprovalCapability — constrained authorization
+
+Owned and signed by ТЗ-NX-005. It authorizes only the exact command digest and scope declared in the capability. It is not a general account permission, not a risk policy, and not a venue request signature.
+
+The capability MUST be independently verifiable by Execution without asking AI or Strategy to interpret it.
+
+## 4. CanonicalTradeCommand v1
+
+### 4.1 Envelope fields
+
+| Field | Type / rule | Required |
+|---|---|---|
+| schema_id | Fixed identifier `nexus.canonical_trade_command` | Yes |
+| schema_version | Integer major/minor; v1 semantics immutable | Yes |
+| nexus_command_id | Globally unique immutable ID | Yes |
+| command_type | CREATE, AMEND, CANCEL, CLOSE, REDUCE_ONLY, CANCEL_ALL; unsupported type rejects | Yes |
+| environment | PAPER, SANDBOX, LIVE | Yes |
+| origin | STRATEGY, AUTHORIZED_OPERATOR, SYSTEM_POLICY | Yes |
+| intent_id | Original TradeIntent ID; null only for explicitly permitted non-strategy operations | Conditional |
+| parent_command_id | Prior command for causal link, e.g. amend/cancel chain | Conditional |
+| idempotency_key | Caller-generated immutable key | Yes |
+| idempotency_scope | Tenant + account + operation namespace | Yes |
+| account_ref | Internal immutable account/subaccount reference | Yes |
+| venue_id | Canonical venue identifier | Yes |
+| market_type | SPOT, LINEAR_PERPETUAL, INVERSE_PERPETUAL, dated/futures as supported | Yes |
+| instrument_id | Stable NEXUS instrument identity | Yes |
+| venue_instrument_id | Exact native instrument identifier | Yes |
+| instrument_spec_version | Immutable ADR-005 specification version | Yes |
+| side | BUY or SELL where applicable | Conditional |
+| position_side | Explicit LONG, SHORT, NET or venue-specific supported value | Conditional |
+| order_type | Explicit supported order type | Conditional |
+| quantity | Exact positive decimal string in native order quantity units | Conditional |
+| price | Exact decimal string or explicit null where order type permits | Conditional |
+| trigger_price | Exact decimal string or explicit null | Conditional |
+| trigger_reference | MARK, INDEX, LAST or supported venue reference | Conditional |
+| time_in_force | Explicit supported enum; no implicit venue default | Conditional |
+| reduce_only | Explicit boolean; absence rejects for applicable commands | Conditional |
+| close_position | Explicit boolean only where venue semantics are certified | Conditional |
+| post_only | Explicit boolean | Conditional |
+| position_mode | Immutable expected account mode/version or reference | Yes for derivatives |
+| margin_mode | ISOLATED, CROSS, PORTFOLIO or venue-defined supported value | Yes for derivatives |
+| price_protection / execution flags | Explicit typed map with schema-defined allowlist | Yes; empty allowed |
+| target_order_ref | Immutable NEXUS order identity for amend/cancel | Conditional |
+| target_venue_order_id | Native order identity when known; otherwise explicit absence reason | Conditional |
+| created_at | UTC RFC 3339 timestamp with defined precision | Yes |
+| not_after | UTC RFC 3339 timestamp; bounded maximum lifetime | Yes |
+| halt_epoch | Current monotonic halt generation observed at command creation | Yes |
+| correlation_id | End-to-end trace ID | Yes |
+| causation_id | Parent event/decision ID | Yes |
+| extensions | No arbitrary executable extensions in v1; unknown keys reject | Yes, empty object allowed |
+
+Conditional fields are required according to the command-type and order-type validation matrix. The matrix MUST be explicit and versioned; a missing field is not equivalent to a venue default.
+
+### 4.2 Command-type rules
+
+- CREATE: requires account, instrument, side, order type and all required sizing/pricing/TIF fields.
+- AMEND: is a new command with its own ID and digest; references one existing order; includes the complete resulting effective order parameters, not a partial patch whose meaning depends on mutable defaults.
+- CANCEL: is a new command referencing one target order. It does not imply the order is canceled; venue outcome must be reconciled.
+- CLOSE / REDUCE_ONLY: are not inherently safe. They require explicit position mode, quantity/close semantics and fresh position evidence; venue-specific capability must be certified.
+- CANCEL_ALL: is a separately scoped control command with explicit account/instrument scope and bounded target set semantics. It cannot be represented as a generic unbounded request.
+- Unsupported command type or venue capability MUST reject before risk approval.
+
+A cancel or reduce command can remove protection, race with a fill, or reverse exposure. Risk policy defines whether it is risk-increasing, risk-reducing or indeterminate. There is no universal bypass.
+
+## 5. Canonicalization and digest
+
+### 5.1 Canonicalization requirements
+
+Before hashing:
+1. Validate against the exact schema version and command-type matrix.
+2. Reject duplicate object keys, unknown fields, invalid enum values, malformed timestamps and invalid decimal strings.
+3. Normalize timestamps to UTC with the contract-defined precision.
+4. Normalize decimal strings to a unique representation: no exponent notation, no leading plus, no unnecessary leading zeros, no trailing fractional zeros, and zero represented as `0`. Negative zero is forbidden.
+5. Distinguish null from absent. Required nullable fields are present with explicit null; optional omission is permitted only where the schema explicitly says so.
+6. Apply deterministic object-key ordering and UTF-8 encoding. Arrays preserve semantic order; set-like arrays require schema-defined sorting.
+7. Include schema ID and version in the canonical bytes.
+8. Exclude transport headers, signatures, mutable delivery attempts and non-semantic tracing metadata only if the schema explicitly identifies them as outside the command payload. All execution-affecting fields remain included.
+
+The selected canonical serialization standard/library is an implementation decision. It MUST be pinned by version and backed by cross-language test vectors before implementation. Do not assume ordinary JSON serialization is canonical.
+
+### 5.2 Digest
+
+`command_digest = HASH(domain_separator || canonical_command_bytes)`
+
+The domain separator MUST be unique to NEXUS canonical trade commands and include the major schema version. The hash algorithm is an owner/security architecture decision; it must be collision-resistant and pinned before production.
+
+The digest is calculated over the complete immutable CanonicalTradeCommand payload. Approval metadata is not embedded into the command digest, avoiding a circular dependency.
+
+## 6. RiskEvaluationRequest v1
+
+Risk Engine receives:
+- complete canonical command and computed digest;
+- authenticated caller/service identity and authorization scope;
+- current account/venue/instrument references;
+- immutable instrument specification version;
+- current policy bundle/version and policy evaluation mode;
+- exposure snapshot ID/version and reservation state reference;
+- StateEvidence/FreshnessVector reference (WP-D);
+- current halt epoch and scoped halt state;
+- requested evaluation deadline;
+- provenance references for positions, open orders, pending commands, balances, market state and reconciliation.
+
+The Risk Engine MUST recompute the digest from canonical bytes. It MUST NOT trust a caller-supplied digest without recomputation.
+
+A request with mismatched account, unknown instrument, unsupported command semantics, stale evidence, unresolved exposure or incompatible policy/spec version returns DENY or REQUIRE_REVIEW, never APPROVE.
+
+## 7. RiskDecision v1
+
+Decision enum:
+- APPROVE — executable only when accompanied by a valid RiskApprovalCapability and durable reservation reference where required;
+- DENY — explicit hard failure with stable reason code;
+- REQUIRE_REVIEW — non-executable; requires authorized human/process resolution and a new evaluation.
+
+Required fields:
+- decision_id;
+- command_id and recomputed command_digest;
+- decision enum;
+- stable reason_codes and bounded diagnostic references;
+- evaluated_at and decision_deadline;
+- policy_bundle_id/version;
+- instrument_spec_version;
+- exposure_snapshot_id/version;
+- state_evidence_ref/version;
+- halt_epoch;
+- reservation_id/version when applicable;
+- evaluation_engine_version;
+- audit_event_id.
+
+Warnings or confidence scores MUST NOT override DENY or REQUIRE_REVIEW. No default APPROVE on timeout, exception, partial response or unknown enum.
+
+## 8. RiskApprovalCapability v1
+
+### 8.1 Required claims
+
+| Claim | Meaning |
+|---|---|
+| capability_schema_version | Approval capability schema version |
+| approval_id | Unique immutable approval identifier |
+| issuer | Trusted Risk Engine identity/key ID |
+| audience | Exact Execution/Command Coordinator service audience |
+| command_id | Exact NEXUS command ID |
+| command_digest | Digest recomputed from canonical command |
+| command_type | Authorized operation type |
+| environment | PAPER/SANDBOX/LIVE exact scope |
+| account_ref | Exact account/subaccount |
+| venue_id / market_type | Exact venue and market scope |
+| instrument_id / venue_instrument_id | Exact instrument scope |
+| instrument_spec_version | Approved immutable spec version |
+| policy_bundle_id/version | Exact risk policy version |
+| exposure_snapshot_id/version | Exposure state used for approval |
+| reservation_id/version | Durable reservation binding when required |
+| halt_epoch | Halt generation observed at approval |
+| issued_at / expires_at | Short-lived authorization interval |
+| nonce | Cryptographically strong unique value |
+| evaluation_id | Risk evaluation lineage |
+| signature/key_id | Verifiable signature and key identifier |
+
+A capability MUST NOT contain exchange API keys, reusable venue signatures or broad permissions such as “trade any instrument on this account”.
+
+### 8.2 Validation by Execution
+
+Immediately before dispatch, Execution MUST verify:
+1. signature and trusted issuer/key status;
+2. audience matches this service;
+3. command ID and recomputed digest match byte-for-byte;
+4. command type, environment, account, venue, market and instrument match;
+5. instrument spec and policy versions remain permitted;
+6. approval is not expired and clock uncertainty is within configured bound;
+7. nonce/approval has not already been consumed;
+8. reservation is active and bound to this command;
+9. halt epoch matches current authoritative epoch and scope is not halted;
+10. command/outbox payload being dispatched is exactly the approved canonical payload.
+
+Any failed check rejects dispatch and records a stable reason code. A valid signature alone is insufficient.
+
+### 8.3 Single-use consumption and crash handling
+
+Approval consumption MUST be durable and atomic with the transition that makes the command eligible for dispatch. The same approval cannot authorize two commands or two independent dispatch records.
+
+The protocol MUST distinguish:
+- NOT_CONSUMED;
+- CONSUMED_FOR_DISPATCH;
+- DISPATCH_OUTCOME_KNOWN;
+- DISPATCH_OUTCOME_UNKNOWN;
+- INVALIDATED;
+- EXPIRED.
+
+If the process crashes after durable consumption but before it is known whether the venue received the request, the command enters the ADR-002 ambiguous-outcome path. It MUST NOT mint or reuse a new approval to blindly resend. Recovery requires authoritative evidence or a new command/evaluation after the previous outcome is resolved.
+
+## 9. Invalidation rules
+
+Approval is invalid if any of the following occurs before dispatch:
+- canonical command digest changes;
+- command schema major version changes;
+- account, environment, venue, market type or instrument changes;
+- instrument spec version changes incompatibly;
+- policy version changes in a material way;
+- exposure snapshot/reservation becomes stale, released, consumed by another command or invalidated;
+- halt epoch advances or scope is halted;
+- approval expires or issuer key is revoked/disabled;
+- required account/market/reconciliation evidence falls outside policy freshness bounds;
+- command is canceled, superseded or quarantined.
+
+No automatic extension of expiry is allowed. Re-evaluation creates a new decision and, if approved, a new capability.
+
+## 10. Stable reason-code families
+
+Initial reason-code namespaces (exact catalogue to be versioned):
+- SCHEMA_* — malformed/unknown schema or field;
+- CANONICALIZATION_* — digest/canonical representation mismatch;
+- IDENTITY_* — caller, account or scope mismatch;
+- INSTRUMENT_* — unsupported instrument or spec mismatch;
+- VENUE_CAPABILITY_* — unsupported order/position semantics;
+- POLICY_* — hard limit, unconfigured policy or policy version mismatch;
+- EXPOSURE_* — limit breach, unknown exposure or stale snapshot;
+- RESERVATION_* — missing, expired, duplicated or conflicting reservation;
+- DATA_QUALITY_* — stale, invalid, unsynchronized or incomplete evidence;
+- RECONCILIATION_* — unresolved account/order/ledger discrepancy;
+- HALT_* — active halt or stale halt epoch;
+- APPROVAL_* — invalid signature, expired, consumed, revoked or audience mismatch;
+- INTERNAL_* — Risk/Execution integrity failure; fail closed.
+
+Reason codes are machine-stable; human-readable explanations may evolve independently.
+
+## 11. Security and trust requirements
+
+- Risk approval signing keys are separate from exchange signing keys.
+- Approval signing key material is isolated; ordinary services cannot export it.
+- Execution holds only public verification material or a constrained verification interface.
+- Key rotation includes key ID, activation/retirement windows and revocation handling.
+- Signature verification MUST be constant-time where applicable and use vetted libraries.
+- Approval claims are integrity-protected; sensitive account identifiers are opaque references.
+- Logs record IDs, digests, versions and reason codes, never secrets or raw signatures unless secure evidence policy explicitly requires protected retention.
+- AI and Strategy have no permission to issue or consume approval capabilities.
+- Operator-originated commands require authenticated actor identity, role and audit context; privileged scopes may require dual control per owner policy.
+
+Cryptographic algorithm, signature envelope standard, key custody provider and rotation policy remain explicit owner/security decisions. No custom cryptography.
+
+## 12. Contract state transitions
+
+`PROPOSED → NORMALIZED → VALIDATED → RISK_EVALUATED`
+
+Risk evaluation branches:
+- `RISK_EVALUATED → DENIED`
+- `RISK_EVALUATED → REVIEW_REQUIRED`
+- `RISK_EVALUATED → APPROVED_WITH_RESERVATION`
+
+Execution intake:
+- `APPROVED_WITH_RESERVATION → PERSISTED`
+- `PERSISTED → APPROVAL_CONSUMED`
+- `APPROVAL_CONSUMED → DISPATCH_ELIGIBLE`
+- `DISPATCH_ELIGIBLE → DISPATCHED`
+- `DISPATCHED → ACKNOWLEDGED / REJECTED / OUTCOME_UNKNOWN`
+
+This is a logical contract, not a substitute for the detailed command/order state machines in ТЗ-NX-004 and reservation state machine in WP-B. No transition may be inferred from a missing response.
+
+## 13. Version compatibility and migration
+
+- Major schema version changes are incompatible unless a formally reviewed adapter proves equivalence.
+- Minor versions may add only explicitly optional, non-ambiguous fields; unknown fields remain rejected by v1 consumers unless negotiated by capability.
+- Canonicalization version is independently identified and pinned.
+- Strategy proposal schema, command schema and approval schema are separately versioned.
+- Adapter upgrades MUST pass the same canonicalization and signature test vectors.
+- Historical command bytes/digests and approval evidence are retained under audit retention policy; never recompute historical digest using a newer canonicalizer and overwrite the original.
+
+## 14. Conformance and negative test matrix
+
+Required test vectors before implementation approval:
+1. Same semantic command from two supported language runtimes produces identical canonical bytes and digest.
+2. Different quantity, price, side, account, instrument, TIF, trigger, reduce-only or position mode produces a different digest.
+3. Null vs omitted required field rejects or produces explicitly distinct canonical representation.
+4. Unknown field, duplicate key, exponent notation, NaN, Infinity, negative zero and malformed decimal reject.
+5. Unicode, timestamp precision and key ordering vectors are deterministic.
+6. Expired approval rejects at boundary and under configured clock-skew conditions.
+7. Wrong audience, account, environment, venue, market or instrument rejects.
+8. Modified payload with original approval rejects.
+9. Wrong spec/policy/exposure version rejects.
+10. Replayed nonce/approval and duplicate consumption reject.
+11. Concurrent attempts to consume one approval allow at most one durable winner.
+12. Crash before/after consumption follows explicit recovery path without blind resend.
+13. Halt epoch change between approval and dispatch rejects.
+14. Revoked signing key rejects according to revocation policy.
+15. Unsupported venue capability and ambiguous reduce/close semantics reject.
+16. AI/Strategy caller cannot mint, mutate or consume approval.
+17. Risk timeout, signer outage, partial response or unknown decision enum never becomes APPROVE.
+
+Golden vectors MUST include canonical input, expected canonical bytes, digest algorithm/version and expected digest. Vectors are not considered verified until executed in the selected implementation runtimes.
+
+## 15. Acceptance criteria
+
+- [ ] One versioned canonical command schema is accepted by Strategy/Command Coordinator/Risk/Execution owners.
+- [ ] Field-level CREATE/AMEND/CANCEL/CLOSE/REDUCE_ONLY/CANCEL_ALL matrix is complete.
+- [ ] Canonicalization and digest standard are selected, pinned and backed by cross-language golden vectors.
+- [ ] Approval capability schema, issuer/audience, signature and key lifecycle are approved by Security.
+- [ ] Execution validation checklist is normative and independently testable.
+- [ ] One-time consumption and crash behavior are integrated with WP-B reservation and WP-C outbox design.
+- [ ] Spec/policy/state/halt epoch invalidation semantics are accepted.
+- [ ] Stable reason-code catalogue and audit lineage are approved.
+- [ ] Negative conformance tests cover all critical rejection paths.
+- [ ] Owner approves exact initial environment and operating scope before implementation.
+
+## 16. Open owner decisions
+
+1. Initial venue/account mode and supported command types for v1.
+2. Cryptographic signature envelope and algorithm, key custody and rotation.
+3. Canonical serialization standard/library and digest algorithm.
+4. Maximum approval lifetime and clock-skew tolerance.
+5. Internal account-reference and operator identity model.
+6. Whether v1 supports only one venue/account per command (recommended) or multi-leg atomic intents (defer unless required).
+7. Initial order types and explicit venue defaults to prohibit.
+8. Required operator dual-control actions and audit retention.
+
+No risk limits, approval lifetimes, cryptographic algorithm or venue capabilities are invented as accepted project decisions. Until these are decided and implemented, live risk-increasing activity remains unconfigured and blocked.
+
+## 17. Dependencies and next work
+
+- WP-B must define durable reservation binding, concurrent exposure versioning, fencing and recovery.
+- WP-C must define atomic persistence of command, approval consumption and outbox plus event handoff.
+- WP-D must define StateEvidenceVector and freshness semantics referenced by RiskEvaluationRequest.
+- WP-E must define halt epoch authority and emergency command classes.
+- ТЗ-NX-003, ТЗ-NX-004 and ТЗ-NX-005 must reference this contract rather than maintaining competing field definitions.
+
+## 18. Verification status
+
+This document is a proposed interface design artifact only.
+
+Verified in this documentation task:
+- relevant source specifications and ADRs were fetched from `docs/project-foundation`;
+- this contract is linked to the existing 12-finding cross-specification review.
+
+Not verified:
+- implementation, schemas, serialization, signatures or cryptographic configuration;
+- conformance/golden tests, CI, builds, runtime, latency or failure behavior;
+- venue capability support for any command class;
+- owner acceptance or authorization for live operation.
+
+No code, exchange connection, credentials, order placement, risk-limit change, PR merge or default-branch change was performed.
