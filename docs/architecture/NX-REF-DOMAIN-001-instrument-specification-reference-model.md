@@ -47,7 +47,7 @@ The reference validator:
 
 The dedicated test suite covers valid exact order values, off-tick and off-step rejection, minimum/maximum quantity, minimum notional, explicit UNKNOWN vs NOT_APPLICABLE, suspended/unknown instruments, unsupported inverse contracts, multiplier requirements, invalid provenance and non-positive order values.
 
-GitHub Actions run [#43592403363](https://github.com/PandaGarry/NEXUS/actions/runs/43592403363) passed exact branch / PR #11 HEAD `255ea79f3253b6ba7cbffeab0c5d2d030b4afa5c` on Python 3.11, 3.12 and 3.13. Each matrix job passed 11 exact-decimal, 24 execution-gateway, 13 egress-handover and 17 instrument-specification tests (195 test executions across the matrix). This is reference-only CI evidence; no production or venue integration is claimed.
+GitHub Actions run [#43592464265](https://github.com/PandaGarry/NEXUS/actions/runs/43592464265) passed exact branch / PR #11 HEAD `255ea79f3253b6ba7cbffeab0c5d2d030b4afa5c` on Python 3.11, 3.12 and 3.13. Each matrix job passed 11 exact-decimal, 24 execution-gateway, 13 egress-handover and 17 instrument-specification tests (195 test executions across the matrix). This is reference-only CI evidence; no production or venue integration is claimed.
 
 ## 5. Deliberate exclusions
 
