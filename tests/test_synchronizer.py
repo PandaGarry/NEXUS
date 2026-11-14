@@ -82,6 +82,30 @@ class BookSynchronizerTests(unittest.TestCase):
         self.assertFalse(sync.valid)
         self.assertEqual(sync.last_invalidation_reason, "websocket_disconnect")
 
+
+    def test_malformed_level_shape_invalidates_without_raising(self):
+        sync = BookSynchronizer("BTCUSDT")
+        outcome = sync.on_delta(delta(10, 100, [["100"]]))
+        self.assertEqual(outcome.state, "INVALID")
+        self.assertFalse(outcome.request_snapshot)
+        self.assertFalse(sync.valid)
+
+    def test_non_integer_sequence_values_are_rejected(self):
+        sync = BookSynchronizer("BTCUSDT")
+        malformed = delta(10, 100)
+        malformed["data"]["u"] = 10.5
+        outcome = sync.on_delta(malformed)
+        self.assertEqual(outcome.state, "INVALID")
+        self.assertFalse(sync.valid)
+
+    def test_boolean_sequence_values_are_rejected(self):
+        sync = BookSynchronizer("BTCUSDT")
+        malformed = delta(10, 100)
+        malformed["data"]["seq"] = True
+        outcome = sync.on_delta(malformed)
+        self.assertEqual(outcome.state, "INVALID")
+        self.assertFalse(sync.valid)
+
     def test_malformed_event_does_not_trigger_snapshot_without_buffer(self):
         sync = BookSynchronizer("BTCUSDT")
         outcome = sync.on_delta({"topic": "orderbook.full.BTCUSDT", "type": "delta", "data": None})
