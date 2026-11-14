@@ -849,3 +849,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep this CI evidence scoped to Python reference models; it does not verify Rust, CBOR/COSE implementation, PostgreSQL, external fencing, Trusted Egress, venues or live execution.
 
 **Disposition:** branch ancestry is valid and deliberately stacked; all direct-chain PRs remain Draft. Exact-head Python reference CI passed. PR #16 remains open/Draft/unmerged; no owner approval for merge or production/live action is implied.
+
+## 18.39 Final exact-head CI after COSE wire profile and documentation synchronization — 2026-11-14
+
+- [x] Verify branch HEAD `71afa64c00affed017c1f072600f4f0e4aaeccc6` with [workflow #43616247630](https://github.com/PandaGarry/NEXUS/actions/runs/43616247630).
+- [x] Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests; 717 successful executions total.
+- [x] Inspect all three job logs: no test failures, Node.js 20 deprecation or `punycode` warnings.
+- [x] Confirm CI workflow direct actions remain full-SHA pinned and exact manifests declare Node 24.
+- [x] Confirm all current serialization/COSE changes remain design/research only; no parser, signer, verifier or key registry was added.
+- [ ] Continue to keep G0D/OD-08/G1 strict-parser, COSE interoperability, PostgreSQL and Trusted Egress evidence gates open.
+
+**Disposition:** exact-head Python reference-model regression passed. It is not cryptographic, Rust, persistence, egress, venue or live-trading evidence.
