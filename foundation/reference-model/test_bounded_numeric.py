@@ -1,6 +1,7 @@
 import unittest
 
 from nexus_decimal import DivisionByZero, ExactDecimal, ExactRational, RoundingMode
+from numeric_wire import serialize_decimal, serialize_rational
 from bounded_numeric import BoundedNumericContext, NumericLimitExceeded, NumericLimits
 
 
@@ -50,6 +51,33 @@ class BoundedNumericTests(unittest.TestCase):
     def test_parse_rejects_coefficient_digit_budget(self):
         with self.assertRaisesRegex(NumericLimitExceeded, "coefficient"):
             context(max_coefficient_digits=3).parse_decimal("1234")
+
+    def test_decimal_digit_budget_boundary_is_exact(self):
+        ctx = context(max_coefficient_digits=3)
+        self.assertEqual(ctx.parse_decimal("999"), d("999"))
+        with self.assertRaises(NumericLimitExceeded):
+            ctx.parse_decimal("1000")
+
+    def test_bounded_wire_parse_enforces_character_and_numeric_limits(self):
+        ctx = context(max_input_chars=32, max_coefficient_digits=3)
+        self.assertEqual(ctx.parse_decimal_wire(serialize_decimal(d("123"))), d("123"))
+        with self.assertRaises(NumericLimitExceeded):
+            ctx.parse_decimal_wire(serialize_decimal(d("1234")))
+        with self.assertRaises(Exception):
+            ctx.parse_rational_wire(serialize_rational(ExactRational(123456, 1)))
+
+    def test_compare_and_step_validation_are_bounded(self):
+        ctx = context()
+        self.assertEqual(ctx.compare(d("1.0001"), d("1")), 1)
+        self.assertTrue(ctx.is_multiple_of(d("1.25"), d("0.05")))
+        self.assertFalse(ctx.is_multiple_of(d("1.23"), d("0.05")))
+
+    def test_exact_terminating_conversion_is_bounded(self):
+        self.assertEqual(context().to_decimal_exact(ExactRational(1, 8)), d("0.125"))
+
+    def test_exact_conversion_rejects_scale_over_budget(self):
+        with self.assertRaisesRegex(NumericLimitExceeded, "scale"):
+            context(max_scale=2).to_decimal_exact(ExactRational(1, 8))
 
     def test_add_exact_within_budget(self):
         ctx = context()
