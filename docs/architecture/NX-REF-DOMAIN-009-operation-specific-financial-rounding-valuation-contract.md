@@ -327,7 +327,7 @@ This package can move from PROPOSED to owner-review-ready only when:
 - [x] Estimated values are separated from authoritative venue/account facts.
 - [x] Venue-specific and owner-controlled unknowns are explicitly BLOCKED.
 - [x] Required venue qualification dossier and fixture schema are defined.
-- [ ] Cross-document consistency review completed against NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006.
+- [x] Cross-document consistency review completed against NX-ADR-005, NX-IF-003, ТЗ-NX-005 and ТЗ-NX-006.
 - [ ] Owner review of accounting and valuation policy boundaries completed.
 - [ ] Exact venue/product/account selection and legal eligibility completed before venue-specific rules are populated.
 
@@ -344,3 +344,20 @@ This is not an implementation gate and does not pass G0/G1.
 5. Publish a finite disposition: ACCEPTED DESIGN / OWNER DECISION REQUIRED / VENUE QUALIFICATION REQUIRED / DEFERRED.
 
 No production calculator, Risk Engine, Ledger or live execution work is authorized by this package.
+
+
+### 10.1 Cross-document consistency review (2026-11-14)
+
+Reviewed the exact current branch versions of:
+- NX-ADR-005, blob `e66701d9ffadbf93343988b7976913e83abe834a`;
+- NX-IF-003, blob `62d93913d88f0c0af4eb5ad623160b9770acac76`;
+- ТЗ-NX-005, blob `d34ffa9cd703e9b6d351e3df129d9feabe093462`;
+- ТЗ-NX-006, blob `53de605aa5c391920f35b928ee848c402b5d5114`.
+
+**Result: no blocking contradiction found in the reviewed financial-operation boundaries.**
+- NX-ADR-005 requires exact instrument semantics and operation-specific rounding; this contract makes the per-operation decision and qualification boundary explicit.
+- ТЗ-NX-005 requires exact exposure/margin calculations, explicit cross-currency source/quality/haircut and fail-closed behavior; this contract preserves Risk as a consumer of qualified valuation inputs and does not claim margin/liquidation formulas.
+- ТЗ-NX-006 requires exact values, explicit rounding boundaries, immutable source evidence and UNKNOWN for missing/stale FX; this contract adds the missing operation-level rounding/provenance and estimate-versus-fact distinctions.
+- NX-IF-003 separates fill, fee, funding and P&L effects and requires atomic journal posting/corrections; this contract does not change that ownership and explicitly leaves posting rules and owner accounting decisions open.
+
+**Residual design gaps remain intentionally open:** position/inventory matching, fee and funding settlement details, venue/product/account formulas, valuation source hierarchy, collateral haircuts, journal precision/rounding accounts, and numeric production limits. This review does not accept any of those policies or pass G0/G1.
