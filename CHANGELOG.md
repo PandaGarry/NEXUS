@@ -775,3 +775,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Clarified that PostgreSQL SERIALIZABLE guarantees equivalence to some serial order, not by itself the contract's wall-clock commit-order/linearization requirement for overlapping source writers.
 - Added an open G1 requirement for an enforced common per-scope generation/guard shared atomically by HEGC and every invalidating source writer, with direct-DML bypass prevention and PostgreSQL 18.7 concurrency proof.
 - No database guard or production transaction protocol is implemented or selected.
+
+
+### Duplicate-halt cause preservation and expanded HEGC CI — 2026-11-14
+
+- Made duplicate halt requests idempotent for the active halt episode: the original initiating reason is preserved; later causes belong in separate audit events.
+- Added regression cases for duplicate requests during HALTING and HALT_PENDING.
+- Exact code/test HEAD fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8 passed [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619194630).
+- Python 3.11/3.12/3.13 each passed 13 suites / 262 tests (786 executions); egress-fencing passed 36 tests, including 23 HaltEgressGate cases.
+- All three job logs were inspected; no test failures or deprecation warnings. This remains sequential Python reference evidence only.
