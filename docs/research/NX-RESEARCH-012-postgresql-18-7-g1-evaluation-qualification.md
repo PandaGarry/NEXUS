@@ -121,7 +121,7 @@ The preferred G1 mechanism to evaluate is a narrowly scoped database-owned funct
 
 This pattern preserves service ownership of source tables while giving the common guard one narrow, audited write authority. It is a G1 evaluation candidate, not an implementation or production approval.
 
-This guard is a design candidate, not a selected/implemented mechanism. Before G1, run PostgreSQL 18.7 multi-connection tests proving both source-writer-first and HEGC-first order, pause/crash points, stale-snapshot retry, guard bypass denial, deterministic multi-scope locking and ambiguous commit recovery. Until the commit-order property is demonstrated, HEGC MUST deny a final grant whenever it cannot prove the bound validation state is current under the common guard.
+This guard remains a design candidate, not a selected production mechanism. A disposable PostgreSQL 18.7 fixture now proves the initial writer-first and HEGC-first multi-connection ordering cases: the blocked stale transaction receives SQLSTATE 40001 and succeeds only after a whole-transaction retry. The same fixture checks root-first/complete scope locking, basic role/ACL closure, direct-DML denial, SET ROLE, search_path/temp-object and custom-GUC spoofing, and exact grant retry binding; see tests/postgres-hegc-guard/README.md and workflow #43621246827. This is fixture-level evidence only. Before G1, extend qualification to pause/crash points, RLS, concurrent duplicate attempts, ambiguous commit recovery, scope-membership mutation, role/ACL closure under the actual connection topology, full migration/restore behavior and independent security review. Until the production commit-order property is demonstrated, HEGC MUST deny a final grant whenever it cannot prove the bound validation state is current under the common guard.
 
 **Why this matters:** the existing contract says updates committed before the final gate are visible and updates committed after it are causally later. That is a real-time ordering requirement; ordinary SSI serializability alone must not be represented as proof.
 
@@ -145,7 +145,7 @@ Mandatory constraints:
 - Definer owners must not have BYPASSRLS and must not own source tables. PostgreSQL superusers and BYPASSRLS roles bypass RLS; table owners normally bypass it unless FORCE ROW LEVEL SECURITY is enabled. Test the actual RLS policies under the definer owner and verify only intended source rows are visible.
 - The entrypoint returns only an opaque grant reference and bounded attempt status. It must not return unrestricted source records or canonical financial payloads to the HEGC runtime.
 
-This is a G1 qualification requirement, not a claim that the database functions or roles exist.
+This is a G1 qualification requirement. The fixture contains test-only analogues of these functions and roles; no production database functions, roles, schemas or credentials exist.
 
 ## 5. G1 qualification checklist
 

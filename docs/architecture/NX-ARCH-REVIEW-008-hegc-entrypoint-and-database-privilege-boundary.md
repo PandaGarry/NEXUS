@@ -14,7 +14,7 @@ The HEGC trust boundary is materially stronger when the application runtime cann
 - Trusted Egress has a distinct workload principal and can consume its own one-use grant, report socket initiation and read bounded attempt status, but cannot write control tables or call the privileged authorization entrypoint.
 - Risk/Command/eligibility writers use guarded domain procedures; direct DML paths that bypass the common commit-order guard are revoked.
 
-This is a preferred G1 candidate, not a selected production implementation. No database schema, role, function, connection or credential has been created.
+This is a preferred G1 candidate, not a selected production implementation. No production database schema, role, function, connection or credential has been created. A disposable test-only fixture now exists under tests/postgres-hegc-guard; its scope and evidence are recorded in that directory's README and do not constitute production implementation.
 
 ## 2. Authority and role separation
 
@@ -132,11 +132,12 @@ The following tests are required before implementation acceptance:
 ## 8. Open gates and disposition
 
 - [ ] Select the concrete PostgreSQL guard/entrypoint implementation only after comparative least-privilege review.
-- [ ] Build an isolated PostgreSQL 18.7 multi-connection harness and execute the full matrix above.
+- [x] Build an isolated PostgreSQL 18.7 multi-connection harness; its initial five-test fixture suite passes both writer-first and HEGC-first ordering.
+- [ ] Extend the fixture to the full adversarial matrix above, including RLS, overload/PUBLIC EXECUTE, crash/ambiguous-commit and restore cases.
 - [ ] Prove the exact database role graph, RLS policy behavior, function ownership, function ACLs and caller identity under the real connection/pooler topology.
 - [ ] Prove positive Egress process/host/network fencing independently of database leases and role revocation.
 - [ ] Prove crash, backup/restore, PITR, ambiguous commit and failover/recovery semantics.
 - [ ] Measure throughput, lock wait, fan-out and tail latency.
 - [ ] Obtain independent security review of SECURITY DEFINER code before any production deployment.
 
-**Disposition:** architecture boundary and candidate controls are specified. No schema, function, role, connection or runtime is implemented. G0D/G1 remain open; production/live execution is not authorized. Owner decisions OD-08, OD-09, OD-10 and OD-12 remain open where they concern key custody, storage/isolation, recovery objectives and break-glass operations.
+**Disposition:** architecture boundary and candidate controls are specified. No production schema, function, role, connection or runtime is implemented; only a disposable test fixture exists. G0D/G1 remain open; production/live execution is not authorized. Owner decisions OD-08, OD-09, OD-10 and OD-12 remain open where they concern key custody, storage/isolation, recovery objectives and break-glass operations.
