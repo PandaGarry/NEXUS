@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from nexus_bybit_recorder.journal import RawFrameJournal
-from nexus_bybit_recorder.replay import JournalIntegrityError, iter_verified_frames, summarize
+from nexus_bybit_recorder.replay import JournalIntegrityError, iter_verified_frames, replay_book, summarize
 
 
 class ReplayTests(unittest.TestCase):
@@ -38,6 +38,25 @@ class ReplayTests(unittest.TestCase):
             self.assertEqual(summary["valid_book_events"], 1)
             self.assertEqual(summary["classification_total"], 9)
             self.assertTrue(summary["classification_reconciles"])
+
+    def test_replay_reconstructs_snapshot_bridge_and_disconnect(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "raw.jsonl"
+            snapshot = {"retCode": 0, "result": {"s": "BTCUSDT", "u": 10, "seq": 100, "b": [["100", "2"]], "a": [["101", "3"]]}}
+            with RawFrameJournal(path) as journal:
+                journal.append(json.dumps({"topic": "orderbook.full.BTCUSDT", "type": "delta", "data": {"s": "BTCUSDT", "u": 10, "seq": 100, "b": [], "a": []}}), 1)
+                journal.append(json.dumps({"topic": "orderbook.full.BTCUSDT", "type": "delta", "data": {"s": "BTCUSDT", "u": 11, "seq": 102, "b": [["100", "4"]], "a": []}}), 1)
+                journal.append(json.dumps(snapshot), 1, record_type="raw_rest_snapshot", metadata={"request_url": "https://api.bybit.com/v5/market/full_orderbook?category=linear&symbol=BTCUSDT", "http_status": 200})
+                journal.append(json.dumps({"state": "LIVE_VALID", "valid": True, "update_id": 11, "cross_seq": 102}), 1, record_type="derived_book_state")
+                journal.append(json.dumps({"topic": "orderbook.full.BTCUSDT", "type": "delta", "data": {"s": "BTCUSDT", "u": 12, "seq": 103, "b": [["100", "5"]], "a": []}}), 1)
+                journal.append(json.dumps({"state": "INVALID", "valid": False, "reason": "websocket_disconnect_or_generation_end"}), 1, record_type="derived_book_state")
+            replay = replay_book(path)
+            self.assertEqual(replay["delta_events"], 3)
+            self.assertEqual(replay["snapshot_events"], 1)
+            self.assertEqual(replay["valid_book_markers_matched"], 1)
+            self.assertEqual(replay["marker_mismatches"], [])
+            self.assertTrue(replay["replay_matches_recorded_valid_markers"])
+            self.assertFalse(replay["final_books"]["1:BTCUSDT"]["valid"])
 
     def test_corrupt_frame_fails_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
