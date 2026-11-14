@@ -2,7 +2,7 @@
 
 **Plan date:** 2026-11-15  
 **Scope owner:** NEXUS engineering / research workstream  
-**Status:** interim live-feed gate passed; M1/M2/M3 remain open. M2 implementation is in progress but NOT ACCEPTED. Further automated live captures are gated pending Bybit API terms review. See [M2-ACCEPTANCE.md](M2-ACCEPTANCE.md).
+**Status:** `IN_PROGRESS` — first raw-capture gate passed; M1/M2/M3 acceptance remains open. Further automated live captures are gated pending Bybit API terms review. See [M2-ACCEPTANCE.md](M2-ACCEPTANCE.md).
 
 ## Interim gate — first real bytes
 
