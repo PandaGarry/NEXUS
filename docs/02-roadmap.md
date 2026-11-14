@@ -776,3 +776,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Reference NX-ADR-008's selected G1 CBOR/SHA-256/COSE Ed25519 profile.
 - [ ] Add tests for dual evidence-vector invalidation and egress ordering.
 - [ ] Qualify cryptographic libraries and key custody independently before implementation.
+
+## WP-D valuation evidence and dispatch compatibility
+
+- [x] Separate StateEvidenceVector from ValuationInputVector and bind both into RiskApprovalCapability.
+- [x] Require persisted Risk evidence-manifest validation of the exact signed valuation vector at Trusted Egress.
+- [x] Prohibit remote source calls and valuation substitution on the dispatch path; fail closed on missing/unverifiable manifest.
+- [ ] Prove immutable source snapshots, cross-source vector coherence, watermark/correction continuity and source-specific freshness.
+- [ ] Instrument Trusted Egress and network policy to prove no market/FX/fee/collateral fetch occurs at send time.
+- [ ] Test market-data tick changes, source corrections/revocations and stale manifests between approval and dispatch.
