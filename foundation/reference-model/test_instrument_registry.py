@@ -4,7 +4,7 @@ from instrument_registry import (
     EffectiveTimeRegression, IdentityConflict, InstrumentSpecRegistry,
     Registration, VersionConflict,
 )
-from test_instrument_spec import spec
+from test_instrument_spec import dec, spec
 
 
 class InstrumentSpecRegistryTests(unittest.TestCase):
@@ -19,7 +19,7 @@ class InstrumentSpecRegistryTests(unittest.TestCase):
 
     def test_newer_version_appends_without_mutating_history(self):
         first = spec()
-        second = spec(spec_version=2, tick_size=spec().tick_size.parse("0.01"))
+        second = spec(spec_version=2, tick_size=dec("0.01"))
         self.registry.register(first)
         self.registry.register(second)
         self.assertEqual(self.registry.get(first.instrument_id, 1), first)
