@@ -174,8 +174,8 @@ class InstrumentUnitModel:
         self._require_contracts(contracts)
         if self.contract_type is not ContractType.LINEAR:
             raise UnsupportedUnitModel("base exposure conversion is only defined here for LINEAR")
-        assert self.contract_multiplier is not None
-        return AssetAmount(self.base_asset, contracts.count * self.contract_multiplier)
+        multiplier = self._require_multiplier()
+        return AssetAmount(self.base_asset, contracts.count * multiplier)
 
     def linear_notional(self, contracts: ContractCount, price: Price) -> Notional:
         self._require_contracts(contracts)
@@ -189,8 +189,8 @@ class InstrumentUnitModel:
         self._require_contracts(contracts)
         if self.contract_type is not ContractType.INVERSE:
             raise UnsupportedUnitModel("inverse quote notional is unavailable for this contract type")
-        assert self.contract_multiplier is not None
-        return Notional(self.quote_asset, contracts.count * self.contract_multiplier)
+        multiplier = self._require_multiplier()
+        return Notional(self.quote_asset, contracts.count * multiplier)
 
     def inverse_base_exposure(self, contracts: ContractCount, price: Price) -> AssetAmount:
         self._require_contracts(contracts)
@@ -201,6 +201,11 @@ class InstrumentUnitModel:
         raise UnsupportedUnitModel(
             "inverse base exposure requires exact division and an explicit rounding/precision policy"
         )
+
+    def _require_multiplier(self) -> ExactDecimal:
+        if self.contract_multiplier is None:
+            raise UnitModelMismatch("contract multiplier is missing")
+        return self.contract_multiplier
 
     def _require_contracts(self, contracts: ContractCount) -> None:
         if not isinstance(contracts, ContractCount):
