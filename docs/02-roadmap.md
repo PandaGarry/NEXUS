@@ -23,7 +23,7 @@
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
 
 ## Phase 2 — Professional Analytics (Blocked)
-- [ ] Спецификации и golden tests для Footprint, Delta/CVD, DOM, Tape, Profiles.
+- [ ] Утвердить ТЗ-NX-002 Professional Order Flow. (Draft published; formula decisions and owner review required.)\n- [ ] Подготовить независимые golden datasets и тесты для Footprint, Delta/CVD, DOM, Tape, Profiles.
 - [ ] Независимая проверка данных и нормализации.
 - [ ] UI/UX benchmark и производительные сценарии.
 
