@@ -83,3 +83,9 @@ The financial math fixture suite also runs 650 deterministic seeded property cas
 The financial fixture suite now delegates weighted-average arithmetic to `financial_aggregation.aggregate_partial_fills`. The test-only function accepts typed `(AssetAmount, Price)` pairs and returns total quantity, quote notional and an exact rational average. It rejects an empty fill set and relies on domain types to reject incompatible base/quote dimensions. It does not validate venue fill admissibility or calculate fees, funding, P&L, accounting or rounding. Non-terminating averages remain rational; no implicit decimal conversion is performed.
 
 A non-empty signed fill set whose aggregate quantity is zero raises the typed `DivisionByZero`; this is separate from empty input (`ValueError`) and malformed argument types (`TypeError`). Signed quantities remain accepted by the arithmetic helper and do not imply that signed venue fills are admissible.
+
+
+## Numeric wire parser resource-boundary hardening — 2026-11-14
+
+The decimal wire parser now accepts an optional max_scale budget; if omitted, it uses the explicit max_chars input budget as a conservative scale ceiling. Python integer-string conversion limit failures are normalized to the stable NUMERIC.RESOURCE_LIMIT class for decimal coefficients/scales and rational numerators/denominators. The numeric wire suite now contains 14 tests. This is a reference-parser guard, not a production numeric profile or a substitute for the future NX-ARCH-005 fixture runner's explicit resource profiles.
+
