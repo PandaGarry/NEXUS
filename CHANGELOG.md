@@ -531,3 +531,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Added adversarial acceptance cases for projection/reservation races, duplicate/reordered events, serialization/deadlock retry and recovery.
 - No PostgreSQL instance/schema/service implemented; G1 evaluation only.
 - Clarified that absence of a visible idempotency row does not prove rollback while the original Risk transaction may still be in flight; only same-identity/digest retry is permitted, otherwise halt.
+
+### Risk scope serialization and PostgreSQL concurrency — NX-ARCH-REVIEW-007 — 2026-11-14
+
+- Added a source-grounded concurrency review of the Risk-owned scope-state serialization point.
+- Required parent/account and child projection fan-out to update all affected scope rows atomically; added scope-config version serialization.
+- Defined logical scope-state version metadata without selecting a physical schema.
+- Clarified whole-transaction 40001/40P01 retry and non-generic 23505/23P01 handling.
+- Added a PostgreSQL 18 concurrency/fault-injection matrix and performance proof requirements.
+- Synchronized NX-ADR-008, NX-IF-002 and OD-09. No database, schema, migration or runtime was implemented.
