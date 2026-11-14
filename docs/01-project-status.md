@@ -306,3 +306,11 @@ NX-RESEARCH-010 published a candidate shortlist. PostgreSQL is the leading persi
 ### Final synchronized documentation-head verification — 2026-11-14
 
 The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` passed exact-head GitHub Actions [#43611122433](https://github.com/PandaGarry/NEXUS/actions/runs/43611122433). Python 3.11, 3.12 and 3.13 jobs all completed successfully; each ran 13 isolated reference-model suites / 237 tests (711 successful executions total). This is existing Python reference-model regression evidence only. It does not test NX-ARCH-008's proposed registry, manifest, workload identity, grants, module runtime/isolation, secrets, database permissions, network/egress enforcement, Rust, venue behavior or live-trading safety. NX-ARCH-008 remains PROPOSED / DESIGN ONLY; G0D/G1 remain open.
+
+
+## Module governance cross-review — 2026-11-14
+
+- Published [NX-ARCH-REVIEW-002](architecture/NX-ARCH-REVIEW-002-module-governance-cross-review.md), cross-reviewing NX-ARCH-001/006/007/008, NX-SEC-001, NX-IF-001..005 and NX-OWNER-DECISIONS-001.
+- No blocking design contradiction remains after two wording clarifications: gateway admission checks versus owning-service authorization; T4 protection tier versus separate protected workload identities/authorities.
+- Retained findings F-03..F-08 as open: executable permission mapping, revocation propagation objectives, registry/signing/workload identity trust roots, actual DB/host/network isolation evidence, first G1 module/resource budgets and operator/support governance.
+- Cross-review is design-level only. No owner decision or gate is closed; no module runtime, registry, security control or dependency is implemented. G0D/G1 remain open.
