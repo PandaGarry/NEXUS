@@ -161,6 +161,18 @@ class VenueEligibilityEgressTests(unittest.TestCase):
                 "elig-4", 4, "other", 8, EgressMode.LIVE_ELIGIBLE, NOW + 10_000
             ))
 
+    def test_same_record_revision_cannot_be_reused_with_new_epoch(self):
+        with self.assertRaisesRegex(ValueError, "revision must increase"):
+            self.authority.advance(snapshot(epoch=8))
+
+    def test_resume_after_suspension_requires_new_record_revision(self):
+        self.authority.suspend()
+        with self.assertRaisesRegex(ValueError, "revision must increase"):
+            self.authority.advance(snapshot(epoch=9, revision=4))
+        resumed = self.authority.advance(snapshot(epoch=9, revision=5))
+        self.assertEqual(resumed.mode, EgressMode.LIVE_ELIGIBLE)
+        self.assertEqual(resumed.revision, 5)
+
     def test_invalid_clock_is_rejected(self):
         with self.assertRaises(ValueError):
             self.authority.dispatch(command(), now_ms=True, send=lambda value: True)
