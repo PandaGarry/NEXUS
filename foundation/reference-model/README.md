@@ -44,4 +44,4 @@ cd execution-gateway
 python -m unittest -v
 ```
 
-The GitHub Actions workflow runs both reference suites on Python 3.11, 3.12 and 3.13. A workflow definition is not evidence of a pass; consult the run attached to the exact PR HEAD. No production, multi-process or live-exchange guarantees are claimed.
+The GitHub Actions workflow runs both reference suites on Python 3.11, 3.12 and 3.13. Run [#43588259035](https://github.com/PandaGarry/NEXUS/actions/runs/43588259035) passed on exact HEAD `fdfd54f093fbe0b3613738e02c823815c6b243d1` (10 exact-decimal tests + 17 gateway tests on each runtime). This is reference-model CI only; no production, multi-process or live-exchange guarantees are claimed.
