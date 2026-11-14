@@ -154,3 +154,13 @@ Phase 0 не означает исследовать все существующ
 - [ ] Add independent mathematical golden fixtures only after each formula's universality or venue-specific authority is established.
 
 No production financial calculator or execution/risk/ledger implementation is authorized by this documentation increment.
+
+### Venue-neutral financial math fixtures
+
+- [x] Publish NX-REF-DOMAIN-010 and language-neutral exact vectors for explicitly dimensioned spot, linear, inverse and partial-fill arithmetic.
+- [x] Add independent rational-oracle checks and negative dimension/identity tests.
+- [x] Add the fixture suite to Python 3.11–3.13 CI.
+- [ ] Verify exact PR-head CI; then freeze this bounded fixture package.
+- [ ] Keep fee/funding/P&L/margin/liquidation/FX/accounting fixtures blocked until authoritative venue/account or owner policies exist.
+
+This package validates mathematical identities only; it does not pass financial readiness gates.
