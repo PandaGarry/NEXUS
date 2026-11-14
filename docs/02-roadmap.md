@@ -2,6 +2,17 @@
 
 Статусы меняются только при наличии проверяемых свидетельств.
 
+## Product-first vertical slice (active, research-qualified)
+- [x] Complete targeted Bybit V5 public market-data contract audit in NX-RESEARCH-013; official snapshot/delta, trade, timestamp, metadata, rate-limit and later execution caveats recorded.
+- [ ] Build a read-only public recorder for one technical fixture (`linear / BTCUSDT`); no API keys or private endpoints.
+- [ ] Implement the documented full-depth REST snapshot + buffered WebSocket delta bridge, `u` gap/reset recovery and `seq` semantics.
+- [ ] Record raw payloads and normalized events with separate exchange/receive/process/write timestamps; exact decimal strings only.
+- [ ] Add deterministic replay and fault-injection coverage before any seven-day endurance run.
+- [ ] Measure JSONL write/replay economics and compare Parquet/PostgreSQL before selecting long-term raw-data storage.
+- [ ] Run strategy research only on validated, replayable datasets with fees/slippage/latency and out-of-sample controls.
+
+Scope freeze: no UI/Desktop/Web, AI Orchestrator, WASM, additional venues, broker, ClickHouse, NautilusTrader/Hummingbot core integration, COSE/CBOR runtime or HEGC expansion in this workstream.
+
 ## Phase 0 — Foundation Audit (In Progress)
 
 **Operational checklist:** [NX-PROJECT-CHECKLIST-001](quality/NX-PROJECT-CHECKLIST-001-execution-and-evidence.md). It is the current source for D1–D8 package status and ordered engineering work.
