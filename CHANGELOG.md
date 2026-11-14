@@ -630,3 +630,11 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Required Egress to validate the exact signed valuation vector against the persisted Risk evidence manifest and latest consumed watermark/correction state.
 - Prohibited remote source calls or replacement valuation fetches on the dispatch path; missing/stale/unverifiable evidence denies send.
 - Added cross-source coherence and RecoveryBarrier/approval separation acceptance cases. No implementation/runtime added.
+
+### Halt / final Trusted Egress race semantics — 2026-11-14
+
+- Reconciled halt-epoch propagation with the final EgressBoundaryAuthorization linearization point across NX-IF-005, NX-ADR-008, NX-ARCH-REVIEW-005 and NX-REF-EXEC-002.
+- Halt-first denies the final gate; gate-first creates an in-flight attempt that cannot be retroactively revoked and must be tracked until socket initiation or positive sender fencing.
+- Egress cannot acknowledge a new halt epoch while a paused pre-halt gate-authorized attempt could still resume and initiate a write.
+- Clarified that full HALTED acknowledgement prevents new stale/queued send initiation but does not recall requests already initiated or guarantee no bytes after the wall-clock halt-request time.
+- No runtime, transport fence or fault-injection test was implemented; evidence remains open.
