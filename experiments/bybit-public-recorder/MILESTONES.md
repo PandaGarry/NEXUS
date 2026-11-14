@@ -2,7 +2,7 @@
 
 **Plan date:** 2026-11-15  
 **Scope owner:** NEXUS engineering / research workstream  
-**Status:** interim live-feed gate passed; M1/M2/M3 remain open. M2 acceptance checklist: [M2-ACCEPTANCE.md](M2-ACCEPTANCE.md).
+**Status:** interim live-feed gate passed; M1/M2/M3 remain open. M2 implementation is in progress but NOT ACCEPTED. See [M2-ACCEPTANCE.md](M2-ACCEPTANCE.md).
 
 ## Interim gate — first real bytes
 
@@ -29,13 +29,15 @@
 
 ## M2 — live book reconstruction (target 2026-11-28)
 
+**Implementation status (2026-11-15):** REST snapshot client, response validator, bounded synchronizer, live CLI integration, REST journal records, book-state markers and deterministic book replay have been added to PR #19. CI and a new live capture must still prove the integrated path. M2 is not accepted.
+
 - Follow the detailed [M2 acceptance checklist](M2-ACCEPTANCE.md); do not mark M2 accepted by passing only pure state-machine fixtures.
 - Fetch documented REST full-depth snapshot from `/v5/market/full_orderbook`, journal exact response before parsing, buffer WS deltas, and bridge only at exact matching `seq` + `u`.
 - Invalidate and resynchronize on update-ID gap, `u=1`, stale connection, malformed event, wrong symbol, crossed book or bounded-buffer overflow.
 - Expose a book as valid only after snapshot bridge; preserve RPI exclusion metadata; never let consumers read invalid/synchronizing state.
 - Demonstrate replay equivalence, a real synchronized session, disconnect/reconnect, and injected `u=1` and gap recovery.
 - Verify official archive inventory: trade-level vs candle-only, categories, symbols, date range, timestamps, IDs, and whether any L2 history is actually present.
-- Publish HYP-001 result or an explicit archive/data-coverage blocker. Primary config is fixed; secondary grid is exploratory with Holm–Bonferroni correction.
+- Publish HYP-001 result or an explicit archive/data-coverage blocker. Primary config is fixed; secondary grid is exploratory with Holm–Bonferroni correction. The registered venue/instrument candidate set is in [RESEARCH-UNIVERSE.md](RESEARCH-UNIVERSE.md).
 
 ## M3 — seven-day endurance (target start 2026-11-28; report target 2026-12-05)
 
