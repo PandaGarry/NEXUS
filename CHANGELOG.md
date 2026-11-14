@@ -394,3 +394,9 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Python 3.11, 3.12 and 3.13 each passed all 13 isolated suites / 239 tests; 717 successful executions total.
 - All three logs show no test failures and no Node.js 20 / `punycode` deprecation warnings.
 - Verification is limited to existing Python reference models; no Rust, CBOR/COSE, PostgreSQL, Trusted Egress, venue or live-safety implementation was exercised.
+
+### Post-synchronization exact-head regression — 2026-11-14
+
+- Branch HEAD `928d5fd261553676c3fad6a8e88b984a862af338` passed [workflow #43615282210](https://github.com/PandaGarry/NEXUS/actions/runs/43615282210).
+- Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions).
+- No test failures or Node.js 20 / `punycode` deprecation warnings. Evidence remains limited to Python reference models.
