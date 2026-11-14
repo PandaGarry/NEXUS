@@ -10,7 +10,7 @@ Requirements: Python 3.13, psql, and PostgreSQL 18.7 (server_version_num = 18000
 
     PGHOST=127.0.0.1 PGPORT=5432 PGDATABASE=nexus_test PGUSER=postgres PGPASSWORD=postgres python tests/postgres-hegc-guard/test_harness.py
 
-GitHub Actions runs the same harness with the postgres:18.7 service image in the PostgreSQL HEGC guard qualification workflow.
+GitHub Actions runs the same harness with the Docker Official Image pinned by multi-platform index digest `sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b`. The `linux/amd64` child manifest is `sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452`; both were checked on [Docker Hub's official postgres:18.7 image page](https://hub.docker.com/layers/library/postgres/18.7/images/sha256-c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452).
 
 ## What the fixture exercises
 
@@ -51,7 +51,7 @@ The earlier PostgreSQL run #43621620302 correctly exposed a harness orchestratio
 
 This fixture proves only the behavior of these test-only SQL functions and role grants. Its RLS tests are limited to the fixture source table and fixture policies; they do not establish production policy correctness. It does not establish production schema correctness, production caller identity, complete NEXUS source-writer participation, DBA/superuser role or ACL mutation safety, catalog-manifest drift detection, migration governance, crash/restore, halt-epoch semantics, Egress process identity, socket initiation, host/network fencing, venue reconciliation, backup/PITR or production readiness. The lost-response case tests a committed grant whose client response is lost; it is not a complete crash/failover or uncertain-COMMIT recovery qualification.
 
-The test binding_digest is an opaque fixture string, not a cryptographic canonicalization or signature. The image is selected by the postgres:18.7 tag; image digest/provenance pinning remains open. No production role, credential, database, schema or service is created by this work.
+The test binding_digest is an opaque fixture string, not a cryptographic canonicalization or signature. The CI image index is digest-pinned; signed build provenance, SBOM retention, vulnerability disposition and independent image review remain open. No production role, credential, database, schema or service is created by this work.
 
 
 The documentation-only synchronization HEAD 806832a2a15ea25376408c7d27cde409438451ce also triggered CI: PostgreSQL workflow #43628569042 passed all 8 tests, and Python workflow #43628569028 passed 264 tests on each of Python 3.11, 3.12 and 3.13. No source/test changes were made after the verified code/test HEAD.
@@ -65,3 +65,7 @@ The new runtime tests deliberately attempt PostgreSQL role/ACL operations from e
 Code/test HEAD `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf` passed [PostgreSQL workflow #43629845855](https://github.com/PandaGarry/NEXUS/actions/runs/43629845855): **11/11 tests** on PostgreSQL 18.7. New coverage includes runtime-role privilege-escalation denial and restrictive RLS composition. Python reference-model workflow [#43629845861](https://github.com/PandaGarry/NEXUS/actions/runs/43629845861) passed 13 suites / **264 tests per runtime** on Python 3.11, 3.12 and 3.13 (792 executions). All four job logs were inspected; no failures or ResourceWarning/DeprecationWarning matches were found.
 
 The initial test iteration exposed a harness assertion issue, not a database privilege escalation: PostgreSQL can treat a non-owner GRANT attempt as a warning/no-op when the role can resolve the schema, while a role without schema USAGE receives 42501. The corrected regression checks both the role's schema visibility and the effective function ACL after the attempt; the PUBLIC grant must not appear in effective privileges.
+
+## PostgreSQL container image pin
+
+The workflow pins the Docker Official Image multi-platform index digest `sha256:9f4fd4aa918f52ae3d6f3b687f1de90d8f867cd4d520021545a9a50c120eae3b`; Docker Hub identifies the linux/amd64 child manifest as `sha256:c7fedce47eff6a78cb35dad6b627f0d684107f75ab15c0870e40c093766ba452`. The exact workflow commit `1844a9964fee667b7d29299a5b75f0f07df5076d` passed PostgreSQL workflow [#43630438579](https://github.com/PandaGarry/NEXUS/actions/runs/43630438579) (11/11) and Python workflow [#43630438570](https://github.com/PandaGarry/NEXUS/actions/runs/43630438570) (264 tests per runtime). This pins the referenced image content but does not itself prove publisher build provenance, signatures, SBOM completeness or vulnerability acceptability.
