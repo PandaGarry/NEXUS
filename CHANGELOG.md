@@ -758,3 +758,5 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - HaltEgressGate now has 18 tests; the egress-fencing package has 31 tests.
 - Exact code/test HEAD `2e94edd73f8933f0d510eed940452316ec5b8832` passed workflow [#43618796109](https://github.com/PandaGarry/NEXUS/actions/runs/43618796109): 13 suites / 257 tests on each Python 3.11/3.12/3.13 runtime (771 executions).
 - The sequential oracle still does not prove real DB concurrency, HEGC persistence, socket behavior or external fencing.
+
+- Added durable one-use `ConsumeEgressGrant` transition before socket initiation; only a positive response permits one send. Lost/indeterminate response cannot be retried as a new attempt; reservation remains held pending fence/reconciliation. The Python oracle now covers 21 state-machine cases.
