@@ -256,6 +256,10 @@ For the G1 evaluation target, [NX-ADR-008 §5.3](NX-ADR-008-g1-technical-baselin
 - A multi-scope reservation locks/updates every required pre-provisioned scope-state record in deterministic canonical scope-ID byte order and commits all reservations/capacity totals/idempotency state atomically.
 - Missing/ambiguous scope state or stale/incomplete source watermarks fail closed. Scope records are provisioned before the reservation hot path.
 - PostgreSQL SERIALIZABLE is the G1 default evaluation level, combined with state-version/CAS and unique constraints. SQLSTATE 40001/40P01 requires whole-transaction retry from a fresh snapshot within a finite budget. Ambiguous commit is resolved by the same stable request identity and digest.
+- A projection event MUST update every affected pre-provisioned scope-state row in one Risk transaction, including parent/account aggregates and any child scopes whose projection changes. Child-only projection updates that leave parent totals stale are forbidden.
+- Scope hierarchy/configuration changes use a separate privileged transaction that locks the complete old/new scope set in canonical order and advances scope_config_version atomically. Stale scope-set calculations abort/recompute; missing or unbounded membership fails closed.
+- The logical scope-state record carries scope_config_version, monotonic scope_state_version, exposure_projection_version, reservation_aggregate_version, source-watermark-vector reference/version, fencing_generation and last_transition_id. This is not an approved physical schema.
+- SQLSTATE 23505 is not a generic retry: only the expected idempotency constraint may be resolved in a new authoritative-primary transaction by comparing the durable request digest; unrelated uniqueness/exclusion errors fail closed.
 - This is a proposed implementation reference, not a selected schema or verified concurrency guarantee. Exact PostgreSQL patch, queries, role grants and test evidence remain open.
 
 ## 7. Event handling and edge cases
