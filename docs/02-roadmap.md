@@ -611,3 +611,13 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Verify `8d2c2f404782b718f1a3a422bb0ce918bb6b922d` on [workflow #43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308).
 - [x] Pass 13 suites / 239 tests on each Python 3.11/3.12/3.13 runtime (717 executions).
 - [ ] Keep COSE wire conformance, signer/verifier and key-registry tests as separate G0D/OD-08 implementation gates.
+
+## Current COSE profile and stacked-PR verification
+
+- [x] Freeze exact COSE_Sign1 application wire profile in NX-ADR-008 and NX-RESEARCH-011.
+- [x] Verify PR #16 exact-head Python reference CI [#43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308): 13 suites / 239 tests per Python 3.11/3.12/3.13 (717 executions).
+- [x] Re-verify PR #1→#2→#3→#4→#5→#6→#7→#9→#10→#11→#12→#13→#14→#16 exact SHA ancestry; PR #8 is parallel.
+- [x] Confirm direct-chain PRs remain open/Draft/unmerged; retain parent-first integration.
+- [ ] Add byte-exact cross-language COSE vectors and strict profile rejection tests.
+- [ ] Qualify exact crate versions, licenses, provenance, SBOM, advisories, fuzz behavior and key custody.
+- [ ] Do not interpret Python reference CI as Rust, CBOR/COSE, PostgreSQL, Trusted Egress or live-safety evidence.
