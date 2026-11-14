@@ -175,3 +175,5 @@
 - Defined deterministic runner responsibilities, normalized reports, CI provenance/evidence and layered differential/property/adversarial test strategy.
 - Confirmed the tracked repository has no Cargo workspace, Rust toolchain pin, Rust source tree or Rust runner; no Rust implementation is started before G0D/G1 approval.
 - Existing v1 fixture files and current Python unittest workflows remain unchanged. No schema validator, runner or cross-language conformance is claimed.
+
+- Added a per-family legacy fixture migration assessment to NX-ARCH-005, distinguishing structural conversion from rejection-class annotation and newly derived instrument-spec expectations; all existing v1 files remain untouched.
