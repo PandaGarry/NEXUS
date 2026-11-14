@@ -5,7 +5,6 @@
 ## Unreleased
 
 ### Added
-- NX-RESEARCH-006: first reference-platform fit assessment. NautilusTrader is a leading candidate for selected runtime reuse, not a selected full-stack foundation; durable-before-dispatch, independent risk boundary, bounded numeric precision and recovery integration require source-level conformance proof.
 - NX-ARCH-002: proposed personal-first product/deployment profiles defining single-owner closed use, PERSONAL_DEV/PERSONAL_TEST/PERSONAL_PRODUCTION and separately gated future COMMERCIAL scope; no runtime enforcement or live authorization claimed.
 - NX-IF-001: proposed Canonical Trade Command & Risk Approval Contract defining TradeIntent separation, immutable command envelope, canonicalization/digest, signed scoped approval capability, one-time consumption, invalidation and negative conformance matrix; implementation and tests not started.
 - NX-IF-002: proposed Exposure Snapshot & Risk Reservation Contract defining exclusive exposure buckets, source ownership, durable reservations, atomic multi-scope capacity checks, fencing, partial-fill transfer, unknown-outcome retention and recovery/conformance scenarios; implementation and tests not started.
@@ -25,11 +24,24 @@
 - NX-WP-001: рабочий регламент AI Project Lead с правилами исследования, evidence, контроля качества, согласований и Definition of Done.
 - NX-OPS-001: ежедневный pulse, еженедельный deep review и событийный анализ внешних изменений.
 
-### Changed
-- Project status now distinguishes the successful 10-test exact-decimal reference-file run from missing GitHub Actions evidence and unimplemented production runtime.
+### Added
+- Создана базовая структура документации NEXUS TRADING.
+- Зафиксированы устав проекта, текущий статус, roadmap и readiness gates.
+- Добавлены реестры ADR, спецификаций, исследований и безопасности.
 
 ### Notes
 - Это документационный baseline, не программный релиз.
 - Прототипирование остаётся заблокированным до прохождения readiness gates.
 - NX-RESEARCH-003: preliminary official-docs comparison of Coinbase and Kraken as conditional first-venue candidates; no venue selected, account eligibility and exact API capabilities remain unverified.
-- Exact-decimal reference oracle and golden vectors are test-only; they do not constitute production numeric implementation.
+
+
+### Added — Foundation documentation review and domain reference slice
+- NX-DOC-REVIEW-001: bounded final documentation review with PR integration findings, cross-document corrections, G0 close-out packages and finite exit criteria.
+- NX-ARCH-003: proposed venue-neutral exact numeric domain-kernel contract; production language, numeric bounds and rounding policy remain open.
+- Added a dependency-free Python exact-decimal reference oracle plus language-neutral golden vectors v1.0.0 (15 cases) and 10 unit tests for parsing, canonicalization, exact arithmetic, comparison, quantization and tick/lot divisibility. Local tests passed; this is not production runtime evidence.
+- Corrected NX-ARCH-001 stale reference to NX-ADR-001 and added a separate G0D documentation-baseline gate. No prototype/live permission is granted.
+
+
+### Added — Reference platform fit assessment
+- NX-RESEARCH-006: evidence-backed first assessment of NautilusTrader against NEXUS execution, risk, persistence, reconciliation, numeric and simulation contracts. NautilusTrader remains a leading candidate, not selected; no dependency integration or live use authorized.
+- Project status distinguishes isolated execution of the 10 exact-decimal reference tests from unavailable GitHub Actions evidence and absent production runtime.
