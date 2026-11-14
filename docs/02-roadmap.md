@@ -826,7 +826,7 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 
 - [x] Add explicit race matrix cases 36–42 to NX-IF-005.
 - [x] Align acceptance criteria with the final egress authorization linearization point and distinguish Risk outage from halt-store outage.
-- [x] Verify exact PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` on workflow #43618215618: 250 tests/runtime, 750 executions, including the 11-test HaltEgressGate oracle.
+- [x] Verify exact PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` on workflow #43618215618: 251 tests/runtime, 753 executions, including the 11-test HaltEgressGate oracle.
 - [ ] Re-run CI after any further final documentation/code synchronization.
 - [ ] Implement only after G0D/G1 gates: instrumented halt/Egress race tests, actual socket boundary, external process/host/network fencing and recovery evidence.
 
