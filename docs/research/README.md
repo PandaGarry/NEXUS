@@ -30,3 +30,5 @@
 
 - [NX-RESEARCH-009 — Russia Jurisdiction, Product Classification & First-Venue Eligibility](NX-RESEARCH-009-russia-jurisdiction-product-and-venue-eligibility.md) — Current 2026-11-14 baseline for Law 282-FZ, domestic regulated candidates, MOEX/SPB crypto derivatives and foreign venue eligibility; no live venue qualified.
 - NX-RESEARCH-003 and NX-RESEARCH-004 remain historical research records; their venue eligibility conclusions must be read with NX-RESEARCH-009, which supersedes earlier shortlist conclusions for the owner's RF-resident scenario.
+
+- [NX-RESEARCH-010 — Open-Source Component Qualification](NX-RESEARCH-010-open-source-component-qualification.md) — candidate shortlist for PostgreSQL, OpenTelemetry, OpenBao, NATS JetStream, Cilium and Temporal; no dependency adoption approved.
