@@ -86,14 +86,27 @@ class InstrumentSpecTests(unittest.TestCase):
         with self.assertRaises(IncompleteSpecification):
             value.validate_limit_order(dec("50000"), dec("0.001"))
 
-    def test_inverse_contract_requires_multiplier_and_is_not_supported(self):
-        with self.assertRaisesRegex(SpecError, "multiplier"):
-            spec(contract_type=ContractType.INVERSE)
-        value = spec(contract_type=ContractType.INVERSE, contract_multiplier=dec("100"))
-        self.assertIn("contract_model_not_supported_by_reference_validator",
-                      value.tradability_blockers)
+    def test_derivative_contracts_require_multiplier_and_are_not_supported(self):
+        for contract_type in (ContractType.LINEAR, ContractType.INVERSE, ContractType.QUANTO):
+            with self.subTest(contract_type=contract_type):
+                with self.assertRaisesRegex(SpecError, "multiplier"):
+                    spec(contract_type=contract_type)
+                value = spec(contract_type=contract_type, market_type=MarketType.PERPETUAL,
+                             contract_multiplier=dec("0.001"))
+                self.assertIn("derivative_contract_formula_not_supported_by_reference_validator",
+                              value.tradability_blockers)
+                with self.assertRaises(IncompleteSpecification):
+                    value.validate_limit_order(dec("50000"), dec("1"))
+
+    def test_spot_quote_quantity_semantics_are_not_assumed(self):
+        value = spec(quantity_unit="USDT")
+        self.assertIn("spot_quantity_unit_not_base_asset", value.tradability_blockers)
         with self.assertRaises(IncompleteSpecification):
-            value.validate_limit_order(dec("50000"), dec("0.001"))
+            value.validate_limit_order(dec("50000"), dec("10"))
+
+    def test_contract_and_market_types_must_agree(self):
+        with self.assertRaisesRegex(SpecError, "requires SPOT market type"):
+            spec(market_type=MarketType.PERPETUAL)
 
     def test_quantity_max_must_not_be_below_min(self):
         with self.assertRaisesRegex(SpecError, "below min_quantity"):
