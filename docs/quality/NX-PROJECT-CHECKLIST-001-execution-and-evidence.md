@@ -680,7 +680,7 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 
 - [x] Verify RFC 8949 §4.2.1 core deterministic map ordering is bytewise lexicographic over deterministic key encodings (not legacy length-first ordering).
 - [x] Clarify that canonicality is an ingress requirement, not merely an encoder preference.
-- [x] Restrict command map keys to schema-defined text field names and require rejection of unknown/duplicate keys.
+- [x] Restrict command map keys to schema-defined ASCII text field names; reject non-ASCII, unknown and duplicate keys; Unicode remains valid in values under strict UTF-8.
 - [x] Require decoder rejection of non-preferred integer/length encodings, indefinite lengths, unsorted maps and trailing bytes before object materialization.
 - [ ] Add byte-level negative vectors for non-shortest integer/length encodings, wrong map order, duplicate keys, trailing bytes, nested limits and invalid UTF-8 in both language implementations.
 - [ ] Confirm selected Python/Rust CBOR libraries expose raw-token/duplicate detection and deterministic-profile validation; reject a library if it normalizes malformed input before NEXUS can inspect it.
