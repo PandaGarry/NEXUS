@@ -1049,3 +1049,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Add cross-contract conformance tests for StateEvidenceVector + ValuationInputVector invalidation and final egress gate ordering.
 
 **Disposition:** documentation consistency correction only; no signer, verifier, key or dispatch runtime implemented.
+
+## 18.53 WP-D StateEvidenceVector / ValuationInputVector / Egress synchronization — 2026-11-14
+
+- [x] Keep StateEvidenceVector (NX-IF-004) distinct from ValuationInputVector (NX-IF-002); RiskApprovalCapability binds both exact immutable IDs/versions and required digests/policy references.
+- [x] Require Trusted Egress to validate the signed valuation vector against the authoritative persisted Risk evidence manifest and latest consumed source watermark/correction state.
+- [x] Prohibit remote market/FX/fee/collateral source calls or replacement valuation fetches on the dispatch path; missing/stale/incomplete/unverifiable manifest denies send.
+- [x] Specify that a newer monotonic market-data tick alone does not invalidate an admissible bound vector unless versioned source/operation policy requires latest; no silent rebind.
+- [x] Add WP-D conformance cases for source identity/watermark/clock/correction lineage, cross-source coherence, valuation manifest invalidation and separation of RecoveryBarrier readiness from command approval.
+- [ ] Prove source-owned snapshot immutability, vector coherence, manifest freshness and no-fetch behavior at instrumented process/network boundaries after G0D/G1 readiness.
+
+**Disposition:** NX-IF-001/002/004, NX-ADR-008, NX-ARCH-REVIEW-007 and NX-REF-EXEC-002 are aligned at the design level. No runtime or production authorization exists.
