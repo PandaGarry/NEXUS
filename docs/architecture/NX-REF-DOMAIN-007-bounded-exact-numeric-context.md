@@ -72,4 +72,4 @@ CI runs the suite on Python 3.11, 3.12 and 3.13. This is reference-level conform
 Before production adoption, select and justify limits per deployment profile, prove checked arithmetic in the chosen language, add boundary/property/fuzz tests, benchmark worst-case resource use, define overflow/error mapping, and verify cross-language parity against shared vectors.
 
 
-**CI evidence:** PR run [#43595199511](https://github.com/PandaGarry/NEXUS/actions/runs/43595199511) passed exact PR HEAD `fddd03f59baa159d8ed345691221c2446b0f60e3` on Python 3.11, 3.12 and 3.13. The bounded suite ran 32 tests per runtime. The complete matrix ran 172 tests per runtime / 516 test executions across ten isolated suites. This remains reference-level evidence only.
+**CI evidence:** PR run [#43595449902](https://github.com/PandaGarry/NEXUS/actions/runs/43595199511) passed exact PR HEAD `6200bae99e9b7ce865487a40312d0074c0e2a276` on Python 3.11, 3.12 and 3.13. The bounded suite ran 32 tests per runtime. The complete matrix ran 172 tests per runtime / 516 test executions across ten isolated suites. This remains reference-level evidence only.
