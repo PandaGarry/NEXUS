@@ -260,6 +260,8 @@ The final validation and one-use EgressBoundaryAuthorization commit occur in a s
 
 If the halt transition commits first, Egress denies the attempt. If the final gate commits first, the attempt is in-flight and remains potentially sent; the reservation is retained and the attempt is reconciled. The Egress boundary MUST NOT acknowledge the newer HALTED epoch while that pre-halt authorized attempt could still resume and initiate a socket write, unless its sender is positively fenced. See NX-IF-005 and NX-REF-EXEC-002.
 
+The logical owner and sole writer of `EgressBoundaryAuthorization` is the Halt/Egress Gate Coordinator (HEGC) defined by NX-IF-005 §5.2.2. Trusted Egress requests a one-use attempt-scoped grant from HEGC and MUST NOT write or mutate halt-state / gate-authorization records directly. HEGC serializes the final gate with the authoritative halt epoch. If HEGC or its authoritative store is unavailable, Egress denies the send. The grant binds command digest, reservation, attempt, halt epoch, eligibility revision, StateEvidenceVector, ValuationInputVector, dispatcher generation and Egress workload identity; it is not a replacement RiskApprovalCapability.
+
 ### 8.3 Single-use consumption and crash handling
 
 Approval consumption MUST be durable and atomic with the transition that makes the command eligible for dispatch. The same approval cannot authorize two commands or two independent dispatch records.
