@@ -14,9 +14,10 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 - [x] Added `BookSynchronizer` with bounded buffering, exact watermark bridge, `u=1` reset handling, gap invalidation and disconnect invalidation.
 - [x] Integrated REST snapshot acquisition and live synchronization into the public recorder CLI; the live CLI journals book-state transitions.
 - [x] Added unit tests for REST response validation, synchronization, reset/gap behavior and exhaustive record classification.
-- [ ] Latest CI on the complete implementation must pass on Python 3.11/3.12/3.13.
-- [ ] A new live run must prove that the public endpoint returns a REST snapshot and the CLI reaches `LIVE_VALID`; hosted-runner latency remains out of scope.
-- [ ] Replay must reconstruct the same book state from the raw REST/WS journal, not merely summarize recorded state markers.
+- [x] Unit CI passed on Python 3.11/3.12/3.13: [run 43642980172](https://github.com/PandaGarry/NEXUS/actions/runs/43642980172), code revision `d6141a482ae0ff20b421a0d488ef606813685876`.
+- [ ] Integrated 10-minute live run [43642980172](https://github.com/PandaGarry/NEXUS/actions/runs/43642980172) is in progress; it must prove a real REST snapshot, `LIVE_VALID` state and replay agreement. Hosted-runner latency remains out of scope.
+- [x] Added `replay_book()` and a deterministic fixture that reconstructs the same watermark from raw REST/WS journal events and compares it with a recorded `LIVE_VALID` marker.
+- [ ] Replay evidence from the integrated live archive must pass the workflow gate; the unit fixture alone is insufficient.
 - [ ] Fault-injection and reconnect evidence remain outstanding; M2 is not accepted.
 
 
