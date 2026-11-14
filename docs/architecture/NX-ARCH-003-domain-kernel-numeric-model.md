@@ -42,9 +42,12 @@ The first conformance slice covers:
 3. exact addition and subtraction;
 4. exact multiplication;
 5. exact rescaling/quantization only when no information is discarded;
-6. positive-step divisibility for tick/lot validation.
+6. positive-step divisibility for tick/lot validation;
+7. exact rational division with reduced numerator/denominator;
+8. exact finite-decimal conversion where the reduced denominator contains only factors 2 and 5;
+9. explicit-scale quantization only when a caller supplies a named rounding mode.
 
-Division, rounding, square roots, transcendental functions, arbitrary precision bounds, maximum scale, overflow strategy and cross-language serialization are deliberately excluded until separately specified. No implicit rounding is permitted.
+General decimal division and rounding were excluded from the initial scalar slice. NX-REF-DOMAIN-005 now adds an isolated test-only exact-rational division oracle and explicit quantization modes. This does not approve a rounding mode for any financial operation. Square roots and transcendental functions remain open. NX-REF-DOMAIN-007 adds a test-only bounded admission context with caller-supplied limits and preflight checks; it does not select production limits or prove resource safety. NX-REF-DOMAIN-008 adds versioned scalar wire encodings; cross-language conformance and event/command integration remain open. No implicit rounding is permitted.
 
 ## 4. Units and dimensional safety
 
@@ -60,7 +63,7 @@ Minimum future typed wrappers:
 - Timestamp with explicit clock source/precision;
 - TickSize and QuantityStep as positive validated increments.
 
-Operations between incompatible units must be rejected at the type/domain boundary. This initial reference model intentionally implements only scalar decimal mathematics; it does not yet model financial dimensions.
+Operations between incompatible units must be rejected at the type/domain boundary. NX-REF-DOMAIN-003 adds test-only AssetAmount, Money, Price, Notional and instrument-scoped ContractCount wrappers. NX-REF-DOMAIN-004 adds a spec-version-pinned quantity-unit mapping. These remain reference models, not production domain integration.
 
 ## 5. Instrument-rule validation
 
@@ -85,7 +88,7 @@ It is not:
 - a performance implementation;
 - evidence of Rust/WASM or backend conformance.
 
-Production implementation must match the golden vectors and add bounded-overflow, serialization, fuzz/property and cross-language tests.
+Production implementation must match the golden vectors and add bounded-overflow, serialization, fuzz/property and cross-language tests. NX-REF-DOMAIN-007/008 now provide initial test-only bounded-admission and scalar-wire references; production profiles, implementation and cross-language evidence remain open.
 
 ## 7. Acceptance criteria for this slice
 
@@ -99,15 +102,17 @@ Production implementation must match the golden vectors and add bounded-overflow
 - [x] Golden vectors are language-neutral and reusable by production implementations (v1.0.0, 15 cases).
 - [x] Deterministic property checks compare 1,000 generated cases against an independent rational representation.
 - [ ] Fuzz/property coverage with broader input generation and cross-language conformance.
+- [x] Test-only bounded numeric context rejects configured scale, coefficient, rational and intermediate-growth excess before arithmetic expansion.
+- [x] Test-only canonical scalar decimal/rational wire encodings reject non-canonical representations and require input-size budgets.
 - [ ] Production numeric bounds and overflow behavior are decided before live financial calculations.
 - [ ] Unit-bearing Price/Quantity/Money types are separately specified before order/risk/ledger integration.
 
 ## 8. Open decisions
 
 - Production implementation language and shared backend/client boundary.
-- Bounded numeric type and maximum coefficient/scale.
-- Overflow and checked-operation policy for every financial calculation.
-- Canonical wire encoding and versioning.
+- Production bounded numeric type and maximum coefficient/scale (test-only limits are caller-supplied fixtures, not production values).
+- Production overflow and checked-operation policy for every financial calculation.
+- Cross-language adoption and integration of canonical scalar wire encoding into typed events/commands.
 - Explicit rounding modes and per-operation ownership (venue normalization, fees, P&L, display only).
 - Currency and contract dimensional model.
 - Whether inverse/quanto instruments are deferred from the first supported product family.
@@ -119,3 +124,16 @@ The reference oracle is a conformance aid only. It does not establish production
 GitHub Actions run [#43590395882](https://github.com/PandaGarry/NEXUS/actions/runs/43590395882) passed exact PR HEAD `3fb21aa53c9d6c72afcf6761493388f417fcb56b`: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases) and 21 gateway tests on Python 3.11, 3.12 and 3.13.
 
 **Status remains PROPOSED.**
+
+
+## 10. Bounded numeric and scalar wire reference extensions
+
+NX-REF-DOMAIN-007 provides an explicit BoundedNumericContext. All NumericLimits are mandatory; there is no global default. It preflights input length, scale alignment, multiplication growth, division expansion, rational bounds and quantization growth. Division uses conservative pre-reduction checks and may reject some reducible quotients. These are reference semantics only; production limits remain unselected.
+
+NX-REF-DOMAIN-008 defines nxd1 decimal and nxr1 rational scalar encodings. Parsers require max_chars and reject non-canonical or unreduced values. These encodings carry no currency, instrument, provenance, timestamp, command identity or signature semantics.
+
+
+Latest bounded numeric/wire evidence: PR run [#43595199511](https://github.com/PandaGarry/NEXUS/actions/runs/43595199511) passed exact PR HEAD `fddd03f59baa159d8ed345691221c2446b0f60e3` on Python 3.11–3.13; ten isolated suites, 172 tests per runtime / 516 matrix executions. This remains reference-only and does not select production limits.
+
+
+Latest exact PR-head verification: run [#43595449902](https://github.com/PandaGarry/NEXUS/actions/runs/43595449902) passed commit `6200bae99e9b7ce865487a40312d0074c0e2a276` on Python 3.11–3.13. Ten suites, 172 tests per runtime / 516 matrix executions. Production limits and resource-safety proof remain open.

@@ -1,0 +1,107 @@
+{
+  "version": "1.0.0",
+  "representation": "reduced signed numerator / positive denominator; decimal conversion only for terminating base-10 expansions",
+  "cases": [
+    {
+      "id": "divide-001",
+      "op": "divide",
+      "a": "1",
+      "b": "3",
+      "expected_numerator": "1",
+      "expected_denominator": "3"
+    },
+    {
+      "id": "divide-002",
+      "op": "divide",
+      "a": "1.20",
+      "b": "0.30",
+      "expected_numerator": "4",
+      "expected_denominator": "1"
+    },
+    {
+      "id": "divide-003",
+      "op": "divide",
+      "a": "-2",
+      "b": "4",
+      "expected_numerator": "-1",
+      "expected_denominator": "2"
+    },
+    {
+      "id": "decimal-001",
+      "op": "to_decimal_exact",
+      "numerator": "1",
+      "denominator": "8",
+      "expected": "0.125"
+    },
+    {
+      "id": "decimal-002",
+      "op": "to_decimal_exact",
+      "numerator": "7",
+      "denominator": "40",
+      "expected": "0.175"
+    },
+    {
+      "id": "quantize-001",
+      "op": "quantize",
+      "numerator": "1",
+      "denominator": "3",
+      "scale": 2,
+      "rounding": "DOWN",
+      "expected": "0.33"
+    },
+    {
+      "id": "quantize-002",
+      "op": "quantize",
+      "numerator": "-1",
+      "denominator": "3",
+      "scale": 2,
+      "rounding": "UP",
+      "expected": "-0.34"
+    },
+    {
+      "id": "quantize-003",
+      "op": "quantize",
+      "numerator": "-1",
+      "denominator": "3",
+      "scale": 2,
+      "rounding": "FLOOR",
+      "expected": "-0.34"
+    },
+    {
+      "id": "quantize-004",
+      "op": "quantize",
+      "numerator": "-1",
+      "denominator": "3",
+      "scale": 2,
+      "rounding": "CEILING",
+      "expected": "-0.33"
+    },
+    {
+      "id": "quantize-005",
+      "op": "quantize",
+      "numerator": "5",
+      "denominator": "2",
+      "scale": 0,
+      "rounding": "HALF_UP",
+      "expected": "3"
+    },
+    {
+      "id": "quantize-006",
+      "op": "quantize",
+      "numerator": "5",
+      "denominator": "2",
+      "scale": 0,
+      "rounding": "HALF_EVEN",
+      "expected": "2"
+    },
+    {
+      "id": "quantize-007",
+      "op": "quantize",
+      "numerator": "7",
+      "denominator": "2",
+      "scale": 0,
+      "rounding": "HALF_EVEN",
+      "expected": "4"
+    }
+  ]
+}

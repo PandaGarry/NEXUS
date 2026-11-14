@@ -4,6 +4,47 @@
 
 ## Unreleased
 
+### Added — Bounded exact numeric context and canonical scalar wire (test-only; CI verified)
+- Added mandatory caller-supplied NumericLimits and BoundedNumericContext preflight for decimal input, scale alignment, multiplication, rational division, compare, step checks, exact conversion and quantization.
+- Added strict versioned scalar wire formats nxd1 (decimal) and nxr1 (reduced rational); parsers require explicit input character budgets and reject non-canonical forms.
+- Added dedicated bounded-numeric (32 tests) and wire-conformance (11 tests, including language-neutral golden vectors) suites. PR run #43595449902 passed exact PR HEAD `6200bae99e9b7ce865487a40312d0074c0e2a276` on Python 3.11–3.13: 172 tests per runtime / 516 executions. No production limits or cross-language adoption are approved.
+
+
+### Added — Exact rational inverse base exposure (test-only; CI verified)
+- Added `RationalAssetAmount` and a conventional inverse-contract formula: quote notional divided by quote-per-base price.
+- Preserves repeating results as reduced rationals (e.g. 1/300 BTC); finite decimal conversion is conditional and quantization requires an explicit mode.
+- Requires base-asset settlement in this reference model. Venue-specific product qualification remains open.
+
+
+### Added — Exact rational division and explicit quantization (test-only; CI verified)
+- `ExactDecimal.divide_exact` returns a reduced `ExactRational`; division by zero fails closed and no rounding is implicit.
+- Added exact terminating-decimal conversion and explicit quantization modes: UNNECESSARY, DOWN, UP, FLOOR, CEILING, HALF_UP and HALF_EVEN.
+- Added 1,000 deterministic rational property cases, language-neutral division vectors and a dedicated Python 3.11–3.13 CI step. Run [#43594118145](https://github.com/PandaGarry/NEXUS/actions/runs/43594118145) passed exact PR HEAD `a46b49a2cbb7a5960ce483f93a736a3fbc945554`: eight isolated suites, 127 tests per runtime / 381 matrix executions. Operation-specific financial rounding policies remain unapproved.
+
+
+### Added — Instrument quantity-unit semantics reference (test-only; CI verified)
+- Added `InstrumentUnitModel`, explicitly bound to an immutable `InstrumentSpec` version, for spot base-asset quantities, linear contract counts and inverse contract counts.
+- Linear multiplier is typed as base-asset units per contract; inverse multiplier is typed as quote-asset units per contract. Inverse base exposure and QUANTO remain explicitly blocked.
+- Added a dedicated 16-test Python 3.11–3.13 conformance suite. Run [#43593795698](https://github.com/PandaGarry/NEXUS/actions/runs/43593795698) passed exact HEAD `ba8df9def72bff82625669bc236430bb8d21592d`: seven isolated suites, 109 tests per runtime and 327 matrix executions. No production venue mapping or order authority is implied.
+
+
+### Added — Dimensional financial types reference (test-only; CI verified)
+- Added `AssetAmount`, `Money`, `Price`, `Notional` and instrument-scoped `ContractCount`, backed exclusively by `ExactDecimal`.
+- Added 16 focused tests for exact quote notional calculation, unit compatibility, cross-dimension rejection, contract-count separation and signed position deltas.
+- Added the dedicated suite to the Python 3.11–3.13 reference-model workflow. PR run [#43593305970](https://github.com/PandaGarry/NEXUS/actions/runs/43593305970) checked out merge ref `5f8dad3` (PR code/workflow head `5a1369435dd9024191f193df70651f1c00a36c6e` merged into base `3458ffac87adda08650a040f6be0861784fb509b`): six isolated suites, 93 tests per runtime and 279 matrix executions. This remains test-only evidence; no production domain types, FX, derivatives, margin, fees, P&L or accounting policy are implemented.
+
+
+### Added — Append-only instrument registry reference (stacked Draft PR; CI verified)
+- Added a test-only in-memory registry for immutable InstrumentSpec snapshots: historical lookup, idempotent identical replays, same-version content conflicts, monotonic version checks, stable internal identity checks and effective-time regression checks across unknown intermediate timestamps.
+- Added 12 deterministic registry tests and a dedicated Python 3.11–3.13 CI step. Run [#43592862627](https://github.com/PandaGarry/NEXUS/actions/runs/43592862627) passed exact code/index HEAD `7654c67774f3b6131b498a57c5de6b6621f6513f` across Python 3.11–3.13: 77 tests per runtime across all five reference suites. No persistence, concurrent-writer protocol, venue source precedence, freshness policy or production authority is implemented.
+
+
+### Added — Instrument specification reference slice (stacked Draft PR; CI verified)
+- Added immutable venue-neutral instrument snapshots with explicit identity, market/contract/lifecycle types, provenance and timestamps.
+- Added exact tick-size, quantity-step, min/max quantity and minimum-notional checks; UNKNOWN metadata fails closed and NOT_APPLICABLE must be explicit.
+- Added a synthetic fixture and 17 focused tests. Exact implementation HEAD `b8eee65facd3f62d351c803844005c41ddd245b5` passed GitHub Actions run [#43592464265](https://github.com/PandaGarry/NEXUS/actions/runs/43592464265) on Python 3.11–3.13. This evidence is code-test-only; derivative validation, spot quote-quantity semantics, venue adapters, registry persistence, freshness policy, contract formulas and production order authority are explicitly out of scope.
+
+
 ### Fixed — Serialized recovery ownership
 - Restart recovery now serializes its scan and state transitions in one write transaction, then conditionally changes only commands still in DISPATCHING. This prevents a late response committed before recovery from being overwritten and prevents concurrent recovery workers from claiming the same row twice in the local SQLite reference model.
 - Added a two-connection recovery race test. The command-gateway reference suite now contains 24 tests.

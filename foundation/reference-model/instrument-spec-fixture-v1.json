@@ -1,0 +1,28 @@
+{
+  "fixture_notice": "Synthetic conformance fixture; not copied from or attributed to a real venue.",
+  "schema_version": "1.0.0",
+  "instrument": {
+    "instrument_id": "nexus:demo:BTC-USDT",
+    "venue_id": "demo",
+    "market_type": "SPOT",
+    "native_instrument_id": "BTC-USDT",
+    "base_asset": "BTC",
+    "quote_asset": "USDT",
+    "settlement_asset": "USDT",
+    "contract_type": "SPOT",
+    "status": "ACTIVE",
+    "spec_version": 1,
+    "tick_size": "0.1",
+    "quantity_step": "0.001",
+    "min_quantity": "0.001",
+    "max_quantity": "10",
+    "min_notional": "5",
+    "min_notional_applicability": "REQUIRED",
+    "contract_multiplier": null,
+    "quantity_unit": "BTC",
+    "source_id": "demo:instrument-catalogue:v1",
+    "raw_payload_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "fetched_at_ms": 1794650000000,
+    "effective_at_ms": null
+  }
+}

@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE — living execution register  
 **Snapshot:** 2026-11-14  
-**Branch:** `foundation/domain-kernel-reference-v0`  
+**Branch:** `foundation/instrument-spec-reference-v0`  
 **Scope:** NEXUS v1 foundation, documentation close-out, safe reference work and readiness-controlled implementation.
 
 This checklist is the operational index for the next actions. It does not replace ADRs, specifications, owner decisions or readiness gates. Each checked item must point to a durable artifact or commit-specific evidence. A document being published is not the same as a decision being accepted; a test passing in a reference model is not production verification.
@@ -23,6 +23,9 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 |---|---|---|
 | Product scope | DONE for bounded v1 scope | OD-01 and OD-04 accepted; OD-15 partially accepted. See NX-OWNER-DECISIONS-001 |
 | PR #10 | OPEN / Draft / unmerged | Current branch contains reference models and docs; not a production implementation |
+| Instrument specification validator | DONE as test-only reference slice | NX-REF-DOMAIN-001; 17 tests passed in run #43593302985 on Python 3.11–3.13; synthetic fixture only, no production authority |
+| Dimensional financial types | IN PROGRESS as test-only reference slice | NX-REF-DOMAIN-003; 16 tests passed in run #43593302985 on Python 3.11–3.13 (93 tests per runtime across six isolated suites); reference-only, no production bounds, FX, derivatives, margin or ledger policy |
+| Instrument registry | DONE as test-only reference slice | NX-REF-DOMAIN-002; 12 tests passed in run #43593302985 on Python 3.11–3.13; in-memory only, no persistence or distributed writer protocol |
 | Exact-decimal oracle | DONE as reference slice only | 11 tests, 15 golden vectors and 1,000 deterministic rational-oracle property cases; exact PR-head CI passed on Python 3.11–3.13; no bounded production numeric type, dimensional wrappers, division or rounding |
 | Command-gateway oracle | DONE as test-only slice only | 24 tests; fake adapter; local SQLite concurrency only; conditional state guards cover late ACK, pre-send rejection and adapter-error races; recovery scan is serialized |
 | Stale dispatcher fencing | BLOCKED | NX-REF-EXEC-001 counterexample proves stale worker can still reach adapter after recovery |
@@ -47,8 +50,9 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 ## 4. Technical workstreams
 
 ### W1 — Market data and instrument truth
-- [ ] Publish a venue-neutral canonical instrument-spec schema and provenance/version rules.
-- [ ] Define exact metadata fields: tick, quantity step, min/max quantity, min notional, contract type/value/multiplier, settlement, price bands, leverage tiers and status.
+- [x] Publish a first venue-neutral instrument-spec reference schema, provenance fields and immutable snapshot validator (NX-REF-DOMAIN-001).
+- [ ] Qualify NX-REF-DOMAIN-002 registry history semantics against owner-approved identity, version assignment, source precedence, effective-time conflict and persistence decisions.
+- [ ] Complete the canonical metadata contract for price bands, leverage tiers, margin brackets, order capabilities and all contract denomination semantics; the current reference slice covers only a narrow subset.
 - [ ] Build venue fixtures only from official documented responses; preserve unknown/unsupported fields explicitly.
 - [ ] Define stream identity, sequence scope, snapshot bridge, gap detection, stale/degraded states and replay evidence.
 - [ ] Keep Tradoor public-data adapters as research candidates only; do not infer private execution capability.
@@ -155,7 +159,14 @@ For every substantive code or architecture change:
 6. Keep PRs Draft until the bounded review is complete; do not merge into the default branch without the required approval.
 7. No secret material, live credentials, private account data or personal financial identifiers in Git.
 
-## 8. Explicit non-authorizations
+## 8. Latest domain-kernel increment
+
+- Added `AssetAmount`, `Money`, `Price`, `Notional` and instrument-scoped `ContractCount`, all backed by `ExactDecimal`.
+- Only same-dimension/same-unit addition and subtraction are supported. `Price × matching AssetAmount` yields quote-denominated `Notional`; contract counts cannot be treated as asset quantity.
+- 16 dedicated tests passed in GitHub Actions run [#43593302985](https://github.com/PandaGarry/NEXUS/actions/runs/43593302985) on Python 3.11, 3.12 and 3.13. Historical six-suite evidence only: 11 decimal, 24 gateway, 13 egress, 17 instrument-spec, 12 registry and 16 dimensional-type tests (93 per runtime; 279 matrix executions). The latest seven-suite run also includes 16 instrument-unit tests (109 per runtime; 327 matrix executions).
+- This does not resolve `InstrumentSpec.quantity_unit` mapping, derivative formulas, FX, margin, fees, P&L, production numeric bounds or accounting policy.
+
+## 9. Explicit non-authorizations
 
 This checklist does not authorize:
 - real exchange credentials, private account connectivity or order placement;
@@ -166,3 +177,43 @@ This checklist does not authorize:
 - commercial, multi-tenant or third-party capital management.
 
 **Current overall disposition: FOUNDATION IN PROGRESS; PROTOTYPE READINESS BLOCKED; LIVE NOT AUTHORIZED.**
+
+## 10. Instrument quantity-unit semantics increment
+
+- Added `InstrumentUnitModel`, pinned to exact `InstrumentSpec` version and identity.
+- Spot maps explicitly to base-asset amount; linear contracts use base-asset units per contract; inverse contracts use quote-asset units per contract.
+- QUANTO is explicitly unsupported; inverse base exposure remains blocked until exact division and rounding/precision policy exist.
+- Venue `quantity_unit` remains opaque: quantity kind and multiplier dimension are caller-declared, never inferred from a string.
+- Dedicated 16-test suite and CI workflow step added. GitHub Actions run [#43593795698](https://github.com/PandaGarry/NEXUS/actions/runs/43593795698) passed exact HEAD `ba8df9def72bff82625669bc236430bb8d21592d` on Python 3.11–3.13: 109 tests per runtime / 327 matrix executions across seven isolated suites.
+
+
+## 11. Exact rational division and quantization increment
+
+- Added `ExactRational` reduced numerator/positive-denominator representation.
+- Decimal division returns an exact rational and never silently truncates or rounds; division by zero is rejected.
+- Exact conversion to finite decimal succeeds only for denominators containing factors 2 and/or 5.
+- Quantization requires an explicit `RoundingMode`; seven modes are covered for positive and negative inputs.
+- Added 1,000 deterministic rational quantization property cases and language-neutral division golden vectors.
+- Dedicated 18-test suite added. GitHub Actions run [#43594118145](https://github.com/PandaGarry/NEXUS/actions/runs/43594118145) passed exact PR HEAD `a46b49a2cbb7a5960ce483f93a736a3fbc945554` on Python 3.11–3.13: 127 tests per runtime / 381 matrix executions across eight isolated suites.
+- No operation-specific trading/accounting rounding policy is approved.
+
+
+## 12. Inverse contract rational exposure increment
+
+- Added `RationalAssetAmount`, preserving inverse base exposure as a reduced rational rather than rounding to a finite decimal.
+- Inverse exposure uses quote notional / quote-per-base price and requires settlement in the base asset for this reference model.
+- Exact finite-decimal conversion is conditional; quantization requires explicit scale and rounding mode.
+- Synthetic tests cover terminating and non-terminating outcomes, explicit quantization and settlement mismatch.
+- Dedicated suite is part of the Python 3.11–3.13 CI workflow; current-head evidence pending.
+
+
+## 13. Bounded numeric context and canonical scalar wire increment
+
+- Added BoundedNumericContext as a separate preflight/admission layer; the arbitrary-precision oracle remains unchanged.
+- NumericLimits are mandatory and caller-supplied; no default or production profile is selected. Zero scale and zero power-of-ten budgets are valid; input/digit/intermediate budgets must be positive.
+- Added preflight guards for input characters, coefficient digits, scale, scale-alignment powers, multiplication scale/growth, division pre-reduction numerator/denominator, rational bounds and quantization expansion.
+- Added bounded compare, step divisibility, exact terminating conversion and canonical wire parsing.
+- Added nxd1 decimal and nxr1 rational encodings with strict canonical grammar, normalized/reduced forms, version tags and mandatory max_chars parsing.
+- Conservative division preflight may reject a quotient whose unreduced values exceed budget even if GCD reduction would fit; this behavior is documented.
+- Dedicated bounded numeric (32 tests) and numeric wire (11 tests, including shared language-neutral vectors) suites passed PR run [#43595449902](https://github.com/PandaGarry/NEXUS/actions/runs/43595199511) on exact PR HEAD `6200bae99e9b7ce865487a40312d0074c0e2a276`, Python 3.11–3.13; full matrix 172 tests per runtime / 516 executions.
+- No production limits, fixed-width integer choice, resource-safety proof, Rust implementation or cross-language conformance is approved.

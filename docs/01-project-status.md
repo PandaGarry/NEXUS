@@ -2,7 +2,7 @@
 
 **Дата среза:** 2026-11-14  
 **Общий статус:** BLOCKED — Prototype Readiness Gate не пройден; bounded v1 scope decisions OD-01/04 accepted  
-**Текущая фаза:** Phase 0 — Foundation Audit / Architecture Synthesis
+**Текущая фаза:** Phase 0 — Foundation Audit / Architecture Synthesis; bounded instrument-spec reference implementation in a stacked Draft PR
 
 | Область | Статус | Комментарий |
 |---|---|---|
@@ -11,9 +11,10 @@
 | Tradoor audit | In Progress | Source pass обновлён до HEAD 6ab3877; funding/private execution capability audit добавлен в NX-RESEARCH-002. Полная per-venue сертификация, instrument metadata и runtime verification остаются открыты |
 | Exchange capabilities matrix | Incomplete | Trade/book/OI/liquidation первично просмотрены; per-channel matrix и UNKNOWN поля ещё не закрыты |
 | Simulation fidelity | In Progress | Tradoor paper-модель недостаточна для реалистичного исполнения |
-| Runtime verification | Partial / reference-only | GitHub Actions run [#43591592168](https://github.com/PandaGarry/NEXUS/actions/runs/43591592168) passed exact PR HEAD `2128771d6de67636f3b86dc40e137049c6e41fbd`: 11 exact-decimal, 24 gateway and 13 egress-handover tests on Python 3.11, 3.12 and 3.13 (144 test executions across the matrix; 1,000 seeded rational-oracle cases run inside each exact-decimal suite). Reference-only; no production runtime, real egress fencing or exchange-adapter verification claimed |
+| Runtime verification | Partial / reference-only | GitHub Actions run [#43593302985](https://github.com/PandaGarry/NEXUS/actions/runs/43593302985) passed code/workflow HEAD `5a1369435dd9024191f193df70651f1c00a36c6e`: six isolated suites (11 exact-decimal, 24 gateway, 13 egress-handover, 17 instrument-specification, 12 instrument-registry and 16 dimensional-type tests) on Python 3.11, 3.12 and 3.13 (93 tests per runtime; 279 matrix executions; 1,000 seeded rational-oracle cases inside each exact-decimal suite). Reference-only; no production runtime, real egress fencing or exchange-adapter verification claimed |
 | Security threat model | Drafted / Proposed | NX-SEC-001 сохранён; owner review, deployment-specific analysis и security verification не выполнены |
-| Exact arithmetic / instrument specs | ADR proposed / implementation not started | NX-ADR-005 drafted; требует owner review и последующих golden tests. Блокер реализации сохраняется |
+| Dimensional financial types | Reference slice added / exact-head CI pending (16 dedicated tests) | NX-REF-DOMAIN-003 introduces exact-decimal AssetAmount, Money, Price, Notional and ContractCount with explicit unit checks; 16 tests pass in run #43593302985 on Python 3.11–3.13; production integration, contract formulas and numeric bounds remain open |
+| Exact arithmetic / instrument specs | ADR proposed / reference slices verified | NX-ADR-005 remains PROPOSED. NX-REF-DOMAIN-001 validates immutable snapshots and exact tick/lot/minimum rules (17 tests); NX-REF-DOMAIN-002 adds append-only in-memory history, idempotent replay, version/identity conflicts and effective-time ordering (12 tests). Combined reference CI run [#43592862627](https://github.com/PandaGarry/NEXUS/actions/runs/43592862627) passed on Python 3.11–3.13 at branch HEAD `7654c67774f3b6131b498a57c5de6b6621f6513f`; no persistence, source precedence, official venue fixtures, derivative formulas or production authority | NX-ADR-005 drafted; requires owner review and full registry/venue contract decisions. Implementation readiness remains blocked |
 | Unified market event contract | PROPOSED | NX-ADR-001 опубликован; owner review и conformance design review требуются |
 | Professional Order Flow specification | PROPOSED | ТЗ-NX-002 опубликовано; формулы, golden datasets и реализация не проверялись |
 | Quant & Strategy Engine specification | PROPOSED | ТЗ-NX-003 опубликовано; research protocol, runtime, feature registry и стратегии не реализованы/не проверены |
@@ -109,3 +110,20 @@
 - Added a two-connection/two-worker test proving that only one recovery worker claims a DISPATCHING command.
 - GitHub Actions run [#43591524490](https://github.com/PandaGarry/NEXUS/actions/runs/43591524490) passed exact PR HEAD `4f836d0f9d1a43161927331c05e6cc19bb12072b`: 11 decimal, 24 gateway and 13 egress-handover tests on Python 3.11–3.13.
 - The stale-worker network-send counterexample remains intentionally reproducible. Real egress fencing remains BLOCKED.
+
+### Latest domain-kernel work
+
+NX-REF-DOMAIN-004 adds a test-only, explicit mapping between instrument specifications and quantity dimensions. Spot, linear and inverse reference semantics are supported; QUANTO and inverse base exposure remain blocked. Dedicated 16-test suite passed in GitHub Actions run #43593795698 on exact HEAD `ba8df9def72bff82625669bc236430bb8d21592d` across Python 3.11–3.13 (109 tests per runtime / 327 matrix executions). No venue is qualified by synthetic fixtures.
+
+### Exact division reference increment
+
+NX-REF-DOMAIN-005 adds reduced rational division, exact terminating-decimal conversion and explicitly selected quantization modes. The dedicated 18-test suite and 1,000 deterministic rational property cases passed GitHub Actions run #43594118145 on exact PR HEAD `a46b49a2cbb7a5960ce483f93a736a3fbc945554` across Python 3.11–3.13 (127 tests per runtime / 381 matrix executions). No production or operation-specific rounding policy is approved.
+
+### Inverse contract exposure increment
+
+NX-REF-DOMAIN-006 adds a rational base-exposure result for the conventional inverse model, preserving exactness without implicit rounding. Synthetic tests passed PR CI run #43594275808 on current PR HEAD `a47085efd19826d9fea6edcaf2245dd689a288e8` across Python 3.11–3.13 (129 tests per runtime / 387 matrix executions). Venue-specific qualification remains pending.
+
+
+### Bounded numeric and canonical wire increment
+
+NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context with preflight checks; the arbitrary-precision oracle remains unchanged. NX-REF-DOMAIN-008 adds strict versioned scalar decimal/rational wire formats. PR CI run #43595449902 passed exact PR HEAD `6200bae99e9b7ce865487a40312d0074c0e2a276` on Python 3.11–3.13 (172 tests per runtime / 516 executions). Production numeric limits, fixed-width representation, resource-safety proof and cross-language integration remain open.

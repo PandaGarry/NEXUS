@@ -3,7 +3,7 @@ name: Reference model conformance
 on:
   push:
     branches:
-      - foundation/domain-kernel-reference-v0
+      - 'foundation/**'
   pull_request:
   workflow_dispatch:
 
@@ -26,10 +26,31 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Test exact-decimal oracle
         working-directory: foundation/reference-model
-        run: python -m unittest -v
+        run: python -m unittest -v test_nexus_decimal.py
       - name: Test execution-gateway reference slice
         working-directory: foundation/reference-model/execution-gateway
         run: python -m unittest -v
       - name: Test egress authority handover reference
         working-directory: foundation/reference-model/egress-fencing
         run: python -m unittest -v
+      - name: Test instrument specification reference
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_instrument_spec.py
+      - name: Test instrument registry reference
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_instrument_registry.py
+      - name: Test dimensional financial types reference
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_domain_types.py
+      - name: Test instrument quantity unit models
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_instrument_units.py
+      - name: Test exact rational division and explicit quantization
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_exact_division.py
+      - name: Test bounded numeric context and preflight limits
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_bounded_numeric.py
+      - name: Test canonical numeric wire encoding
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_numeric_wire.py

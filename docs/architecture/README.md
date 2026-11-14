@@ -22,6 +22,10 @@
 ## Reference platform research
 - [NX-RESEARCH-006 — Reference Platform Fit Assessment](../research/NX-RESEARCH-006-reference-platform-fit-assessment.md) — In progress; NautilusTrader is a leading candidate, not selected; NEXUS risk, durable outbox, ledger and recovery boundaries remain independently owned.
 
+## Executable reference slices
+- [NX-REF-DOMAIN-001 — Instrument Specification Reference Model](NX-REF-DOMAIN-001-instrument-specification-reference-model.md) — Test-only immutable metadata snapshot and exact tick/lot/minimum-rule validator; not a production registry or order authority.
+- [NX-REF-DOMAIN-002 — Instrument Registry Reference Model](NX-REF-DOMAIN-002-instrument-registry-reference-model.md) — Test-only append-only in-memory history, version conflict detection and effective-time ordering; no persistence or distributed authority.
+
 ## Interface contracts
 - [NX-IF-001 — Canonical Trade Command & Risk Approval Contract](NX-IF-001-canonical-trade-command-risk-approval-contract.md) — Proposed; WP-A design artifact, not accepted or implemented.
 - [NX-IF-002 — Exposure Snapshot & Risk Reservation Contract](NX-IF-002-exposure-snapshot-risk-reservation-contract.md) — Proposed; WP-B design artifact, not accepted or implemented.
@@ -35,3 +39,14 @@ ADR, подготовленные в обсуждении, не считаютс
 
 - [NX-REF-EXEC-001 — Command Gateway Reference Conformance Slice](NX-REF-EXEC-001-command-gateway-reference-conformance.md) — Experimental Python/SQLite reference model; includes explicit stale-worker split-brain counterexample; fake adapter only; not production implementation.
 - [NX-REF-EXEC-002 — Dispatcher Authority Transfer and Egress Fencing](NX-REF-EXEC-002-dispatcher-authority-transfer-egress-fencing.md) — Proposed design for account-scoped authority transfer, independently enforced egress revocation, stale-state mutation rejection and fail-closed recovery; a separate test-only control-plane state-machine model checks transition ordering but does not implement network fencing.
+
+- [NX-REF-DOMAIN-003 — Dimensional Financial Types Reference Model](NX-REF-DOMAIN-003-dimensional-financial-types-reference-model.md) — test-only exact-decimal value types; production integration remains blocked.
+
+- [NX-REF-DOMAIN-004 — Instrument Quantity Unit Semantics](NX-REF-DOMAIN-004-instrument-quantity-unit-semantics.md) — explicit version-pinned unit mapping for spot, linear and conventional inverse contracts; inverse base exposure is represented exactly by NX-REF-DOMAIN-006; QUANTO remains unsupported.
+
+- [NX-REF-DOMAIN-005 — Exact Rational Division & Explicit Quantization](NX-REF-DOMAIN-005-exact-rational-division-and-quantization.md) — reduced rational intermediate results and explicit rounding modes; test-only.
+
+- [NX-REF-DOMAIN-006 — Inverse Contract Rational Exposure](NX-REF-DOMAIN-006-inverse-contract-rational-exposure.md) — inverse quote notional divided by price yields an exact rational base exposure; no implicit rounding.
+
+- [NX-REF-DOMAIN-007 — Bounded Exact Numeric Context](NX-REF-DOMAIN-007-bounded-exact-numeric-context.md) — test-only caller-configured limits and preflight checks; no production profile selected.
+- [NX-REF-DOMAIN-008 — Canonical Numeric Wire Encoding v1](NX-REF-DOMAIN-008-canonical-numeric-wire-encoding.md) — versioned scalar decimal/rational encodings with strict canonical parsing.
