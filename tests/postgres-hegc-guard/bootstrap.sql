@@ -288,6 +288,52 @@ ALTER FUNCTION nexus_control.set_scope_active(uuid, uuid[], uuid, boolean) OWNER
 REVOKE ALL ON FUNCTION nexus_control.set_scope_active(uuid, uuid[], uuid, boolean) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION nexus_control.set_scope_active(uuid, uuid[], uuid, boolean) TO nexus_membership_admin;
 
+CREATE FUNCTION nexus_control.set_service_principal(
+    p_account uuid,
+    p_current_scope_ids uuid[],
+    p_principal name,
+    p_service_kind text,
+    p_enabled boolean
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, nexus_control, pg_temp
+AS $function$
+DECLARE
+    v_rows integer;
+BEGIN
+    IF p_principal IS NULL
+       OR p_principal = session_user
+       OR p_service_kind NOT IN ('hegc', 'writer')
+       OR p_enabled IS NULL THEN
+        RAISE EXCEPTION 'invalid service-principal mutation' USING ERRCODE = '22023';
+    END IF;
+
+    -- Authorization-map mutations share the same account root guard as gate
+    -- and source writes, so a stale transaction cannot use revoked authority.
+    PERFORM nexus_control.acquire_scope_guards(p_account, p_current_scope_ids);
+
+    IF p_enabled THEN
+        INSERT INTO nexus_control.service_principal(principal, service_kind, account_id)
+        VALUES (p_principal, p_service_kind, p_account)
+        ON CONFLICT (principal, account_id, service_kind) DO NOTHING;
+    ELSE
+        DELETE FROM nexus_control.service_principal
+         WHERE principal = p_principal
+           AND service_kind = p_service_kind
+           AND account_id = p_account;
+        GET DIAGNOSTICS v_rows = ROW_COUNT;
+        IF v_rows <> 1 THEN
+            RAISE EXCEPTION 'service principal is not active' USING ERRCODE = '22023';
+        END IF;
+    END IF;
+END
+$function$;
+ALTER FUNCTION nexus_control.set_service_principal(uuid, uuid[], name, text, boolean) OWNER TO nexus_guard_owner;
+REVOKE ALL ON FUNCTION nexus_control.set_service_principal(uuid, uuid[], name, text, boolean) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION nexus_control.set_service_principal(uuid, uuid[], name, text, boolean) TO nexus_membership_admin;
+
 REVOKE ALL ON ALL TABLES IN SCHEMA nexus_control, nexus_source, nexus_hegc FROM nexus_membership_admin;
 
 REVOKE ALL ON ALL TABLES IN SCHEMA nexus_control, nexus_source, nexus_hegc FROM PUBLIC;
