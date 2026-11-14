@@ -33,7 +33,7 @@ The approval is bound to command ID/digest, account, venue, instrument, instrume
 
 ## 4. Test scenarios
 
-The test suite currently covers 23 deterministic cases:
+The test suite currently covers 24 deterministic cases:
 - valid approval and one adapter invocation;
 - tampered signature;
 - command payload mutation;
@@ -56,7 +56,8 @@ The test suite currently covers 23 deterministic cases:
 - non-canonical decimal rejection;
 - stale worker resumes after recovery: venue send still occurs without an egress fence, while conditional state transitions reject the late ACK and record it as a stale observation;
 - stale pre-send guard runs after recovery: conditional rejection preserves OUTCOME_UNKNOWN and records a dispatch observation instead of overwriting recovered state;
-- stale adapter timeout/error after recovery: conditional rejection preserves OUTCOME_UNKNOWN and records the stale error separately.
+- stale adapter timeout/error after recovery: conditional rejection preserves OUTCOME_UNKNOWN and records the stale error separately;
+- two independent recovery workers racing to recover one DISPATCHING command: one atomic recovery claim succeeds, the other observes no remaining claim.
 
 ## 5. Verification record
 
@@ -67,7 +68,7 @@ cd foundation/reference-model/execution-gateway
 python -m unittest -v
 ```
 
-GitHub Actions run [#43591389103](https://github.com/PandaGarry/NEXUS/actions/runs/43591389103) completed with **success** on exact PR HEAD `f2dc357e9c65f0c2e108e670c4211bb36ff1a162`. All three suites passed on Python 3.11, 3.12 and 3.13: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases), 23 gateway tests and 13 egress-handover tests in each runtime. The gateway suite includes the stale-worker egress counterexample and conditional guards for late ACK, pre-send rejection and adapter error paths.
+GitHub Actions run [#43591524490](https://github.com/PandaGarry/NEXUS/actions/runs/43591524490) completed with **success** on exact PR HEAD `4f836d0f9d1a43161927331c05e6cc19bb12072b`. All three suites passed on Python 3.11, 3.12 and 3.13: 11 exact-decimal tests (including 1,000 deterministic rational-oracle property cases), 24 gateway tests and 13 egress-handover tests in each runtime. The gateway suite includes the stale-worker egress counterexample and conditional guards for late ACK, pre-send rejection and adapter error paths, plus serialized recovery claims across two independent SQLite connections.
 
 This is CI verification of the checked-in reference model only. It is not production, multi-process, database durability, security or exchange-adapter verification.
 
