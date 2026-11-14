@@ -208,3 +208,15 @@ First-venue selection remains BLOCKED; no live trading is authorized.
 
 - [x] Harmonize NX-ADR-002 with NX-IF-001/002: durable reservation precedes capability issuance; single-use capability consumption is atomic with command/outbox commit; pre-egress attempt marker preserves conservative `DISPATCH_OUTCOME_UNKNOWN` exposure.
 - [ ] Owner/architecture/security acceptance of the harmonized design; implementation gates remain unchanged.
+
+
+## Conformance infrastructure — fixture contract
+
+- [x] Audit existing golden fixture formats and confirm they are not yet normalized under one schema.
+- [x] Publish NX-ARCH-005 with proposed fixture envelope, stable rejection classes, comparison rules, version policy and runner evidence protocol.
+- [ ] Owner review and approval of fixture contract and error taxonomy.
+- [ ] Migrate legacy fixture suites through explicit, tested converters; preserve v1 files unchanged.
+- [ ] Implement deterministic Python runner and machine-readable report.
+- [ ] Implement Rust adapter/differential runner only after G0D/G1 and toolchain/workspace approval.
+
+**Current blocker:** repository tree contains no Cargo manifest, Rust toolchain pin, Rust source or Rust runner. No implementation readiness is inferred.
