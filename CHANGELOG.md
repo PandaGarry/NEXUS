@@ -616,3 +616,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 
 - Corrected the exact-head workflow reference for SHA `7fb396df5f3e700adf0ad151c446e38930fdadb0` to [#43617626344](https://github.com/PandaGarry/NEXUS/actions/runs/43617626344).
 - Verified Python 3.11/3.12/3.13: 13 suites / 239 tests each (717 successful executions), no failures or Node.js 20 / `punycode` warnings.
+
+### NX-IF-004 G1 profile and Trusted Egress ownership aligned — 2026-11-14
+
+- RiskApprovalCapability now binds both StateEvidenceVector and ValuationInputVector.
+- Final compatibility checking is assigned to Trusted Egress at the attempt-scoped send-authorization gate, not generic Execution.
+- Canonical CBOR/SHA-256/COSE Ed25519 profile now references NX-ADR-008 / NX-IF-001; library, key custody and security acceptance remain open.
+- Documentation only; no signer, verifier, key or dispatch runtime implemented.
