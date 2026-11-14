@@ -74,3 +74,7 @@ See [NX-REF-EXEC-002 §4.5](NX-REF-EXEC-002-dispatcher-authority-transfer-egress
 ### Modular product boundaries proposal (2026-11-14)
 
 See [NX-ARCH-006](NX-ARCH-006-modular-product-boundaries-and-trust-isolation.md). The proposal defines bounded product domains, versioned contracts, deny-by-default module admission, workload identities, least-privilege capabilities, hard Demo/live separation, and a low-privilege Learning/Wiki domain. Modular monolith / limited trust-domain separation is preferred initially; arbitrary in-process plugin loading is not approved. Design only; no technology or deployment topology selected.
+
+### Platform extensibility and commercial entitlements (2026-11-14)
+
+See [NX-ARCH-007](NX-ARCH-007-platform-extensibility-and-entitlements.md). Defines the future product-domain portfolio, stable feature identifiers, entitlement lifecycle, quota model, contract compatibility, multi-tenancy readiness gates and the strict separation between product availability, commercial entitlement and security authorization. No plans, prices, payment provider, public SaaS or tenant runtime are selected.
