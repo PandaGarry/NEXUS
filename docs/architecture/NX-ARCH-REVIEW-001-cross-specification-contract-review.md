@@ -105,9 +105,9 @@ Each specification defines local recovery, but not the system-wide recovery barr
 
 ## 4. Proposed normative interface set
 
-The following contracts should be designed before implementation:
+The following contracts are required before implementation. WP-A now has a proposed design artifact; the remaining contracts are still to be designed:
 
-1. **CanonicalTradeCommand v1** — immutable, versioned execution intent with strict canonicalization and complete execution semantics.
+1. **CanonicalTradeCommand v1** — proposed in [NX-IF-001](NX-IF-001-canonical-trade-command-risk-approval-contract.md); not accepted, implemented or conformance-tested.
 2. **StateEvidenceVector v1** — provenance, freshness, quality, watermarks and version lineage for every risk input.
 3. **ExposureSnapshot v1** — positions + open orders + pending commands + reservations + unknown exposure, with exclusive bucket ownership and a monotonic snapshot version.
 4. **RiskReservation v1** — durable reservation lifecycle, capacity accounting, fencing, expiry and resolution evidence.
@@ -136,7 +136,7 @@ These are proposed design artifacts, not existing implemented schemas.
 
 | Work package | Scope | Exit criteria |
 |---|---|---|
-| WP-A Command & approval contracts | CanonicalTradeCommand, digest, approval capability, one-time validation | Field-level schemas, canonicalization test vectors, versioning and rejection rules |
+| WP-A Command & approval contracts | NX-IF-001 design draft exists | Owner/security decisions, canonicalization/digest selection, golden vectors and conformance evidence remain open |
 | WP-B Exposure & reservation | Exposure buckets, reservations, concurrent requests, unknown outcomes | State machine, ownership matrix, crash/race test matrix, no double count/omission invariant |
 | WP-C Execution ↔ Ledger | Durable event handoff, fill identity, posting idempotency | Event ownership, inbox/outbox contracts, replay and duplicate/correction tests |
 | WP-D Freshness & recovery | Evidence vector, watermarks, quarantine, startup barrier | Per-scope state model, fault scenarios, explicit recovery gates |
@@ -157,7 +157,7 @@ No numeric risk limits are invented. UNCONFIGURED remains a hard block for live 
 
 ## 8. Review disposition and verification limits
 
-**Disposition: BLOCKED pending WP-A through WP-E design closure and owner review.**
+**Disposition: BLOCKED. WP-A design draft published (NX-IF-001); WP-A acceptance and WP-B through WP-E design closure plus owner review remain outstanding.**
 
 Verified in this review:
 - all reviewed source documents were fetched from the named branch;
