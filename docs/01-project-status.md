@@ -714,3 +714,9 @@ Documentation-synchronized PR #16 HEAD `3d5181f1dc01441ebcd89145be2c0456608f501f
 ## NX-ARCH-REVIEW-008 — HEGC entrypoint and database privilege boundary
 
 Added a design cross-review for the EXECUTE-only HEGC runtime, separate NOLOGIN SECURITY DEFINER owners, authenticated session_user, per-generation Egress database principal, common scope guard and one-use grant lifecycle. The review adds an adversarial SQL privilege/search_path/RLS/role matrix. Official PostgreSQL 18 documentation was checked. The preferred entrypoint shape is a G1 candidate only; no database roles, functions, schemas or connections exist. Implementation acceptance remains open.
+
+## Logical-send boundary and exact CI — 2026-11-14
+
+The HaltEgressGate oracle now rejects a second logical venue-request initiation from the same consumed grant. SOCKET_INITIATED means the first transport write of the logical request, not full delivery or venue acceptance. Automatic HTTP/SDK/proxy/service-mesh retries, redirects and WebSocket reconnect replay for order mutations are disabled by default; any venue-specific exception requires documented endpoint idempotency proof and explicit approval. Partial/uncertain writes remain OUTCOME_UNKNOWN and require reconciliation.
+
+Code/test HEAD `fbccb65e3c75cbaf7081f6d1f6e02095fd53d8ee` passed workflow #43620606806: 264 tests per Python runtime (792 executions), egress-fencing 38 tests / HaltEgressGate 25. Documentation-synchronized branch HEAD `3a8099750dfb562af63901163a123b8849a8d425` also passed [workflow #43620613920](https://github.com/PandaGarry/NEXUS/actions/runs/43620613920) on all three Python versions. Subsequent changes are documentation-only. No venue transport library, socket instrumentation or live adapter is implemented.
