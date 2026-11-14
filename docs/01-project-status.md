@@ -126,4 +126,4 @@ NX-REF-DOMAIN-006 adds a rational base-exposure result for the conventional inve
 
 ### Bounded numeric and canonical wire increment
 
-NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context with preflight checks; the arbitrary-precision oracle remains unchanged. NX-REF-DOMAIN-008 adds strict versioned scalar decimal/rational wire formats. CI verification is pending. Production numeric limits, fixed-width representation, resource-safety proof and cross-language integration remain open.
+NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context with preflight checks; the arbitrary-precision oracle remains unchanged. NX-REF-DOMAIN-008 adds strict versioned scalar decimal/rational wire formats. PR CI run #43594861745 passed exact PR HEAD `2c0135f1205a27f070b0b6a835aa3c19e904e540` on Python 3.11–3.13 (166 tests per runtime / 498 executions). Production numeric limits, fixed-width representation, resource-safety proof and cross-language integration remain open.
