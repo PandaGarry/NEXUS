@@ -54,3 +54,6 @@ jobs:
       - name: Test canonical numeric wire encoding
         working-directory: foundation/reference-model
         run: python -m unittest -v test_numeric_wire.py
+      - name: Test venue-neutral financial math golden fixtures
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_financial_math_fixtures.py
