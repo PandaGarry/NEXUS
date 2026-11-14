@@ -465,3 +465,11 @@ Branch HEAD `88fcb30068507d85fb35802ca5d2195fd528c000` passed [workflow #4361605
 ## Exact-head CI after COSE_Sign1 wire-profile specification — 2026-11-14
 
 Branch HEAD `8d2c2f404782b718f1a3a422bb0ce918bb6b922d` passed [workflow #43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308): Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions total). No failures or Node.js 20 / `punycode` deprecation warnings. This is Python reference-model CI only; no COSE wire parser, signer, verifier, key registry or cross-language signature vector was executed.
+
+## Exact COSE profile and current stacked-PR verification — 2026-11-14
+
+- PR #16 current verified snapshot: `8d2c2f404782b718f1a3a422bb0ce918bb6b922d`, 33 changed files, 4,937 additions, 72 deletions and 322 commits in the stacked comparison (including parent history). It remains open/Draft/unmerged.
+- Re-verified the direct chain by exact base/head SHA equality: #1 → #2 → #3 → #4 → #5 → #6 → #7 → #9 → #10 → #11 → #12 → #13 → #14 → #16. PR #8 is a parallel branch from #7, not an ancestor. Every PR in the direct chain is currently open, Draft and unmerged; PR #16's immediate base is PR #14's exact head.
+- Exact-head workflow [#43616141308](https://github.com/PandaGarry/NEXUS/actions/runs/43616141308) passed on Python 3.11/3.12/3.13: 13 isolated suites / 239 tests per runtime, 717 successful executions total. All three logs inspected; no failures or Node.js 20 / `punycode` warnings.
+- COSE_Sign1 now has one exact application wire profile in NX-ADR-008: untagged, embedded payload, four-element array; protected alg=-19 and 1–64-byte kid only; empty unprotected map; deterministic-CBOR capability payload; exact protected/payload byte preservation; RFC 9052 §9 Sig_structure; fixed external AAD. Token metadata is untrusted until verification; key lookup is local and bounded.
+- Evidence remains Python reference-model-only. No Rust, CBOR/COSE runtime, PostgreSQL, Trusted Egress, external fence, venue adapter or live trading behavior was exercised. G0D/G1 implementation and evidence gates remain open.
