@@ -2,7 +2,9 @@
 
 This models a logical commit order only. It does NOT implement database locks,
 a durable halt store, a socket, a network fence, or a production kill switch.
-A GATE_COMMITTED attempt is treated as in-flight even before socket initiation.
+A GATE_COMMITTED attempt is in-flight even before socket initiation. Positive
+sender fencing prevents a future write but does not prove that no earlier
+socket side effect occurred; the outcome therefore remains unknown.
 """
 from __future__ import annotations
 
@@ -24,7 +26,7 @@ class HaltPhase(str, Enum):
 class AttemptPhase(str, Enum):
     GATE_COMMITTED = "GATE_COMMITTED"
     SOCKET_INITIATED = "SOCKET_INITIATED"
-    FENCED_NOT_SENT = "FENCED_NOT_SENT"
+    SENDER_FENCED_UNKNOWN = "SENDER_FENCED_UNKNOWN"
 
 
 @dataclass
@@ -88,7 +90,8 @@ class HaltEgressGate:
         """An earlier gate-committed attempt may start while halt is propagating.
 
         It cannot start after HALTED acknowledgement. The halt acknowledgement
-        is blocked until this attempt is initiated or its sender is fenced.
+        is blocked until this attempt is initiated or its sender is positively
+        fenced. Fencing does not establish that no earlier side effect occurred.
         """
         attempt = self._attempt(attempt_id)
         if attempt.phase is not AttemptPhase.GATE_COMMITTED:
@@ -97,16 +100,21 @@ class HaltEgressGate:
             raise GateDenied("halt was acknowledged; stale socket initiation denied")
         attempt.phase = AttemptPhase.SOCKET_INITIATED
 
-    def fence_unstarted_sender(self, *, attempt_id: str, receipt: str) -> None:
-        """Record test-fixture evidence that a gate-committed sender is fenced."""
+    def fence_sender(self, *, attempt_id: str, receipt: str) -> None:
+        """Record test-fixture evidence that the sender can no longer initiate.
+
+        The absence of an initiation report is not proof that the socket call
+        never happened. The attempt therefore remains OUTCOME_UNKNOWN and
+        reconciliation-required after the halt is acknowledged.
+        """
         attempt = self._attempt(attempt_id)
         self._require_text(receipt, "fence receipt")
         if attempt.phase is not AttemptPhase.GATE_COMMITTED:
-            raise GateDenied("only an unstarted gate-committed attempt can be fenced here")
+            raise GateDenied("only a gate-committed attempt without an initiation report can be fenced here")
         if self.phase not in (HaltPhase.HALT_PENDING, HaltPhase.HALTING):
             raise GateDenied("sender fencing is only part of halt containment")
-        # The receipt is an opaque test fixture, not a verified production attestation.
-        attempt.phase = AttemptPhase.FENCED_NOT_SENT
+        # Opaque test fixture only; this is not a verified production attestation.
+        attempt.phase = AttemptPhase.SENDER_FENCED_UNKNOWN
 
     def acknowledge_halt(self) -> None:
         if self.phase is not HaltPhase.HALTING:
@@ -126,12 +134,15 @@ class HaltEgressGate:
         self.phase = HaltPhase.HALTED
 
     def reconciliation_required(self) -> tuple[str, ...]:
-        """Socket-initiated attempts remain externally uncertain after halt ack."""
+        """Initiated or fenced-without-report attempts remain externally uncertain."""
         return tuple(
             sorted(
                 item.attempt_id
                 for item in self.attempts.values()
-                if item.phase is AttemptPhase.SOCKET_INITIATED
+                if item.phase in (
+                    AttemptPhase.SOCKET_INITIATED,
+                    AttemptPhase.SENDER_FENCED_UNKNOWN,
+                )
             )
         )
 
