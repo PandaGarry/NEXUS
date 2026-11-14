@@ -92,6 +92,6 @@ The suite includes positive vectors and negative dimensional/instrument-identity
 
 These fixtures are not financial-operation conformance evidence and do not pass G0/G1. Existing readiness gates remain unchanged.
 
-## 6. First CI evidence (intermediate exact head)
+## 6. CI evidence
 
-GitHub Actions push run [#43596630780](https://github.com/PandaGarry/NEXUS/actions/runs/43596630780) passed exact commit `af7949f183389c25fa6ce5c4ac3648c1dd4ae851` on Python 3.11, 3.12 and 3.13. Each runtime executed 11 isolated suites with 179 tests: the ten existing suites (172 tests) plus this package's 7 tests. All three jobs completed successfully. This proves the Python reference suite behavior on that exact source tree only; it is not production or venue conformance evidence. A fresh run is required for the final PR head after documentation close-out.
+GitHub Actions run [#43596710483](https://github.com/PandaGarry/NEXUS/actions/runs/43596710483) passed exact code/test commit `9d0bf48c3ddc66facf408d60b1c64beb971eebb6` on Python 3.11, 3.12 and 3.13. Each runtime executed 11 isolated suites with 179 tests: ten existing suites (172 tests) plus this package's 7 tests. All three jobs completed successfully. The subsequent PR metadata/documentation close-out is documentation-only and does not modify the tested source, test or workflow files. This is Python reference evidence only; it is not production, cross-language or venue conformance evidence.
