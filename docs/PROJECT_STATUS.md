@@ -10,7 +10,7 @@ This is a dated evidence snapshot. Every status is scoped to the cited commit, C
 | Item | Status | Evidence / limitation (checked 2026-11-15) |
 |---|---|---|
 | Public repository and review access | Verified | [Repository](https://github.com/PandaGarry/NEXUS); default branch `main` |
-| Main branch project overview | In Progress | [PR #20](https://github.com/PandaGarry/NEXUS/pull/20), head `ef78b792509c5b57726a239c8027cf641d1c8388`; documentation proposal is not on `main` |
+| Main branch project overview | In Progress | [PR #20](https://github.com/PandaGarry/NEXUS/pull/20) remains open and unmerged; review-hub proposal is not on `main` (checked 2026-11-15) |
 | Legacy architecture/documentation chain | In Progress | [Open PR list](https://github.com/PandaGarry/NEXUS/pulls); each PR must be checked for current base/head before relying on it |
 | Independent recorder spike | In Progress | [PR #19](https://github.com/PandaGarry/NEXUS/pull/19), head `7ec12122937c84f281f7a913b4d607ae6bbc68a6`, based directly on `main`, Draft/open |
 | Recorder unit CI | Verified | [Run 43643265811](https://github.com/PandaGarry/NEXUS/actions/runs/43643265811) passed Python 3.11/3.12/3.13 on code revision `12ef58ad7c4b50210d9fa0e9f310628a61068504`; later PR #19 commits in this review changed documentation only |
