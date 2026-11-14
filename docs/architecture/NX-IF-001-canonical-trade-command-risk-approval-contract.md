@@ -232,23 +232,33 @@ Warnings or confidence scores MUST NOT override DENY or REQUIRE_REVIEW. No defau
 
 A capability MUST NOT contain exchange API keys, reusable venue signatures or broad permissions such as “trade any instrument on this account”.
 
-### 8.2 Validation by Execution
+### 8.2 Execution-side preflight validation (non-authorizing)
 
-Immediately before dispatch, Execution MUST verify:
-1. signature and trusted issuer/key status;
-2. audience matches this service;
+Before handing a persisted command/attempt reference to Trusted Egress, Execution MUST independently verify:
+1. signature and trusted issuer/key status using public verification material only;
+2. audience matches the configured Execution service;
 3. command ID and recomputed digest match byte-for-byte;
 4. command type, environment, account, venue, market and instrument match;
 5. instrument spec and policy versions remain permitted;
-6. approval is not expired and clock uncertainty is within configured bound;
+6. approval is not expired and clock uncertainty is within the configured bound;
 7. nonce/approval has not already been consumed;
 8. reservation is active and bound to this command;
-9. valuation_input_vector_id/version matches the signed capability and durable reservation; every referenced immutable input remains within its source-specific freshness, clock-uncertainty, quality, correction and policy-defined drift bounds;
-10. the exact StateEvidenceVector/FreshnessPolicy and RecoveryBarrier requirements remain compatible with the requested operation class;
-11. halt epoch matches current authoritative epoch and scope is not halted;
-12. command/outbox payload being dispatched is exactly the approved canonical payload.
+9. valuation_input_vector_id/version matches the signed capability and durable reservation;
+10. the exact StateEvidenceVector/FreshnessPolicy and RecoveryBarrier references are present and compatible with the requested operation class;
+11. the observed halt epoch is current at preflight time and the scope is not reported halted;
+12. command/outbox payload being handed to Egress is exactly the approved canonical payload.
 
-Any failed check rejects dispatch and records a stable reason code. A valid signature alone is insufficient.
+Any failed check rejects the attempt and records a stable reason code. A valid signature alone is insufficient.
+
+These checks are preflight and defense in depth. They do not authorize a venue-side effect and cannot guarantee that state remains unchanged after the check. Execution MUST NOT hold venue credentials or a direct venue network route. It submits an immutable command/attempt reference to Trusted Egress; it does not open the venue socket.
+
+### 8.2.1 Trusted Egress final send-authorization gate
+
+Immediately before socket initiation, Trusted Egress MUST independently reload and validate the persisted command, consumed Risk approval, active reservation, bound StateEvidenceVector and ValuationInputVector, source-watermark/correction manifest, venue eligibility revision, current halt generation, dispatcher/egress fence generation and exact attempt identity. It MUST NOT trust Execution's earlier preflight result as the final authorization.
+
+The final validation and one-use EgressBoundaryAuthorization commit occur in a short attempt-scoped transaction. This commit is the sole send-authorization linearization point and MUST serialize against the same authoritative halt-state generation as a halt transition. Only Trusted Egress may initiate the venue socket write; no queue hop, remote source fetch or unbounded asynchronous preparation may occur between the final gate and socket initiation.
+
+If the halt transition commits first, Egress denies the attempt. If the final gate commits first, the attempt is in-flight and remains potentially sent; the reservation is retained and the attempt is reconciled. The Egress boundary MUST NOT acknowledge the newer HALTED epoch while that pre-halt authorized attempt could still resume and initiate a socket write, unless its sender is positively fenced. See NX-IF-005 and NX-REF-EXEC-002.
 
 ### 8.3 Single-use consumption and crash handling
 
