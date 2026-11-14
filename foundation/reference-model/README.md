@@ -92,3 +92,9 @@ The decimal wire parser now accepts an optional max_scale budget; if omitted, it
 ## Numeric wire integer-digit budget — 2026-11-14
 
 The decimal/rational wire parser applies a fixed **512 decimal-digit maximum** to every encoded integer coefficient, scale, numerator and denominator, independently of the caller's max_chars input-size budget. This bound is explicit and identical across supported Python runtimes; values beyond it fail with NUMERIC.RESOURCE_LIMIT before integer conversion. The bound is a parser resource limit, not a financial magnitude, precision, Risk or production numeric policy. The test suite covers the 512-digit accepted boundary and 513-digit rejection for both decimal and rational encodings.
+
+## Halt / final Egress authorization race
+
+The `egress-fencing` package now includes `HaltEgressGate`, a test-only oracle for the final EgressBoundaryAuthorization / halt-epoch ordering. Its 11 tests cover halt-first denial, gate-first in-flight treatment, paused sender acknowledgement blocking, positive sender fencing, store outage, single-use attempt IDs and reconciliation obligations after socket initiation.
+
+This is a sequential state-machine oracle only. It does not test real database serialization, process scheduling, sockets, network paths or production fencing.
