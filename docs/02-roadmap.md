@@ -907,3 +907,13 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Inspect all three logs for failures and deprecated action runtimes; none found.
 - [ ] Re-run exact-head CI after the signed-64-bit epoch-exhaustion grant-denial guard.
 - [ ] Prove the HEGC SERIALIZABLE read/write protocol with all gate-critical writers and actual socket-boundary fencing.
+
+## HaltEgressGate 18-case hardening and code/test CI
+
+- [x] Fix duplicate halt requests during store outage so an already committed HALTING/HALTED epoch is not downgraded.
+- [x] Assert sender-fenced attempts retain reservations and remain OUTCOME_UNKNOWN without trusted socket-initiation evidence.
+- [x] Add two regressions for duplicate halt requests during store outage (HALTING and HALTED).
+- [x] Pass exact code/test HEAD `2e94edd73f8933f0d510eed940452316ec5b8832` on workflow #43618796109: 257 tests/runtime on Python 3.11/3.12/3.13 (771 executions).
+- [x] Verify 31 egress-fencing tests (13 authority-handover + 18 HaltEgressGate).
+- [ ] Re-run CI after final documentation synchronization; current PR head is docs-only beyond the tested code/test SHA.
+- [ ] Prove the same semantics with real PostgreSQL concurrent transactions, HEGC grant persistence, instrumented sockets and independently verified sender fencing.
