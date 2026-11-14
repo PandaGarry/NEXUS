@@ -886,3 +886,18 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove the Risk projection's source lineage and freshness requirements cover every exposure-affecting venue/Ledger/manual event before G1 acceptance.
 
 **Disposition:** design protocol clarified in NX-ADR-008 §5.3, NX-IF-002 §6.4 and OD-09. No PostgreSQL instance/schema, reservation service or concurrency runtime was implemented. G1 remains gated on exact-version evidence.
+
+## 18.41 Field-level data lineage and projection governance — 2026-11-14
+
+- [x] Inspect actual field definitions in NX-IF-001..005 and security asset/trust boundaries in NX-SEC-001.
+- [x] Map TradeIntent, CanonicalTradeCommand, RiskDecision, RiskApprovalCapability, RiskScope, ExposureItem, ExposureSnapshot, RiskReservation, ExecutionEvent, StateEvidenceVector, FreshnessPolicy, RecoveryCase, RecoveryBarrier, HaltState, EmergencyActionPlan and EmergencyCommand fields.
+- [x] Distinguish opaque-but-linkable IDs, financial values, source evidence references, security metadata, personal/identity data and true SECRET material.
+- [x] Define source-owner projection restrictions for Analytics, Portfolio, Notifications, Strategy, Demo, Learning, Billing and future Support.
+- [x] Explicitly record that NX-IF-003 does not enumerate the complete Ledger journal-leg schema; no fields were invented.
+- [x] Record retention/legal basis and field-level classification as proposals requiring owner/security approval.
+- [ ] Obtain source-owner/security approval of every field/combination classification and projection allowlist.
+- [ ] Author Ledger journal and Analytics/Portfolio projection contracts before any read API or query service.
+- [ ] Define retention, deletion, rebuild, audit custody and declassification controls with legal/accounting review.
+- [ ] Add row/field leakage, cross-account, source-lineage, stale-watermark, partial-coverage and forbidden-field tests at actual boundaries.
+
+**Disposition:** NX-ARCH-REVIEW-006 published. Field inventory is source-grounded; classifications and retention are proposed, not accepted. No API, schema, database table, grant or runtime was implemented.
