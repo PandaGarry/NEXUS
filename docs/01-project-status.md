@@ -245,3 +245,12 @@ The egress recommendation is one account-scoped credential-owning boundary; ordi
 ## Persistence and trusted-egress option analysis — 2026-11-14
 
 NX-REF-EXEC-002 §4.5 now compares persistence and egress topologies. Candidate model: Risk and Command use separately owned local ACID transactions (all-scope reservation commit before capability issuance; atomic single-use consume + command/outbox at Command); Ledger remains independently atomic/idempotent. Candidate egress boundary is one account-scoped credential/socket-owning workload with workers denied direct venue routes and takeover gated on positive external fencing. A DB lease/local epoch is explicitly insufficient to stop a stale process already past its final check. OD-08/09/10/12 remain open. Documentation/design only; no provider, DB, crypto, proxy, host or deployment selection and no implementation. No new CI evidence is claimed for this documentation increment.
+
+
+
+### Exact-head CI verification after persistence/egress analysis — 2026-11-14
+
+- Documentation analysis head verified: `3187a69e443157ac3e66b874b4dcbb29588ddc70`.
+- GitHub Actions run [#43606550889](https://github.com/PandaGarry/NEXUS/actions/runs/43606550889) completed successfully on that exact head.
+- Three jobs passed: Python 3.11, 3.12 and 3.13. Each executed 13 isolated reference-model suites with counts 11, 24, 13, 17, 12, 16, 18, 18, 32, 12, 15, 28 and 21 = 237 tests per runtime; 711 successful test executions total.
+- This CI run verifies the existing Python reference-model suites at the exact documentation-analysis head. It does not test the newly documented transaction alternatives, database isolation, production egress topology, external host/network fencing, Rust, venue behavior or live safety.
