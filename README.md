@@ -6,6 +6,8 @@
 
 ## Навигация
 - [Устав проекта](docs/00-project-charter.md)
+- [Рабочий регламент AI Project Lead](docs/working-agreement.md)
+- [Ритм исследований и ревью](docs/operations/research-cadence.md)
 - [Текущий статус](docs/01-project-status.md)
 - [Дорожная карта](docs/02-roadmap.md)
 - [Архитектура и ADR](docs/architecture/README.md)
