@@ -215,6 +215,8 @@ First-venue selection remains BLOCKED; no live trading is authorized.
 - [x] Audit existing golden fixture formats and confirm they are not yet normalized under one schema.
 - [x] Publish NX-ARCH-005 with proposed fixture envelope, stable rejection classes, comparison rules, version policy and runner evidence protocol.
 - [x] Classify legacy fixture migration paths and identify where rejection classes or expected behavior require reference-derived review.
+- [x] Specify initial operation identifiers, typed result forms and current reference exception mapping; document numeric-wire's catch-all error limitation.
+- [ ] Review and approve operation registry and stable error mappings before schema/runner implementation.
 - [ ] Owner review and approval of fixture contract and error taxonomy.
 - [ ] Migrate legacy fixture suites through explicit, tested converters; preserve v1 files unchanged.
 - [ ] Implement deterministic Python runner and machine-readable report.
