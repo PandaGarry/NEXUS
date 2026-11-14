@@ -564,3 +564,11 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Implement no executable schema or policy engine until G0D approval and relevant OD-08/09/10/12 decisions.
 
 **Disposition:** design cross-review complete; acceptance not granted. No permission, grant, runtime or dependency activated.
+
+
+## 18.16 NX-ARCH-009 / NX-ARCH-REVIEW-003 exact-head regression evidence
+
+- Exact branch HEAD `c906f855b0084eb12582e5adc8e1f7992dd2a94a` passed GitHub Actions [#43612365312](https://github.com/PandaGarry/NEXUS/actions/runs/43612365312).
+- Python 3.11, 3.12 and 3.13 jobs all succeeded. Each runtime executed 13 isolated reference-model suites and 237 tests; total 711 successful test executions.
+- This verifies the existing Python reference-model regression workflow only. It does not execute NX-ARCH-009's proposed capability catalog, schema, grants, authorization service, module runtime, isolation, data-classification controls, billing provider flow, Rust or venue integration.
+- NX-ARCH-009 and NX-ARCH-REVIEW-003 remain PROPOSED / DESIGN ONLY; no capability is approved or active. CAP-R-02..09 remain open. G0D/G1 remain open.
