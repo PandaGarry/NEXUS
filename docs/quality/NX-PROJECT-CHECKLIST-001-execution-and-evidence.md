@@ -1575,6 +1575,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [x] Verify official Bybit V5 public feed contracts and record findings/limitations in NX-RESEARCH-013.
 - [x] Record that Bybit is a technical research candidate only; no v1 venue/account/product eligibility decision is made.
 - [x] Keep PR #16 unchanged; create a separate child workstream for public data capture/replay.
+- [x] Open separate Draft PR [#17](https://github.com/PandaGarry/NEXUS/pull/17), based on PR #16; exact documentation-only head `5d4932b69eddb88672b147cf024ae8d7313cd2e5`.
 - [ ] Pin Rust toolchain and qualify the minimum dependency set/licences before implementation.
 - [ ] Implement public WebSocket supervisor, heartbeat, reconnect generation and bounded buffering.
 - [ ] Implement full-depth snapshot/delta synchronization exactly per Bybit `u`/`seq` rules; invalidate the book on any gap/reset.
