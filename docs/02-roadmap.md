@@ -14,7 +14,7 @@
 
 ## Phase 1 — Core Architecture (Blocked)
 - [ ] Утвердить NX-ADR-001 Unified Market Event Contract.
-- [ ] Утвердить NX-ADR-004 Market Data Recovery State Machine.
+- [ ] Утвердить NX-ADR-002 Execution Integrity & Reconciliation. (ADR drafted; owner review required.)\n- [ ] Утвердить NX-ADR-003 Simulation Fidelity & Strategy Validation. (ADR drafted; owner review required.)\n- [ ] Утвердить NX-ADR-004 Market Data Recovery State Machine.
 - [ ] Утвердить NX-ADR-005 Instrument Specification & Exact Arithmetic.
 - [ ] Утвердить NX-ARCH-001 целевую архитектуру и deployment topology.
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
