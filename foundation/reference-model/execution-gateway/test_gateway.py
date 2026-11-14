@@ -240,6 +240,60 @@ class GatewayTests(unittest.TestCase):
         self.assertEqual(outcomes, ["ACKNOWLEDGED"])
         self.assertEqual(len(blocking.calls), 1)
 
+    def test_known_split_brain_counterexample_stale_worker_sends_after_recovery(self):
+        entered_adapter = threading.Event()
+        release_adapter = threading.Event()
+
+        class PausedBeforeNetworkSend(FakeVenueAdapter):
+            def send(inner_self, payload):
+                entered_adapter.set()
+                if not release_adapter.wait(timeout=5):
+                    raise TimeoutError("test release timed out")
+                inner_self.calls.append(payload)
+                return "venue-order-stale-worker"
+
+        stale_adapter = PausedBeforeNetworkSend()
+        stale_store = SQLiteOutbox(self.path)
+        stale_gateway = CommandGateway(stale_store, stale_adapter, verification_key=KEY,
+                                       clock=lambda: self.now,
+                                       current_halt_epoch=lambda _account: self.epoch)
+        recovery_store = SQLiteOutbox(self.path)
+        recovery_gateway = CommandGateway(recovery_store, FakeVenueAdapter(),
+                                          verification_key=KEY, clock=lambda: self.now,
+                                          current_halt_epoch=lambda _account: self.epoch)
+        self.gateway.persist_approved(self.cmd, self.approval)
+        outcomes = []
+
+        def stale_dispatch():
+            try:
+                outcomes.append(stale_gateway.dispatch("cmd-001"))
+            except Exception as exc:
+                outcomes.append(type(exc).__name__)
+
+        worker = threading.Thread(target=stale_dispatch)
+        worker.start()
+        try:
+            self.assertTrue(entered_adapter.wait(timeout=3),
+                            "stale worker did not reach the pre-network boundary")
+            self.assertEqual(recovery_gateway.recover_after_restart(), ["cmd-001"])
+            self.assertEqual(recovery_gateway.state("cmd-001"), "OUTCOME_UNKNOWN")
+            release_adapter.set()
+            worker.join(timeout=5)
+        finally:
+            release_adapter.set()
+            worker.join(timeout=5)
+            stale_store.close()
+            recovery_store.close()
+
+        self.assertFalse(worker.is_alive())
+        # This is an intentional counterexample test: current code is unsafe.
+        # It records that a stale worker can still send and overwrite recovery state.
+        self.assertEqual(len(stale_adapter.calls), 1)
+        self.assertEqual(outcomes, ["ACKNOWLEDGED"])
+        self.assertEqual(self.store.db.execute(
+            "SELECT state FROM commands WHERE command_id='cmd-001'").fetchone()[0],
+            "ACKNOWLEDGED")
+
     def test_duplicate_approval_and_command_replay_rejected(self):
         self.gateway.persist_approved(self.cmd, self.approval)
         with self.assertRaises(Denied):
