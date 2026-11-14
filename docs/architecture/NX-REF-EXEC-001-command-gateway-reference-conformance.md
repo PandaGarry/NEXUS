@@ -33,7 +33,7 @@ The approval is bound to command ID/digest, account, venue, instrument, instrume
 
 ## 4. Test scenarios
 
-The test suite currently covers 17 deterministic cases:
+The test suite currently covers 18 deterministic cases:
 - valid approval and one adapter invocation;
 - tampered signature;
 - command payload mutation;
@@ -49,6 +49,7 @@ The test suite currently covers 17 deterministic cases:
 - approval expiry after persistence;
 - unsupported CANCEL command;
 - timeout after possible send;
+- crash after simulated venue acceptance but before ACK persistence;
 - duplicate approval/command replay;
 - non-canonical decimal rejection.
 
@@ -61,7 +62,7 @@ cd foundation/reference-model/execution-gateway
 python -m unittest -v
 ```
 
-GitHub Actions run [#43588330433](https://github.com/PandaGarry/NEXUS/actions/runs/43588330433) completed with **success** on current exact HEAD `31c99f0b4a0591a41d97afa265145567cf1ddbd3`. Both suites passed on Python 3.11, 3.12 and 3.13: 10 exact-decimal tests and 17 gateway tests in each runtime.
+GitHub Actions run [#43588330433](https://github.com/PandaGarry/NEXUS/actions/runs/43588330433) completed with **success** on current exact HEAD `31c99f0b4a0591a41d97afa265145567cf1ddbd3`. Both suites passed on Python 3.11, 3.12 and 3.13: 10 exact-decimal tests and 18 gateway tests in each runtime.
 
 This is CI verification of the checked-in reference model only. It is not production, multi-process, database durability, security or exchange-adapter verification.
 
