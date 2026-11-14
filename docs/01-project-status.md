@@ -24,6 +24,8 @@
 - Server trade parser имеет отдельные event-time/coverage расхождения для Kraken Spot, Coinbase Spot и Lighter; browser parser в этих местах отличается. Детали и пути — в NX-RESEARCH-002.
 - Open Interest recorder существует для восьми venue/market families, polling 15s, minute storage; arithmetic использует f64.
 - Общая Tradoor Product-модель не содержит authoritative lot step/minQty/minNotional/contract multiplier/settlement/margin rules; Binance parser извлекает tick decimals, но не переносит LOT_SIZE в общий каталог. Contract-size conversion в Order Flow выборочная и имеет fallback 1.0. Не использовать для live order validation.
+- В Hyperliquid Product parser `szDecimals` (precision quantity) передаётся в `price_decimals`: подтверждённый source-level semantic mismatch. См. NX-RESEARCH-002.
+- Подготовлены NX-ADR-004 и NX-ADR-005 со статусом PROPOSED; они требуют owner review и не являются принятыми решениями.
 - Server liquidation collector охватывает 11 perpetual venues, с 24h retention.
 - Funding-rate collection и private authenticated order execution остаются UNKNOWN в рамках текущего аудита.
 
