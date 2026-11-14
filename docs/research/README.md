@@ -25,3 +25,4 @@
 - CLAIMED — заявлено документацией, но независимо не подтверждено.
 - UNKNOWN — доказательств недостаточно.
 - NOT TESTED — runtime/CI/test не запускался в этой проверке.
+- [NX-RESEARCH-003 — First-Venue Shortlist](NX-RESEARCH-003-first-venue-shortlist.md) — preliminary official-documentation comparison of Coinbase and Kraken; no venue selected pending actual jurisdiction, product and account eligibility.

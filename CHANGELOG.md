@@ -31,3 +31,4 @@
 ### Notes
 - Это документационный baseline, не программный релиз.
 - Прототипирование остаётся заблокированным до прохождения readiness gates.
+- NX-RESEARCH-003: preliminary official-docs comparison of Coinbase and Kraken as conditional first-venue candidates; no venue selected, account eligibility and exact API capabilities remain unverified.

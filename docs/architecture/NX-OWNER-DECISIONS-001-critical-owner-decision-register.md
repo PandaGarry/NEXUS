@@ -1,7 +1,7 @@
 # NX-OWNER-DECISIONS-001 — Critical Owner Decision Register
 
 **Date:** 2026-11-14  
-**Status:** PROPOSED — decision register for owner review; no decision in this document is accepted  
+**Status:** PROPOSED — register with owner-directed decisions OD-01, OD-04 and OD-15 accepted; remaining decisions open/deferred  
 **Scope:** Phase 0 architecture closure and safe implementation-readiness gates  
 **Baseline:** WP-E head `c44510810fca9de4a79d5728235b46ef6784770b`  
 **Related:** NX-ARCH-REVIEW-001, NX-IF-001..005, NX-ADR-001..005, NX-ARCH-001, ТЗ-NX-001..006, NX-SEC-001
@@ -18,7 +18,7 @@ Each decision has:
 - the gate at which it becomes mandatory;
 - the safe behavior while it remains unresolved.
 
-Recommendations are not decisions. A decision becomes ACCEPTED only after explicit owner approval and the corresponding ADR/specification update.
+Recommendations are not decisions. On 2026-11-14 the owner explicitly delegated conservative technical baseline choices to the technical lead (“proceed as you think is right”). This delegation is recorded for bounded architecture-scope decisions only; it does not authorize live trading, credentials, risk-limit values, PR merges or irreversible financial actions. Accepted decisions below are limited to the selected first-release scope and previously explicit product constraints.
 
 ## 2. Decision priority and gates
 
@@ -33,10 +33,10 @@ A decision may be deferred to a later gate only if the earlier phase can safely 
 
 | ID | Decision | Proposed conservative starting point | Required by | If unresolved |
 |---|---|---|---|---|
-| OD-01 | First-release venue/account scope | One venue and one dedicated account/subaccount; do not begin with multi-venue portfolio aggregation | G0 | No venue adapter certification or final account-scope architecture |
+| OD-01 | First-release venue/account scope | **ACCEPTED:** one venue + one dedicated account/subaccount for v1; no multi-venue portfolio aggregation in the first release | G0 | Closed for v1 scope; exact venue selection remains OD-03 |
 | OD-02 | Product and account mode | One explicitly selected product family and one documented position/account mode; defer mixed spot/derivative and cross-margin semantics | G0 | Unsupported modes remain out of scope |
 | OD-03 | Venue shortlist and API capabilities | Select venue only after official API review for public data, private orders/fills, balances/positions, history retention, cancel/amend/reduce semantics and rate limits | G0/G2 | Capability remains UNKNOWN; affected operation disabled |
-| OD-04 | Risk-scope hierarchy | Start with account/subaccount scope; add portfolio and cross-venue scopes only when their aggregation and transaction semantics are proven | G0 | Parent-scope authorization remains UNCONFIGURED |
+| OD-04 | Risk-scope hierarchy | **ACCEPTED:** account/subaccount is the sole initial hard-limit and reservation scope; strategy/instrument constraints may be narrower child constraints; no cross-venue or shared portfolio scope in v1 | G0 | Closed for v1 scope; unsupported parent scopes remain disabled |
 | OD-05 | Manual/external activity | Detect and quarantine external/manual orders and positions; do not attribute them to a strategy; choose later whether manual trading is prohibited or routed through NEXUS | G1/G2 | Unknown external exposure blocks affected risk-increasing scope |
 | OD-06 | Numeric risk policy | Owner must set hard limits for order notional/quantity, gross/net exposure, leverage/margin, concentration, daily loss, drawdown and halt triggers; no numeric defaults are invented | G3 | Live risk-increasing authorization is blocked |
 | OD-07 | Valuation, collateral and FX | Approve mark/index/FX source hierarchy, freshness, haircuts, collateral eligibility and inverse/quanto calculation policy; initially avoid cross-currency/cross-venue collateral if not fully modeled | G1/G3 | Material valuation remains UNKNOWN/PARTIAL; risk approval blocked |
@@ -47,7 +47,37 @@ A decision may be deferred to a later gate only if the earlier phase can safely 
 | OD-12 | Emergency operations governance | Assign halt/resume roles, step-up method, dual-control scopes, protective-order policy, permitted emergency actions and whether any offline emergency plan is allowed | G1/G3 | Halt remains available; emergency order workflows remain disabled unless specifically pre-approved |
 | OD-13 | Venue emergency capabilities | Certify native amend/cancel-replace, cancel-all scope, reduce-only/close-position, partial-fill races, rate-limit priority and reconciliation behavior per exact account mode | G2/G3 | Unsupported/unknown emergency command classes remain disabled |
 | OD-14 | Simulation and strategy-validation target | Select a layered approach only after matching fidelity needs: historical research, book replay, execution simulation and paper/shadow are separate acceptance targets | G1 | No profitability or execution-fidelity claim; no live strategy promotion |
-| OD-15 | Deployment and availability objectives | Confirm server-side autonomous execution boundary, Desktop+Web shared backend/state, operator access model, backup/restore, RTO/RPO and isolation zones | G0/G1 | No production topology freeze or production-readiness claim |
+| OD-15 | Deployment and availability objectives | **PARTIALLY ACCEPTED:** server-side autonomous execution; Desktop+Web are clients of one backend and authoritative state. Hosting provider/region, operator access details, backup/restore and RTO/RPO remain open | G0/G1 | Core topology invariant closed; production deployment remains blocked |
+
+
+
+## 3A. Owner-directed decisions recorded on 2026-11-14
+
+The owner delegated conservative technical baseline choices to the technical lead and explicitly instructed the project to proceed using professional judgment. The following bounded decisions are therefore recorded as ACCEPTED for NEXUS v1 architecture scope:
+
+### OD-01 — Single venue and dedicated account
+
+- **Decision:** NEXUS v1 targets exactly one exchange venue and one dedicated account or subaccount.
+- **Excluded from v1 baseline:** simultaneous multi-venue execution, shared cross-venue collateral, and portfolio-wide exposure aggregation across venues.
+- **Rationale:** minimizes adapter, reconciliation, instrument-specification, ledger, risk-reservation and operational failure domains while proving the complete end-to-end lifecycle.
+- **Trade-off:** multi-venue diversification and consolidated portfolio controls are deferred; this is an explicit scope reduction, not a permanent product limitation.
+- **Review trigger:** after one venue/account passes adapter certification, recovery, accounting and risk conformance; multi-venue scope requires a new ADR and owner review.
+- **Authority:** owner instruction in the project conversation dated 2026-11-14 delegating technical choices and authorizing the conservative recommended baseline.
+
+### OD-04 — Account/subaccount as the initial risk boundary
+
+- **Decision:** the initial authoritative hard-limit, exposure and reservation scope is the dedicated account/subaccount. Instrument and strategy limits may be implemented as narrower child constraints, but no cross-venue/shared portfolio parent is enabled in v1.
+- **Rationale:** aligns the risk reservation transaction boundary with one independently reconciled account and avoids pretending that independent venue accounts share atomic collateral or state.
+- **Fail-closed rule:** any unconfigured parent scope or external activity that can affect the account's economic exposure remains UNKNOWN and blocks affected risk-increasing authorization.
+- **Review trigger:** only after multi-account aggregation, valuation, collateral and atomic reservation semantics have separate evidence.
+
+### OD-15 — Server-authoritative autonomous runtime and shared clients
+
+- **Decision:** ACCEPTED for the core architecture: autonomous execution, market-data capture, recovery, Risk and Ledger state run server-side; Web and Desktop are clients of one backend and one authoritative account/portfolio state. Execution continues when both clients are closed.
+- **Still open:** hosting provider, deployment region, operational staffing, backup/restore objectives, RPO/RTO and production availability targets.
+- **Authority:** this restates the user's earlier explicit Desktop + Web and Autonomous product decisions; it does not authorize production deployment.
+
+No other OD item is inferred to be accepted by the delegation. In particular, venue/product selection, numeric risk limits, signing algorithms, financial accounting policy, emergency operator roles and live-trading authorization remain open and fail closed.
 
 ## 4. Recommended sequencing
 
@@ -65,7 +95,7 @@ This order is a recommendation, not a rigid dependency where independent work mu
 
 ## 5. Non-negotiable interim defaults
 
-Until the owner explicitly changes them through an accepted decision:
+Until an accepted decision explicitly changes them:
 
 - no live credentials or live order placement;
 - no withdrawal/transfer permissions for trading keys;
@@ -106,6 +136,6 @@ This register is considered administratively complete when:
 
 ## 8. Verification status
 
-This is a proposed owner-decision register derived from the current WP-A..WP-E design drafts. It does not claim that the owner has made any of the listed decisions. No code, tests, builds, benchmarks, venue connections, credentials, orders, risk-limit changes or live trading were performed.
+This register derives from the current WP-A..WP-E design drafts. OD-01 and OD-04 are accepted under the owner's explicit delegation dated 2026-11-14; OD-15 is partially accepted based on earlier explicit product decisions. All other choices remain open/deferred and are not inferred. No code, tests, builds, benchmarks, venue connections, credentials, orders, risk-limit changes or live trading were performed.
 
 **Prototype Readiness remains BLOCKED pending owner decisions and evidence-based gates.**

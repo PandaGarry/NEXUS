@@ -13,11 +13,15 @@
 - [ ] Сопоставить Order Flow формулы с поведенческими эталонами.
 - [ ] Зафиксировать дефекты, неизвестные свойства и ограничения.
 
+- [x] Prepare bounded first-venue candidate review (NX-RESEARCH-003): Coinbase and Kraken remain conditional candidates; no selection until jurisdiction/product eligibility and exact API capability are verified.
+
 ## Phase 1 — Core Architecture (Blocked)
 
 - [x] Publish bounded WP-A..WP-E interface design drafts (NX-IF-001..005).
 - [x] Consolidate critical owner decisions and readiness dependencies in NX-OWNER-DECISIONS-001.
-- [ ] Obtain explicit owner decisions for G0 architecture scope before freezing the architecture baseline.
+- [x] Accept bounded v1 scope: one venue + dedicated account/subaccount; account/subaccount risk boundary; server-side autonomous runtime; shared Desktop+Web backend (OD-01/04/15, owner-directed 2026-11-14).
+- [ ] Select first venue and product/account mode after confirming legal/account eligibility and completing official capability review (OD-02/03).
+- [ ] Obtain remaining G0 owner decisions before freezing the architecture baseline.
 - [ ] Obtain G1/G2 decisions and conformance evidence before read-only/paper and sandbox/shadow gates respectively.
 - [ ] Obtain all G3 risk/security/emergency approvals before any limited-live consideration.
 - [ ] Утвердить NX-ADR-001 Unified Market Event Contract. (Draft published; owner review and schema conformance design review required.)
