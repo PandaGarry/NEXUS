@@ -880,3 +880,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Implement disposable HEGC/DB test harness only after G0D/OD-12 acceptance.
 - [ ] Prove actual socket boundary reporting, role separation, grant replay prevention and positive process/host/network fencing.
 - [ ] Prove halt acknowledgement cannot precede resolution/isolation of every gate-committed attempt.
+
+## Sender-fence outcome preservation
+
+- [x] Treat positive sender fencing as prevention of future writes only.
+- [x] Keep an attempt OUTCOME_UNKNOWN and reservation held when no trusted socket-initiation report exists.
+- [x] Prohibit DEFINITELY_NOT_SENT classification or reservation release from fence evidence alone.
+- [ ] Verify the revised 12-test oracle on all supported Python runtimes.
+- [ ] Prove initiation reports, external fence attestation and venue reconciliation at the real Egress boundary.
