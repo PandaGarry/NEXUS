@@ -1,7 +1,7 @@
 # Текущий статус проекта
 
 **Дата среза:** 2026-11-14  
-**Общий статус:** BLOCKED — Prototype Readiness Gate не пройден  
+**Общий статус:** BLOCKED — Prototype Readiness Gate не пройден; bounded v1 scope decisions OD-01/04 accepted  
 **Текущая фаза:** Phase 0 — Foundation Audit / Architecture Synthesis
 
 | Область | Статус | Комментарий |
@@ -21,7 +21,7 @@
 | Independent Risk Engine specification | PROPOSED | ТЗ-NX-005 опубликовано; policy registry, exposure calculator, approval signer, reservations, kill-switch controller и conformance tests не реализованы/не проверены |
 | Portfolio & Financial Ledger specification | PROPOSED | ТЗ-NX-006 опубликовано; journal, posting engine, accounting projections, reconciliation, replay and restore tests не реализованы/не проверены |
 | Cross-specification interfaces | BLOCKED | NX-ARCH-REVIEW-001 выявил 12 design gaps. WP-A NX-IF-001, WP-B NX-IF-002, WP-C NX-IF-003, WP-D NX-IF-004 и WP-E NX-IF-005 опубликованы как PROPOSED design drafts; owner/security/accounting/operations review, open decisions and conformance evidence remain outstanding |
-| Target architecture | PROPOSED | NX-ARCH-001 опубликован; owner review и согласование TBD deployment decisions требуются |
+| Target architecture | PROPOSED / bounded scope decisions accepted | NX-ARCH-001 remains proposed; owner-directed v1 scope accepted: one venue + dedicated account/subaccount, account-level risk boundary, server-side autonomous runtime, shared Desktop+Web backend. Venue/product/account-mode and production deployment decisions remain open |
 | Prototype readiness | BLOCKED | Не начинать прототипирование |
 
 
@@ -39,7 +39,7 @@
 - [NX-IF-003 — Execution Event & Ledger Posting Contract](architecture/NX-IF-003-execution-event-ledger-posting-contract.md) — WP-C proposed contract for canonical fill identity, durable outbox/inbox, atomic journal posting, corrections and projection-watermark exposure handoff; implementation and conformance tests NOT STARTED.
 - [NX-IF-004 — State Evidence, Freshness & Recovery Barrier Contract](architecture/NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md) — WP-D proposed contract for source evidence vectors, freshness policies, recovery cases/quarantine and scoped restart/reconciliation barriers; implementation and conformance tests NOT STARTED.
 - [NX-IF-005 — Emergency Operations, Halt & Risk-Reduction Authorization Contract](architecture/NX-IF-005-emergency-operations-halt-risk-reduction-contract.md) — WP-E proposed contract for monotonic halt epochs, command-class authorization, bounded emergency plans, protective-order handling and controlled resume; implementation and conformance tests NOT STARTED.
-- [NX-OWNER-DECISIONS-001 — Critical Owner Decision Register](architecture/NX-OWNER-DECISIONS-001-critical-owner-decision-register.md) — OD-01..OD-15 grouped by G0–G3; proposed recommendations only, no owner decisions accepted.
+- [NX-OWNER-DECISIONS-001 — Critical Owner Decision Register](architecture/NX-OWNER-DECISIONS-001-critical-owner-decision-register.md) — OD-01 and OD-04 accepted under owner delegation; OD-15 partially accepted from prior product decisions; remaining OD items open/deferred by G0–G3.
 - [NX-ADR-002 — Execution Integrity & Reconciliation](architecture/NX-ADR-002-execution-integrity-reconciliation.md)
 - [NX-ADR-003 — Simulation Fidelity & Strategy Validation](architecture/NX-ADR-003-simulation-fidelity-strategy-validation.md)
 - [NX-ADR-004 — Market Data Recovery State Machine](architecture/NX-ADR-004-market-data-recovery-state-machine.md)
