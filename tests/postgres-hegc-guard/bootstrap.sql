@@ -75,16 +75,6 @@ DECLARE
     v_scope uuid;
     v_rows integer;
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM nexus_control.service_principal sp
-        WHERE sp.principal = session_user
-          AND sp.account_id = p_account
-          AND sp.service_kind IN ('hegc', 'writer')
-    ) THEN
-        RAISE EXCEPTION 'unauthorized guard caller' USING ERRCODE = '42501';
-    END IF;
-
     IF p_scope_ids IS NULL
        OR cardinality(p_scope_ids) < 1
        OR cardinality(p_scope_ids) > 16
@@ -96,13 +86,20 @@ BEGIN
     END IF;
 
     -- Root/account guard is always acquired before deriving and locking children.
-    UPDATE nexus_control.scope_guard
+    UPDATE nexus_control.scope_guard g
        SET generation = generation + 1
-     WHERE account_id = p_account
-       AND scope_id = p_account;
+     WHERE g.account_id = p_account
+       AND g.scope_id = p_account
+       AND EXISTS (
+            SELECT 1
+              FROM nexus_control.service_principal sp
+             WHERE sp.principal = session_user
+               AND sp.account_id = p_account
+               AND sp.service_kind IN ('hegc', 'writer')
+       );
     GET DIAGNOSTICS v_rows = ROW_COUNT;
     IF v_rows <> 1 THEN
-        RAISE EXCEPTION 'missing root guard' USING ERRCODE = '55000';
+        RAISE EXCEPTION 'unauthorized caller or missing root guard' USING ERRCODE = '42501';
     END IF;
 
     SELECT array_agg(sm.scope_id ORDER BY (sm.scope_id = p_account) DESC, uuid_send(sm.scope_id))
