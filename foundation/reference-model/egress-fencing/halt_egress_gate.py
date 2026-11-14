@@ -37,6 +37,7 @@ class AttemptPhase(str, Enum):
 class Attempt:
     attempt_id: str
     authorized_epoch: int
+    binding_digest: str
     phase: AttemptPhase = AttemptPhase.GATE_COMMITTED
     reservation_held: bool = True
 
@@ -94,22 +95,40 @@ class HaltEgressGate:
         self.phase = HaltPhase.HALTING
         return self.epoch
 
-    def authorize_attempt(self, *, attempt_id: str, observed_epoch: int) -> None:
-        """Model the final gate commit; successful IDs are single-use."""
+    def authorize_attempt(
+        self, *, attempt_id: str, observed_epoch: int, binding_digest: str
+    ) -> Attempt:
+        """Model idempotent final-gate commit on a stable attempt ID.
+
+        Exact retries return the original persisted attempt even if the halt
+        epoch has since advanced. Changed bindings conflict; they never mint a
+        replacement grant. Store unavailability prevents status resolution.
+        """
         self._require_text(attempt_id, "attempt_id")
+        self._require_text(binding_digest, "binding_digest")
         if not isinstance(observed_epoch, int) or isinstance(observed_epoch, bool):
             raise GateDenied("observed_epoch must be an integer")
         if not self.store_available:
             raise GateDenied("authoritative halt store is unavailable")
+
+        existing = self.attempts.get(attempt_id)
+        if existing is not None:
+            if (
+                existing.authorized_epoch == observed_epoch
+                and existing.binding_digest == binding_digest
+            ):
+                return existing
+            raise GateDenied("attempt ID conflicts with changed authorization binding")
+
         if self.phase is not HaltPhase.ACTIVE:
             raise GateDenied("halt is pending, propagating or enforced")
         if self.epoch >= MAX_HALT_EPOCH:
             raise GateDenied("halt epoch exhausted; fail closed")
         if observed_epoch != self.epoch:
             raise GateDenied("stale halt epoch")
-        if attempt_id in self.attempts:
-            raise GateDenied("attempt authorization is single-use")
-        self.attempts[attempt_id] = Attempt(attempt_id, self.epoch)
+        attempt = Attempt(attempt_id, self.epoch, binding_digest)
+        self.attempts[attempt_id] = attempt
+        return attempt
 
     def consume_grant(self, *, attempt_id: str) -> None:
         """Durably consume the one-use grant before the socket side effect."""
