@@ -36,6 +36,7 @@
 - [ ] Проверить latency, queue position, partial fills, slippage и adverse selection.
 
 ## Phase 4 — Risk & Execution (Blocked)
+- [ ] Утвердить ТЗ-NX-004 Autonomous Execution Engine. (Draft published; venue shortlist, kill-switch playbook and persistence decisions require owner review.)
 - [ ] Утвердить NX-ADR-002 Execution Integrity & Reconciliation.
 - [ ] Утвердить независимый Risk Engine и NX-SEC-001 threat model.
 - [ ] Проверить kill switch, limits, secrets, audit и disaster recovery.
