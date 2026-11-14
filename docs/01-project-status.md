@@ -506,3 +506,7 @@ Published [NX-ARCH-REVIEW-007](architecture/NX-ARCH-REVIEW-007-risk-scope-serial
 ## Exact-head CI after NX-ARCH-REVIEW-007 — 2026-11-14
 
 Branch HEAD `e7c5461ae7ccea4f29fc77461db91d44566aba36` passed [workflow #43616908979](https://github.com/PandaGarry/NEXUS/actions/runs/43616908979): Python 3.11/3.12/3.13 each passed 13 isolated reference suites / 239 tests (717 successful executions). All three logs show no failures or Node.js 20 / `punycode` deprecation warnings. This is Python reference-model regression only; no PostgreSQL concurrency harness, database, Rust, CBOR/COSE, Trusted Egress, venue or live path was exercised.
+
+## Numeric-wire parser resource determinism — 2026-11-14
+
+The Python reference numeric-wire parser now enforces a fixed 512-decimal-digit limit for every integer field (decimal coefficient/scale and rational numerator/denominator), separately from the overall max_chars limit. Oversized values fail as NUMERIC.RESOURCE_LIMIT before interpreter integer conversion. Regression tests cover 512-digit acceptance and 513-digit rejection. This removes normal acceptance dependence on Python's configurable integer-string conversion threshold. The value is a reference parser resource budget only—not a production numeric profile, financial limit or Risk policy. Rust parity remains open.
