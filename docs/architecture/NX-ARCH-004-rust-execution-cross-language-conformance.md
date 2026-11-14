@@ -77,7 +77,16 @@ The command gateway accepts only a canonical command envelope linked to:
 - halt/authority epoch;
 - unique command and attempt identifiers.
 
-The gateway persists the command and reservation before dispatch becomes possible. Approval consumption and reservation transition must be atomic within the selected durable transaction boundary. The production store and transaction semantics have not been selected.
+The ordering is normative and follows NX-IF-001/002:
+
+1. Canonicalize the immutable command and compute its digest.
+2. Risk evaluates current evidence and atomically commits the required `PRE_DISPATCH_RESERVATION` across all affected scopes.
+3. Only after that durable reservation commit may Risk issue a short-lived `RiskApprovalCapability` bound to the exact command digest, reservation, scope and versions.
+4. The command coordinator validates the capability and atomically consumes its single-use authorization while committing the command and outbox record. The reservation remains held in `PRE_DISPATCH_RESERVATION`; it is not released or counted twice.
+5. The dispatcher durably claims the outbox attempt and records the transition to `DISPATCH_OUTCOME_UNKNOWN` before the external side effect. Immediately before send, trusted egress revalidates the approval-consumption evidence, active reservation, payload, current halt epoch, eligibility revision/epoch and dispatcher fence.
+6. Only the trusted egress boundary can transmit the persisted canonical payload.
+
+NX-IF-002 requires the reservation commit to precede approval issuance; NX-IF-001 requires single-use approval consumption to be durable and atomic with dispatch eligibility. NX-ADR-002's concise sequence (approval then order/outbox persistence) must be reconciled with these explicit WP-A/WP-B requirements before acceptance by making the reservation-before-approval stage explicit. The production store and transaction semantics have not been selected.
 
 ### 4.3 Trusted egress
 
@@ -192,7 +201,11 @@ No production workspace is created by this documentation-only change. If the cur
 - [ ] Architecture index, roadmap, status, checklist and changelog are updated.
 - [ ] No live credentials, private account connectivity, orders, transfers, deposits, withdrawals, production deployment or live-trading authorization.
 
-## 11. Current disposition
+## 11. Bounded cross-contract review note
+
+A targeted readback of NX-IF-001..005, NX-ADR-002/007 and NX-SEC-001 found that the proposed trust/authority boundaries are directionally consistent. One integration detail requires explicit harmonization: NX-IF-002 mandates durable reservation before RiskApprovalCapability issuance, while the short sequence in NX-ADR-002 begins with obtaining approval and then persisting the outbox. NX-ARCH-004 adopts the more explicit IF-001/IF-002 ordering and records ADR-002 reconciliation as an acceptance item. This is a documentation sequencing gap, not evidence of a runtime defect; no implementation exists to test.
+
+## 12. Current disposition
 
 **DOCUMENTATION DESIGN DRAFT ONLY.** This change does not add Rust source, Cargo workspace, production numeric types, production adapter, signer, persistence, trusted egress, venue connectivity or executable trading capability.
 
