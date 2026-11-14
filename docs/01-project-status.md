@@ -122,3 +122,8 @@ NX-REF-DOMAIN-005 adds reduced rational division, exact terminating-decimal conv
 ### Inverse contract exposure increment
 
 NX-REF-DOMAIN-006 adds a rational base-exposure result for the conventional inverse model, preserving exactness without implicit rounding. Synthetic tests passed PR CI run #43594275808 on current PR HEAD `a47085efd19826d9fea6edcaf2245dd689a288e8` across Python 3.11–3.13 (129 tests per runtime / 387 matrix executions). Venue-specific qualification remains pending.
+
+
+### Bounded numeric and canonical wire increment
+
+NX-REF-DOMAIN-007 adds a separate caller-configured bounded reference context with preflight checks; the arbitrary-precision oracle remains unchanged. NX-REF-DOMAIN-008 adds strict versioned scalar decimal/rational wire formats. CI verification is pending. Production numeric limits, fixed-width representation, resource-safety proof and cross-language integration remain open.
