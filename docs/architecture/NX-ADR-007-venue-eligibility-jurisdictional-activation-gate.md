@@ -103,6 +103,20 @@ A missing item blocks live activation. The gate must return a machine-readable d
 - A change in legal rules, venue terms, KYC status, account region, residence, nationality where relevant, product, settlement asset, funding rail, sanctions status or API permission triggers revalidation and may automatically move the scope to `SUSPENDED`.
 - No geolocation/IP inference, VPN detection, address substitution or nationality guess is sufficient to grant or revoke legal eligibility. Verified evidence and formal review control the decision.
 
+### 6.1 Egress-bound eligibility fencing
+
+A simple preflight read of the Eligibility Gate is insufficient because eligibility may be suspended after command authorization but before the network side effect.
+
+The production design MUST:
+- bind `eligibility_record_id`, revision, scope digest, monotonically increasing scope epoch and expiry to the canonical live command;
+- verify the record at command admission and again at the final trusted egress boundary immediately before the external side effect;
+- make the egress boundary the sole holder of live venue credentials; no strategy, AI, adapter worker or stale dispatcher may retain a direct path to the venue;
+- serialize eligibility-epoch changes with dispatch so that a stale command cannot be sent after a suspension/revocation epoch has advanced;
+- reject if the current record revision/epoch differs, the record is expired, or the trusted eligibility state is unavailable;
+- preserve OUTCOME_UNKNOWN and reconcile if the external send may already have occurred; never assume a suspension cancels an accepted venue order.
+
+A local cached flag, process lease or caller-side check is not a security boundary. This requirement reuses the same stale-worker/egress-fencing principle already identified in the execution reference work.
+
 ## 7. Suspensions and emergency operations
 
 Suspension is not permission to continue trading under a different label.
@@ -165,7 +179,29 @@ Deferred. This may be the eventual outcome for a particular owner/product/legal 
 
 No defaults are selected for these decisions.
 
-## 11. Acceptance criteria for this ADR
+## 11. Cross-document consistency review (2026-11-14)
+
+Reviewed exact branch versions:
+- NX-IF-001, blob `8324c9b1f9a221fbb505c89c008a4e99d77741c7`;
+- NX-IF-002, blob `7205cefb1d9fe76283f089ca272199087fd4e9ec`;
+- NX-IF-003, blob `62d93913d88f0c0af4eb5ad623160b9770acac76`;
+- NX-IF-004, blob `abc4e5808c129d4556c1dfe622d18d6a8710b82c`;
+- NX-IF-005, blob `648543cd89b196cd0ee1d78d9b81d73257364b1d`;
+- NX-SEC-001, blob `06c5ee9d6c5ec0e5b7549e9d3cf0a5a872328e01`;
+- NX-ADR-002, blob `7107feec894ab4f8e4bf4e210153551b3555b541`.
+
+**Result: no blocking contradiction found.** The following integration points must be addressed before implementation:
+- NX-IF-001 must carry an eligibility evidence reference separately from the Risk approval; Risk must not become the legal eligibility authority.
+- NX-IF-002 exposure and reservation semantics remain independent of legal eligibility.
+- NX-IF-003 ledger posting ownership is unchanged.
+- NX-IF-004 should include eligibility evidence freshness/revalidation state where it affects system readiness.
+- NX-IF-005 must define operation-specific permissions after eligibility suspension; no cancel/close/flatten permission is presumed.
+- NX-SEC-001 requires the eligibility evidence vault and reviewer/operator access controls to protect identity and legal records.
+- NX-ADR-002 / fenced egress must verify the current eligibility revision/epoch at the final side-effect boundary and prevent stale dispatchers from bypassing suspension.
+
+This review is an architecture consistency pass, not owner acceptance, legal opinion, conformance evidence or implementation verification.
+
+## 12. Acceptance criteria for this ADR
 
 - [x] Separate legal/venue eligibility from Risk Engine authorization and adapter capability.
 - [x] Define immutable scope-bound eligibility record and evidence groups.
@@ -179,4 +215,4 @@ No defaults are selected for these decisions.
 - [ ] Conformance scenarios and tests for missing, stale, expired, mismatched, suspended and revoked records.
 - [ ] Production identity/evidence storage, signing, authorization and operator role design.
 
-**Disposition:** PROPOSED. No implementation, API key, order or live capability is authorized. G0/G1 remain blocked.
+**Disposition:** PROPOSED. Cross-document consistency review completed with no blocking contradiction; owner/legal review and conformance evidence remain open. No implementation, API key, order or live capability is authorized. G0/G1 remain blocked.
