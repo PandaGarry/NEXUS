@@ -710,3 +710,7 @@ NX-RESEARCH-012 and NX-SEC-001 now explicitly note that a standalone SECURITY DE
 ## Exact current branch-head CI — 2026-11-14
 
 Documentation-synchronized PR #16 HEAD `3d5181f1dc01441ebcd89145be2c0456608f501f` passed [workflow #43619941084](https://github.com/PandaGarry/NEXUS/actions/runs/43619941084): Python 3.11/3.12/3.13, 13 isolated suites / 263 tests per runtime, 789 successful executions total. Egress-fencing passed 37 tests, including 24 HaltEgressGate cases. All job logs were inspected; no failures or Node.js 20 / `punycode` deprecation warnings. The code/test source HEAD remains `c2350f7`; later changes are documentation/research synchronization only. This is not Rust, PostgreSQL concurrency, HEGC runtime, socket or network-fence evidence.
+
+## NX-ARCH-REVIEW-008 — HEGC entrypoint and database privilege boundary
+
+Added a design cross-review for the EXECUTE-only HEGC runtime, separate NOLOGIN SECURITY DEFINER owners, authenticated session_user, per-generation Egress database principal, common scope guard and one-use grant lifecycle. The review adds an adversarial SQL privilege/search_path/RLS/role matrix. Official PostgreSQL 18 documentation was checked. The preferred entrypoint shape is a G1 candidate only; no database roles, functions, schemas or connections exist. Implementation acceptance remains open.
