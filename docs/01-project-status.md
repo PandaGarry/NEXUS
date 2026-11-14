@@ -15,6 +15,7 @@
 | Security threat model | Drafted / Proposed | NX-SEC-001 сохранён; owner review, deployment-specific analysis и security verification не выполнены |
 | Exact arithmetic / instrument specs | ADR proposed / implementation not started | NX-ADR-005 drafted; требует owner review и последующих golden tests. Блокер реализации сохраняется |
 | Unified market event contract | PROPOSED | NX-ADR-001 опубликован; owner review и conformance design review требуются |
+| Professional Order Flow specification | PROPOSED | ТЗ-NX-002 опубликовано; формулы, golden datasets и реализация не проверялись |
 | Target architecture | PROPOSED | NX-ARCH-001 опубликован; owner review и согласование TBD deployment decisions требуются |
 | Prototype readiness | BLOCKED | Не начинать прототипирование |
 
@@ -29,6 +30,7 @@
 - [NX-ADR-004 — Market Data Recovery State Machine](architecture/NX-ADR-004-market-data-recovery-state-machine.md)
 - [NX-ADR-005 — Instrument Specification & Exact Arithmetic](architecture/NX-ADR-005-instrument-specification-exact-arithmetic.md)
 - [ТЗ-NX-001 — Market Data Infrastructure](specifications/TZ-NX-001-market-data-infrastructure.md)
+- [ТЗ-NX-002 — Professional Order Flow](specifications/TZ-NX-002-professional-order-flow.md) — функциональные требования и критерии корректности; implementation NOT STARTED
 - [NX-SEC-001 — Threat Model & Credential Isolation](security/NX-SEC-001-threat-model-credential-isolation.md)
 
 Эти документы сохранены и повторно прочитаны из GitHub; они не утверждены владельцем и не являются реализацией.
