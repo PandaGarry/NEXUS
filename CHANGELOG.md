@@ -352,3 +352,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Verified the previous Node.js 20 and `punycode` deprecation warnings are absent from all three job logs.
 - Audited the stacked PR ancestry: #13 -> #14 -> #16; each child base SHA equals the parent head SHA. No base retarget, merge or stack rewrite performed.
 - This verifies existing Python reference models and CI action execution only. It does not establish Rust conformance, transitive dependency integrity, production persistence/egress safety, venue behavior or live readiness.
+
+
+### Numeric wire parser resource-boundary hardening — 2026-11-14
+
+- Added an explicit decimal max_scale option; absent an override, the reference parser bounds scale by the caller-supplied max_chars budget.
+- Normalized interpreter integer-string conversion budget failures into the stable NUMERIC.RESOURCE_LIMIT rejection for decimal coefficient/scale and rational numerator/denominator parsing.
+- Added adversarial tests for extreme scales and oversized integer strings.
+- Exact code/test HEAD b0fb99d4505ba5eb405788fee8ce447f28437479 passed [workflow #43614612130](https://github.com/PandaGarry/NEXUS/actions/runs/43614612130): 13 suites / 239 tests on each of Python 3.11, 3.12 and 3.13 (717 successful executions).
+- Test-only reference hardening; no production numeric profile, normalized fixture runner or Rust implementation was introduced.
