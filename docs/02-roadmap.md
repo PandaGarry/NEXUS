@@ -455,3 +455,14 @@ Review publication does not establish implementation readiness or production gua
 - [ ] Integrate the stack in parent-first order after bounded review; retain Draft until review and required approval are complete.
 
 The current CI result proves only the checked-in Python reference suites. It does not close G0D/G1 or authorize Rust production code, database selection, trusted egress, venue connectivity or live execution.
+
+
+## Numeric wire parser resource boundary
+
+- [x] Bound decimal wire scale independently from encoded syntax; default to the explicit input character budget and permit a stricter caller-supplied maximum.
+- [x] Convert interpreter integer digit-budget failures into stable resource-limit outcomes.
+- [x] Add decimal/rational adversarial regressions and verify 239 tests per Python runtime on the exact code/test HEAD.
+- [ ] Add language-neutral fixture cases for scale and integer resource limits after NX-ARCH-005 profile semantics are accepted.
+- [ ] Implement the normalized parser/runner and Rust differential conformance only after G0D/G1 readiness gates.
+
+This hardening is confined to the Python reference oracle; it does not define production numeric limits.
