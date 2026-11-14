@@ -247,6 +247,17 @@ For multiple scopes, either one atomic transaction covers all affected scopes or
 - A stale writer, duplicate event or lower fencing token cannot overwrite a newer reservation/snapshot state.
 - Reservation and approval IDs are never reused.
 
+### 6.4 G1 PostgreSQL evaluation reference
+
+For the G1 evaluation target, [NX-ADR-008 §5.3](NX-ADR-008-g1-technical-baseline-storage-and-capability-signing.md) defines the preferred serialization protocol:
+
+- Risk owns its exposure projection, source watermarks, scope-state version and reservation aggregates. Ledger remains authoritative for journal posting but MUST NOT write Risk-owned scope state directly.
+- Risk applies Ledger/venue/external exposure events through an idempotent Risk inbox. Projection updates and reservation commits update the same Risk-owned scope-state record in local Risk transactions; this is the common serialization point.
+- A multi-scope reservation locks/updates every required pre-provisioned scope-state record in deterministic canonical scope-ID byte order and commits all reservations/capacity totals/idempotency state atomically.
+- Missing/ambiguous scope state or stale/incomplete source watermarks fail closed. Scope records are provisioned before the reservation hot path.
+- PostgreSQL SERIALIZABLE is the G1 default evaluation level, combined with state-version/CAS and unique constraints. SQLSTATE 40001/40P01 requires whole-transaction retry from a fresh snapshot within a finite budget. Ambiguous commit is resolved by the same stable request identity and digest.
+- This is a proposed implementation reference, not a selected schema or verified concurrency guarantee. Exact PostgreSQL patch, queries, role grants and test evidence remain open.
+
 ## 7. Event handling and edge cases
 
 ### 7.1 Concurrent commands
