@@ -95,3 +95,14 @@ These fixtures are not financial-operation conformance evidence and do not pass 
 ## 6. CI evidence
 
 GitHub Actions run [#43596710483](https://github.com/PandaGarry/NEXUS/actions/runs/43596710483) passed exact code/test commit `9d0bf48c3ddc66facf408d60b1c64beb971eebb6` on Python 3.11, 3.12 and 3.13. Each runtime executed 11 isolated suites with 179 tests: ten existing suites (172 tests) plus this package's 7 tests. All three jobs completed successfully. The subsequent PR metadata/documentation close-out is documentation-only and does not modify the tested source, test or workflow files. This is Python reference evidence only; it is not production, cross-language or venue conformance evidence.
+
+## 7. Deterministic property checks and expanded CI evidence
+
+Beyond the four fixed golden vectors, the test suite performs 650 seeded property cases:
+- 250 spot notional products cross-checked against independent `fractions.Fraction` arithmetic;
+- 200 partial-fill aggregation cases checking permutation invariance and exact partition invariance (splitting one fill into two same-price fills);
+- 200 inverse exposure cases checking the exact identity `base_exposure × price = quote_notional`.
+
+GitHub Actions run [#43596851904](https://github.com/PandaGarry/NEXUS/actions/runs/43596851904) passed exact code/test commit `0f0b44e927aacf67d6f7a5678b160b3e3c6088e0` on Python 3.11, 3.12 and 3.13. The dedicated fixture suite now contains 10 tests; the complete matrix contains 182 tests per runtime across 11 isolated suites. All three jobs passed. Subsequent documentation close-out does not alter the tested source/test/workflow files.
+
+These seeded properties are bounded mathematical checks, not fuzzing, formal verification, production resource-safety evidence or venue conformance.
