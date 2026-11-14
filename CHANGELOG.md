@@ -717,3 +717,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Trusted Egress must independently verify the RiskApprovalCapability signature and exact command/reservation/evidence/audience/expiry/single-use bindings; the HEGC grant cannot replace Risk approval.
 - HEGC grant issuance is idempotent by attempt ID; changed bindings conflict and ambiguous responses resolve through the same ID.
 - No HEGC runtime or production security proof exists.
+
+### HEGC authority and halt-gate reference model hardened — 2026-11-14
+
+- Selected HEGC as sole logical writer of halt and final Egress authorization records; no venue credentials, socket or Risk signing key.
+- Restricted Egress to one-use attempt-scoped grants and removed direct control-state write authority.
+- Added test-only model cases for pending halt/store recovery, in-flight attempts, sender fencing, repeated halt idempotency and signed-64-bit epoch exhaustion.
+- Production HEGC, PostgreSQL schema/API, actual socket instrumentation and external fencing remain unimplemented.
