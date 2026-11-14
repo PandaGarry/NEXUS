@@ -10,9 +10,9 @@ This is a dated evidence snapshot. Every status is scoped to the cited commit, C
 | Item | Status | Evidence / limitation (checked 2026-11-15) |
 |---|---|---|
 | Public repository and review access | Verified | [Repository](https://github.com/PandaGarry/NEXUS); default branch `main` |
-| Main branch project overview | In Progress | [PR #20](https://github.com/PandaGarry/NEXUS/pull/20), head `226de9531813095043e63df2174b78ee10cd7b2f`; documentation proposal is not on `main` |
+| Main branch project overview | In Progress | [PR #20](https://github.com/PandaGarry/NEXUS/pull/20), head `08225eb9f5342a6bb3b92d6e9e0eeb7da382c5cf`; documentation proposal is not on `main` |
 | Legacy architecture/documentation chain | In Progress | [Open PR list](https://github.com/PandaGarry/NEXUS/pulls); each PR must be checked for current base/head before relying on it |
-| Independent recorder spike | In Progress | [PR #19](https://github.com/PandaGarry/NEXUS/pull/19), head `0f2de4fa8a57b3296d3701e3a0f0ff2d7a79d66b`, based directly on `main`, Draft/open |
+| Independent recorder spike | In Progress | [PR #19](https://github.com/PandaGarry/NEXUS/pull/19), head `7ec12122937c84f281f7a913b4d607ae6bbc68a6`, based directly on `main`, Draft/open |
 | Recorder unit CI | Verified | [Run 43643265811](https://github.com/PandaGarry/NEXUS/actions/runs/43643265811) passed Python 3.11/3.12/3.13 on code revision `12ef58ad7c4b50210d9fa0e9f310628a61068504`; later PR #19 commits in this review changed documentation only |
 | Live public exchange capture | Verified — first 10-minute smoke only | [Run #10](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666); artifact [14131465205](https://github.com/PandaGarry/NEXUS/actions/runs/43637091666/artifacts/14131465205), expires 2026-11-28. It is not M1 or production certification |
 | Published frame accounting | Verified / reconciled | Original artifact #10 independently classified 2026-11-15: 8,149 trades + 2,998 book deltas + 29 pong replies + 1 subscription acknowledgement = 11,177; zero malformed/non-JSON/other records, zero SHA-256 mismatches |
