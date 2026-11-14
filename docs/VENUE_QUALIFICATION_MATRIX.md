@@ -38,12 +38,15 @@
 - Official synchronization requires consecutive `u` within a session, discarding a delta whose `seq` decreases, discarding deltas older than the REST snapshot `seq`, and matching both `seq` and `u` before applying subsequent deltas.
 - `u=1` is a reinitialization signal. `seq` is monotonic but not necessarily consecutive.
 - Full-depth stream and REST snapshot exclude RPI orders.
+- Bybit API Terms & Conditions (support page last updated 2026-10-20) grant a limited revocable API license for development/testing/support (Section 5.1), prohibit API/Service Data availability or performance benchmarking (6.6), prohibit repackaging/reselling Service Data (6.7), and prohibit commercial exploitation (6.9). Section 2.3 says API use requires API-key identity verification; applicability to technically unauthenticated public market-data endpoints requires clarification. NEXUS therefore keeps raw data private and gates future automated live capture pending explicit terms review.
 - NEXUS run #10 captured 8,149 public trade messages and 2,998 full-depth delta messages over approximately 10 minutes. Total journal records were 11,177, leaving 30 records unclassified in the published count breakdown. One connection generation was observed.
 
 Official sources:
 - Full-depth WS and synchronization: https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob
 - Full-depth REST snapshot: https://bybit-exchange.github.io/docs/v5/market/full-ob
 - Trade channel: https://bybit-exchange.github.io/docs/v5/websocket/public/trade
+- API Terms & Conditions: https://www.bybit.com/en/help-center/article/API-Terms?category=ae1012f19fad1c184e
+- API agreement PDF: https://www.bybit.com/common-static/compliance/legal/BYBIT/df1923006718fbba8ba70d7d762b9866.pdf
 
 ### Kraken Spot WebSocket v2 evidence
 
