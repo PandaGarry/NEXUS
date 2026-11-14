@@ -812,3 +812,12 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Inject control-store outage and verify final gate denies.
 - [ ] Verify late venue acceptance of a pre-acknowledgement initiated request remains reconciled.
 - [ ] Prove no stale/queued socket initiation after halt acknowledgement using actual instrumented egress boundary.
+
+## Halt / final Egress authorization linearization
+
+- [x] Serialize halt-epoch and final EgressBoundaryAuthorization commits against the same authoritative halt-state record/generation.
+- [x] Define gate-first attempts as in-flight and non-revocable; retain reservation and reconcile.
+- [x] Block HALTED acknowledgement while a paused gate-committed sender could still initiate a socket write.
+- [x] Add crash/conformance cases for halt-first, gate-first, pause-before-write, unavailable control store, positive fence failure and late venue acceptance.
+- [ ] Test both transaction lock orders and actual socket initiation at the real Egress boundary.
+- [ ] Prove external process/host/network fencing and post-ack no-new-send property under pause, partition and crash.
