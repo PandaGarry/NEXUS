@@ -255,7 +255,7 @@ The barrier is evaluated against a versioned requirement set, not a single unive
 - Amend that can increase exposure or worsen price/risk: treated as risk-increasing and requires fresh evaluation.
 - Strategy evaluation without dispatch: may use an explicitly declared degraded/read-only evidence policy, but its output remains a proposal and cannot authorize execution.
 - Read-only chart/reporting: may display last-known data only with visible age/quality/coverage indicators; it does not change source truth.
-- Cancel, reduce-only, close, cancel-all and emergency actions: WP-E must define the command-specific authorization and evidence matrix. WP-D does not silently classify these as safe or provide a blanket bypass. Existing WP-IF/ADR controls remain in force pending WP-E closure.
+- Cancel, reduce-only, close, cancel-all and emergency actions: WP-E must define the command-specific authorization and evidence matrix. WP-D does not silently classify these as safe or provide a blanket bypass. Existing NX-IF/ADR controls remain in force pending WP-E closure.
 
 A READY barrier for one operation class MUST NOT be reused for another class with stronger requirements.
 
