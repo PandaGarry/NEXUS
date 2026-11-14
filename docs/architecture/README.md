@@ -116,4 +116,4 @@ See [NX-ARCH-REVIEW-006](NX-ARCH-REVIEW-006-field-level-data-lineage-and-project
 
 ### Risk scope serialization and PostgreSQL concurrency — NX-ARCH-REVIEW-007
 
-See [NX-ARCH-REVIEW-007](NX-ARCH-REVIEW-007-risk-scope-serialization-and-postgresql-concurrency.md). Refines the G1 Risk-owned scope-state serialization protocol with parent/child projection fan-out, scope-config versioning, idempotency 23505 handling, bounded scope fan-out, and a PostgreSQL 18 concurrency/fault-injection matrix. Design only; no schema or runtime is implemented.
+See [NX-ARCH-REVIEW-007](NX-ARCH-REVIEW-007-risk-scope-serialization-and-postgresql-concurrency.md). Refines the G1 Risk-owned scope-state serialization protocol with parent/child projection fan-out, mandatory account/root configuration guard, scope-config versioning, idempotency 23505 handling, bounded scope fan-out, immutable versioned valuation inputs (no per-tick scope writes), and a PostgreSQL 18 concurrency/fault-injection matrix. Design only; no schema or runtime is implemented.
