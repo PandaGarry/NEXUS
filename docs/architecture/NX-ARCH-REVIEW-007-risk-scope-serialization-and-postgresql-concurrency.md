@@ -136,6 +136,8 @@ No statement-only retry, stale snapshot reuse, unbounded retry loop, or retry un
 | Ledger attempts direct Risk-state write | Database permission denial |
 | High contention / lock timeout / fan-out limit | Bounded latency/retries; fail closed without partial state |
 | Market-data mark/index/FX tick | No scope-state write per tick; reservation binds exact immutable valuation-input versions and stale/invalid inputs block dispatch |
+| Newer market-data tick arrives after reservation | Existing bound immutable valuation vector remains usable only while its source-specific freshness/uncertainty/drift policy passes; a policy may require latest; Egress never silently substitutes the new vector |
+| Bound valuation vector becomes stale, corrected or policy-invalid before dispatch | Egress rejects the send; reservation remains held/reconciliation-gated until Risk re-evaluates and proves a safe replacement path |
 | Projection and reservation crash at every commit boundary | Durable inbox, projection, reservation and scope version remain mutually consistent |
 | PostgreSQL primary failover with old writer alive | No second authoritative writer; external egress remains separately fenced |
 
