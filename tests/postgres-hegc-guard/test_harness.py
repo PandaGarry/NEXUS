@@ -2,6 +2,7 @@
 """Disposable PostgreSQL 18.7 HEGC guard qualification tests; never production code."""
 from __future__ import annotations
 
+import hashlib
 import os
 import subprocess
 import time
@@ -82,7 +83,7 @@ def uuid_array(values: list[str]) -> str:
 
 
 CATALOG_FINGERPRINT_SQL = """
-SELECT md5(jsonb_build_object(
+SELECT jsonb_build_object(
   'roles', (SELECT COALESCE(jsonb_agg(jsonb_build_array(
       r.rolname, r.rolsuper, r.rolinherit, r.rolcreaterole, r.rolcreatedb,
       r.rolreplication, r.rolbypassrls, r.rolcanlogin
@@ -133,7 +134,7 @@ SELECT md5(jsonb_build_object(
     FROM pg_default_acl d JOIN pg_roles owner ON owner.oid = d.defaclrole
     LEFT JOIN pg_namespace n ON n.oid = d.defaclnamespace
     WHERE owner.rolname LIKE 'nexus_%')
-)::text);
+)::text;
 """
 
 
@@ -342,9 +343,9 @@ class PostgreSQLGuardHarness(unittest.TestCase):
         def fingerprint() -> str:
             result = run_sql(CATALOG_FINGERPRINT_SQL)
             self.assertEqual(result.returncode, 0, result.stderr)
-            value = result.stdout.strip()
-            self.assertRegex(value, r"^[0-9a-f]{32}$")
-            return value
+            snapshot = result.stdout.strip()
+            self.assertTrue(snapshot.startswith("{"), "catalog snapshot must be JSON")
+            return hashlib.sha256(snapshot.encode("utf-8")).hexdigest()
 
         approved = fingerprint()
 
