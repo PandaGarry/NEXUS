@@ -43,12 +43,19 @@
 - [ ] Проверить kill switch, limits, secrets, audit и disaster recovery.
 - [ ] Допускать read-only/paper только после прохождения архитектурных gates.
 
-## Phase 5 — Autonomous Intelligence (Blocked)
+## Phase 5 — Portfolio & Accounting (Blocked)
+- [ ] Утвердить ТЗ-NX-006 Portfolio & Financial Ledger. (Draft published; chart of accounts, posting rules, P&L boundaries, FX/valuation policy and retention require owner review.)
+- [ ] Зафиксировать immutable journal, event identity, correction/bust and idempotency semantics.
+- [ ] Подготовить golden accounting fixtures для spot, linear, inverse и quanto.
+- [ ] Проверить fees, funding, settlement, transfers, reconciliation и deterministic replay.
+- [ ] Согласовать Ledger read models and freshness contract с Risk Engine.
+
+## Phase 6 — Autonomous Intelligence (Blocked)
 - [ ] Определить права и ограничения AI Orchestrator.
 - [ ] Проверить policy enforcement и полный audit trail.
 - [ ] Исключить прямой обход AI компонента Risk Engine.
 
-## Phase 6 — Desktop + Web Production (Blocked)
+## Phase 7 — Desktop + Web Production (Blocked)
 - [ ] Выбрать desktop shell по benchmark.
 - [ ] Проверить единое состояние, offline/reconnect и multi-device behavior.
 - [ ] Подготовить production observability, backups и deployment runbooks.
