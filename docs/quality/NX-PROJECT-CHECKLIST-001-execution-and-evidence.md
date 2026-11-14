@@ -1169,7 +1169,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 ## 18.66 Test-only halt / final Egress gate reference oracle — 2026-11-14
 
 - [x] Add `halt_egress_gate.py` as a pure test-only state-machine oracle; no production imports or dependencies.
-- [x] Add 13 tests for halt-first denial, gate-first in-flight ordering, paused-process acknowledgement blocking, positive sender fencing, single-use attempt identity, halt-store outage and post-socket reconciliation.
+- [x] Add 12 tests for halt-first denial, gate-first in-flight ordering, paused-process acknowledgement blocking, positive sender fencing, single-use attempt identity, halt-store outage and post-socket reconciliation.
 - [x] Treat a sender fence without trusted socket-initiation evidence as OUTCOME_UNKNOWN; retain reservation and reconciliation obligation.
 - [x] Ensure a gate-committed attempt remains eligible to initiate while halt is propagating, but prevents HALTED acknowledgement until socket initiation is observed or sender is positively fenced.
 - [x] Ensure both socket-initiated attempts and fenced attempts without a trusted initiation report remain reconciliation obligations after HALTED acknowledgement.
@@ -1183,7 +1183,7 @@ The exact-head workflow above verifies the current normalized documentation tree
 
 - [x] Verify code/test SHA `e45ea01c6047e1f1207a6987a2cd05d7440853b1` and PR #16 HEAD `772943e9e37272af7065fc26ad01eae5d48af22b` on [workflow #43618215618](https://github.com/PandaGarry/NEXUS/actions/runs/43618215618).
 - [x] Pass 13 isolated suites / 250 tests on Python 3.11, 3.12 and 3.13 (750 successful executions).
-- [x] Confirm egress-fencing suite contains 24 tests, including 11 HaltEgressGate cases for halt/gate ordering, paused senders, fencing and store outage.
+- [x] Confirm egress-fencing suite contains 24 tests, including 12 HaltEgressGate cases for halt/gate ordering, paused senders, fencing and store outage.
 - [x] Inspect all logs: no test failures or deprecated Node.js runtime warnings.
 - [ ] Prove the same semantics with real PostgreSQL transactions, concurrent processes, instrumented sockets and independent host/network fencing.
 
