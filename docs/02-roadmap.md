@@ -969,3 +969,13 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Prove canonical digest construction includes every authorization binding and authenticated Egress workload/process identity.
 - [ ] Prove durable database uniqueness, ambiguous commit lookup and same-attempt retry under concurrent HEGC requests.
 - [ ] Prove first-statement guard entrypoint and per-scope commit-order semantics against PostgreSQL 18.7.
+
+
+## HEGC grant idempotency and database-enforced guard entrypoint
+
+- [x] Bind attempt ID to immutable authorization digest in the reference oracle.
+- [x] Exact retry returns the original attempt record even after halt epoch advances; changed digest or epoch conflicts without replacement grant.
+- [x] Pass exact code/test HEAD `c2350f7807587e0428b760890f6fdba09ba60f60` on workflow #43619636403: 13 suites / 263 tests per Python 3.11–3.13 runtime (789 executions), egress-fencing 37 tests / HaltEgressGate 24.
+- [x] Separate internal scope-guard helper from HEGC gate transaction entrypoint; service role must not have direct source SELECT or guard/grant DML.
+- [x] Record SECURITY DEFINER identity constraints: dedicated authenticated session_user, no shared login/SET ROLE spoofing, explicit scope authorization.
+- [ ] Prove the first-operation guard acquisition, complete scope-set derivation, entrypoint privilege closure, all guarded source writers, stale-snapshot retry and both commit orders on PostgreSQL 18.7.
