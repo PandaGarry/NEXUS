@@ -258,6 +258,8 @@ No runtime dependency, database, key, credential, venue, order or production dep
 - NIST FIPS 186-5 — Digital Signature Standard: https://csrc.nist.gov/pubs/fips/186-5/final
 - PostgreSQL 18 transaction isolation: https://www.postgresql.org/docs/18/sql-set-transaction.html
 - PostgreSQL serialization failure handling: https://www.postgresql.org/docs/18/mvcc-serialization-failure-handling.html
+- PostgreSQL 18 application-level consistency and explicit locking: https://www.postgresql.org/docs/18/applevel-consistency.html
+- PostgreSQL 18 INSERT / ON CONFLICT uniqueness and concurrency: https://www.postgresql.org/docs/18/sql-insert.html
 - PostgreSQL high availability and synchronous replication: https://www.postgresql.org/docs/18/high-availability.html
 - PostgreSQL failover and old-primary fencing: https://www.postgresql.org/docs/18/warm-standby-failover.html
 
