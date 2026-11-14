@@ -964,3 +964,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Keep numeric freshness/drift thresholds owner/domain-controlled; no universal defaults.
 
 **Disposition:** design boundary clarified across NX-ADR-008, NX-IF-002 and NX-ARCH-REVIEW-007. No valuation service, schema or dispatch runtime implemented.
+
+## 18.27 PostgreSQL 18.7 exact G1 evaluation target — 2026-11-14
+
+- [x] Verify PostgreSQL 18.7 is the latest supported PostgreSQL 18 minor release on 2026-11-14.
+- [x] Select 18.7 as the exact G1 database qualification patch only; production remains unselected.
+- [x] Review official 18.7 migration notes: index-corruption/REINDEX caveats, incremental-backup chain warning, C-extension rebuild requirements and privilege/extension hardening changes.
+- [x] Record initial G1 constraints: no third-party/C extensions, no unreviewed extension scripts, no dblink, no untrusted replication subscriptions, no privileged COPY FROM ON_ERROR path; use a fresh full backup for PITR tests.
+- [ ] Pin exact package/image digest, checksum, provenance, host OS/architecture and configuration before harness creation.
+- [ ] Review every 18.7 REINDEX note against actual schema/indexes and test full backup/restore/PITR.
+- [ ] Requalify the latest supported 18.x patch before any future deployment decision.
+
+**Disposition:** PostgreSQL 18.7 is the bounded G1 evaluation target only. No instance, schema, extension or production topology is selected or installed.
