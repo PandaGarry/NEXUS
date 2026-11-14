@@ -67,6 +67,12 @@ class InstrumentSpecRegistryTests(unittest.TestCase):
         self.registry.register(first)
         self.assertEqual(self.registry.register(second), Registration.ADDED)
 
+    def test_effective_time_regression_is_detected_across_unknown_intermediate(self):
+        self.registry.register(spec(effective_at_ms=2000))
+        self.registry.register(spec(spec_version=2, effective_at_ms=None))
+        with self.assertRaises(EffectiveTimeRegression):
+            self.registry.register(spec(spec_version=3, effective_at_ms=1999))
+
     def test_instruments_have_independent_histories(self):
         first = spec()
         other = spec(instrument_id="nexus:demo:ETH-USDT", native_instrument_id="ETH-USDT",
