@@ -7,7 +7,7 @@
 
 ## 1. Problem statement
 
-NX-REF-EXEC-001 now contains an adversarial counterexample: a dispatcher can pass its final local halt/expiry check, pause before network transmission, lose operational authority while recovery marks its command OUTCOME_UNKNOWN, then resume and send. Its late acknowledgement can also overwrite the recovery state.
+NX-REF-EXEC-001 contains an adversarial counterexample: a dispatcher can pass its final local halt/expiry check, pause before network transmission, lose operational authority while recovery marks its command OUTCOME_UNKNOWN, then resume and send. An earlier model revision also allowed a late ACK to overwrite recovery state; the current conditional state transition rejects that overwrite and records the response as a stale venue observation. The external send race remains unresolved.
 
 A database lease, heartbeat, fencing integer, or local token check is not sufficient when the stale process still has venue credentials, an open network route, or direct access to the adapter. The stale process can ignore the token or have already passed the check.
 
@@ -90,7 +90,9 @@ The old worker may later return an ACK or timeout. That response is recorded as 
 
 ## 6. Reference conformance scenarios
 
-A future test harness must prove:
+A test-only Python control-plane state machine now exists at `foundation/reference-model/egress-fencing/`. Its unit tests cover transition ordering (HALTING → FENCING → FENCED → RECONCILING → READY_TO_GRANT), stale epoch rejection and fail-closed behavior. It does not revoke a network route, terminate a host, validate trusted fence attestations or prove actual egress isolation. A passing state-machine test is not a production fence.
+
+A production-grade conformance harness must prove:
 1. A worker paused immediately before egress cannot send after its egress identity is revoked.
 2. A new authority cannot obtain credentials/route before positive fence acknowledgement.
 3. A stale epoch cannot update command state after authority epoch changes.
