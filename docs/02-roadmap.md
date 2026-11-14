@@ -20,7 +20,9 @@
 - [ ] Утвердить NX-ADR-004 Market Data Recovery State Machine.
 - [ ] Утвердить NX-ADR-005 Instrument Specification & Exact Arithmetic.
 - [ ] Утвердить NX-ARCH-001 целевую архитектуру и deployment topology. (Draft published; owner review required.)
+- [ ] Закрыть NX-ARCH-REVIEW-001 WP-A..WP-E: canonical command/approval, exposure/reservations, Execution↔Ledger handoff, freshness/recovery, emergency operations.
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
+- [ ] Выполнить end-to-end contract review и зафиксировать owner decisions до выбора реализации.
 
 ## Phase 2 — Professional Analytics (Blocked)
 - [ ] Утвердить ТЗ-NX-002 Professional Order Flow. (Draft published; formula decisions and owner review required.)
@@ -80,13 +82,13 @@ Phase 0 не означает исследовать все существующ
 4. **Simulation & research:** сопоставление HFTBacktest/LEAN/ABIDES; выбрать минимально достаточную модель симуляции и зафиксировать limitations.
 5. **Security & supply chain:** threat model, credentials, auth, dependencies, licenses, CI and backup/recovery.
 6. **Analytics correctness:** формулы, aggregation semantics, golden datasets и independent checks для ключевых Order Flow функций.
-7. **Architecture synthesis:** NX-ARCH-001, service boundaries, deployment, persistence, observability и final readiness review.
+7. **Architecture synthesis:** NX-ARCH-001, NX-ARCH-REVIEW-001, service boundaries, deployment, persistence, observability и final readiness review.
 
 Каждый work package имеет ограниченный scope и exit criteria. Новые интересные направления помещаются в backlog, но не блокируют текущий этап, если не затрагивают безопасность, финансовую корректность или выбранную архитектуру.
 
 ### Обязательный выход Phase 0
 - утверждаемые NX-ADR-001..006 и NX-SEC-001;
-- NX-ARCH-001;
+- NX-ARCH-001 и NX-ARCH-REVIEW-001;
 - шесть ТЗ с контрактами и acceptance criteria;
 - exchange capabilities matrix;
 - risk register и dependency/license inventory;
