@@ -42,3 +42,6 @@ jobs:
       - name: Test dimensional financial types reference
         working-directory: foundation/reference-model
         run: python -m unittest -v test_domain_types.py
+      - name: Test instrument quantity unit models
+        working-directory: foundation/reference-model
+        run: python -m unittest -v test_instrument_units.py
