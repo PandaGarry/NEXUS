@@ -650,7 +650,7 @@ HEGC now has an explicit durable one-use grant-consumption transition: `GATE_COM
 
 ## Exact code/test-head CI — HEGC one-use grant consumption, halt recovery and cause preservation — 2026-11-14
 
-- [x] Verify code/test HEAD `fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8` on [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619080626).
+- [x] Verify code/test HEAD `fedc4879fee5ed97f03dea094c3d5f3fb6aaf7c8` on [workflow #43619194630](https://github.com/PandaGarry/NEXUS/actions/runs/43619194630).
 - [x] Pass 13 isolated suites / **262 tests** on Python 3.11, 3.12 and 3.13 (786 successful executions total).
 - [x] Confirm egress-fencing passes 36 tests, including 23 HaltEgressGate cases for grant consumption, lost consume response, store outage, halt recovery and unknown-outcome retention and duplicate-halt cause preservation.
 - [x] Inspect all three logs; no failures or deprecation warnings.
