@@ -33,7 +33,7 @@ The approval is bound to command ID/digest, account, venue, instrument, instrume
 
 ## 4. Test scenarios
 
-The test suite currently covers 18 deterministic cases:
+The test suite currently covers 20 deterministic cases:
 - valid approval and one adapter invocation;
 - tampered signature;
 - command payload mutation;
@@ -50,7 +50,7 @@ The test suite currently covers 18 deterministic cases:
 - unsupported CANCEL command;
 - timeout after possible send;
 - crash after simulated venue acceptance but before ACK persistence;
-- duplicate approval/command replay;
+- duplicate approval/command replay;\n- two gateway instances concurrently racing to consume the same approval/reservation;\n- two dispatcher instances racing to claim one persisted command while the winning adapter call is held open;
 - non-canonical decimal rejection.
 
 ## 5. Verification record
@@ -62,7 +62,7 @@ cd foundation/reference-model/execution-gateway
 python -m unittest -v
 ```
 
-GitHub Actions run [#43588330433](https://github.com/PandaGarry/NEXUS/actions/runs/43588330433) completed with **success** on current exact HEAD `31c99f0b4a0591a41d97afa265145567cf1ddbd3`. Both suites passed on Python 3.11, 3.12 and 3.13: 10 exact-decimal tests and 18 gateway tests in each runtime.
+GitHub Actions run [#43588330433](https://github.com/PandaGarry/NEXUS/actions/runs/43588330433) completed with **success** on current exact HEAD `31c99f0b4a0591a41d97afa265145567cf1ddbd3`. Both suites passed on Python 3.11, 3.12 and 3.13: 10 exact-decimal tests and 20 gateway tests in each runtime.
 
 This is CI verification of the checked-in reference model only. It is not production, multi-process, database durability, security or exchange-adapter verification.
 
@@ -72,7 +72,7 @@ This is CI verification of the checked-in reference model only. It is not produc
 - Risk decision creation and numeric exposure calculations are not implemented. The reservation row is a pre-created fixture, not a risk engine.
 - HMAC test helper is not production cryptography. No production signing key, key rotation, HSM/KMS or signer boundary exists.
 - SQLite local transaction semantics are not a production database decision.
-- No durable dispatcher lease, multi-worker claim fencing, serializable reservation-capacity transaction or distributed halt-epoch authority.
+- No durable dispatcher lease, cross-host claim fencing, serializable reservation-capacity transaction or distributed halt-epoch authority. The new two-connection/thread tests exercise SQLite's local write serialization only; they are not proof of process supervision, host failure handling or a production multi-worker lease protocol.
 - A process crash after DISPATCHING is conservatively unknown even if the network call had not yet happened. This intentional false-positive is safer than a duplicate send.
 - A final local halt check cannot fully eliminate the race between local state read and external network side effect. Production needs a single fenced gateway boundary and venue-aware reconciliation.
 - No order/fill private stream, ledger journal, reconciliation, rate-limit policy or external/manual order handling.
