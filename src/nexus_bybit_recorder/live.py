@@ -118,6 +118,10 @@ async def record_public(
                                 if snapshot_task is None or force_refresh:
                                     if snapshot_task is not None:
                                         snapshot_task.cancel()
+                                        try:
+                                            await snapshot_task
+                                        except asyncio.CancelledError:
+                                            pass
                                     snapshot_task = _snapshot_fetch_task(normalized_symbol, testnet)
 
                         if snapshot_task is not None and snapshot_task.done():
