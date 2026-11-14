@@ -38,6 +38,14 @@ class BoundedNumericTests(unittest.TestCase):
             NumericLimits(max_input_chars=8, max_coefficient_digits=4, max_scale=4,
                           max_rational_numerator_digits=8, max_rational_denominator_digits=8,
                           max_intermediate_digits=8, max_power10_exponent=9, max_wire_chars=8)
+        with self.assertRaises(ValueError):
+            NumericLimits(max_input_chars=8, max_coefficient_digits=4, max_scale=-1,
+                          max_rational_numerator_digits=8, max_rational_denominator_digits=8,
+                          max_intermediate_digits=8, max_power10_exponent=0, max_wire_chars=8)
+        with self.assertRaises(ValueError):
+            NumericLimits(max_input_chars=8, max_coefficient_digits=4, max_scale=0,
+                          max_rational_numerator_digits=8, max_rational_denominator_digits=8,
+                          max_intermediate_digits=8, max_power10_exponent=0, max_wire_chars=0)
 
     def test_context_has_no_implicit_global_profile(self):
         with self.assertRaises(TypeError):
