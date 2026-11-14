@@ -1187,3 +1187,16 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Prove the same semantics with real PostgreSQL transactions, concurrent processes, instrumented sockets and independent host/network fencing.
 
 **Disposition:** sequential reference state-machine tests pass; no production linearizability or fencing guarantee is established.
+
+## 18.68 HEGC control authority and idempotent attempt-grant recovery — 2026-11-14
+
+- [x] Define HEGC as the logical sole writer of HaltState and EgressBoundaryAuthorization, separate from Risk, Command Coordinator and credential-owning Egress.
+- [x] Require HEGC to hold no venue credentials/socket and no Risk approval signing key; Egress holds no direct write permission to HEGC control records.
+- [x] Require narrow read-only access to Risk/Command/eligibility/evidence/dispatcher records and write access only to the control-owned schema.
+- [x] Make grant issuance idempotent on stable attempt ID: exact retry returns the same persisted grant; any changed binding conflicts.
+- [x] Define ambiguous HEGC response recovery by reading the same attempt ID; no replacement attempt or second grant while the first may still send.
+- [ ] Implement and test HEGC transaction semantics, durable uniqueness constraints, Egress grant verification/consumption and restart recovery.
+- [ ] Test response loss after grant commit, duplicate request, changed digest, changed evidence generation, Egress pause, HEGC restart and positive sender fencing.
+- [ ] Qualify the HEGC workload identity, service role, audit trail and independent recovery/fencing before any deployment.
+
+**Disposition:** logical authority and retry contract documented in NX-ADR-008 / NX-IF-001 / NX-IF-005 / NX-REF-EXEC-002. No HEGC runtime or database schema implemented.
