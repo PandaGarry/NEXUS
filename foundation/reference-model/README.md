@@ -63,3 +63,6 @@ Latest full reference workflow: [#43594275808](https://github.com/PandaGarry/NEX
 ## Bounded numeric context and canonical wire
 
 Run `python -m unittest -v test_bounded_numeric.py` for mandatory caller-supplied budgets, preflight checks and bounded operations. Run `python -m unittest -v test_numeric_wire.py` for versioned canonical scalar wire encoding. `NumericLimits` has no default profile; zero scale/zero power-of-ten are valid limits, while digit and input budgets must be positive. These modules are reference-only and do not establish production resource safety or a selected production profile.
+
+
+Latest verified PR matrix: [#43594861745](https://github.com/PandaGarry/NEXUS/actions/runs/43594861745) passed exact PR HEAD `2c0135f1205a27f070b0b6a835aa3c19e904e540` on Python 3.11–3.13. Ten isolated suites, 166 tests per runtime / 498 matrix executions; bounded numeric 27 per runtime and numeric wire 10 per runtime.
