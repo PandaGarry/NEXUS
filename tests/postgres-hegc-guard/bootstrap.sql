@@ -7,13 +7,14 @@ CREATE ROLE nexus_hegc_owner  NOLOGIN NOINHERIT NOSUPERUSER NOBYPASSRLS;
 CREATE ROLE nexus_writer_owner NOLOGIN NOINHERIT NOSUPERUSER NOBYPASSRLS;
 CREATE ROLE nexus_hegc LOGIN NOINHERIT NOSUPERUSER NOBYPASSRLS PASSWORD 'hegc-test-only';
 CREATE ROLE nexus_writer LOGIN NOINHERIT NOSUPERUSER NOBYPASSRLS PASSWORD 'writer-test-only';
+CREATE ROLE nexus_membership_admin LOGIN NOINHERIT NOSUPERUSER NOBYPASSRLS PASSWORD 'membership-test-only';
 
 CREATE SCHEMA nexus_control;
 CREATE SCHEMA nexus_source;
 CREATE SCHEMA nexus_hegc;
 
 REVOKE ALL ON SCHEMA nexus_control, nexus_source, nexus_hegc FROM PUBLIC;
-GRANT USAGE ON SCHEMA nexus_control TO nexus_guard_owner, nexus_hegc_owner, nexus_writer_owner, nexus_hegc, nexus_writer;
+GRANT USAGE ON SCHEMA nexus_control TO nexus_guard_owner, nexus_hegc_owner, nexus_writer_owner, nexus_hegc, nexus_writer, nexus_membership_admin;
 GRANT USAGE ON SCHEMA nexus_source TO nexus_hegc_owner, nexus_writer_owner, nexus_writer;
 GRANT USAGE ON SCHEMA nexus_hegc TO nexus_hegc_owner, nexus_hegc;
 
@@ -25,7 +26,7 @@ CREATE TABLE nexus_control.scope_membership (
 );
 CREATE TABLE nexus_control.service_principal (
     principal name NOT NULL,
-    service_kind text NOT NULL CHECK (service_kind IN ('hegc', 'writer')),
+    service_kind text NOT NULL CHECK (service_kind IN ('hegc', 'writer', 'membership_admin')),
     account_id uuid NOT NULL,
     PRIMARY KEY (principal, account_id, service_kind)
 );
@@ -64,6 +65,36 @@ GRANT SELECT ON nexus_source.exposure TO nexus_hegc_owner;
 GRANT UPDATE ON nexus_source.exposure TO nexus_writer_owner;
 GRANT SELECT, INSERT ON nexus_hegc.egress_grant TO nexus_hegc_owner;
 
+-- Force RLS even for the source-table owner (writer definer).
+ALTER TABLE nexus_source.exposure ENABLE ROW LEVEL SECURITY;
+ALTER TABLE nexus_source.exposure FORCE ROW LEVEL SECURITY;
+CREATE POLICY exposure_hegc_read ON nexus_source.exposure
+    FOR SELECT TO nexus_hegc_owner
+    USING (EXISTS (
+        SELECT 1 FROM nexus_control.service_principal sp
+         WHERE sp.principal = session_user AND sp.account_id = exposure.account_id
+           AND sp.service_kind = 'hegc'
+    ));
+CREATE POLICY exposure_writer_read ON nexus_source.exposure
+    FOR SELECT TO nexus_writer_owner
+    USING (EXISTS (
+        SELECT 1 FROM nexus_control.service_principal sp
+         WHERE sp.principal = session_user AND sp.account_id = exposure.account_id
+           AND sp.service_kind = 'writer'
+    ));
+CREATE POLICY exposure_writer_update ON nexus_source.exposure
+    FOR UPDATE TO nexus_writer_owner
+    USING (EXISTS (
+        SELECT 1 FROM nexus_control.service_principal sp
+         WHERE sp.principal = session_user AND sp.account_id = exposure.account_id
+           AND sp.service_kind = 'writer'
+    ))
+    WITH CHECK (EXISTS (
+        SELECT 1 FROM nexus_control.service_principal sp
+         WHERE sp.principal = session_user AND sp.account_id = exposure.account_id
+           AND sp.service_kind = 'writer'
+    ));
+
 CREATE FUNCTION nexus_control.acquire_scope_guards(p_account uuid, p_scope_ids uuid[])
 RETURNS void
 LANGUAGE plpgsql
@@ -95,7 +126,7 @@ BEGIN
               FROM nexus_control.service_principal sp
              WHERE sp.principal = session_user
                AND sp.account_id = p_account
-               AND sp.service_kind IN ('hegc', 'writer')
+               AND sp.service_kind IN ('hegc', 'writer', 'membership_admin')
        );
     GET DIAGNOSTICS v_rows = ROW_COUNT;
     IF v_rows <> 1 THEN
@@ -210,7 +241,56 @@ ALTER FUNCTION nexus_source.apply_exposure(uuid, uuid[], bigint) OWNER TO nexus_
 REVOKE ALL ON FUNCTION nexus_source.apply_exposure(uuid, uuid[], bigint) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION nexus_source.apply_exposure(uuid, uuid[], bigint) TO nexus_writer;
 
+-- Scope membership changes use the same root-first serialization boundary.
+CREATE FUNCTION nexus_control.set_scope_active(
+    p_account uuid,
+    p_current_scope_ids uuid[],
+    p_target_scope uuid,
+    p_active boolean
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, nexus_control, pg_temp
+AS $function$
+DECLARE
+    v_rows integer;
+BEGIN
+    IF p_target_scope IS NULL OR p_target_scope = p_account OR p_active IS NULL THEN
+        RAISE EXCEPTION 'invalid scope membership change' USING ERRCODE = '22023';
+    END IF;
+
+    PERFORM nexus_control.acquire_scope_guards(p_account, p_current_scope_ids);
+
+    IF p_active THEN
+        INSERT INTO nexus_control.scope_guard(account_id, scope_id, generation)
+        VALUES (p_account, p_target_scope, 0)
+        ON CONFLICT (account_id, scope_id) DO NOTHING;
+
+        INSERT INTO nexus_control.scope_membership(account_id, scope_id, active)
+        VALUES (p_account, p_target_scope, true)
+        ON CONFLICT (account_id, scope_id)
+        DO UPDATE SET active = true;
+    ELSE
+        UPDATE nexus_control.scope_membership
+           SET active = false
+         WHERE account_id = p_account
+           AND scope_id = p_target_scope
+           AND active;
+        GET DIAGNOSTICS v_rows = ROW_COUNT;
+        IF v_rows <> 1 THEN
+            RAISE EXCEPTION 'target scope is not currently active' USING ERRCODE = '22023';
+        END IF;
+    END IF;
+END
+$function$;
+ALTER FUNCTION nexus_control.set_scope_active(uuid, uuid[], uuid, boolean) OWNER TO nexus_guard_owner;
+REVOKE ALL ON FUNCTION nexus_control.set_scope_active(uuid, uuid[], uuid, boolean) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION nexus_control.set_scope_active(uuid, uuid[], uuid, boolean) TO nexus_membership_admin;
+
+REVOKE ALL ON ALL TABLES IN SCHEMA nexus_control, nexus_source, nexus_hegc FROM nexus_membership_admin;
+
 REVOKE ALL ON ALL TABLES IN SCHEMA nexus_control, nexus_source, nexus_hegc FROM PUBLIC;
-REVOKE ALL ON ALL TABLES IN SCHEMA nexus_control, nexus_source, nexus_hegc FROM nexus_hegc, nexus_writer;
+REVOKE ALL ON ALL TABLES IN SCHEMA nexus_control, nexus_source, nexus_hegc FROM nexus_hegc, nexus_writer, nexus_membership_admin;
 
 COMMIT;
