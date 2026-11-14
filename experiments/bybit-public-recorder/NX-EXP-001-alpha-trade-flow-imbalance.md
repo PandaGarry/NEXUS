@@ -26,11 +26,24 @@ For each completed 1-second bucket:
 
 ## Data qualification
 
-Primary candidate: Bybit's official historical data download page:
+**Confirmatory primary remains Bybit V5 linear BTCUSDT.** Its feature window, threshold and horizon were frozen in one reviewable commit: [9895842](https://github.com/PandaGarry/NEXUS/commit/9895842a7c892260ffa03a175bb3bc39bc6f5146). The broader pre-registered candidate universe is maintained separately in [RESEARCH-UNIVERSE.md](RESEARCH-UNIVERSE.md). Other venues/instruments are exploratory and cannot replace the primary after results are seen.
 
-https://www.bybit.com/en/derivative-activity/history-data
+### Bybit primary data
 
-Bybit's V5 recent-trade endpoint is not an arbitrary-range history service; the official API documentation points to downloadable archives. The archive page is dynamically rendered, so product/category/date coverage must be inspected and recorded before the experiment begins. Specifically verify that the archive contains trade-level records (not merely candles), with timestamps, trade IDs, side, price and size. Do not assume L2 history exists.
+- The official public directory [BTCUSDT trade archive](https://public.bybit.com/trading/BTCUSDT/) lists daily CSV files beginning 2020-03-25. The listing inspected on 2026-11-15 is not proof of current completeness/freshness; download and validate a permitted sample before analysis.
+- Bybit Learn says downloadable historical public data may include order-book snapshots, K-lines, trades and funding rates: https://www.bybit.com/en/learn/bybit-guide/how-to-create-a-bybit-api-key
+- NEXUS has not yet located and validated an official L2 archive manifest/file path, schema, depth or date range. A third-party downloader references `quote-saver.bycsi.com/orderbook/linear`, but this is only a discovery lead and is not official completeness/license evidence: https://github.com/Anton495/bybit-data-downloader
+- Therefore trade history is a plausible source for predictive-association screening; historical L2 remains UNKNOWN. Do not report executable net alpha from an assumed historical book.
+
+### Cross-venue exploratory data
+
+- **OKX:** official historical-data portal lists tick-level trades from 2021-09 and high-resolution L2 from 2023-03. This is the strongest documented candidate for an exploratory L2 replication, but it remains a separate stratum and does not replace the Bybit confirmatory primary. Archive sample/schema and exact instrument coverage must be verified. OKX historical/API terms restrict data to personal non-commercial use and prohibit redistribution/competing analytics products without written consent.
+- **Kraken Spot:** official Time & Sales archive covers each pair from its first trade through 2026-09-30, but it is trade history, not L2. Historical `type` buy/sell semantics must be verified against WS v2 taker-side semantics before using it as signed flow.
+- No Spot/derivative datasets are pooled. BTC/USD, BTC-USD and BTCUSDT are not treated as identical instruments.
+
+### Required validation before analysis
+
+For each dataset, verify trade-level records (not only candles), timestamps and precision, trade IDs, taker-side semantics, price, quantity, ordering, duplicate rows, missing days/intervals, timezone, schema changes, instrument specifications and terms. Preserve raw source files privately with checksums; do not commit or redistribute raw exchange data without explicit rights.
 
 Minimum required for an executable-cost conclusion:
 
@@ -39,7 +52,7 @@ Minimum required for an executable-cost conclusion:
 - documented missing intervals, time zone and product specification;
 - exact instrument metadata for the period.
 
-If archives contain trades but no L2, the archive can support predictive-association screening only. Executable-cost conclusions then require our own synchronized live capture; otherwise publish an explicit data-coverage blocker. Candles alone do not qualify for this trade-flow hypothesis. No assumed fill at mid-price.
+If archives contain trades but no L2, the archive can support predictive-association screening only. Executable-cost conclusions then require our own synchronized live capture after the data-terms gate is cleared; otherwise publish an explicit data-coverage blocker. Candles alone do not qualify for this trade-flow hypothesis. No assumed fill at mid-price.
 
 ## Execution-cost model
 
