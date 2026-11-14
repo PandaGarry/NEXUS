@@ -176,6 +176,20 @@ PostgreSQL streaming replication is asynchronous by default and may lose acknowl
 
 If the old primary cannot be positively fenced or the authoritative state is uncertain, the affected execution scope remains HALTED.
 
+### 5.5 Halt/Egress Gate Coordinator ownership
+
+The G1 logical authority for halt and final send authorization is the **Halt/Egress Gate Coordinator (HEGC)**, a bounded Control Plane component separate from Risk, Command Coordinator and the credential-owning Egress process.
+
+- HEGC is the sole writer of the control-owned `HaltState` and `EgressBoundaryAuthorization` records. It serializes `CommitHaltEpoch` and `AuthorizeEgressAttempt` against the same authoritative halt-state generation in one local PostgreSQL 18.7 transaction protocol.
+- The operator halt/resume API and Egress final-gate API terminate at HEGC. Risk may submit an authenticated policy-triggered halt request but cannot mutate halt state or mint Egress authorization.
+- HEGC uses a dedicated service role: write access only to its control schema and narrowly scoped read-only access to the Risk approval/reservation, Command/outbox, eligibility, evidence-manifest and dispatcher-fence records required for final validation. It MUST NOT mutate Risk, Command, Ledger or venue state.
+- The Egress process has no direct write access to control-owned halt/gate records. It requests an opaque, persisted, one-use, attempt-scoped EgressBoundaryAuthorization from HEGC; the grant binds command digest, reservation, attempt, halt epoch, eligibility, StateEvidenceVector, ValuationInputVector, dispatcher generation and Egress workload identity.
+- HEGC has no venue credentials, venue signing capability or socket. Egress remains the only process allowed to initiate the venue socket write. It reports socket-write initiation to HEGC only after the syscall has been invoked/returned; a pre-send local flag is not proof. Missing report leaves the attempt in-flight until positive sender/process/host/network fencing.
+- HEGC outage denies new final gates. A halt request may remain pending if the authoritative store is unavailable; the system MUST NOT report fully enforced HALTED until the epoch is durable and every boundary acknowledges or is positively isolated.
+- G1 uses one active HEGC instance. No active-active coordinator or automatic failover is permitted until old-instance fencing, durable grant reconciliation and no-new-send-after-ack are proven.
+- This is a logical ownership selection, not an implemented service, API, schema, role grant, opaque-grant format or fencing mechanism. Those remain G1 acceptance gates.
+
+
 ## 6. Messaging and observability
 
 - Do not add NATS, Kafka or another broker to G1. Use transactional outbox/inbox with bounded polling until measured fan-out, replay or throughput requirements justify a broker.
