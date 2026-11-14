@@ -170,3 +170,55 @@ This contract is not implementation-ready until:
 - recovery and resume policy is approved under NX-IF-004/NX-IF-005.
 
 No live credential, order, risk-limit change, production deployment, or live-trading permission is granted by this document.
+
+
+### 4.5 Persistence and trusted-egress option analysis (PROPOSED; OD-08/09/10 remain open)
+
+This section narrows the implementation choices without selecting a provider, database product, cryptographic scheme or deployment topology. The recommendation is a candidate baseline for G1 design review, not an accepted owner decision.
+
+#### A. Risk reservation and Command acceptance persistence
+
+| Option | Strengths | Failure/correctness concerns | Disposition |
+|---|---|---|---|
+| One relational database, one shared transaction across Risk and Command | Superficially simple atomicity | Couples service authority; risks collapsing reservation and command ownership; does not solve venue-side ambiguity; broad transaction can become a distributed service boundary in disguise | Do not make this the conceptual contract |
+| One relational database cluster, service-owned schemas/tables and separate local transactions | Mature ACID primitives; one operational database failure domain; clear table ownership; no distributed transaction required for capability hand-off | Shared cluster is still a common availability/administration blast radius; strict ownership and database roles are mandatory; local transactions do not make Risk+Command atomic | Preferred candidate for a first controlled prototype, subject to OD-09 and threat review |
+| Separate authoritative databases per service | Stronger fault/ownership isolation; independent scaling and operational lifecycle | Capability hand-off becomes cross-database messaging; more recovery, backup, observability and idempotency complexity; no atomic commit across stores | Valid later option; likely premature before workload and RPO/RTO evidence |
+| Event store/consensus coordination service as primary authority | Can provide ordered durable log and fencing primitives | Operational complexity; semantics vary; still needs transaction boundaries, projections and proof of multi-scope atomicity | Defer until a measured requirement justifies it |
+
+**Candidate transaction model:**
+
+1. Risk owns reservation records and account-scope capacity versions. A single local transaction validates the current version/fencing token, exposure snapshot, policy/spec versions and idempotency key; locks or conditionally updates every required scope; writes every reservation and the durable request/result record; then commits. No capability is returned before commit.
+2. Command Coordinator owns command, capability-consumption and outbox records. A separate local transaction validates the capability claims and atomically consumes its unique nonce while inserting the immutable canonical command, reservation reference and outbox row. A unique constraint on the capability/nonce and stable command/request identity is required.
+3. The two commits are deliberately ordered, not presented as one distributed ACID transaction. A crash between them leaves a durable reservation that can be recovered or safely expire only after proving dispatch impossible. A lost commit response is resolved by reading the stable request/command identity; never repeat a non-idempotent operation merely because the caller did not receive the response.
+4. Multi-scope reservation must be all-or-nothing inside Risk's authoritative transaction. A saga or sequential partial reservation must never produce an approval while any required scope is missing.
+5. Ledger journal posting remains its own local atomic transaction with idempotent inbox/event identity; Execution-to-Ledger delivery is durable and replayable, not a cross-service transaction.
+
+**Relational implementation requirements to carry into a later ADR:** explicit isolation level and retry policy; lock ordering for account/scope rows; unique constraints for request, capability nonce, command and outbox identities; conditional updates on monotonic versions; bounded deadlock/serialization retries; transaction timeout and cancellation semantics; durable commit acknowledgement; backup/restore and point-in-time recovery; migration compatibility; and fault tests for lost commit responses. Serializable isolation is a candidate, not a blanket guarantee: a correctly designed row-lock/CAS protocol may be preferable if its invariants are proven under the selected database and isolation level. No correctness claim may rely solely on an application mutex, cache lock or lease.
+
+#### B. Trusted Egress topology
+
+| Option | What it can guarantee | Main limitation | Disposition |
+|---|---|---|---|
+| DB lease/epoch checked by ordinary worker | Rejects stale database writes when every write is conditional | Cannot stop a paused process that already passed its check from later opening a socket; lease expiry is not external fencing | Rejected as sole egress control |
+| Network gateway/proxy that owns the venue connection and credentials | Centralizes the actual socket and can deny worker direct egress; can enforce current generation at the network boundary | Unsafe if it merely checks a token and hands bytes to a credential-bearing worker; proxy HA/takeover still needs single-writer fencing | Required architectural property; candidate mechanism |
+| Dedicated credential-owning process/workload with deny-by-default network policy | Clear security boundary; workers cannot sign or reach venue directly; process can be restarted/revoked independently | Process-local epoch is not enough; network policy and identity revocation must be independently enforced and evidenced | Preferred logical boundary |
+| Dedicated isolated host/VM per account egress | Stronger containment and a potentially independent power/network fence | More expensive operations; host replacement and recovery are slower; provider control-plane guarantees must be verified | Strong candidate for initial low-availability prototype if simpler isolation cannot be proven |
+| Active-active egress for one account | Higher nominal availability | Requires consensus/single-writer and proof that the losing writer cannot still send | Excluded until equivalent fencing evidence exists |
+
+**Candidate topology:** one active account-scoped Egress Authority owns the venue credentials, signing capability and actual venue socket. Dispatcher, strategy, AI, API and adapter workers hold neither venue credentials nor a direct venue route; they submit immutable command/attempt references to Egress. Egress loads the persisted canonical payload from the authoritative store and validates approval consumption, active reservation, command digest, halt epoch, eligibility revision, attempt identity and current egress generation immediately before transmission.
+
+The control plane may request takeover, but it cannot grant the successor authority merely because a lease expired or an epoch incremented. It must obtain positive evidence from an independently controlled enforcement point that the prior workload identity and network path are revoked, or that the prior host is externally terminated/fenced. The successor receives credentials/route only after that acknowledgement and the account's possibly-sent attempts have entered reconciliation. If the enforcement point is unavailable, ambiguous, or cannot identify the old generation, CREATE remains HALTED. A proxy that checks the epoch and then forwards to a stale credential-bearing worker does not satisfy this design.
+
+#### C. Required proof before selecting a concrete topology
+
+- Prove a worker paused immediately before socket write cannot transmit after revocation.
+- Prove no alternate route, DNS/proxy bypass, local credential copy or secondary client can reach the venue.
+- Prove old identity/host revocation is acknowledged by an authority independent of the old process.
+- Prove a successor cannot receive credentials or route before the old fence is positive.
+- Inject control-plane partition, enforcement-point outage, delayed/replayed fence acknowledgement, clock skew, stale process resume, simultaneous takeover and lost database commit response.
+- Inspect both authoritative database state and the instrumented real egress boundary; a mock adapter or local token check is insufficient.
+- Record exact runtime identity, policy version, network enforcement evidence, host/workload generation and fault schedule for every conformance run.
+
+#### D. Decision boundary
+
+OD-09 remains the owner decision for durable storage and transaction/isolation selection; OD-10 governs freshness/recovery objectives; OD-08 governs canonicalization/signing/key custody; OD-12 governs operator and break-glass authority. This analysis recommends a relational ACID candidate with Risk- and Command-owned local transactions, plus a single credential/socket-owning Egress workload behind independent external fencing. It does **not** select PostgreSQL, a cloud, a vault, a proxy product, a host provider, a cryptographic algorithm or a production availability topology. No implementation or live authority is implied.
