@@ -6,7 +6,7 @@
 
 ## Interim gate — first real bytes
 
-<badge>PASS — 2026-11-14</badge>
+**PASS — 2026-11-14**
 
 - Hosted GitHub Actions run #10 connected to the public Bybit linear WebSocket and captured approximately 10 minutes.
 - 11,177 raw journal records: 8,149 publicTrade.BTCUSDT messages and 2,998 orderbook.full.BTCUSDT messages, plus protocol/control frames.
