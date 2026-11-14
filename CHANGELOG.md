@@ -815,3 +815,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Refined the PostgreSQL G1 candidate: an internal guard helper is not directly exposed to app roles; HEGC uses a reviewed EXECUTE-only transaction entrypoint that acquires guards before protected reads and writes the grant in the same transaction. Domain mutations likewise use guarded procedures.
 - Added authenticated session_user identity, no shared login/SET ROLE impersonation, explicit scope authorization and complete affected-scope derivation as security proof obligations.
 - No PostgreSQL schema, function, procedure, integration harness or production HEGC has been implemented.
+
+### Exact branch-head CI after HEGC security-boundary review — 2026-11-14
+
+- Documentation-synchronized PR #16 HEAD `3d5181f1dc01441ebcd89145be2c0456608f501f` passed [workflow #43619941084](https://github.com/PandaGarry/NEXUS/actions/runs/43619941084).
+- Python 3.11/3.12/3.13 each passed 263 tests (789 successful executions); egress-fencing passed 37 tests including 24 HaltEgressGate cases.
+- All job logs show no test failures or Node.js 20 / `punycode` deprecation warnings.
+- No code/test source changed after verified code/test SHA `c2350f7`; this does not prove Rust, PostgreSQL multi-connection serialization, HEGC database functions or external fencing.
