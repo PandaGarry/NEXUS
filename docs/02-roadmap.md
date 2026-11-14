@@ -755,3 +755,10 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Pin exact vendor package/image digest, build provenance, host platform and configuration.
 - [ ] Review each 18.7 REINDEX item against actual schema/indexes and prove restore/PITR.
 - [ ] Requalify the newest supported 18.x patch before any later deployment decision.
+
+## Exact-head CI after G1 architecture qualification
+
+- [x] Verify PR #16 HEAD `7fb396df5f3e700adf0ad151c446e38930fdadb0` on workflow #43617605777.
+- [x] Pass 13 suites / 239 tests on Python 3.11–3.13 (717 successful executions).
+- [x] Inspect logs for failures and deprecated Node.js runtime warnings; none found.
+- [ ] Maintain separate proof gates for Rust, CBOR/COSE, PostgreSQL 18.7, Trusted Egress, fencing and venue behavior.
