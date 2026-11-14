@@ -18,9 +18,12 @@
 
 ## Новые архитектурные артефакты (PROPOSED)
 
-- [NX-ADR-002 — Execution Integrity & Reconciliation](architecture/NX-ADR-002-execution-integrity-reconciliation.md)\n- [NX-ADR-003 — Simulation Fidelity & Strategy Validation](architecture/NX-ADR-003-simulation-fidelity-strategy-validation.md)\n- [NX-ADR-004 — Market Data Recovery State Machine](architecture/NX-ADR-004-market-data-recovery-state-machine.md)
+- [NX-ADR-002 — Execution Integrity & Reconciliation](architecture/NX-ADR-002-execution-integrity-reconciliation.md)
+- [NX-ADR-003 — Simulation Fidelity & Strategy Validation](architecture/NX-ADR-003-simulation-fidelity-strategy-validation.md)
+- [NX-ADR-004 — Market Data Recovery State Machine](architecture/NX-ADR-004-market-data-recovery-state-machine.md)
 - [NX-ADR-005 — Instrument Specification & Exact Arithmetic](architecture/NX-ADR-005-instrument-specification-exact-arithmetic.md)
 - [ТЗ-NX-001 — Market Data Infrastructure](specifications/TZ-NX-001-market-data-infrastructure.md)
+- [NX-SEC-001 — Threat Model & Credential Isolation](security/NX-SEC-001-threat-model-credential-isolation.md)
 
 Эти документы сохранены и повторно прочитаны из GitHub; они не утверждены владельцем и не являются реализацией.
 
@@ -48,9 +51,3 @@
 Это контрольная точка, а не отчёт о полном аудите. Выводы связывать с точным commit SHA, путями/строками, датой и методом. Непроверенное помечать UNKNOWN, а не PASS.
 
 
-## Архитектурные артефакты (PROPOSED)
-
-- [NX-ADR-002 — Execution Integrity & Reconciliation](architecture/NX-ADR-002-execution-integrity-reconciliation.md): durable outbox, immutable command identity, asynchronous order lifecycle, unknown outcomes, fill deduplication and reconciliation.
-- [NX-ADR-003 — Simulation Fidelity & Strategy Validation](architecture/NX-ADR-003-simulation-fidelity-strategy-validation.md): explicit simulation modes/fidelity levels, execution assumptions, cost/funding model and leakage-resistant validation.
-
-Оба ADR сохранены в рабочей ветке и требуют owner review. Они не являются реализацией. NX-RESEARCH-002 дополнен bounded funding/private-execution audit на Tradoor HEAD `6ab3877`; официальные API capabilities отделены от Tradoor application integration. No private execution implementation, live account test or runtime certification is claimed.
