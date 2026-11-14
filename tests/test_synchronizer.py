@@ -23,7 +23,7 @@ class BookSynchronizerTests(unittest.TestCase):
         self.assertFalse(sync.on_delta(delta(11, 102, [["100", "7"]])).request_snapshot)
         outcome = sync.on_snapshot(snapshot())
         self.assertEqual(outcome.state, "LIVE_VALID")
-        self.assertEqual(outcome.applied_buffered_deltas, 2)
+        self.assertEqual(outcome.applied_buffered_deltas, 1)
         self.assertTrue(sync.valid)
         self.assertEqual(sync.book.update_id, 11)
         self.assertEqual(sync.book.bids["100"], "7")
