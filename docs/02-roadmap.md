@@ -10,7 +10,7 @@
 - [ ] Complete NX-DOC-REVIEW-001 packages D1–D8 or explicitly defer each behind a named gate.
 - [x] Add exact-decimal reference oracle and unit tests (10/10; reference-only evidence).
 - [x] Publish language-neutral golden vectors v1.0.0 (15 cases); Python oracle passes all vectors.
-- [ ] Add deterministic property/fuzz coverage and cross-language conformance.
+- [x] Add deterministic exact-arithmetic property checks: 1,000 seeded cases cross-checked against independent `fractions.Fraction` arithmetic.\n- [ ] Add broader fuzz coverage and cross-language conformance.
 - [ ] Approve production numeric bounds, overflow behavior, typed units and rounding ownership before financial runtime implementation.
 - [ ] Establish implementation workspace, pinned toolchain, dependency policy and reproducible CI before production-language kernel work.
 - [ ] Зафиксировать baseline commit и структуру Tradoor.
