@@ -623,3 +623,10 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Final compatibility checking is assigned to Trusted Egress at the attempt-scoped send-authorization gate, not generic Execution.
 - Canonical CBOR/SHA-256/COSE Ed25519 profile now references NX-ADR-008 / NX-IF-001; library, key custody and security acceptance remain open.
 - Documentation only; no signer, verifier, key or dispatch runtime implemented.
+
+### WP-D evidence-vector and Trusted Egress contract synchronized — 2026-11-14
+
+- Distinguished StateEvidenceVector (NX-IF-004) from ValuationInputVector (NX-IF-002); RiskApprovalCapability binds both.
+- Required Egress to validate the exact signed valuation vector against the persisted Risk evidence manifest and latest consumed watermark/correction state.
+- Prohibited remote source calls or replacement valuation fetches on the dispatch path; missing/stale/unverifiable evidence denies send.
+- Added cross-source coherence and RecoveryBarrier/approval separation acceptance cases. No implementation/runtime added.
