@@ -416,3 +416,12 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - All direct-chain PRs remain open/Draft/unmerged; #16 correctly targets #14's head.
 - Exact PR #16 head `9e9035033da77d958601cb6b69128e13e2551a0d` passed [workflow #43615373737](https://github.com/PandaGarry/NEXUS/actions/runs/43615373737): Python 3.11/3.12/3.13, 13 suites / 239 tests each, 717 successful executions.
 - No failures or Node.js 20 / `punycode` deprecation warnings. This is Python reference-model CI only, not Rust, persistence, Trusted Egress, venue or live-safety evidence.
+
+### CBOR / COSE library qualification — NX-RESEARCH-011 — 2026-11-14
+
+- Added a standards- and source-grounded comparison of Rust `cbor2`, `cbor-core`, `coset`, `cose2` and Python `pycose`.
+- Identified `cbor2` as a deterministic encoder/raw-value candidate but not a strict NEXUS ingress decoder alone.
+- Rejected `cbor-core` as a drop-in codec due to draft profile, length-first ordering and unstable API.
+- Identified `coset` 0.4.2 as the leading test-only COSE structure candidate for RFC 9864 alg=-19, with original protected-header preservation and custom crypto closures.
+- Recorded that `cose2`'s bundled Ed25519 provider uses deprecated alg=-8; no signer, verifier or dependency was adopted.
+- No Cargo workspace, package, key, parser or runtime was introduced. G0D/G1 qualification remains open.
