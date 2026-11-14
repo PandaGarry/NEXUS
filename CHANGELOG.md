@@ -7,7 +7,7 @@
 ### Added — Bounded exact numeric context and canonical scalar wire (test-only; CI verified)
 - Added mandatory caller-supplied NumericLimits and BoundedNumericContext preflight for decimal input, scale alignment, multiplication, rational division, compare, step checks, exact conversion and quantization.
 - Added strict versioned scalar wire formats nxd1 (decimal) and nxr1 (reduced rational); parsers require explicit input character budgets and reject non-canonical forms.
-- Added dedicated bounded-numeric (27 tests) and wire-conformance (10 tests) suites. PR run #43594861745 passed exact PR HEAD `2c0135f1205a27f070b0b6a835aa3c19e904e540` on Python 3.11–3.13: 166 tests per runtime / 498 executions. No production limits or cross-language adoption are approved.
+- Added dedicated bounded-numeric (32 tests) and wire-conformance (11 tests, including language-neutral golden vectors) suites. PR run #43595199511 passed exact PR HEAD `fddd03f59baa159d8ed345691221c2446b0f60e3` on Python 3.11–3.13: 172 tests per runtime / 516 executions. No production limits or cross-language adoption are approved.
 
 
 ### Added — Exact rational inverse base exposure (test-only; CI verified)
