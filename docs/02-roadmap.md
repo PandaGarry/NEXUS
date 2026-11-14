@@ -568,3 +568,11 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [x] Confirm no test failures or Node.js 20 / `punycode` warnings.
 - [x] Verify both direct pinned GitHub Actions manifests declare Node 24 at their exact pinned commit SHAs.
 - [ ] Keep CI claims limited to Python reference models; CBOR/COSE, Rust, persistence, egress and venue qualification remain separate gates.
+
+## COSE key-resolution conformance
+
+- [x] Specify local-only bounded key lookup; token-supplied kid/issuer/audience are hints, never authority before signature verification.
+- [x] Bind signed issuer/audience to local expected context after verification; forbid token-directed remote key retrieval.
+- [x] Restrict verifier input to public Ed25519 key material and exact key/signature lengths.
+- [ ] Add cross-language positive and adversarial COSE vectors for lookup ambiguity, remote key URL, claim mismatch, stale/revoked registry generation and private-key leakage.
+- [ ] Qualify library behavior for protected-header byte preservation, duplicate headers and strict failure semantics.
