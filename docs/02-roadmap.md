@@ -667,3 +667,14 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Prove backup/restore/PITR, old-primary fencing and recovery before any failover selection.
 - [ ] Keep PostgreSQL as G1 evaluation target only until proof and security/operational review complete.
 - [ ] Prove a lost response while the original transaction remains in flight cannot create a second reservation; same-identity/digest retry is arbitrated by the unique constraint, and unresolved outcome keeps the scope HALTED.
+
+## Risk scope serialization and PostgreSQL concurrency — NX-ARCH-REVIEW-007
+
+- [x] Refine common Risk-owned scope-state serialization for reservation and projection updates.
+- [x] Require atomic updates to every affected parent/account and child scope row.
+- [x] Version and serialize scope hierarchy/configuration changes.
+- [x] Specify logical state-version fields and precise 40001/40P01/23505 behavior.
+- [x] Define concurrency/fault-injection matrix and exact PostgreSQL 18 evidence sources.
+- [ ] Implement exact-version concurrency tests, role separation and failure injection.
+- [ ] Benchmark scope contention/fan-out without weakening atomicity.
+- [ ] Prove source watermark completeness, failover, backup/restore and external fencing before G1.
