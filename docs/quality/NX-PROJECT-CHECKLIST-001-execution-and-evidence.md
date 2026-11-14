@@ -24,7 +24,7 @@ Never infer DONE from prose, a draft document, a green CI run on a different SHA
 | Product scope | DONE for bounded v1 scope | OD-01 and OD-04 accepted; OD-15 partially accepted. See NX-OWNER-DECISIONS-001 |
 | PR #10 | OPEN / Draft / unmerged | Current branch contains reference models and docs; not a production implementation |
 | Instrument specification validator | DONE as test-only reference slice | NX-REF-DOMAIN-001; 17 tests passed in combined run #43592862627 on Python 3.11–3.13; synthetic fixture only, no production authority |
-| Instrument registry | DONE as test-only reference slice | NX-REF-DOMAIN-002; 12 tests passed in combined run #43592862627 on Python 3.11–3.13; in-memory only, no persistence or distributed writer protocol |
+| Dimensional financial types | IN PROGRESS as test-only reference slice | NX-REF-DOMAIN-003; exact-decimal dimensional wrappers added; exact-head CI pending; no production bounds, FX, derivatives, margin or ledger policy |\n| Instrument registry | DONE as test-only reference slice | NX-REF-DOMAIN-002; 12 tests passed in combined run #43592862627 on Python 3.11–3.13; in-memory only, no persistence or distributed writer protocol |
 | Exact-decimal oracle | DONE as reference slice only | 11 tests, 15 golden vectors and 1,000 deterministic rational-oracle property cases; exact PR-head CI passed on Python 3.11–3.13; no bounded production numeric type, dimensional wrappers, division or rounding |
 | Command-gateway oracle | DONE as test-only slice only | 24 tests; fake adapter; local SQLite concurrency only; conditional state guards cover late ACK, pre-send rejection and adapter-error races; recovery scan is serialized |
 | Stale dispatcher fencing | BLOCKED | NX-REF-EXEC-001 counterexample proves stale worker can still reach adapter after recovery |
@@ -157,7 +157,7 @@ For every substantive code or architecture change:
 6. Keep PRs Draft until the bounded review is complete; do not merge into the default branch without the required approval.
 7. No secret material, live credentials, private account data or personal financial identifiers in Git.
 
-## 8. Explicit non-authorizations
+## 8. Latest domain-kernel increment\n\n- Added `AssetAmount`, `Money`, `Price`, `Notional` and instrument-scoped `ContractCount`, all backed by `ExactDecimal`.\n- Only same-dimension/same-unit addition and subtraction are supported. `Price × matching AssetAmount` yields quote-denominated `Notional`; contract counts cannot be treated as asset quantity.\n- 15 dedicated tests are included in the CI workflow; exact-head CI evidence is pending.\n- This does not resolve `InstrumentSpec.quantity_unit` mapping, derivative formulas, FX, margin, fees, P&L, production numeric bounds or accounting policy.\n\n## 9. Explicit non-authorizations
 
 This checklist does not authorize:
 - real exchange credentials, private account connectivity or order placement;
