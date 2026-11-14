@@ -41,6 +41,7 @@ class HaltEgressGateTests(unittest.TestCase):
         with self.assertRaises(GateDenied):
             self.gate.initiate_socket_write(attempt_id="paused")
         self.assertEqual(self.gate.attempts["paused"].phase, AttemptPhase.SENDER_FENCED_UNKNOWN)
+        self.assertTrue(self.gate.attempts["paused"].reservation_held)
         self.assertEqual(self.gate.reconciliation_required(), ("paused",))
 
     def test_sender_fence_does_not_prove_no_prior_socket_side_effect(self):
