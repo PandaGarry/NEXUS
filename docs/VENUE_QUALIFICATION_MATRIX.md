@@ -103,8 +103,8 @@ The following remain UNKNOWN until exact jurisdiction, account type, product fam
 | Spot eligibility | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Perpetual swap eligibility | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Dated futures / expiry semantics | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
-| Historical trade archive coverage / start date | YES — public BTCUSDT daily CSV listing begins 2020-03-25; current freshness/completeness unverified | UNKNOWN | YES — Spot Time & Sales from each pair's first trade through 2026-09-30 | YES — tick-level trades from 2021-09 | UNKNOWN | UNKNOWN |
-| Historical L2 archive coverage | UNKNOWN | UNKNOWN | UNKNOWN — no L2 shown in Time & Sales archive | YES — high-resolution L2 from 2023-03 | UNKNOWN | UNKNOWN |
+| Historical trade archive coverage / start date | YES — public BTCUSDT daily CSV listing begins 2020-03-25; current freshness/completeness unverified | UNKNOWN | YES — Spot Time & Sales from each pair's first trade through 2026-09-30 | YES — tick-level trades from 2021-09 | UNKNOWN |
+| Historical L2 archive coverage | UNKNOWN | UNKNOWN | UNKNOWN — no L2 shown in Time & Sales archive | YES — high-resolution L2 from 2023-03 | UNKNOWN |
 | Private order/fill/account streams | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | REST reconciliation for unknown order outcome | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Client order ID constraints / idempotency semantics | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
