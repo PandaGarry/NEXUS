@@ -160,7 +160,7 @@ No production financial calculator or execution/risk/ledger implementation is au
 - [x] Publish NX-REF-DOMAIN-010 and language-neutral exact vectors for explicitly dimensioned spot, linear, inverse and partial-fill arithmetic.
 - [x] Add independent rational-oracle checks and negative dimension/identity tests.
 - [x] Add the fixture suite to Python 3.11–3.13 CI.
-- [ ] Verify exact PR-head CI; then freeze this bounded fixture package.
+- [x] Verify exact code/test commit CI: 179 tests per runtime passed on Python 3.11, 3.12 and 3.13; freeze this bounded fixture package as test-only reference evidence.
 - [ ] Keep fee/funding/P&L/margin/liquidation/FX/accounting fixtures blocked until authoritative venue/account or owner policies exist.
 
 This package validates mathematical identities only; it does not pass financial readiness gates.
