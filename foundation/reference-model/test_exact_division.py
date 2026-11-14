@@ -1,5 +1,7 @@
 """Exact rational division and explicit quantization policy conformance tests."""
 import unittest
+import json
+from pathlib import Path
 from fractions import Fraction
 
 from nexus_decimal import (
@@ -98,6 +100,26 @@ class ExactDivisionTests(unittest.TestCase):
         value = ExactRational(10**80 + 1, 10**40)
         self.assertEqual(value.numerator, 10**80 + 1)
         self.assertEqual(value.denominator, 10**40)
+
+    def test_language_neutral_division_golden_vectors(self):
+        path = Path(__file__).with_name("division-golden-vectors-v1.json")
+        vectors = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(vectors["version"], "1.0.0")
+        for case in vectors["cases"]:
+            with self.subTest(vector=case["id"]):
+                if case["op"] == "divide":
+                    result = d(case["a"]).divide_exact(d(case["b"]))
+                    actual = (str(result.numerator), str(result.denominator))
+                    expected = (case["expected_numerator"], case["expected_denominator"])
+                elif case["op"] == "to_decimal_exact":
+                    actual = str(ExactRational(int(case["numerator"]), int(case["denominator"])).to_decimal_exact())
+                    expected = case["expected"]
+                elif case["op"] == "quantize":
+                    actual = str(ExactRational(int(case["numerator"]), int(case["denominator"])).quantize(case["scale"], RoundingMode(case["rounding"])))
+                    expected = case["expected"]
+                else:
+                    self.fail(f"unsupported division vector operation: {case['op']}")
+                self.assertEqual(actual, expected)
 
     def test_deterministic_rational_quantization_properties(self):
         import random
