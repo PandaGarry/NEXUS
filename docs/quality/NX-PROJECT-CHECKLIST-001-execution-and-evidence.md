@@ -1095,3 +1095,14 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Inject halt-before-gate, gate-before-halt, paused process, crash after gate commit, control-store outage and sender-fencing failures; inspect durable state and actual egress boundary.
 
 **Disposition:** ordering and failure semantics specified in NX-IF-005, NX-ADR-008, NX-ARCH-REVIEW-005 and NX-REF-EXEC-002. No halt store, egress runtime or network fence is implemented.
+
+## 18.33 Halt / Egress final-gate adversarial cases — 2026-11-14
+
+- [x] Add explicit cases 36–42 to NX-IF-005 for halt-before-gate, gate-before-halt, paused process after gate commit, unproven external fence, halt-store outage, late venue acceptance and instrumented socket-boundary proof.
+- [x] Require zero socket-write initiation when halt epoch commits before final Egress authorization.
+- [x] Require gate-committed attempts to remain reserved and tracked until socket-write initiation is observed or sender is positively fenced.
+- [x] Keep boundary unacknowledged when an old process could resume; do not claim fully enforced HALTED.
+- [ ] Implement and run all seven cases with actual instrumented socket/network boundary and independent process/host/path fencing.
+- [ ] Verify post-ack venue acceptance of an earlier initiated request is reconciled without blind resend.
+
+**Disposition:** adversarial requirements documented only; no runtime or external fencing proof exists.
