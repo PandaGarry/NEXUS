@@ -733,3 +733,12 @@ This is evidence for the fixture only. Production schema, out-of-band role/ACL m
 ## Public product communications — 2026-11-14
 
 Added a public release-communication standard: user-facing updates must be concise, verified, value-oriented and explicit about material limitations. Internal engineering notes remain internal. Telegram/MAX, VK and other community channels are planned for a later stage after stable product availability, support/moderation ownership and repeatable release governance are established. No public channel is launched by this change.
+
+
+## Latest HEGC PostgreSQL security qualification — 2026-11-14
+
+The disposable PostgreSQL 18.7 fixture was expanded with two bounded adversarial checks: runtime-principal attempts to escalate role/definer/function authority, and restrictive RLS composition with the existing permissive HEGC policy. Exact code/test HEAD `07373e88109bd492d3b0f7c0ab1491e0bb1ab7bf` passed 11/11 PostgreSQL tests in [workflow #43629845855](https://github.com/PandaGarry/NEXUS/actions/runs/43629845855). The Python reference suite passed 264 tests on each of Python 3.11/3.12/3.13 in [workflow #43629845861](https://github.com/PandaGarry/NEXUS/actions/runs/43629845861).
+
+Documentation-synchronized HEAD `e78f3b7c95939d13de18842567d56c4c314c3e6c` independently passed 11/11 PostgreSQL tests in [workflow #43629988964](https://github.com/PandaGarry/NEXUS/actions/runs/43629988964) and 264 Python tests per runtime in [workflow #43629988969](https://github.com/PandaGarry/NEXUS/actions/runs/43629988969). All four logs were inspected; no test failures or ResourceWarning/DeprecationWarning matches were found.
+
+The new tests establish only the behavior of the disposable fixture and its runtime roles. PostgreSQL DBA/superuser role/ACL changes remain a separate migration/control-plane boundary. Production catalog-manifest drift detection, emergency change reconciliation, existing-session termination, full RLS adversarial coverage, crash/restore/PITR, true uncertain-COMMIT recovery, production HEGC/Egress and live execution remain unimplemented or unqualified. Live trading remains NOT AUTHORIZED.
