@@ -387,3 +387,7 @@ Exact branch HEAD `97a1819527bf6b1973793b12a084ef8cd0dee776` passed GitHub Actio
 - Freshness/recovery: source-specific EvidenceRequirementSet/FreshnessPolicy, watermarks/completeness, monotonic elapsed-time and fail-closed UNKNOWN; no global TTL. Numeric thresholds and RTO/RPO remain owner/source decisions.
 - Emergency operations: single Owner, step-up resume after READY RecoveryBarrier, no automatic cancel-all/flatten or offline emergency order plan; break-glass containment only.
 - These are G1 design/qualification choices, not production approval. No package, database, key, cloud, venue, credential or runtime was installed/selected for production. G0D/G1 evidence gates remain open; live trading NOT AUTHORIZED.
+
+## COSE signing-profile standards correction — 2026-11-14
+
+A standards cross-check of NX-ADR-008 found that RFC 9053's polymorphic COSE EdDSA identifier (-8) was superseded for fully specified algorithm use by RFC 9864 (October 2025). The G1 profile now specifies COSE Ed25519 algorithm identifier **-19**, with COSE key type OKP and Ed25519 curve. The deprecated polymorphic identifier (-8), Ed448, algorithm/key mismatch and substitution are rejected. Protected `kid` is only an integrity-protected lookup hint: it is not assumed unique or independently authoritative; key resolution is issuer/algorithm/purpose/status/generation-bound and fails closed on ambiguity. No cryptographic implementation or key custody provider is selected. Cross-language signature vectors and provider qualification remain open.
