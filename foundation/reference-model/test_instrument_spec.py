@@ -54,8 +54,11 @@ class InstrumentSpecTests(unittest.TestCase):
             spec().validate_limit_order(dec("50000"), dec("0.0015"))
 
     def test_rejects_below_minimum_quantity(self):
+        # 0.001 is a valid lot multiple, but below the configured 0.002 minimum.
         with self.assertRaisesRegex(InvalidOrderValue, "min_quantity"):
-            spec().validate_limit_order(dec("50000"), dec("0.0005"))
+            spec(min_quantity=dec("0.002")).validate_limit_order(
+                dec("50000"), dec("0.001")
+            )
 
     def test_rejects_above_maximum_quantity(self):
         with self.assertRaisesRegex(InvalidOrderValue, "max_quantity"):
