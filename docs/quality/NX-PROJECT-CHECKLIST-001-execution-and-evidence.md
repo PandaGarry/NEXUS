@@ -711,3 +711,12 @@ The synchronized documentation head `c5c00d37b26f365b79690a9f3297ab571d9ec6f2` p
 - [ ] Do not interpret this reference-model CI as validation of Rust, CBOR/COSE implementation, PostgreSQL transactions, process/host/network fencing, Trusted Egress, venue adapters or live-trading safety.
 
 **Disposition:** exact synchronized branch-head Python reference regression passed. G0D/G1 implementation/evidence gates remain open; PR #16 remains Draft; live trading NOT AUTHORIZED.
+
+## 18.27 Post-synchronization exact-head regression — 2026-11-14
+
+- [x] Verify branch HEAD `928d5fd261553676c3fad6a8e88b984a862af338` with workflow [#43615282210](https://github.com/PandaGarry/NEXUS/actions/runs/43615282210).
+- [x] Confirm Python 3.11/3.12/3.13 all passed; 13 isolated suites / 239 tests per runtime; 717 successful executions.
+- [x] Inspect all three logs; no test failures or Node.js 20 / `punycode` deprecation warnings.
+- [ ] Keep verification scope limited to Python reference models; this run does not exercise the proposed CBOR/COSE implementation, PostgreSQL, Rust, egress fencing, venue behavior or live safety.
+
+**Disposition:** exact tested SHA passed. This evidence is regression-only; G0D/G1 implementation gates remain open.
