@@ -79,6 +79,19 @@ The PostgreSQL 18.7 release does not change the NX-ADR-008 transaction model:
 
 The 18.7 release contains a fix to `INSERT ... ON CONFLICT` behavior, but NEXUS must still prove its own transaction protocol, row ownership, idempotency constraints and crash semantics. A database release fix does not establish application-level correctness.
 
+### 4.1 HEGC cross-schema read/write consistency
+
+The HEGC final-gate transaction writes only its control-owned schema but reads the gate-critical Risk/Command/eligibility/evidence/dispatcher state. The transaction must run at SERIALIZABLE on the **same logical PostgreSQL database and authoritative primary** as those records. This guarantee is not obtained by running only HEGC at SERIALIZABLE: every transaction that mutates a row/version in HEGC's validation read set must participate in the same SERIALIZABLE protocol or a separately proven shared version/CAS guard. A weaker writer or stale replica is a bypass and blocks grant issuance.
+
+- PostgreSQL's SERIALIZABLE guarantee applies to the set of participating serializable transactions; HEGC and each relevant source writer need a bounded whole-transaction retry path for SQLSTATE 40001. Deadlock 40P01 also requires a bounded retry policy with the whole transaction restarted.
+- HEGC has SELECT-only privileges on source schemas and write privileges only in its control schema. PostgreSQL requires UPDATE privilege on at least one column for `SELECT ... FOR SHARE/UPDATE`; do not quietly grant HEGC source-table UPDATE solely to obtain row locks. If serializable predicate/conflict tracking plus source-writer participation cannot be proven, use a separately reviewed least-privilege lock/version API or fail closed.
+- Advisory locks are application-defined; PostgreSQL does not force every writer to acquire them. They are not an acceptable sole guard unless direct DML is revoked and every relevant write is forced through a reviewed procedure that acquires the same lock.
+- Gate-critical reads must not come from asynchronous replicas. A different database, cross-cluster source or independently lagging replica needs a new consistency/fencing design; do not treat a matching version string as proof of a common atomic snapshot.
+- HEGC grant issuance is idempotent on stable attempt ID. On serialization retry or ambiguous commit, resolve the same attempt ID and digest; never issue a second grant or a replacement attempt while the first may still send.
+
+These requirements are design/qualification constraints, not evidence that the HEGC transaction, role grants or database schema exists.
+
+
 ## 5. G1 qualification checklist
 
 - [ ] Pin the exact PostgreSQL 18.7 distribution, package checksum/image digest and build provenance.
@@ -99,5 +112,8 @@ The 18.7 release contains a fix to `INSERT ... ON CONFLICT` behavior, but NEXUS 
 - PostgreSQL versioning policy / supported minor releases: https://www.postgresql.org/support/versioning/
 - PostgreSQL 18.7 transaction serialization failure handling: https://www.postgresql.org/docs/18/mvcc-serialization-failure-handling.html
 - PostgreSQL 18.7 transaction isolation: https://www.postgresql.org/docs/18/transaction-iso.html
+- PostgreSQL 18 privileges: `SELECT FOR SHARE/UPDATE` requires UPDATE privilege on at least one column: https://www.postgresql.org/docs/18/ddl-priv.html
+- PostgreSQL 18 explicit/advisory locking: advisory locks are application-defined and not enforced for all writers: https://www.postgresql.org/docs/18/explicit-locking.html
+- PostgreSQL 18 application-level consistency / SERIALIZABLE caveats: https://www.postgresql.org/docs/18/applevel-consistency.html
 
 **Final disposition:** PostgreSQL 18.7 is the current G1 evaluation patch target only. Production database selection, hosting, replication, backup retention, RPO/RTO, failover and financial correctness remain unapproved and evidence-gated.
