@@ -435,3 +435,7 @@ Published [NX-RESEARCH-011](research/NX-RESEARCH-011-cbor-cose-library-qualifica
 ## CBOR command-key profile refinement — 2026-11-14
 
 NX-ADR-008 and OD-08 now restrict command map keys to schema-defined ASCII text field names. User-provided identifiers and Unicode text remain values, subject to strict UTF-8 and no implicit Unicode normalization. This reduces key-alias and schema ambiguity; it does not replace raw-byte deterministic validation. No parser implementation or dependency was added.
+
+## Exact-head CI after CBOR / COSE qualification and OD-08 key-profile refinement — 2026-11-14
+
+Branch HEAD `1bb2192e6746e0f86659f006ef204990adc81188` passed [GitHub Actions #43615753905](https://github.com/PandaGarry/NEXUS/actions/runs/43615753905): Python 3.11/3.12/3.13 each passed 13 isolated reference suites / 239 tests (717 successful executions total). No failures or Node.js 20 / `punycode` deprecation warnings. The run verifies Python reference models only; it does not execute CBOR/COSE candidates, the strict byte validator, Rust, PostgreSQL, Trusted Egress, external fencing, venues or live safety.
