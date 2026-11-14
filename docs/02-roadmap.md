@@ -7,14 +7,17 @@
 - [ ] Завершить аудит exchange adapters и capabilities matrix. (Initial Tradoor source pass recorded in NX-RESEARCH-002; private/funding and full instrument rules remain UNKNOWN.)
 - [ ] Проверить ingestion, recorder, backfill, migrations и persistence.
 - [ ] Проверить тесты, CI, dependency tree и лицензии.
-- [x] Подготовить initial threat model (NX-SEC-001, PROPOSED); [ ] провести deployment-specific review и security verification.
+- [x] Подготовить initial threat model (NX-SEC-001, PROPOSED).
+- [ ] Провести deployment-specific review и security verification.
 - [ ] Сравнить HFTBacktest, LEAN и ABIDES по fidelity, replay, latency и queue modeling.
 - [ ] Сопоставить Order Flow формулы с поведенческими эталонами.
 - [ ] Зафиксировать дефекты, неизвестные свойства и ограничения.
 
 ## Phase 1 — Core Architecture (Blocked)
 - [ ] Утвердить NX-ADR-001 Unified Market Event Contract.
-- [ ] Утвердить NX-ADR-002 Execution Integrity & Reconciliation. (ADR drafted; owner review required.)\n- [ ] Утвердить NX-ADR-003 Simulation Fidelity & Strategy Validation. (ADR drafted; owner review required.)\n- [ ] Утвердить NX-ADR-004 Market Data Recovery State Machine.
+- [ ] Утвердить NX-ADR-002 Execution Integrity & Reconciliation. (ADR drafted; owner review required.)
+- [ ] Утвердить NX-ADR-003 Simulation Fidelity & Strategy Validation. (ADR drafted; owner review required.)
+- [ ] Утвердить NX-ADR-004 Market Data Recovery State Machine.
 - [ ] Утвердить NX-ADR-005 Instrument Specification & Exact Arithmetic.
 - [ ] Утвердить NX-ARCH-001 целевую архитектуру и deployment topology.
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
