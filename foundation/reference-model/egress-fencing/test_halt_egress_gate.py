@@ -45,7 +45,6 @@ class HaltEgressGateTests(unittest.TestCase):
         self.assertEqual(self.gate.attempts["paused"].phase, AttemptPhase.SENDER_FENCED_UNKNOWN)
         self.assertTrue(self.gate.attempts["paused"].reservation_held)
         self.assertEqual(self.gate.reconciliation_required(), ("paused",))
-        self.assertTrue(self.gate.attempts["paused"].reservation_held)
 
     def test_sender_fence_does_not_prove_no_prior_socket_side_effect(self):
         self.gate.authorize_attempt(attempt_id="possibly-sent", observed_epoch=7)
@@ -205,6 +204,8 @@ class HaltEgressGateTests(unittest.TestCase):
         from halt_egress_gate import MAX_HALT_EPOCH
 
         gate = HaltEgressGate(epoch=MAX_HALT_EPOCH)
+        with self.assertRaisesRegex(GateDenied, "epoch exhausted"):
+            gate.authorize_attempt(attempt_id="before-halt", observed_epoch=MAX_HALT_EPOCH)
         self.assertIsNone(gate.request_halt(reason="epoch exhausted"))
         self.assertEqual(gate.phase, HaltPhase.HALT_PENDING)
         with self.assertRaisesRegex(GateDenied, "epoch exhausted"):
