@@ -33,7 +33,7 @@ The model uses arbitrary-precision integer coefficients. This is intentionally d
 - no exchange connectivity, credentials, orders or persistence;
 - no production performance or memory claims;
 - no production rounding policy for exchange normalization, fees, funding, margin, P&L or accounting; no square roots or transcendental operations;
-- no financial units/currencies/contracts yet;
+- typed financial dimensional wrappers and instrument quantity semantics exist as test-only references; no production integration;
 - no approved production numeric limits or fixed-width overflow policy; the separate bounded reference context uses explicit synthetic limits only;
 - no claim of production, Rust/WASM or backend conformance.
 
