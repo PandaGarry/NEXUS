@@ -11,7 +11,7 @@
 | Tradoor audit | In Progress | Source pass обновлён до HEAD 6ab3877; funding/private execution capability audit добавлен в NX-RESEARCH-002. Полная per-venue сертификация, instrument metadata и runtime verification остаются открыты |
 | Exchange capabilities matrix | Incomplete | Trade/book/OI/liquidation первично просмотрены; per-channel matrix и UNKNOWN поля ещё не закрыты |
 | Simulation fidelity | In Progress | Tradoor paper-модель недостаточна для реалистичного исполнения |
-| Runtime verification | Partial / reference-only | Exact-decimal and gateway reference suites passed in GitHub Actions on Python 3.11–3.13 at prior revisions; current split-brain counterexample and corrected worker-thread fixture await fresh CI. No production runtime, distributed fencing or exchange-adapter verification claimed |
+| Runtime verification | Partial / reference-only | GitHub Actions run [#43589753391](https://github.com/PandaGarry/NEXUS/actions/runs/43589753391) passed on exact PR HEAD `b761f9249064f881cef994dfe8724b66034ebe02`: 10 exact-decimal + 21 gateway tests on each of Python 3.11, 3.12 and 3.13 (93 executions total). Reference-only; no production runtime, distributed fencing or exchange-adapter verification claimed |
 | Security threat model | Drafted / Proposed | NX-SEC-001 сохранён; owner review, deployment-specific analysis и security verification не выполнены |
 | Exact arithmetic / instrument specs | ADR proposed / implementation not started | NX-ADR-005 drafted; требует owner review и последующих golden tests. Блокер реализации сохраняется |
 | Unified market event contract | PROPOSED | NX-ADR-001 опубликован; owner review и conformance design review требуются |
@@ -64,6 +64,8 @@
 
 ## Foundation documentation review and reference slice (2026-11-14)
 
+- [NX-PROJECT-CHECKLIST-001](quality/NX-PROJECT-CHECKLIST-001-execution-and-evidence.md) added as the living execution/evidence register. G0D remains BLOCKED; D1–D8 statuses and ordered next actions are explicit.
+
 - NX-DOC-REVIEW-001 added as bounded close-out review. Documentation baseline remains NOT FROZEN; G0D is BLOCKED.
 - PR #1–#9 were recorded as Draft/unmerged in the prior snapshot; PR #8 and #9 are sibling branches, and #9 does not include #8.
 - Repository branch `docs/personal-product-profile` contains documentation only; no NEXUS root source workspace/build system was found in that discovery pass.
@@ -78,14 +80,14 @@
 - The previously inspected develop snapshot `97ecbafd6621241a2222ef5a31cf887c6d96d950` diverges from rc9 (77 commits ahead / 72 behind); source findings must not be transferred between snapshots without re-audit.
 - NX-RESEARCH-008 inspects the exact RC9 execution/risk paths. RC9 documentation and source confirm asynchronous best-effort persistence before dispatch, submit/modify/cancel/query route branches that do not enforce a single universal RiskEngine gate, and process-local dispatched-order state absent after restart.
 - NautilusTrader may remain a test-only candidate for replay and selected capabilities, but it is not approved as NEXUS execution authority. NEXUS must own durable outbox, non-bypassable Risk gateway, ledger and recovery barrier.
-- 10 reference-model tests and 10,000 randomized arithmetic comparisons were run against exact fetched files in an isolated local directory. At that earlier review point, PR #10 had no returned GitHub Actions runs; later reference-model CI evidence is recorded in the section below.
+- 10 reference-model tests and 10,000 randomized arithmetic comparisons were run against exact fetched files in an isolated local directory. At that earlier review point, PR #10 had no returned GitHub Actions runs; subsequent exact-HEAD CI evidence is recorded below.
 
 
 ## Command gateway reference slice (2026-11-14)
 
 - NX-REF-EXEC-002 proposes account-scoped authority epochs, credential/network isolation, independently enforced old-egress fencing, stale-epoch state-mutation rejection and a fail-closed takeover sequence. It is a design proposal, not an implemented fence.
 - NX-REF-EXEC-001 and `foundation/reference-model/execution-gateway/` add a test-only Python/SQLite model for CREATE command authorization, payload-bound approval, active reservation consumption, durable local outbox persistence, dispatch marker, and conservative ambiguous-outcome recovery.
-- The suite now contains 21 deterministic tests. The prior GitHub Actions run [#43588971888](https://github.com/PandaGarry/NEXUS/actions/runs/43588971888) passed the preceding 20-test gateway revision on Python 3.11, 3.12 and 3.13; the split-brain counterexample and late-ACK state guard passed CI at a later code revision; latest PR-head CI is being rechecked. Two independent-connection tests cover local SQLite races. A new adversarial counterexample proves a stale worker can resume after recovery and still send through an unfenced adapter. A local state-CAS guard now rejects its late ACK as a state transition and records it as a venue observation, preserving OUTCOME_UNKNOWN. The egress race remains a known unsafe behavior; a real fenced egress authority is required before production.
+- The suite contains 21 deterministic tests. GitHub Actions run [#43589753391](https://github.com/PandaGarry/NEXUS/actions/runs/43589753391) passed the exact PR HEAD `b761f9249064f881cef994dfe8724b66034ebe02`: 10 exact-decimal and 21 gateway tests on Python 3.11, 3.12 and 3.13. Two independent-connection tests cover local SQLite races only. A new adversarial counterexample proves a stale worker can resume after recovery and still send through an unfenced adapter. A local state-CAS guard now rejects its late ACK as a state transition and records it as a venue observation, preserving OUTCOME_UNKNOWN. The egress race remains a known unsafe behavior; a real fenced egress authority is required before production.
 - Scope is intentionally narrow: fake adapter only; no production signer, production database, fenced egress authority, cross-host leases/fencing, complete Risk calculation, ledger posting, venue reconciliation, or real exchange integration.
 - A fresh local container clone attempt failed because the environment could not resolve github.com; CI supplies the checked-in-source verification for this exact HEAD.
 - Prototype Readiness remains BLOCKED. The reference model grants no live permission and does not change any owner risk limits.
