@@ -1091,3 +1091,17 @@ No PR merge, base retarget, force-push or branch rewrite is authorized by this c
 - [ ] Complete independent security review and owner acceptance before any production gate is considered.
 
 **Disposition:** NX-ARCH-REVIEW-009 is design-only. The SHA-256 fixture fingerprint is not a signed production attestation or deployment control. G0D/G1 remain open; live trading remains NOT AUTHORIZED.
+
+
+## Authorization-catalog manifest admission reference — 2026-11-14
+
+- [x] Implement test-only logical v1 manifest field/schema validation with unknown/missing-field rejection.
+- [x] Enforce explicit non-wildcard scope, supported catalog object kinds, unique semantic identities and unique deny-rule IDs.
+- [x] Add fail-closed admission-precondition checks for signature/approval result, revocation availability, exact context, sequence/predecessor, validity interval and digest shape.
+- [x] Add adversarial unit tests and wire the isolated suite into the Python 3.11/3.12/3.13 CI matrix.
+- [ ] Implement strict raw-byte deterministic-CBOR validation and cross-language golden vectors; do not treat logical Python objects as wire conformance.
+- [ ] Implement separately qualified COSE_Sign1/Ed25519 verification and external trust/approval/revocation services.
+- [ ] Bind a trusted manifest digest to immutable external monotonic state and tamper-evident audit custody.
+- [ ] Implement production catalog extraction/effective privilege evaluation, deployment TOCTOU controls and post-startup drift response.
+
+**Disposition:** the reference model tests admission logic only. Boolean verification inputs are test seams, not cryptographic proof. No production authorization is granted.
