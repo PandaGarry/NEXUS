@@ -1083,3 +1083,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Decide whether the product requires the stronger guarantee "no socket initiation after halt commit"; if so, design and prove a transport-level cancellation/fencing primitive before production.
 
 **Disposition:** semantic race closed at design level across NX-IF-005, NX-ADR-008, NX-ARCH-REVIEW-005 and NX-REF-EXEC-002. No runtime or transport fence is implemented; halt propagation remains unproven.
+
+## 18.32 Halt epoch versus final Egress authorization race — 2026-11-14
+
+- [x] Require halt epoch transition and final EgressBoundaryAuthorization to serialize on the same authoritative halt-state generation.
+- [x] Define halt-wins ordering: final Egress gate observes new epoch and denies socket initiation.
+- [x] Define gate-wins ordering: attempt is logically in-flight, retains reservation and requires reconciliation; halt cannot retroactively revoke it.
+- [x] Require Egress to track gate-committed attempts until socket-write initiation is observed or sender is positively fenced; it cannot acknowledge a later halt epoch while a paused old attempt could resume.
+- [x] State the guarantee precisely: after boundary acknowledgement, no stale/queued attempt may newly initiate a socket write; do not claim no bytes can leave after wall-clock halt request or recall venue-processed requests.
+- [x] Separate Risk Engine outage from authoritative halt-store outage; independent Control Plane can commit halt when store is available, while store uncertainty blocks Egress gate and prevents a fully-enforced HALTED claim.
+- [ ] Inject halt-before-gate, gate-before-halt, paused process, crash after gate commit, control-store outage and sender-fencing failures; inspect durable state and actual egress boundary.
+
+**Disposition:** ordering and failure semantics specified in NX-IF-005, NX-ADR-008, NX-ARCH-REVIEW-005 and NX-REF-EXEC-002. No halt store, egress runtime or network fence is implemented.
