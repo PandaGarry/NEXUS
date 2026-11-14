@@ -198,7 +198,7 @@ Module class describes product responsibility. Trust tier describes the maximum 
 | T3 — Privileged platform service | Identity, policy, security control plane | Dedicated review, hardened deployment, narrowly scoped administrative authority and audit |
 | T4 — Protected financial core / Trusted Egress | Risk, command, Ledger, halt/recovery and the sole authorized venue egress boundary | Separate change control and runtime boundary; not assignable by module manifest or commercial entitlement |
 
-T0–T4 are architecture labels, not a claim that a system is invulnerable. Raising a module's tier requires a separate architecture/security decision and cannot be inferred from a successful signature, owner field or plan.
+T0–T4 are architecture labels, not a claim that a system is invulnerable. T4 groups domains requiring the strongest protection; it does **not** combine Risk, Command, Ledger and Trusted Egress into one workload, identity, process or permission set. Those authorities remain separately owned and independently controlled. No optional module may be assigned T4 or inherit a protected-domain identity. Raising a module's tier requires a separate architecture/security decision and cannot be inferred from a successful signature, owner field or plan.
 
 ## 6. Lifecycle state machine
 
