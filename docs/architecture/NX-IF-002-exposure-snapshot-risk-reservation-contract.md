@@ -420,3 +420,8 @@ Numeric risk limits, leverage caps, daily loss thresholds and drawdown limits re
 **WP-B design draft published; acceptance remains BLOCKED pending owner/security review, resolution of owner decisions and conformance design.**
 
 This artifact defines a proposed contract only. No database isolation behavior, distributed transaction, reservation service, exposure calculator, signer, exchange adapter, integration test, concurrency test, fault test or runtime behavior has been implemented or verified. No live credentials, exchange connections, orders or risk-limit changes were used or performed.
+
+
+## WP-D evidence and recovery composition
+
+ExposureSnapshot MUST expose the source-specific event/cursor/journal/projection watermarks, connection generations, quality, completeness and reconciliation references required by [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md). A numerically populated snapshot is not authorization-ready unless its EvidenceRequirementSet passes for the requested operation class. RecoveryBarrier rebuilds exposure only after Execution, Ledger and venue evidence have reached the required recovery stages. Stale fencing generations, incomplete child scopes or unknown external exposure keep affected reservations conservative and block risk-increasing authorization. This is a proposed contract link; no implementation is claimed.

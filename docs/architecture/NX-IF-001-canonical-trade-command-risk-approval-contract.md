@@ -407,3 +407,8 @@ Not verified:
 - owner acceptance or authorization for live operation.
 
 No code, exchange connection, credentials, order placement, risk-limit change, PR merge or default-branch change was performed.
+
+
+## WP-D evidence binding
+
+RiskApprovalCapability MUST reference the immutable StateEvidenceVector ID/version and canonical digest defined by [NX-IF-004](NX-IF-004-state-evidence-freshness-recovery-barrier-contract.md), together with the EvidenceRequirementSet/FreshnessPolicy version used for evaluation. Execution performs the final compatibility check immediately before dispatch. A material source generation, watermark, quality, spec, policy, exposure, reservation or halt-epoch change invalidates the capability unless a contractually defined monotonic compatibility rule proves otherwise. Approval MUST NOT be rebound in place; Risk must re-evaluate and issue a new capability. This is a proposed cross-contract requirement, not an implemented behavior.

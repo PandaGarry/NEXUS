@@ -27,7 +27,10 @@
   - [ ] WP-B acceptance: owner decisions, persistence/transaction design, schema conformance, concurrency and fault-injection evidence.
   - [x] WP-C design draft: NX-IF-003 published; execution ownership, canonical fill identity, durable outbox/inbox, atomic Ledger posting, corrections and projection watermark handoff specified.
   - [ ] WP-C acceptance: owner accounting decisions, transaction/store selection, schema conformance, golden accounting fixtures, replay and fault-injection evidence.
+  - [x] WP-D design draft: NX-IF-004 published; StateEvidenceVector, source-specific freshness/quality, quarantine, RecoveryCase and scoped RecoveryBarrier/restart ordering specified.
+  - [ ] WP-D acceptance: owner freshness thresholds and venue/account scope, durable persistence and operator policy decisions, schema conformance, restart/replay/reconciliation and fault-injection evidence.
 - [ ] Определить transactional boundaries, durable outbox, event log и recovery.
+- [ ] Согласовать EvidenceRequirementSet/FreshnessPolicy thresholds и recovery objectives с владельцем до любой реализации.
 - [ ] Выполнить end-to-end contract review и зафиксировать owner decisions до выбора реализации.
 
 ## Phase 2 — Professional Analytics (Blocked)
