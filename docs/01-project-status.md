@@ -481,3 +481,9 @@ Branch HEAD `71afa64c00affed017c1f072600f4f0e4aaeccc6` passed [workflow #4361624
 ## Final synchronized PR #16 exact-head CI — 2026-11-14
 
 Branch HEAD `3af0453897545b77fee358b9902a6301f662232e` passed [workflow #43616348161](https://github.com/PandaGarry/NEXUS/actions/runs/43616348161): Python 3.11/3.12/3.13 each passed 13 isolated suites / 239 tests (717 successful executions total). All three logs show no failures or Node.js 20 / `punycode` deprecation warnings. This is reference-model CI only; Rust, CBOR/COSE, PostgreSQL, Trusted Egress, venue adapters and live execution remain untested. PR #16 remains Draft/open/unmerged and stacked parent-first.
+
+## Risk reservation concurrency design — 2026-11-14
+
+NX-ADR-008 §5.3 now defines a Risk-owned scope-state record as the common serialization point for reservation commits and Risk's derived exposure-projection updates. Ledger remains journal owner and cannot write Risk-owned state directly; Risk consumes Ledger/venue/external exposure events through an idempotent inbox and updates projection, watermark and scope state in its own local transaction. Multi-scope reservations process all pre-provisioned scope rows in deterministic ID order and commit atomically. Stale/incomplete projections, missing scope rows and unresolved commit authority fail closed. Whole-transaction retry is bounded for SQLSTATE 40001/40P01; stable idempotency identity/digest handles ambiguous commits. NX-IF-002 §6.4 and OD-09 are synchronized.
+
+This is a design protocol only. No PostgreSQL schema, service, transaction or concurrency test has been implemented. Exact patch/version, role grants, query/lock behavior, crash/recovery and adversarial concurrency evidence remain open.
