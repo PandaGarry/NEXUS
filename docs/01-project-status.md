@@ -268,3 +268,13 @@ NX-RESEARCH-010 published a candidate shortlist. PostgreSQL is the leading persi
 - Identity & Access, Demo and Learning/Wiki are separate bounded domains. Demo/live separation must be enforced by account identity, storage/ledger ownership, service permissions and egress—not by UI flags. Learning has no access to trading secrets or financial write paths.
 - Initial direction: modular monolith / limited separate trust domains, not microservices per feature and not arbitrary in-process plugin loading.
 - No runtime modules, packages, identity provider, database, public registration, third-party extension mechanism or deployment topology selected/installed. Exact branch-head workflow #43608583358 passed on `e15e47f9512bc07a1f6534a4f41b0d27d7d42578`: 13 suites / 237 tests each on Python 3.11, 3.12 and 3.13 (711 successful reference-model executions). This does not test module isolation, identity, DB, secrets or egress. Cross-review and owner/security decisions remain OPEN; G0D/G1 remain BLOCKED as applicable.
+
+
+## Platform extensibility and entitlement foundation — 2026-11-14
+
+- Published [NX-ARCH-007](architecture/NX-ARCH-007-platform-extensibility-and-entitlements.md) as PROPOSED / STRATEGIC DESIGN ONLY.
+- Defined a future product-domain taxonomy covering Identity, Trading Core, Demo, Analytics/Research, Strategy Lab, Automation, Learning, Portfolio/Reporting, Collaboration, API/Integrations, Billing/Entitlements and Administration/Support.
+- Separated product capability, commercial entitlement and security authorization. A subscription, successful payment, plan claim or feature flag cannot grant or bypass Risk, Ledger, venue eligibility, limits, halt or trusted egress.
+- Defined stable feature identifiers, auditable entitlement grants, explicit subscription lifecycle, replay-safe billing webhook handling, quotas distinct from Risk limits, downgrade/data-retention principles and compatibility requirements.
+- Public SaaS, multi-tenancy, teams, payment provider, plans/prices, public registration and commercial launch remain separate gated decisions. No payment integration, entitlement service, tenant runtime, module or product feature was implemented.
+- NX-ARCH-007 is a design artifact only; cross-review, G0D/G1, owner/legal/security approvals remain OPEN.
