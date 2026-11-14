@@ -901,3 +901,15 @@ The exact-head workflow above verifies the current normalized documentation tree
 - [ ] Add row/field leakage, cross-account, source-lineage, stale-watermark, partial-coverage and forbidden-field tests at actual boundaries.
 
 **Disposition:** NX-ARCH-REVIEW-006 published. Field inventory is source-grounded; classifications and retention are proposed, not accepted. No API, schema, database table, grant or runtime was implemented.
+
+## 18.43 Risk reservation concurrency contract synchronization — 2026-11-14
+
+- [x] Synchronize NX-ADR-008 §5.3, NX-IF-002 §6.4 / §11, NX-REF-EXEC-002 §4.5 and OD-09 around one Risk-owned scope-state serialization point.
+- [x] Keep Ledger as journal owner; Risk consumes Ledger/venue/external events through idempotent projection inbox transactions.
+- [x] Specify atomic multi-scope account/child reservation, deterministic scope-ID order, pre-provisioned scope rows and fail-closed missing/stale evidence.
+- [x] Add acceptance cases for reservation/projection races, duplicate/reordered events, 40001/40P01 whole-transaction retries, ambiguous commits and idempotency conflicts.
+- [x] Cross-check PostgreSQL 18 transaction isolation, serialization failures, application-level consistency, row locks and ON CONFLICT behavior against official documentation.
+- [ ] Prove all acceptance cases on the exact PostgreSQL 18 patch with separate service roles, fault injection, backup/restore/PITR and primary-fencing evidence.
+- [ ] Keep PostgreSQL as G1 evaluation target only; no production database, schema or reservation service is installed.
+
+**Disposition:** design and test obligations synchronized; no database/runtime behavior is implemented or verified. G1 remains gated.
