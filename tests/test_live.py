@@ -30,7 +30,7 @@ class LiveConfigTests(unittest.TestCase):
         limiter.record(now=1.0)
         limiter.record(now=2.0)
         self.assertEqual(limiter.delay(now=5.0), 5.0)
-        self.assertEqual(limiter.delay(now=9.999), 0.0009999999999994458)
+        self.assertAlmostEqual(limiter.delay(now=9.999), 0.001)
         self.assertEqual(limiter.delay(now=10.0), 0.0)
 
     def test_reconnect_rate_limiter_rejects_invalid_configuration(self):
