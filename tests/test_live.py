@@ -1,11 +1,14 @@
 import json
 import unittest
+import time
+import asyncio
 from unittest.mock import patch
 
 from nexus_bybit_recorder.live import (
     _SNAPSHOT_FETCH_SLOT,
     _backoff_after_connection,
     _fetch_snapshot_singleflight,
+    _frames_until_deadline,
     _reconnect_sleep_seconds,
     ReconnectRateLimiter,
     public_linear_url,
@@ -43,9 +46,31 @@ class LiveConfigTests(unittest.TestCase):
         self.assertEqual(_reconnect_sleep_seconds(1.0, 0.0), 1.0)
         self.assertEqual(_reconnect_sleep_seconds(1.0, 1.0), 1.25)
         self.assertEqual(_reconnect_sleep_seconds(100.0, 0.0), 30.0)
-        self.assertEqual(_reconnect_sleep_seconds(100.0, 1.0), 30.25)
+        self.assertEqual(_reconnect_sleep_seconds(100.0, 1.0), 30.0)
         self.assertEqual(_reconnect_sleep_seconds(4.0, 2.0), 4.25)
         self.assertEqual(_reconnect_sleep_seconds(4.0, -1.0), 4.0)
+
+
+    def test_silent_websocket_does_not_exceed_recording_deadline(self):
+        class SilentWebSocket:
+            def __aiter__(self):
+                return self
+
+            async def __anext__(self):
+                await asyncio.Event().wait()
+
+        async def run():
+            started = time.monotonic()
+            frames = [
+                frame async for frame in _frames_until_deadline(
+                    SilentWebSocket(), started + 0.05
+                )
+            ]
+            elapsed = time.monotonic() - started
+            self.assertEqual(frames, [])
+            self.assertLess(elapsed, 0.25)
+
+        asyncio.run(run())
 
     def test_endpoints(self):
         self.assertEqual(public_linear_url(), "wss://stream.bybit.com/v5/public/linear")
