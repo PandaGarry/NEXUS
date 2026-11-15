@@ -1,6 +1,6 @@
 # NEXUS — venue qualification matrix
 
-**Last reviewed:** 2026-11-15  
+**Last reviewed:** 2026-11-15 (provider and venue re-check)  
 **Purpose:** compare candidate venues without making any venue the architectural center or assuming user eligibility.  
 **Status convention:** YES / NO / UNKNOWN. Every non-UNKNOWN claim is scoped to an exact API/product and backed by a dated source. A documented public feed does not prove account eligibility or production readiness.
 
@@ -9,13 +9,16 @@
 | Candidate | Why it is in the research universe | Current role | Selection status |
 |---|---|---|---|
 | Bybit | Concrete V5 full-depth public stream and linear derivatives market; first live raw capture succeeded | Reference adapter experiment #1; M2 is the active implementation priority | Not selected for trading |
-| Kraken Spot WebSocket v2 | Spot L2 stream sends a WS snapshot and updates with CRC32 checksum; materially contrasts with Bybit full-depth delta-only + REST snapshot model | Protocol/terms research candidate #2; no recorder implementation until Bybit M2 passes | Not selected for trading |
+| Kraken Spot WebSocket v2 | Spot L2 stream sends a WS snapshot and updates with CRC32 checksum; materially contrasts with Bybit and Bitstamp models | Protocol/terms research candidate | Not selected for trading |
+| Bitstamp | Public REST order book, WS v2 feeds, documented derivatives API examples for BTC/USD-PERP; commercial data-license route published | Protocol, market availability and data-rights qualification candidate | Not selected for trading |
 | Coinbase Advanced Trade | Distinct API/product family and useful comparator; do not conflate with Coinbase Exchange API | Alternative technical adapter candidate | Not selected |
 | OKX | Tick-level trades + historical high-resolution L2 since 2023-03; snapshot + seqId/prevSeqId live book model | Leading HYP-001 historical-L2 research candidate; no recorder until Bybit M2 | Not selected; terms restrictive |
+| Tardis.dev | Historical tick-level trades and incremental L2 datasets across venues, including Bitstamp; current ToS permits personal/research use and tightly scoped derived-data distribution | Historical research data provider candidate | Not selected; terms restrict third-party platform use |
+| Amberdata | Market-data API with published commercial-use FAQ; redistribution requires custom license | Commercial/internal data-provider candidate | Not selected; exact NEXUS rights unconfirmed |
 | Binance | Potentially useful large-scale spot/derivatives API comparator | Discovery backlog; no qualification claim here | Unknown |
 | Domestic brokers / listed derivatives venues | May offer a materially different legal, clearing and instrument model | Separate broker/venue adapter research | Not selected |
 
-**Sequencing decision (2026-11-15):** finish and accept Bybit M2 before writing a second recorder. OKX is now the leading historical-L2 research candidate for HYP-001; Kraken remains a strong Spot protocol/checksum contrast and full historical Time & Sales source. Neither is a committed implementation. This avoids two incomplete adapters and lets the second adapter be selected on both protocol contrast and research-data coverage.
+**Sequencing decision (2026-11-15):** Bybit M2 remains NOT ACCEPTED and its live-evidence gate is separately BLOCKED pending terms clarification. The second recorder is no longer unconditionally blocked on Bybit acceptance: it may start after (a) the first implementation has passed its relevant synthetic/unit technical gates and (b) a second source has an acceptable documented data-use basis, with unresolved rights explicitly gated. Otherwise continue offline fixtures and provider research. This prevents a legal response from one venue becoming a project-wide single point of failure without multiplying unverified adapter code. OKX remains a historical-L2 research candidate; Kraken is a Spot snapshot/checksum contrast; Bitstamp is a potential delta + externally seeded snapshot contrast. No second adapter is selected yet.
 
 ## 2. Evidence-backed public-data snapshot (checked 2026-11-15)
 
@@ -77,6 +80,21 @@ Official sources:
 - API terms / prior permission for certain commercial public-data uses: https://docs-legacy.kraken.com/api/docs/guides/global-intro/
 - Global Terms: https://www.kraken.com/legal/global-terms
 
+### Bitstamp API v2 / WebSocket v2 evidence (checked 2026-11-15)
+
+- The official API reference documents REST order book `GET /api/v2/order_book/{market_symbol}/`, with `group=0/1/2` options (ungrouped price levels, grouped-by-price default, or order IDs not grouped at price). It also links the official WebSocket API v2 guide. The official WS page is currently not machine-readable in this review; exact channel payload, timestamp fields, sequence/event identifiers, snapshot semantics and reconnect guarantees therefore remain UNKNOWN until manually verified against the published protocol specification.
+- Bitstamp's own API reference contains multiple `BTC/USD-PERP` examples and identifies it as `market_type: PERPETUAL` in derivatives responses. This proves the instrument is represented in the documented API, not that it is currently active, publicly order-book accessible, available to every legal entity/account, or sufficiently liquid. The live `markets` response and the relevant WS channel must be checked before instrument selection.
+- The same API reference says derivatives markets are returned by public endpoints such as `/api/v2/markets/` and `/api/v2/ticker/{market_symbol}/` (changelog 2025-06-16). It documents public derivatives funding-rate endpoints. Market listing is not an account-eligibility determination.
+- The official API page states companies seeking commercial use of Bitstamp exchange data should contact `partners@bitstamp.net` for a commercial Data License Agreement, and says commercial redistribution/incorporation is possible under that agreement. The page does not establish whether an individual developer can contract on the same terms; ask directly rather than assuming an entity is required or not.
+- Independent Tardis capture documentation reports that Bitstamp `live_orders` and `diff_order_book` subscriptions do not provide an initial full-book snapshot; Tardis obtains a REST snapshot and inserts it as a generated snapshot event. Treat this as a useful independent observation, not official protocol proof. Tardis's own collection process is not a substitute for a NEXUS live protocol test.
+- Architectural implication: Bitstamp may provide a third book-bootstrap pattern (WS deltas + REST seed) but this is not yet a confirmed third continuity model. Do not describe it as timestamp-only or sequence-free: the official WS schema and continuity fields have not been qualified.
+
+Official sources:
+- API v2 reference, REST book, market list, derivatives examples, licensing and changelog: https://www.bitstamp.net/api/
+- Official WebSocket API v2 guide: https://www.bitstamp.net/websocket/v2/
+- Robinhood announcement confirming acquisition closed 2025-06-02: https://robinhood.com/newsroom/robinhood-completes-acquisition-of-bitstamp/
+- Independent capture/snapshot observation: https://docs.tardis.dev/historical-data-details/bitstamp
+
 ### Binance Public Data evidence
 
 - The official Binance Public Data repository documents daily/monthly Spot and USD-M/COIN-M Futures archives. Raw `trades` and `aggTrades` include trade IDs, price, quantity, timestamps and `isBuyerMaker`; `aggTrades` compresses same-price/same-taker-side fills within 100 ms. Prefer raw `trades` for HYP-001 when complete archives exist.
@@ -104,7 +122,34 @@ Official sources:
 - API Agreement: https://www.okx.com/help/okx-api-agreement
 - Historical-data terms: https://www.okx.com/help/historicaldata-terms-and-conditions
 
-## 3. Full qualification matrix
+## 3. Historical-data providers and licensing (separate from exchange execution)
+
+These providers can support research-data acquisition without becoming execution venues. A provider's licence does not automatically clear upstream exchange rights beyond the provider's express grant, nor does a personal/research licence imply permission to expose data or data-powered functionality to NEXUS customers.
+
+| Provider | Evidence-backed scope | Storage / personal research | External/commercial product | Qualification status |
+|---|---|---|---|---|
+| Tardis.dev | Historical raw exchange-native feeds and normalized tick-level trades, incremental L2, snapshots, quotes and derivatives fields; Bitstamp history page lists BTCUSD incremental L2 and trades from 2019-07 | Current ToS (modified 2026-10-28) expressly includes an individual as Customer; Permitted Use includes personal and research use; Clause 9.1 permits download/store/copy and create Derived Data; Clause 9.4 grants continuing rights to lawfully downloaded data subject to surviving restrictions | Clause 9.2 prohibits exposing data/manipulated data or data-powered feed/API/analytics/charting/backtesting functionality to non-Customer Users. Clause 9.3 permits qualifying Derived Data externally as charts/statistics/reports or products aggregated at intervals >=10 minutes (with each measure/instrument datapoint at least 10 minutes apart), except Coinbase data. Coinbase-derived data has stricter prohibitions, including AI/ML use. This is not a blanket SaaS licence | Strong personal HYP-001 candidate; commercial NEXUS rights require a separate interpretation/contract |
+| Amberdata | Official online market-data FAQ publishes API/WS usage limits and commercial-use FAQ | Standard licence says commercial use is allowed; exact historical depth, symbols, retention and account scope need product-level confirmation | Standard licence prohibits redistribution/resale/sublicensing; custom licence needed for redistribution. API keys are single-tenant and tied to purchasing organization | Candidate for internal commercial analytics; not cleared for customer-facing NEXUS |
+| Kaiko / other institutional vendors | Discovery backlog; no current contract or exact product scope reviewed in this pass | UNKNOWN | UNKNOWN; request explicit rights for internal research, derived outputs, display, redistribution, multi-tenant use, retention and post-termination use | Not qualified |
+
+### Tardis terms details (reviewed 2026-11-15)
+
+- The current Terms page explicitly dates its modification to 2026-10-28; do not rely on older indexed copies dated 2023.
+- An individual can be the Customer and, where the Customer is an individual, is a Customer User. Permitted Use expressly includes personal and research purposes.
+- Clauses 9.1 and 9.4 support access, download, storage/copying and continued use of lawfully downloaded data/Derived Data after subscription expiry, subject to the stated surviving restrictions and licensor rights.
+- Clause 9.2 prohibits redistribution/resale/sublicensing or making raw/Manipulated Data available to non-Customer Users, and prohibits providing non-Customer Users a product/service or functionality using the data (examples include data feed, API, analytics, charting and backtesting platforms).
+- Clause 9.3 allows external Derived Data only in specified charts/statistics/reports or data products aggregated at >=10-minute intervals with consecutive points >=10 minutes apart for each measure and instrument. It expressly excludes Coinbase data from this permission.
+- Clause 9.5 permits use of AI tools/agents for the Permitted Use and own models for Customer Users, but prohibits using the data to train/improve a foundation model offered to non-Customer Users or distributing models trained on the data to non-Customer Users. Clause 23 imposes stricter Coinbase-specific AI/ML restrictions.
+- Clause 9.6 permits confidential cloud/IT/data-processing service providers acting on the Customer's behalf for Permitted Use. This does not grant access to arbitrary external collaborators or customers.
+- Thus Tardis is a promising individual research/replay source, not a general licence for a public or multi-user trading platform. Obtain written clarification before product use.
+
+Provider sources:
+- Tardis Terms (modified 2026-10-28): https://docs.tardis.dev/legal/terms-of-service
+- Tardis Bitstamp historical coverage and snapshot notes: https://docs.tardis.dev/historical-data-details/bitstamp
+- Tardis normalized tick-level CSV data types: https://docs.tardis.dev/downloadable-csv-files/data-types
+- Amberdata market-data licensing FAQ: https://www.amberdata.io/online-market-data-ordering-faq
+
+## 4. Full qualification matrix
 
 The following remain UNKNOWN until exact jurisdiction, account type, product family and API version are identified and evidenced.
 
@@ -131,7 +176,7 @@ The following remain UNKNOWN until exact jurisdiction, account type, product fam
 | Market-data license / redistribution restrictions | UNKNOWN — API terms restrict benchmarking, resale and commercial exploitation; public-endpoint/API-key applicability needs clarification | UNKNOWN | UNKNOWN — prior permission for certain non-personal commercial public-data uses; redistribution scope needs confirmation | YES — personal non-commercial use only; no redistribution/competing analytics without written consent | YES — CC BY-NC-SA 4.0 non-commercial; no live proprietary execution or commercial order generation |
 | Specification change / deprecation policy | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 
-## 4. Evidence record required for each cell
+## 5. Evidence record required for each cell
 
 Every qualified cell must record:
 - venue and exact product family (spot, linear perpetual, inverse perpetual, dated future, etc.);
@@ -145,7 +190,7 @@ Every qualified cell must record:
 
 A general venue help page does not prove a specific API feature. A public endpoint does not prove account eligibility. A sandbox does not prove production behavior. A source document does not prove runtime feed continuity.
 
-## 5. Qualification stages
+## 6. Qualification stages
 
 1. **Public data-only:** public feed availability, terms/data rights, schema, timestamps, trade IDs, snapshot/delta continuity, resync, historical coverage and rate limits.
 2. **Sandbox/test execution:** exact product and sandbox eligibility; client order ID constraints; order lifecycle; timeout/duplicate behavior; private streams; reconciliation; reduce-only and cancel semantics.
@@ -154,15 +199,16 @@ A general venue help page does not prove a specific API feature. A public endpoi
 
 The lack of a live-eligible venue does not block public data research. The lack of historical L2 does not justify pretending that L2 history exists; it changes which experiments can be concluded.
 
-## 6. Architecture rule: first concrete, second contrasting, then abstract
+## 7. Architecture rule: first concrete, second contrasting, then abstract
 
-- Adapter #1 remains concrete and venue-specific while Bybit M2 is completed.
-- OKX is the leading historical-L2 research candidate for HYP-001; Kraken Spot WS v2 remains the leading Spot checksum/protocol contrast. Neither recorder is implemented until Bybit M2 acceptance and terms review. Coinbase Advanced Trade remains an alternative.
+- Adapter #1 remains concrete and venue-specific while Bybit M2 technical work continues; its live gate remains separate from code/test work.
+- A second adapter may be authorized before Bybit M2 acceptance only after explicit technical-readiness and data-rights gates are met; it is not automatically authorized by the calendar or Bybit silence.
+- Compare Kraken Spot WS v2 (snapshot + CRC32), Bitstamp (REST seed + WS channels; exact WS contract still UNKNOWN), and OKX (snapshot + prevSeqId/seqId) as materially different candidates. Coinbase Advanced Trade remains an alternative.
 - Compare both implementations and their failure/recovery models before defining a generic adapter interface.
 - Only then define the smallest shared contracts supported by both. Do not force a lowest-common-denominator interface that erases useful venue-specific guarantees.
 - Keep raw source frames, source timestamps and venue-specific evidence. Normalize only into a shared layer with explicit provenance and loss annotations.
 
-## 7. Core data identity principles (target, not current implementation claim)
+## 8. Core data identity principles (target, not current implementation claim)
 
 Future normalized records should carry:
 - venue_id;
@@ -176,11 +222,11 @@ Future normalized records should carry:
 
 Each adapter owns its own parser and continuity proof. The core consumes a venue-neutral statement of continuity/validity, not Bybit's `u` or `seq`, Coinbase's sequence semantics, or Kraken's checksum as if they were interchangeable.
 
-## 8. Order command contract (future execution scope)
+## 9. Order command contract (future execution scope)
 
 The domain-level command identity should be stable and idempotent. Each venue adapter maps it to the venue's client-order identifier subject to that venue's length, character, uniqueness and retention constraints. After an ambiguous submit timeout, the common process is **reconcile before retry**; the actual lookup endpoints, cursor semantics and duplicate behavior are adapter-specific. This is a design target, not implemented functionality.
 
-## 9. References and current evidence
+## 10. References and current evidence
 
 - Existing preliminary comparison: [NX-RESEARCH-003 — Coinbase/Kraken shortlist (PR #14 branch)](https://github.com/PandaGarry/NEXUS/blob/research/russia-venue-eligibility-v0/docs/research/NX-RESEARCH-003-first-venue-shortlist.md) (documentation research only; contains historical and jurisdiction-dependent conclusions that must be revalidated before selection).
 - Bybit recorder prototype: [PR #19](https://github.com/PandaGarry/NEXUS/pull/19).
@@ -188,6 +234,6 @@ The domain-level command identity should be stable and idempotent. Each venue ad
 - Second adapter qualification issue: [Issue #21](https://github.com/PandaGarry/NEXUS/issues/21).
 - Current M2 acceptance checklist: [M2-ACCEPTANCE.md](https://github.com/PandaGarry/NEXUS/blob/prototype/bybit-public-data-recorder-python-v0/experiments/bybit-public-recorder/M2-ACCEPTANCE.md).
 
-## 10. Explicit non-goals
+## 11. Explicit non-goals
 
 This matrix does not select a live venue, infer the user's residence, authorize account connection, or establish legal advice. No credentials, private API, order placement or live trading are part of the current data-only work.
