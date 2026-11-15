@@ -83,6 +83,24 @@ class BookSynchronizerTests(unittest.TestCase):
         self.assertEqual(sync.last_invalidation_reason, "websocket_disconnect")
 
 
+
+    def test_non_object_message_root_invalidates_without_raising(self):
+        sync = BookSynchronizer("BTCUSDT")
+        outcome = sync.on_delta(["not", "an", "object"])
+        self.assertEqual(outcome.state, "INVALID")
+        self.assertFalse(sync.valid)
+        self.assertIn("root_must_be_object", outcome.reason)
+
+    def test_live_cross_sequence_regression_invalidates_immediately(self):
+        sync = BookSynchronizer("BTCUSDT")
+        sync.on_delta(delta(10, 100))
+        self.assertEqual(sync.on_snapshot(snapshot()).state, "LIVE_VALID")
+        outcome = sync.on_delta(delta(11, 99, [["100", "8"]]))
+        self.assertEqual(outcome.state, "SYNCING")
+        self.assertTrue(outcome.request_snapshot)
+        self.assertFalse(sync.valid)
+        self.assertEqual(sync.buffered_count, 1)
+
     def test_malformed_level_shape_invalidates_without_raising(self):
         sync = BookSynchronizer("BTCUSDT")
         outcome = sync.on_delta(delta(10, 100, [["100"]]))
