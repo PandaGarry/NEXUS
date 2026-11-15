@@ -8,6 +8,7 @@ import logging
 import random
 import threading
 import time
+from collections import deque
 from pathlib import Path
 
 from .journal import RawFrameJournal
@@ -17,6 +18,50 @@ from .synchronizer import BookSynchronizer
 LOG = logging.getLogger("nexus_bybit_recorder")
 _SNAPSHOT_FETCH_SLOT = threading.BoundedSemaphore(1)
 BACKOFF_RESET_AFTER_SECONDS = 30.0
+MAX_RECONNECT_BACKOFF_SECONDS = 30.0
+MAX_RECONNECT_JITTER_SECONDS = 0.25
+RECONNECT_RATE_WINDOW_SECONDS = 60.0
+MAX_RECONNECT_ATTEMPTS_PER_WINDOW = 8
+
+
+class ReconnectRateLimiter:
+    """Bound reconnect attempts in a rolling monotonic-time window."""
+
+    def __init__(
+        self,
+        *,
+        max_attempts: int = MAX_RECONNECT_ATTEMPTS_PER_WINDOW,
+        window_seconds: float = RECONNECT_RATE_WINDOW_SECONDS,
+    ) -> None:
+        if max_attempts < 1 or window_seconds <= 0:
+            raise ValueError("reconnect rate limit must be positive")
+        self.max_attempts = max_attempts
+        self.window_seconds = window_seconds
+        self._attempts = deque()
+
+    def _prune(self, now: float) -> None:
+        while self._attempts and now - self._attempts[0] >= self.window_seconds:
+            self._attempts.popleft()
+
+    def delay(self, now: float | None = None) -> float:
+        current = time.monotonic() if now is None else now
+        self._prune(current)
+        if len(self._attempts) < self.max_attempts:
+            return 0.0
+        return max(0.0, self._attempts[0] + self.window_seconds - current)
+
+    def record(self, now: float | None = None) -> None:
+        current = time.monotonic() if now is None else now
+        self._prune(current)
+        self._attempts.append(current)
+
+
+def _reconnect_sleep_seconds(backoff: float, jitter_fraction: float) -> float:
+    """Return capped exponential backoff plus bounded positive jitter."""
+    base = min(max(backoff, 1.0), MAX_RECONNECT_BACKOFF_SECONDS)
+    fraction = min(max(jitter_fraction, 0.0), 1.0)
+    jitter_cap = min(MAX_RECONNECT_JITTER_SECONDS, base / 4.0)
+    return base + jitter_cap * fraction
 
 
 def _backoff_after_connection(current: float, connected_seconds: float) -> float:
@@ -106,8 +151,17 @@ async def record_public(
     deadline = None if duration_seconds is None else time.monotonic() + duration_seconds
     generation = 0
     backoff = 1.0
+    reconnect_limiter = ReconnectRateLimiter()
     with RawFrameJournal(output, flush_each_frame=True) as journal:
         while deadline is None or time.monotonic() < deadline:
+            rate_limit_delay = reconnect_limiter.delay()
+            if rate_limit_delay > 0:
+                LOG.warning(
+                    "reconnect attempt budget exhausted; waiting %.3fs",
+                    rate_limit_delay,
+                )
+                await asyncio.sleep(rate_limit_delay)
+            reconnect_limiter.record()
             generation += 1
             stop = asyncio.Event()
             heartbeat_task = None
@@ -294,8 +348,8 @@ async def record_public(
                     )
             if deadline is not None and time.monotonic() >= deadline:
                 break
-            await asyncio.sleep(min(backoff, 30.0) + random.uniform(0.0, min(0.25, backoff / 4)))
-            backoff = min(backoff * 2, 30.0)
+            await asyncio.sleep(_reconnect_sleep_seconds(backoff, random.random()))
+            backoff = min(backoff * 2, MAX_RECONNECT_BACKOFF_SECONDS)
 
 
 def main() -> None:
