@@ -29,7 +29,7 @@
 
 ## M2 — live book reconstruction (target 2026-11-28)
 
-**Implementation status (2026-11-15):** REST snapshot client, response validator, bounded synchronizer, live CLI integration, REST journal records, book-state markers and deterministic book replay are implemented in PR #19. Unit CI [43644001404](https://github.com/PandaGarry/NEXUS/actions/runs/43644001404) passed Python 3.11/3.12/3.13 and includes a mocked end-to-end live-loop test. This is not exchange-live evidence. M2 remains NOT ACCEPTED.
+**Implementation status (2026-11-15):** REST snapshot client, response validator, bounded synchronizer, live CLI integration, REST journal records, book-state markers and deterministic book replay are implemented in PR #19. Parser-hardening CI [43646661506](https://github.com/PandaGarry/NEXUS/actions/runs/43646661506) passed all 37 tests on Python 3.11/3.12/3.13, including the malformed-delta regression cases. The recorder workflow now also triggers on M2 checklist/milestone changes, so documentation acceptance changes are re-tested against the current branch code. This is not exchange-live evidence. M2 remains NOT ACCEPTED.
 
 - Follow the detailed [M2 acceptance checklist](M2-ACCEPTANCE.md); do not mark M2 accepted by passing only pure state-machine fixtures.
 - Fetch documented REST full-depth snapshot from `/v5/market/full_orderbook`, journal exact response before parsing, buffer WS deltas, and bridge only at exact matching `seq` + `u`.
