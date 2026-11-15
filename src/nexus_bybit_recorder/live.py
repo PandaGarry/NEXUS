@@ -6,14 +6,30 @@ import hashlib
 import json
 import logging
 import random
+import threading
 import time
 from pathlib import Path
 
 from .journal import RawFrameJournal
-from .snapshot import fetch_full_depth_snapshot, parse_full_depth_snapshot
+from .snapshot import SnapshotFetchError, fetch_full_depth_snapshot, parse_full_depth_snapshot
 from .synchronizer import BookSynchronizer
 
 LOG = logging.getLogger("nexus_bybit_recorder")
+_SNAPSHOT_FETCH_SLOT = threading.BoundedSemaphore(1)
+
+
+def _fetch_snapshot_singleflight(symbol: str, testnet: bool):
+    # asyncio cancellation cannot stop a running to_thread HTTP call. Hold a
+    # process-wide slot until the actual blocking request returns; overlapping
+    # generations fail fast instead of accumulating orphaned HTTP workers.
+    if not _SNAPSHOT_FETCH_SLOT.acquire(blocking=False):
+        raise SnapshotFetchError("a prior REST snapshot request is still in flight")
+    try:
+        return fetch_full_depth_snapshot(
+            symbol, category="linear", testnet=testnet
+        )
+    finally:
+        _SNAPSHOT_FETCH_SLOT.release()
 
 
 def public_linear_url(testnet: bool = False) -> str:
@@ -44,7 +60,7 @@ def _snapshot_fetch_task(symbol: str, testnet: bool, delay_seconds: float = 0.0)
         if delay_seconds:
             await asyncio.sleep(delay_seconds)
         return await asyncio.to_thread(
-            fetch_full_depth_snapshot, symbol, category="linear", testnet=testnet
+            _fetch_snapshot_singleflight, symbol, testnet
         )
     return asyncio.create_task(run())
 
