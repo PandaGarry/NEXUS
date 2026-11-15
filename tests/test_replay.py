@@ -59,6 +59,29 @@ class ReplayTests(unittest.TestCase):
             self.assertTrue(replay["replay_matches_recorded_valid_markers"])
             self.assertFalse(replay["final_books"]["1:BTCUSDT"]["valid"])
 
+
+    def test_replay_rejects_duplicate_keys_in_raw_websocket_frame(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "duplicate.jsonl"
+            raw = '{"topic":"orderbook.full.BTCUSDT","type":"delta","data":{"s":"BTCUSDT","u":10,"u":11,"seq":100,"b":[],"a":[]}}'
+            with RawFrameJournal(path) as journal:
+                journal.append(raw, 1, metadata={"expected_symbol": "BTCUSDT"})
+            replay = replay_book(path)
+            self.assertFalse(replay["final_books"]["1:BTCUSDT"]["valid"])
+            self.assertIsNone(replay["final_books"]["1:BTCUSDT"]["update_id"])
+
+    def test_journal_reader_rejects_duplicate_keys_in_record_envelope(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "duplicate-envelope.jsonl"
+            with RawFrameJournal(path) as journal:
+                journal.append('{"topic":"publicTrade.BTCUSDT"}', 1)
+            row = json.loads(path.read_text())
+            duplicate = json.dumps(row).rstrip("\\n")
+            duplicate = duplicate[:-1] + ',"connection_generation":999}'
+            path.write_text(duplicate + "\\n")
+            with self.assertRaises(JournalIntegrityError):
+                list(iter_verified_frames(path))
+
     def test_corrupt_frame_fails_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "raw.jsonl"
