@@ -35,6 +35,14 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 - [x] Latest runtime hardening (commit [`37e6c68`](https://github.com/PandaGarry/NEXUS/commit/37e6c6807ded23f971715b1301155aa57b0b5ffe)) invalidates immediately on a live cross-sequence regression and safely rejects non-object WS roots; two regression tests were added. [CI run 43679738573](https://github.com/PandaGarry/NEXUS/actions/runs/43679738573) passed all 39 tests on Python 3.11/3.12/3.13 at branch head `b4eda7cd5fe49b5a8370ef84985981f9725de5ca`. Protocol-edge [CI run 43679930904](https://github.com/PandaGarry/NEXUS/actions/runs/43679930904) passed all 41 tests on Python 3.11/3.12/3.13 at code head `bdf5d27e0adaf835f7725ea509d6adca55a1f0f6`. Subsequent terms/documentation changes were rechecked by [CI run 43680047302](https://github.com/PandaGarry/NEXUS/actions/runs/43680047302), which again passed all 41 tests on all three runtimes. live smoke was skipped by the terms gate.
 
 
+- [x] Independent Arena review findings were reconciled against the implementation branch. C1 (live sequence regression) was already fixed and covered by an immediate-invalidation regression test; C2 (missing b/a) now fails closed in buffering and live states; C3 (u=1 with empty REST sides) now returns NO_BOOK, never LIVE_VALID.
+- [x] High-risk ingress handling: malformed/non-object WS frames and unexpected orderbook topics/symbols invalidate the generation and force reconnect. Synthetic live-loop tests cover malformed JSON and wrong-symbol orderbook frames.
+- [x] Conflicting duplicate update IDs are detected by canonical payload digest in both live application and buffered snapshot bridging; exact duplicates remain deterministic. Conflicting and identical duplicate tests are included.
+- [x] Snapshot bridge ResyncRequired preserves the latest buffered delta and immediately requests another snapshot. A targeted mocked regression test covers this path.
+- [x] Replay now journals each orderbook transition with generation, symbol, watermark and book fingerprint; replay checks validity, watermarks and fingerprints. A tampered-delta test proves a changed payload is detected. Snapshot-fetch and validation failures are journaled as invalidation transitions.
+- [x] Latest synthetic/unit CI at exact code head 2eb442a45c2931e8fd69429f760c4b1ee80ed703, run 43681007605, completed successfully. The Python 3.11/3.12/3.13 test matrix passed. Live-public-smoke remained skipped by the terms gate.
+- [ ] These tests remain synthetic/mocked evidence. No live synchronized-book, real reconnect/reset/gap, or exchange-session replay evidence has been accepted.
+
 ## 0. Evidence and accounting
 
 - [x] Re-opened and independently classified the original 10-minute artifact on 2026-11-15: 8,149 trade-topic, 2,998 orderbook-topic, 29 pong replies and 1 subscription acknowledgement; all 11,177 records reconcile and all raw SHA-256 checks passed.
