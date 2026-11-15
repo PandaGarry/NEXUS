@@ -37,7 +37,7 @@
 - Expose a book as valid only after snapshot bridge; preserve RPI exclusion metadata; never let consumers read invalid/synchronizing state.
 - Demonstrate replay equivalence, a real synchronized session, disconnect/reconnect, and injected `u=1` and gap recovery.
 - Obtain an independent protocol review of `u`/`seq` handling. `u` is consecutive; `seq` is monotonic but not consecutive. Exact snapshot/delta matching of both fields is required at the bridge watermark.
-- Compare a fresh REST snapshot with the locally reconstructed book at the same `seq/u` watermark over top-N levels; never compare snapshots from different watermarks as if simultaneous. Record exact decimal comparison, depth and any differences.
+- Reconcile a REST snapshot against WS state by buffering continuously, advancing/replaying through its exact matching `seq/u` watermark, then applying subsequent deltas to both books and comparing again at a later common watermark. The REST response can be newer than the local book at response time; never compare different watermarks or hide unexplained differences behind timing tolerance.
 - Verify official archive inventory: trade-level vs candle-only, categories, symbols, date range, timestamps, IDs, and whether any L2 history is actually present.
 - Publish HYP-001 result or an explicit archive/data-coverage blocker. Primary config is fixed; secondary grid is exploratory with Holm–Bonferroni correction. The registered venue/instrument candidate set is in [RESEARCH-UNIVERSE.md](RESEARCH-UNIVERSE.md).
 
