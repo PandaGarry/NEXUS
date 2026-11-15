@@ -12,6 +12,7 @@ from collections import deque
 from pathlib import Path
 
 from .journal import RawFrameJournal
+from .jsonutil import strict_json_loads
 from .snapshot import SnapshotFetchError, fetch_full_depth_snapshot, parse_full_depth_snapshot
 from .synchronizer import BookSynchronizer
 
@@ -61,7 +62,7 @@ def _reconnect_sleep_seconds(backoff: float, jitter_fraction: float) -> float:
     base = min(max(backoff, 1.0), MAX_RECONNECT_BACKOFF_SECONDS)
     fraction = min(max(jitter_fraction, 0.0), 1.0)
     jitter_cap = min(MAX_RECONNECT_JITTER_SECONDS, base / 4.0)
-    return base + jitter_cap * fraction
+    return min(MAX_RECONNECT_BACKOFF_SECONDS, base + jitter_cap * fraction)
 
 
 def _backoff_after_connection(current: float, connected_seconds: float) -> float:
@@ -104,6 +105,25 @@ async def _heartbeat(ws, stop: asyncio.Event) -> None:
             await asyncio.wait_for(stop.wait(), timeout=20)
         except TimeoutError:
             await ws.send('{"op":"ping"}')
+
+
+async def _frames_until_deadline(ws, deadline: float | None):
+    """Yield frames until close or the recorder's monotonic deadline."""
+    iterator = ws.__aiter__()
+    while True:
+        try:
+            if deadline is None:
+                frame = await anext(iterator)
+            else:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    return
+                frame = await asyncio.wait_for(anext(iterator), timeout=remaining)
+        except StopAsyncIteration:
+            return
+        except TimeoutError:
+            return
+        yield frame
 
 
 def _snapshot_fetch_task(symbol: str, testnet: bool, delay_seconds: float = 0.0):
@@ -195,7 +215,7 @@ async def record_public(
                     connected_at = time.monotonic()
                     await ws.send(subscription(normalized_symbol))
                     heartbeat_task = asyncio.create_task(_heartbeat(ws, stop))
-                    async for raw_frame in ws:
+                    async for raw_frame in _frames_until_deadline(ws, deadline):
                         raw_text = raw_frame if isinstance(raw_frame, str) else "hex:" + raw_frame.hex()
                         journal.append(
                             raw_text, generation,
@@ -203,8 +223,8 @@ async def record_public(
                         )
 
                         try:
-                            payload = json.loads(raw_text)
-                        except (json.JSONDecodeError, TypeError):
+                            payload = strict_json_loads(raw_text)
+                        except (json.JSONDecodeError, TypeError, ValueError):
                             payload = None
 
                         # An unparseable frame or non-object JSON may conceal a lost
