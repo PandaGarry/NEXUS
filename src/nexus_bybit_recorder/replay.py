@@ -129,17 +129,47 @@ def replay_book(path: str | Path) -> dict:
         record_type = record.get("record_type", "raw_ws_frame")
         raw = record["raw_frame"]
         if record_type == "raw_ws_frame":
+            metadata = record.get("metadata") or {}
+            expected_symbol = metadata.get("expected_symbol")
             try:
                 payload = json.loads(raw)
             except json.JSONDecodeError:
+                if isinstance(expected_symbol, str):
+                    get_sync(generation, expected_symbol).invalidate("malformed_ws_frame")
+                else:
+                    for (gen, _), sync in synchronizers.items():
+                        if gen == generation:
+                            sync.invalidate("malformed_ws_frame")
                 continue
             if not isinstance(payload, dict):
+                if isinstance(expected_symbol, str):
+                    get_sync(generation, expected_symbol).invalidate("malformed_ws_frame")
+                else:
+                    for (gen, _), sync in synchronizers.items():
+                        if gen == generation:
+                            sync.invalidate("malformed_ws_frame")
                 continue
             topic = payload.get("topic")
-            if isinstance(topic, str) and topic.startswith("orderbook.full."):
-                symbol = topic.removeprefix("orderbook.full.")
-                sync = get_sync(generation, symbol)
-                sync.on_delta(payload)
+            is_orderbook_frame = (
+                isinstance(topic, str) and topic.startswith("orderbook.full.")
+            ) or (
+                payload.get("type") == "delta"
+                and isinstance(payload.get("data"), dict)
+                and ("u" in payload["data"] or "seq" in payload["data"])
+            )
+            if is_orderbook_frame:
+                topic_symbol = (
+                    topic.removeprefix("orderbook.full.")
+                    if isinstance(topic, str) and topic.startswith("orderbook.full.")
+                    else None
+                )
+                if isinstance(expected_symbol, str) and topic_symbol != expected_symbol:
+                    get_sync(generation, expected_symbol).invalidate("unexpected_topic")
+                elif topic_symbol is not None:
+                    sync = get_sync(generation, topic_symbol)
+                    sync.on_delta(payload)
+                elif isinstance(expected_symbol, str):
+                    get_sync(generation, expected_symbol).on_delta(payload)
                 delta_events += 1
         elif record_type == "raw_rest_snapshot":
             metadata = record.get("metadata") or {}
@@ -178,11 +208,47 @@ def replay_book(path: str | Path) -> dict:
             if not isinstance(marker, dict):
                 marker_mismatches.append(f"line {index}: derived state marker is not an object")
                 continue
+            symbol = marker.get("symbol")
             if marker.get("state") == "INVALID" and marker.get("reason") == "websocket_disconnect_or_generation_end":
-                for (gen, _), sync in synchronizers.items():
-                    if gen == generation:
-                        sync.on_disconnect()
-            if marker.get("state") == "LIVE_VALID":
+                if isinstance(symbol, str):
+                    get_sync(generation, symbol).on_disconnect()
+                else:
+                    for (gen, _), sync in synchronizers.items():
+                        if gen == generation:
+                            sync.on_disconnect()
+            if isinstance(symbol, str):
+                sync = get_sync(generation, symbol)
+                if "valid" in marker and bool(marker.get("valid")) != sync.valid:
+                    marker_mismatches.append(
+                        f"line {index}: recorded validity does not match replay for {symbol}"
+                    )
+                if marker.get("state") == "LIVE_VALID":
+                    matched = (
+                        sync.valid
+                        and sync.book is not None
+                        and sync.book.update_id == marker.get("update_id")
+                        and sync.book.cross_seq == marker.get("cross_seq")
+                    )
+                    expected_fingerprint = marker.get("fingerprint_sha256")
+                    if matched and isinstance(expected_fingerprint, str):
+                        actual_fingerprint = hashlib.sha256(
+                            json.dumps(
+                                sync.book.fingerprint_view(), separators=(",", ":")
+                            ).encode("utf-8")
+                        ).hexdigest()
+                        matched = actual_fingerprint == expected_fingerprint
+                    if matched:
+                        marker_matches += 1
+                    else:
+                        marker_mismatches.append(
+                            f"line {index}: LIVE_VALID marker watermark/fingerprint mismatch for {symbol}"
+                        )
+                elif marker.get("state") == "NO_BOOK" and not sync.no_book:
+                    marker_mismatches.append(
+                        f"line {index}: NO_BOOK marker does not match replay for {symbol}"
+                    )
+            elif marker.get("state") == "LIVE_VALID":
+                # Backward compatibility for older journals without symbol/fingerprint fields.
                 symbol_candidates = [
                     sync for (gen, _), sync in synchronizers.items()
                     if gen == generation and sync.valid
@@ -196,7 +262,9 @@ def replay_book(path: str | Path) -> dict:
                 if matched:
                     marker_matches += 1
                 else:
-                    marker_mismatches.append(f"line {index}: LIVE_VALID marker did not match replayed watermark")
+                    marker_mismatches.append(
+                        f"line {index}: LIVE_VALID marker did not match replayed watermark"
+                    )
 
     final_books = {}
     for (generation, symbol), sync in sorted(synchronizers.items()):
@@ -210,6 +278,7 @@ def replay_book(path: str | Path) -> dict:
             "update_id": sync.book.update_id if sync.valid and sync.book else None,
             "cross_seq": sync.book.cross_seq if sync.valid and sync.book else None,
             "fingerprint_sha256": fingerprint,
+            "no_book": sync.no_book,
             "last_invalidation_reason": sync.last_invalidation_reason,
         }
     return {
