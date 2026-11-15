@@ -93,8 +93,11 @@ class BookSynchronizer:
             return SyncOutcome("SYNCING", False, self.last_invalidation_reason)
         if (
             isinstance(snapshot, dict)
+            and type(snapshot.get("u")) is int
             and snapshot.get("u") == 1
+            and isinstance(snapshot.get("b"), list)
             and snapshot.get("b") == []
+            and isinstance(snapshot.get("a"), list)
             and snapshot.get("a") == []
         ):
             self.book = None
