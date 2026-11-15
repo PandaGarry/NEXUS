@@ -25,6 +25,7 @@ class BookSynchronizer:
         self.book: OrderBook | None = None
         self._buffer: list[Delta] = []
         self.last_invalidation_reason: str | None = "awaiting_initial_snapshot"
+        self.no_book = False
 
     @property
     def valid(self) -> bool:
@@ -40,6 +41,7 @@ class BookSynchronizer:
         self.book = None
         self._buffer = [] if retain_delta is None else [retain_delta]
         self.last_invalidation_reason = reason
+        self.no_book = False
 
     def on_delta(self, message: dict[str, Any]) -> SyncOutcome:
         if not isinstance(message, dict):
@@ -57,6 +59,7 @@ class BookSynchronizer:
             self.invalidate(f"malformed_delta:{exc}")
             return SyncOutcome("INVALID", False, self.last_invalidation_reason)
 
+        self.no_book = False
         if delta.update_id == 1:
             self.invalidate("u=1_reinitialization", retain_delta=delta)
             return SyncOutcome("SYNCING", True, self.last_invalidation_reason)
@@ -88,16 +91,29 @@ class BookSynchronizer:
         if not self._buffer:
             self.invalidate("snapshot_arrived_without_buffer")
             return SyncOutcome("SYNCING", False, self.last_invalidation_reason)
+        if (
+            isinstance(snapshot, dict)
+            and snapshot.get("u") == 1
+            and snapshot.get("b") == []
+            and snapshot.get("a") == []
+        ):
+            self.book = None
+            self._buffer.clear()
+            self.no_book = True
+            self.last_invalidation_reason = "u=1_empty_snapshot_no_book"
+            return SyncOutcome("NO_BOOK", False, self.last_invalidation_reason)
         try:
             book, consumed = bridge_snapshot(snapshot, self._buffer)
         except SnapshotNotCaughtUp as exc:
             self.last_invalidation_reason = f"snapshot_not_caught_up:{exc}"
             return SyncOutcome("SYNCING", True, self.last_invalidation_reason)
         except (ResyncRequired, ValueError, KeyError, TypeError) as exc:
-            self.invalidate(f"snapshot_bridge_failed:{exc}")
-            return SyncOutcome("SYNCING", False, self.last_invalidation_reason)
+            retained = self._buffer[-1] if self._buffer else None
+            self.invalidate(f"snapshot_bridge_failed:{exc}", retain_delta=retained)
+            return SyncOutcome("SYNCING", retained is not None, self.last_invalidation_reason)
         self.book = book
         self._buffer.clear()
+        self.no_book = False
         self.last_invalidation_reason = None
         return SyncOutcome("LIVE_VALID", False, None, consumed)
 
