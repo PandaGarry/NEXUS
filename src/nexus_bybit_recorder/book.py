@@ -116,7 +116,10 @@ class OrderBook:
                 f"update-id gap: expected {self.update_id + 1}, got {delta.update_id}"
             )
         if delta.cross_seq < self.cross_seq:
-            return
+            self.invalidate()
+            raise ResyncRequired(
+                f"cross-sequence regression: previous {self.cross_seq}, got {delta.cross_seq}"
+            )
         self._apply_side(self.bids, delta.bids)
         self._apply_side(self.asks, delta.asks)
         self.update_id = delta.update_id
