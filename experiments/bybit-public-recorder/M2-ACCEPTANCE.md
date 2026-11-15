@@ -30,9 +30,9 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 - [x] Added `replay_book()` and a deterministic fixture that reconstructs the same watermark from raw REST/WS journal events and compares it with a recorded `LIVE_VALID` marker.
 - [ ] Replay evidence from the integrated live archive must pass the workflow gate; the unit fixture alone is insufficient.
 - [ ] Fault-injection and reconnect evidence remain outstanding; M2 is not accepted.
-- [x] Live cross-sequence regression and malformed root-frame hardening are tested on all supported Python runtimes; exact-head evidence: [CI 43679682354](https://github.com/PandaGarry/NEXUS/actions/runs/43679682354).
+- [x] Live cross-sequence regression and malformed root-frame hardening are tested on all supported Python runtimes; exact-head evidence: [CI 43679738573](https://github.com/PandaGarry/NEXUS/actions/runs/43679738573), all three Python versions passed.
 - [x] Strict delta parser hardening: `u`/`seq` reject booleans and non-integers; malformed level shapes and non-string price/quantity fields fail closed. Evidence: commits [`ce773e1`](https://github.com/PandaGarry/NEXUS/commit/ce773e190404ec33b2b6d2b09195fd7e8faf697c) and [`54b0a51`](https://github.com/PandaGarry/NEXUS/commit/54b0a510b254f91f1e06346a3b6ce61e13f41999); all 37 tests passed on Python 3.11/3.12/3.13 in run 43646661506.
-- [x] Latest runtime hardening (commit [`37e6c68`](https://github.com/PandaGarry/NEXUS/commit/37e6c6807ded23f971715b1301155aa57b0b5ffe)) invalidates immediately on a live cross-sequence regression and safely rejects non-object WS roots; two regression tests were added. Exact-head [CI run 43679682354](https://github.com/PandaGarry/NEXUS/actions/runs/43679682354) passed all 39 tests on Python 3.11/3.12/3.13; live smoke was skipped by the terms gate.
+- [x] Latest runtime hardening (commit [`37e6c68`](https://github.com/PandaGarry/NEXUS/commit/37e6c6807ded23f971715b1301155aa57b0b5ffe)) invalidates immediately on a live cross-sequence regression and safely rejects non-object WS roots; two regression tests were added. Latest [CI run 43679738573](https://github.com/PandaGarry/NEXUS/actions/runs/43679738573) passed all 39 tests on Python 3.11/3.12/3.13 at branch head `b4eda7cd5fe49b5a8370ef84985981f9725de5ca`; live smoke was skipped by the terms gate.
 
 
 ## 0. Evidence and accounting
