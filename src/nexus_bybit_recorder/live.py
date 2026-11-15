@@ -16,6 +16,12 @@ from .synchronizer import BookSynchronizer
 
 LOG = logging.getLogger("nexus_bybit_recorder")
 _SNAPSHOT_FETCH_SLOT = threading.BoundedSemaphore(1)
+BACKOFF_RESET_AFTER_SECONDS = 30.0
+
+
+def _backoff_after_connection(current: float, connected_seconds: float) -> float:
+    """Reset reconnect backoff only after a connection has remained stable."""
+    return 1.0 if connected_seconds >= BACKOFF_RESET_AFTER_SECONDS else current
 
 
 def _fetch_snapshot_singleflight(symbol: str, testnet: bool):
@@ -108,6 +114,7 @@ async def record_public(
             snapshot_task = None
             snapshot_retry_delay = 0.0
             last_snapshot_request_at = 0.0
+            connected_at = None
             synchronizer = BookSynchronizer(normalized_symbol, max_buffered_deltas=max_buffered_deltas)
 
             def schedule_snapshot_fetch(requested_delay: float = 0.0):
@@ -129,9 +136,9 @@ async def record_public(
                     max_size=16 * 1024 * 1024,
                     max_queue=64,
                 ) as ws:
+                    connected_at = time.monotonic()
                     await ws.send(subscription(normalized_symbol))
                     heartbeat_task = asyncio.create_task(_heartbeat(ws, stop))
-                    backoff = 1.0
                     async for raw_frame in ws:
                         raw_text = raw_frame if isinstance(raw_frame, str) else "hex:" + raw_frame.hex()
                         journal.append(
@@ -281,6 +288,10 @@ async def record_public(
                         await snapshot_task
                     except (asyncio.CancelledError, Exception):
                         pass
+                if connected_at is not None:
+                    backoff = _backoff_after_connection(
+                        backoff, time.monotonic() - connected_at
+                    )
             if deadline is not None and time.monotonic() >= deadline:
                 break
             await asyncio.sleep(min(backoff, 30.0) + random.uniform(0.0, min(0.25, backoff / 4)))
