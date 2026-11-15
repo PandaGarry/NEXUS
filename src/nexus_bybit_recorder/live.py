@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import json
 import logging
 import random
@@ -49,13 +50,21 @@ def _snapshot_fetch_task(symbol: str, testnet: bool, delay_seconds: float = 0.0)
 
 
 def _journal_book_state(journal, generation: int, state: str, *, reason=None, sync=None, applied=0):
+    fingerprint = None
+    if sync is not None and sync.valid and sync.book is not None:
+        fingerprint = hashlib.sha256(
+            json.dumps(sync.book.fingerprint_view(), separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
     payload = {
+        "symbol": sync.symbol if sync is not None else None,
         "state": state,
         "reason": reason,
         "valid": bool(sync.valid) if sync is not None else False,
+        "no_book": bool(sync.no_book) if sync is not None else False,
         "buffered_deltas": sync.buffered_count if sync is not None else 0,
         "update_id": sync.book.update_id if sync is not None and sync.valid else None,
         "cross_seq": sync.book.cross_seq if sync is not None and sync.valid else None,
+        "fingerprint_sha256": fingerprint,
         "applied_buffered_deltas": applied,
     }
     journal.append(json.dumps(payload, separators=(",", ":")), generation, record_type="derived_book_state")
@@ -109,7 +118,10 @@ async def record_public(
                     backoff = 1.0
                     async for raw_frame in ws:
                         raw_text = raw_frame if isinstance(raw_frame, str) else "hex:" + raw_frame.hex()
-                        journal.append(raw_text, generation)
+                        journal.append(
+                            raw_text, generation,
+                            metadata={"expected_symbol": normalized_symbol},
+                        )
 
                         try:
                             payload = json.loads(raw_text)
@@ -139,11 +151,13 @@ async def record_public(
                             outcome = synchronizer.on_delta(payload)
                             if outcome.reason:
                                 LOG.warning("book state generation=%d state=%s reason=%s", generation, outcome.state, outcome.reason)
+                            # Record every order-book transition, including each
+                            # post-snapshot LIVE_VALID watermark and fingerprint.
+                            _journal_book_state(
+                                journal, generation, outcome.state,
+                                reason=outcome.reason, sync=synchronizer,
+                            )
                             if outcome.state == "INVALID":
-                                _journal_book_state(
-                                    journal, generation, "INVALID",
-                                    reason=outcome.reason, sync=synchronizer,
-                                )
                                 # A wrong symbol/topic or malformed delta cannot
                                 # be repaired by a REST snapshot on this stream.
                                 # End the generation and reconnect fail-closed.
@@ -183,7 +197,11 @@ async def record_public(
                             if response is not None:
                                 journal.append(
                                     response.body, generation, record_type="raw_rest_snapshot",
-                                    metadata={"request_url": response.request_url, "http_status": response.http_status},
+                                    metadata={
+                                        "request_url": response.request_url,
+                                        "http_status": response.http_status,
+                                        "expected_symbol": normalized_symbol,
+                                    },
                                     received_wall_ns=response.received_wall_ns,
                                     received_monotonic_ns=response.received_monotonic_ns,
                                 )
