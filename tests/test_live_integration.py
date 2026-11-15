@@ -101,7 +101,7 @@ class LiveIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             journal_path = Path(tmp) / "malformed.jsonl"
             with patch.dict(sys.modules, fake_modules):
-                asyncio.run(record_public(symbol="BTCUSDT", output=journal_path, duration_seconds=0.001))
+                asyncio.run(record_public(symbol="BTCUSDT", output=journal_path, duration_seconds=0.25))
             records = [json.loads(line) for line in journal_path.read_text().splitlines()]
             states = [
                 json.loads(record["raw_frame"])
