@@ -42,6 +42,19 @@ class SnapshotClientTests(unittest.TestCase):
         self.assertEqual(result["u"], 10)
         self.assertEqual(result["seq"], 100)
 
+
+    def test_rejects_duplicate_json_keys_in_snapshot(self):
+        body = '{"retCode":0,"result":{"s":"BTCUSDT","u":10,"u":11,"seq":100,"b":[["100","2"]],"a":[["101","3"]]}}'
+        response = SnapshotHttpResponse(
+            request_url=self.response.request_url,
+            http_status=200,
+            body=body,
+            received_wall_ns=1,
+            received_monotonic_ns=2,
+        )
+        with self.assertRaises(SnapshotValidationError):
+            parse_full_depth_snapshot(response, expected_symbol="BTCUSDT")
+
     def test_rejects_non_200_status(self):
         response = SnapshotHttpResponse(**{**self.response.__dict__, "http_status": 503})
         with self.assertRaises(SnapshotValidationError):
