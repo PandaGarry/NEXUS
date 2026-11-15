@@ -85,6 +85,70 @@ class LiveIntegrationTests(unittest.TestCase):
             self.assertEqual(replay["marker_mismatches"], [])
             self.assertFalse(replay["final_books"]["1:BTCUSDT"]["valid"])
 
+
+    def test_short_lived_handshakes_keep_growing_backoff_and_rate_limit_pauses(self):
+        class EmptyWebSocket(FakeWebSocket):
+            def __init__(self):
+                super().__init__([])
+
+        connections = []
+        sleeps = []
+        backoffs = []
+        real_sleep = asyncio.sleep
+
+        def connect(*args, **kwargs):
+            ws = EmptyWebSocket()
+            connections.append(ws)
+            return ws
+
+        def short_delay(backoff, jitter):
+            backoffs.append(backoff)
+            return 0.001
+
+        async def recording_sleep(seconds):
+            sleeps.append(seconds)
+            await real_sleep(seconds)
+
+        client_module = types.ModuleType("websockets.asyncio.client")
+        client_module.connect = connect
+        asyncio_module = types.ModuleType("websockets.asyncio")
+        asyncio_module.__path__ = []
+        websockets_module = types.ModuleType("websockets")
+        websockets_module.__path__ = []
+        fake_modules = {
+            "websockets": websockets_module,
+            "websockets.asyncio": asyncio_module,
+            "websockets.asyncio.client": client_module,
+        }
+
+        from nexus_bybit_recorder.live import ReconnectRateLimiter
+        with tempfile.TemporaryDirectory() as tmp:
+            journal_path = Path(tmp) / "reconnect.jsonl"
+            with patch.dict(sys.modules, fake_modules):
+                with patch(
+                    "nexus_bybit_recorder.live.ReconnectRateLimiter",
+                    side_effect=lambda: ReconnectRateLimiter(
+                        max_attempts=2, window_seconds=0.04
+                    ),
+                ):
+                    with patch(
+                        "nexus_bybit_recorder.live._reconnect_sleep_seconds",
+                        side_effect=short_delay,
+                    ):
+                        with patch(
+                            "nexus_bybit_recorder.live.asyncio.sleep",
+                            side_effect=recording_sleep,
+                        ):
+                            asyncio.run(record_public(
+                                symbol="BTCUSDT",
+                                output=journal_path,
+                                duration_seconds=0.14,
+                            ))
+
+        self.assertGreaterEqual(len(connections), 3)
+        self.assertEqual(backoffs[:3], [1.0, 2.0, 4.0])
+        self.assertTrue(any(seconds >= 0.025 for seconds in sleeps))
+
     def test_malformed_json_frame_is_journaled_and_forces_invalidation(self):
         ws = FakeWebSocket(["not-json"])
         client_module = types.ModuleType("websockets.asyncio.client")
