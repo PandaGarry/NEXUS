@@ -77,11 +77,6 @@ jobs:
               raise SystemExit(f"book replay does not match recorded valid markers: {book_replay}")
           print(json.dumps(summary, indent=2, sort_keys=True))
           PY
-      - name: Upload raw public capture and replay summary
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: bybit-public-10m-${{ github.run_id }}
-          path: evidence/
-          if-no-files-found: warn
-          retention-days: 14
+      # Raw exchange frames must never be uploaded as artifacts from this public repository.
+      # The job validates the capture in-place; only a reviewed, non-raw summary may be
+      # preserved through a separate owner-approved private evidence workflow.
