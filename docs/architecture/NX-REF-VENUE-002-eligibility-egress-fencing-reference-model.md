@@ -2,8 +2,8 @@
 
 **Status:** TEST-ONLY CONCURRENCY REFERENCE / NOT PRODUCTION EGRESS  
 **Date:** 2026-11-14  
-**Parent decision:** [NX-ADR-007](NX-ADR-007-venue-eligibility-jurisdictional-activation-gate.md)  
-**Related reference:** [NX-REF-VENUE-001](NX-REF-VENUE-001-venue-eligibility-evidence-reference-model.md)
+**Parent decision:** [NX-ADR-007 (PR #14 branch)](https://github.com/PandaGarry/NEXUS/blob/research/russia-venue-eligibility-v0/docs/architecture/NX-ADR-007-venue-eligibility-jurisdictional-activation-gate.md)  
+**Related reference:** [NX-REF-VENUE-001 (PR #14 branch)](https://github.com/PandaGarry/NEXUS/blob/research/russia-venue-eligibility-v0/docs/architecture/NX-REF-VENUE-001-venue-eligibility-evidence-reference-model.md)
 
 ## Purpose
 
