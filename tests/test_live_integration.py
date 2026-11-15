@@ -149,6 +149,56 @@ class LiveIntegrationTests(unittest.TestCase):
         self.assertEqual(backoffs[:3], [1.0, 2.0, 4.0])
         self.assertTrue(any(seconds >= 0.025 for seconds in sleeps))
 
+
+    def test_duration_bounds_rate_limit_wait_and_connection_handshake(self):
+        connections = []
+        open_timeouts = []
+
+        def connect(*args, **kwargs):
+            open_timeouts.append(kwargs["open_timeout"])
+            ws = FakeWebSocket([])
+            connections.append(ws)
+            return ws
+
+        client_module = types.ModuleType("websockets.asyncio.client")
+        client_module.connect = connect
+        asyncio_module = types.ModuleType("websockets.asyncio")
+        asyncio_module.__path__ = []
+        websockets_module = types.ModuleType("websockets")
+        websockets_module.__path__ = []
+        fake_modules = {
+            "websockets": websockets_module,
+            "websockets.asyncio": asyncio_module,
+            "websockets.asyncio.client": client_module,
+        }
+
+        from nexus_bybit_recorder.live import ReconnectRateLimiter
+        with tempfile.TemporaryDirectory() as tmp:
+            journal_path = Path(tmp) / "duration-rate-limit.jsonl"
+            started = __import__("time").monotonic()
+            with patch.dict(sys.modules, fake_modules):
+                with patch(
+                    "nexus_bybit_recorder.live.ReconnectRateLimiter",
+                    side_effect=lambda: ReconnectRateLimiter(
+                        max_attempts=1, window_seconds=1.0
+                    ),
+                ):
+                    with patch(
+                        "nexus_bybit_recorder.live._reconnect_sleep_seconds",
+                        return_value=0.001,
+                    ):
+                        asyncio.run(record_public(
+                            symbol="BTCUSDT",
+                            output=journal_path,
+                            duration_seconds=0.05,
+                        ))
+            elapsed = __import__("time").monotonic() - started
+
+        self.assertEqual(len(connections), 1)
+        self.assertEqual(len(open_timeouts), 1)
+        self.assertLessEqual(open_timeouts[0], 0.05)
+        self.assertLess(elapsed, 0.2)
+
     def test_malformed_json_frame_is_journaled_and_forces_invalidation(self):
         ws = FakeWebSocket(["not-json"])
         client_module = types.ModuleType("websockets.asyncio.client")
