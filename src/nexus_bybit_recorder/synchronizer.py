@@ -42,6 +42,9 @@ class BookSynchronizer:
         self.last_invalidation_reason = reason
 
     def on_delta(self, message: dict[str, Any]) -> SyncOutcome:
+        if not isinstance(message, dict):
+            self.invalidate("malformed_delta:root_must_be_object")
+            return SyncOutcome("INVALID", False, self.last_invalidation_reason)
         if message.get("topic") != f"orderbook.full.{self.symbol}":
             self.invalidate("unexpected_topic")
             return SyncOutcome("INVALID", False, "unexpected_topic")
