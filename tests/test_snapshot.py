@@ -63,6 +63,21 @@ class SnapshotClientTests(unittest.TestCase):
         with self.assertRaises(SnapshotValidationError):
             parse_full_depth_snapshot(response, expected_symbol="BTCUSDT")
 
+    def test_rejects_snapshot_missing_either_side(self):
+        for missing_side in ("b", "a"):
+            with self.subTest(missing_side=missing_side):
+                result = dict(self.result)
+                del result[missing_side]
+                response = SnapshotHttpResponse(
+                    request_url=self.response.request_url,
+                    http_status=200,
+                    body=json.dumps({"retCode": 0, "result": result}),
+                    received_wall_ns=1,
+                    received_monotonic_ns=2,
+                )
+                with self.assertRaises(SnapshotValidationError):
+                    parse_full_depth_snapshot(response, expected_symbol="BTCUSDT")
+
 
 if __name__ == "__main__":
     unittest.main()
