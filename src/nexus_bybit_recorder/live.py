@@ -161,6 +161,8 @@ async def record_public(
                     rate_limit_delay,
                 )
                 await asyncio.sleep(rate_limit_delay)
+            if deadline is not None and time.monotonic() >= deadline:
+                break
             reconnect_limiter.record()
             generation += 1
             stop = asyncio.Event()
