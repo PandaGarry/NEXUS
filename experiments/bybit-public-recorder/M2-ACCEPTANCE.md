@@ -25,11 +25,12 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 - [x] Added `BookSynchronizer` with bounded buffering, exact watermark bridge, `u=1` reset handling, gap invalidation and disconnect invalidation.
 - [x] Integrated REST snapshot acquisition and live synchronization into the public recorder CLI; the live CLI journals book-state transitions.
 - [x] Added unit tests for REST response validation, synchronization, reset/gap behavior, exhaustive record classification and a mocked end-to-end live loop (WS frames → REST snapshot → `LIVE_VALID` → replay).
-- [x] Unit CI passed on Python 3.11/3.12/3.13 for the latest code: [run 43644001404](https://github.com/PandaGarry/NEXUS/actions/runs/43644001404), branch head `1afaa21953aa369d634dd2c224f2495709bbdfd6`.
+- [x] Parser-hardening CI passed on Python 3.11/3.12/3.13: [run 43646661506](https://github.com/PandaGarry/NEXUS/actions/runs/43646661506), testing code commit `54b0a510b254f91f1e06346a3b6ce61e13f41999`; all three matrix jobs passed, 37 tests per runtime. The three new tests for malformed level shape, non-integer sequence values and boolean sequence values passed. The live-public-smoke job was correctly skipped by the terms gate. Workflow path filters now include M2 acceptance/milestone docs so subsequent checklist changes also trigger CI.
 - [ ] Integrated 10-minute live run [43642980172](https://github.com/PandaGarry/NEXUS/actions/runs/43642980172) was cancelled by subsequent code updates before the capture step completed. Future automated live smoke is skipped unless `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true` is set after the terms gate is cleared. A deterministic mocked live-loop integration test now passes, but it is not exchange-live evidence. Hosted-runner latency remains out of scope.
 - [x] Added `replay_book()` and a deterministic fixture that reconstructs the same watermark from raw REST/WS journal events and compares it with a recorded `LIVE_VALID` marker.
 - [ ] Replay evidence from the integrated live archive must pass the workflow gate; the unit fixture alone is insufficient.
 - [ ] Fault-injection and reconnect evidence remain outstanding; M2 is not accepted.
+- [x] Strict delta parser hardening: `u`/`seq` reject booleans and non-integers; malformed level shapes and non-string price/quantity fields fail closed. Evidence: commits [`ce773e1`](https://github.com/PandaGarry/NEXUS/commit/ce773e190404ec33b2b6d2b09195fd7e8faf697c) and [`54b0a51`](https://github.com/PandaGarry/NEXUS/commit/54b0a510b254f91f1e06346a3b6ce61e13f41999); all 37 tests passed on Python 3.11/3.12/3.13 in run 43646661506.
 
 
 ## 0. Evidence and accounting
