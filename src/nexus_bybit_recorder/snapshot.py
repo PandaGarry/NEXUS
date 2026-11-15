@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from .book import OrderBook
+from .jsonutil import strict_json_loads
 
 
 class SnapshotFetchError(RuntimeError):
@@ -97,8 +98,8 @@ def parse_full_depth_snapshot(
     if response.http_status != 200:
         raise SnapshotValidationError(f"unexpected HTTP status: {response.http_status}")
     try:
-        payload = json.loads(response.body)
-    except json.JSONDecodeError as exc:
+        payload = strict_json_loads(response.body)
+    except (json.JSONDecodeError, ValueError) as exc:
         raise SnapshotValidationError("REST response is not valid JSON") from exc
     if not isinstance(payload, dict):
         raise SnapshotValidationError("REST response root must be an object")
