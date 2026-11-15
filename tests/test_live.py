@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from nexus_bybit_recorder.live import (
     _SNAPSHOT_FETCH_SLOT,
+    _backoff_after_connection,
     _fetch_snapshot_singleflight,
     public_linear_url,
     subscription,
@@ -12,6 +13,14 @@ from nexus_bybit_recorder.snapshot import SnapshotFetchError
 
 
 class LiveConfigTests(unittest.TestCase):
+    def test_short_lived_successful_socket_open_does_not_reset_backoff(self):
+        self.assertEqual(_backoff_after_connection(8.0, 0.2), 8.0)
+        self.assertEqual(_backoff_after_connection(8.0, 29.999), 8.0)
+
+    def test_stable_connection_resets_backoff(self):
+        self.assertEqual(_backoff_after_connection(8.0, 30.0), 1.0)
+        self.assertEqual(_backoff_after_connection(30.0, 120.0), 1.0)
+
     def test_endpoints(self):
         self.assertEqual(public_linear_url(), "wss://stream.bybit.com/v5/public/linear")
         self.assertEqual(public_linear_url(True), "wss://stream-testnet.bybit.com/v5/public/linear")
