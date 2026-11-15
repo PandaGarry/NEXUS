@@ -192,6 +192,10 @@ async def record_public(
                                     generation, record_type="rest_snapshot_error",
                                 )
                                 synchronizer.invalidate("rest_snapshot_fetch_failed")
+                                _journal_book_state(
+                                    journal, generation, "INVALID",
+                                    reason="rest_snapshot_fetch_failed", sync=synchronizer,
+                                )
                                 snapshot_retry_delay = min(max(snapshot_retry_delay * 2, 0.5), 5.0)
                                 response = None
                             if response is not None:
@@ -214,6 +218,10 @@ async def record_public(
                                         generation, record_type="snapshot_validation_error",
                                     )
                                     synchronizer.invalidate("rest_snapshot_validation_failed")
+                                    _journal_book_state(
+                                        journal, generation, "INVALID",
+                                        reason="rest_snapshot_validation_failed", sync=synchronizer,
+                                    )
                                     snapshot_retry_delay = min(snapshot_retry_delay * 2, 5.0)
                                 else:
                                     snapshot_retry_delay = 0.5
