@@ -106,7 +106,7 @@ class ReplayTests(unittest.TestCase):
             changed["data"]["b"][0][1] = quantity
             with RawFrameJournal(path) as journal:
                 journal.append(json.dumps(first), 1, metadata={"expected_symbol": "BTCUSDT"})
-                journal.append(json.dumps(second), 1, metadata={"expected_symbol": "BTCUSDT"})
+                journal.append(json.dumps(changed), 1, metadata={"expected_symbol": "BTCUSDT"})
                 journal.append(
                     json.dumps(snapshot), 1, record_type="raw_rest_snapshot",
                     metadata={"request_url": "https://api.bybit.com/v5/market/full_orderbook", "http_status": 200, "expected_symbol": "BTCUSDT"},
