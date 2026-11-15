@@ -182,7 +182,7 @@ The domain-level command identity should be stable and idempotent. Each venue ad
 
 ## 9. References and current evidence
 
-- Existing preliminary comparison: [NX-RESEARCH-003 — Coinbase/Kraken shortlist](research/NX-RESEARCH-003-first-venue-shortlist.md) (documentation research only; contains historical and jurisdiction-dependent conclusions that must be revalidated before selection).
+- Existing preliminary comparison: [NX-RESEARCH-003 — Coinbase/Kraken shortlist (PR #14 branch)](https://github.com/PandaGarry/NEXUS/blob/research/russia-venue-eligibility-v0/docs/research/NX-RESEARCH-003-first-venue-shortlist.md) (documentation research only; contains historical and jurisdiction-dependent conclusions that must be revalidated before selection).
 - Bybit recorder prototype: [PR #19](https://github.com/PandaGarry/NEXUS/pull/19).
 - Bybit public-feed API research: [PR #17](https://github.com/PandaGarry/NEXUS/pull/17).
 - Second adapter qualification issue: [Issue #21](https://github.com/PandaGarry/NEXUS/issues/21).
