@@ -175,6 +175,9 @@ async def record_public(
     with RawFrameJournal(output, flush_each_frame=True) as journal:
         while deadline is None or time.monotonic() < deadline:
             rate_limit_delay = reconnect_limiter.delay()
+            if deadline is not None:
+                remaining = max(0.0, deadline - time.monotonic())
+                rate_limit_delay = min(rate_limit_delay, remaining)
             if rate_limit_delay > 0:
                 LOG.warning(
                     "reconnect attempt budget exhausted; waiting %.3fs",
@@ -203,11 +206,17 @@ async def record_public(
                     delay_seconds=max(requested_delay, rate_limit_delay),
                 )
             try:
+                open_timeout = 10.0
+                if deadline is not None:
+                    remaining = max(0.0, deadline - time.monotonic())
+                    if remaining <= 0:
+                        break
+                    open_timeout = min(open_timeout, remaining)
                 LOG.info("connecting generation=%d endpoint=%s", generation, public_linear_url(testnet))
                 async with connect(
                     public_linear_url(testnet),
                     ping_interval=None,
-                    open_timeout=10,
+                    open_timeout=open_timeout,
                     close_timeout=5,
                     max_size=16 * 1024 * 1024,
                     max_queue=64,
