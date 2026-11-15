@@ -97,6 +97,32 @@ class OrderBookTests(unittest.TestCase):
         with self.assertRaisesRegex(ResyncRequired, "conflicting duplicate"):
             bridge_snapshot(self.snapshot, buffered)
 
+    def test_snapshot_rejects_numerically_duplicate_price_strings(self):
+        invalid = {
+            "u": 10, "seq": 100,
+            "b": [["100", "2"], ["100.0", "3"]],
+            "a": [["101", "4"]],
+        }
+        with self.assertRaisesRegex(ValueError, "duplicate numeric price"):
+            OrderBook.from_snapshot(invalid)
+
+    def test_delta_rejects_numerically_duplicate_price_strings(self):
+        with self.assertRaisesRegex(ValueError, "duplicate numeric price"):
+            Delta.from_message({
+                "topic": "orderbook.full.BTCUSDT",
+                "type": "delta",
+                "data": {
+                    "s": "BTCUSDT", "u": 11, "seq": 101,
+                    "b": [["100", "2"], ["100.0", "3"]], "a": [],
+                },
+            })
+
+    def test_decimal_equivalent_price_update_targets_existing_level(self):
+        book = OrderBook.from_snapshot(self.snapshot)
+        book.apply(delta(11, 101, [["100.0", "9"]]))
+        self.assertEqual(book.bids["100"], "9")
+        self.assertEqual(len(book.bids), 2)
+
 
 if __name__ == "__main__":
     unittest.main()
