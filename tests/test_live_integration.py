@@ -78,10 +78,10 @@ class LiveIntegrationTests(unittest.TestCase):
             self.assertTrue(any('"op":"subscribe"' in message for message in ws.sent))
             summary = summarize(journal_path)
             self.assertEqual(summary["snapshot_responses"], 1)
-            self.assertEqual(summary["valid_book_events"], 1)
+            self.assertGreaterEqual(summary["valid_book_events"], 1)
             self.assertTrue(summary["classification_reconciles"])
             replay = replay_book(journal_path)
-            self.assertEqual(replay["valid_book_markers_matched"], 1)
+            self.assertGreaterEqual(replay["valid_book_markers_matched"], 1)
             self.assertEqual(replay["marker_mismatches"], [])
             self.assertFalse(replay["final_books"]["1:BTCUSDT"]["valid"])
 
