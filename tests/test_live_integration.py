@@ -2,6 +2,7 @@ import asyncio
 import json
 import sys
 import tempfile
+import time
 import types
 import unittest
 from pathlib import Path
@@ -175,7 +176,7 @@ class LiveIntegrationTests(unittest.TestCase):
         from nexus_bybit_recorder.live import ReconnectRateLimiter
         with tempfile.TemporaryDirectory() as tmp:
             journal_path = Path(tmp) / "duration-rate-limit.jsonl"
-            started = __import__("time").monotonic()
+            started = time.monotonic()
             with patch.dict(sys.modules, fake_modules):
                 with patch(
                     "nexus_bybit_recorder.live.ReconnectRateLimiter",
