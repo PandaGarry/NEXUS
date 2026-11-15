@@ -76,9 +76,9 @@ class ReplayTests(unittest.TestCase):
             with RawFrameJournal(path) as journal:
                 journal.append('{"topic":"publicTrade.BTCUSDT"}', 1)
             row = json.loads(path.read_text())
-            duplicate = json.dumps(row).rstrip("\\n")
+            duplicate = json.dumps(row).rstrip("\n")
             duplicate = duplicate[:-1] + ',"connection_generation":999}'
-            path.write_text(duplicate + "\\n")
+            path.write_text(duplicate + "\n")
             with self.assertRaises(JournalIntegrityError):
                 list(iter_verified_frames(path))
 
