@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Iterator
 
 from .snapshot import SnapshotHttpResponse, parse_full_depth_snapshot
+from .jsonutil import strict_json_loads
 from .synchronizer import BookSynchronizer
 
 
@@ -20,8 +21,8 @@ def iter_verified_frames(path: str | Path) -> Iterator[dict]:
     with Path(path).open("r", encoding="utf-8") as stream:
         for line_number, line in enumerate(stream, start=1):
             try:
-                record = json.loads(line)
-            except json.JSONDecodeError as exc:
+                record = strict_json_loads(line)
+            except (json.JSONDecodeError, ValueError) as exc:
                 raise JournalIntegrityError(f"invalid JSON at line {line_number}") from exc
             raw = record.get("raw_frame")
             if not isinstance(raw, str):
@@ -60,7 +61,7 @@ def summarize(path: str | Path) -> dict:
             if record_type == "derived_book_state":
                 try:
                     state_payload = json.loads(record["raw_frame"])
-                except json.JSONDecodeError:
+                except (json.JSONDecodeError, ValueError):
                     other_json_frames += 1
                 else:
                     state = state_payload.get("state")
