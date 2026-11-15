@@ -143,3 +143,16 @@ Official source: [Bybit full-depth orderbook synchronization procedure](https://
 
 - Bybit full-depth WebSocket and synchronization procedure: https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob
 - Bybit full-depth REST snapshot: https://bybit-exchange.github.io/docs/v5/market/full-ob
+
+
+## Independent Arena audit A — remediation follow-up (2026-11-15)
+
+Arena's report against `38dfbf2` identified three additional ingress/replay defects and clarified the retry cap. Remediation is implemented in the current branch; CI evidence for the resulting head is pending.
+
+- [x] **Decimal resource bounds:** price and quantity strings are length-limited; coefficient precision and exponent are bounded before fixed-point canonicalization. `Decimal.normalize()` was removed from price-key construction to avoid context-sensitive overflow. Extreme `1e1000000` and `1e-1000000` deltas now fail closed through `BookSynchronizer.on_delta()` without an exception escaping.
+- [x] **Silent-socket duration:** the WebSocket frame iterator is now bounded by the remaining monotonic recording deadline. A silent connected socket stops the iterator when `--duration` expires; normal disconnect and cancellation paths still run.
+- [x] **Strict JSON:** shared `strict_json_loads()` rejects duplicate object keys recursively. Live WS ingress, REST snapshot validation, journal-envelope parsing and replay all use the same policy. Duplicate-key frames invalidate the generation; duplicate-key journal envelopes fail integrity validation.
+- [x] **Reconnect policy clarified:** after 8 attempts in a rolling 60-second window, the recorder waits until the oldest attempt expires and a slot becomes available; it does not terminate. The wait checks the recording deadline before another connection attempt.
+- [x] **Strict reconnect delay cap:** jitter is included inside the 30-second maximum; total delay cannot exceed 30.0 seconds.
+- [ ] **Verification pending:** exact current PR head must pass Python 3.11/3.12/3.13 unit CI. Add full lifecycle fault-injection coverage for repeated short-lived handshakes, stable reset, exceptions before handshake, rate-window exhaustion/release and cancellation. Unit helper tests do not replace this integration evidence.
+- [ ] **M2 acceptance remains open:** no permitted synchronized live REST/WS session, controlled reconnect/reset/gap session, or permitted real-session replay has been accepted. These code fixes do not change the terms gate or authorize a new capture.
