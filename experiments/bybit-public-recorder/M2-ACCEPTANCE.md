@@ -30,7 +30,9 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 - [x] Added `replay_book()` and a deterministic fixture that reconstructs the same watermark from raw REST/WS journal events and compares it with a recorded `LIVE_VALID` marker.
 - [ ] Replay evidence from the integrated live archive must pass the workflow gate; the unit fixture alone is insufficient.
 - [ ] Fault-injection and reconnect evidence remain outstanding; M2 is not accepted.
+- [ ] Live cross-sequence regression and malformed root-frame hardening are committed but awaiting exact-head CI; see [37e6c68](https://github.com/PandaGarry/NEXUS/commit/37e6c6807ded23f971715b1301155aa57b0b5ffe).
 - [x] Strict delta parser hardening: `u`/`seq` reject booleans and non-integers; malformed level shapes and non-string price/quantity fields fail closed. Evidence: commits [`ce773e1`](https://github.com/PandaGarry/NEXUS/commit/ce773e190404ec33b2b6d2b09195fd7e8faf697c) and [`54b0a51`](https://github.com/PandaGarry/NEXUS/commit/54b0a510b254f91f1e06346a3b6ce61e13f41999); all 37 tests passed on Python 3.11/3.12/3.13 in run 43646661506.
+- [ ] Latest runtime hardening (commit [`37e6c68`](https://github.com/PandaGarry/NEXUS/commit/37e6c6807ded23f971715b1301155aa57b0b5ffe)) now invalidates immediately on a live cross-sequence regression and safely rejects non-object WS roots; two regression tests were added. CI for this exact code head is not yet verified. Do not mark this change TESTED until a fresh all-version CI run passes.
 
 
 ## 0. Evidence and accounting
