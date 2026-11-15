@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, DecimalException, InvalidOperation
 from typing import Any, Iterable
 
 
@@ -15,19 +15,44 @@ class SnapshotNotCaughtUp(RuntimeError):
     """The REST snapshot is not aligned with the buffered WebSocket stream yet."""
 
 
+MAX_DECIMAL_INPUT_LENGTH = 64
+MAX_DECIMAL_DIGITS = 32
+MAX_DECIMAL_EXPONENT = 32
+
+
 def _validated_level(price: str, quantity: str) -> tuple[Decimal, Decimal]:
+    if (
+        not isinstance(price, str)
+        or not isinstance(quantity, str)
+        or len(price) > MAX_DECIMAL_INPUT_LENGTH
+        or len(quantity) > MAX_DECIMAL_INPUT_LENGTH
+    ):
+        raise ValueError("invalid order-book decimal length")
     try:
         p, q = Decimal(price), Decimal(quantity)
-    except (InvalidOperation, TypeError, ValueError) as exc:
+    except (DecimalException, TypeError, ValueError) as exc:
         raise ValueError("invalid order-book decimal") from exc
     if not p.is_finite() or not q.is_finite() or p <= 0 or q < 0:
         raise ValueError("invalid order-book decimal")
+    for value in (p, q):
+        parts = value.as_tuple()
+        if (
+            len(parts.digits) > MAX_DECIMAL_DIGITS
+            or not isinstance(parts.exponent, int)
+            or abs(parts.exponent) > MAX_DECIMAL_EXPONENT
+        ):
+            raise ValueError("order-book decimal exceeds precision or exponent limits")
     return p, q
 
 
 def _price_key(price: str) -> str:
     value, _ = _validated_level(price, "0")
-    return format(value.normalize(), "f")
+    # Avoid Decimal.normalize(): it is context-sensitive and can overflow.
+    # The validated exponent bound also keeps fixed-point expansion bounded.
+    canonical = format(value, "f")
+    if "." in canonical:
+        canonical = canonical.rstrip("0").rstrip(".")
+    return canonical
 
 
 def _levels(raw: Iterable[Iterable[str]]) -> dict[str, str]:
