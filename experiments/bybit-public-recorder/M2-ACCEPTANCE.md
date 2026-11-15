@@ -43,6 +43,11 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 - [x] Latest synthetic/unit CI at exact code head 2eb442a45c2931e8fd69429f760c4b1ee80ed703, run 43681007605, completed successfully. The Python 3.11/3.12/3.13 test matrix passed. Live-public-smoke remained skipped by the terms gate.
 - [ ] These tests remain synthetic/mocked evidence. No live synchronized-book, real reconnect/reset/gap, or exchange-session replay evidence has been accepted.
 
+- [x] Numeric price identity is canonicalized with exact Decimal semantics. Numerically equivalent wire strings map to one price key; duplicate numeric price levels in snapshots or deltas are rejected rather than silently overwriting each other.
+- [x] Snapshot HTTP concurrency is bounded process-wide: cancelling an asyncio task no longer permits repeated orphaned to_thread requests to accumulate; overlapping requests fail fast while the prior blocking request still owns the single-flight slot.
+- [x] Exact runtime code head [bed5667](https://github.com/PandaGarry/NEXUS/commit/bed5667e2d68e76ff694a731a9c5ea9a458d775f) passed the Python 3.11/3.12/3.13 matrix in [CI 43681248092](https://github.com/PandaGarry/NEXUS/actions/runs/43681248092). Live-public-smoke remained skipped by the terms gate.
+- [ ] Define and persist seeded-depth semantics before M2 acceptance: LIVE_VALID means sequence-consistent from the exact REST seed, not a globally complete book. Record seed depth per side and explicitly state RPI exclusion; Bybit REST full-depth is bounded to 10,000 levels per side.
+
 ## 0. Evidence and accounting
 
 - [x] Re-opened and independently classified the original 10-minute artifact on 2026-11-15: 8,149 trade-topic, 2,998 orderbook-topic, 29 pong replies and 1 subscription acknowledgement; all 11,177 records reconcile and all raw SHA-256 checks passed.
