@@ -1,0 +1,82 @@
+name: Bybit public recorder spike
+
+concurrency:
+  group: bybit-public-recorder-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    paths:
+      - "src/nexus_bybit_recorder/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "experiments/bybit-public-recorder/M2-ACCEPTANCE.md"
+      - "experiments/bybit-public-recorder/MILESTONES.md"
+      - ".github/workflows/bybit-public-recorder.yml"
+  push:
+    branches: ["prototype/bybit-public-data-recorder-python-v0"]
+    paths:
+      - "src/nexus_bybit_recorder/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "experiments/bybit-public-recorder/M2-ACCEPTANCE.md"
+      - "experiments/bybit-public-recorder/MILESTONES.md"
+      - ".github/workflows/bybit-public-recorder.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install -e .
+      - run: python -m unittest discover -s tests -v
+
+  live-public-smoke:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/prototype/bybit-public-data-recorder-python-v0' && vars.NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install optional live transport
+        run: python -m pip install -e ".[live]"
+      - name: Capture ten minutes from public Bybit WebSocket
+        run: |
+          mkdir -p evidence
+          nexus-bybit-record --symbol BTCUSDT --output evidence/bybit-public-10m.jsonl --duration 600
+      - name: Verify journal and require both live topics
+        run: |
+          nexus-bybit-replay evidence/bybit-public-10m.jsonl --replay-book | tee evidence/replay-summary.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          summary = json.loads(Path("evidence/replay-summary.json").read_text())
+          topics = summary.get("topics", {})
+          required = ("publicTrade.BTCUSDT", "orderbook.full.BTCUSDT")
+          missing = [topic for topic in required if topics.get(topic, 0) <= 0]
+          if summary.get("frames", 0) <= 0 or missing:
+              raise SystemExit(f"capture is not accepted; missing topics={missing}; summary={summary}")
+          if not summary.get("classification_reconciles", False):
+              raise SystemExit(f"journal classification does not reconcile: {summary}")
+          if summary.get("snapshot_responses", 0) <= 0 or summary.get("valid_book_events", 0) <= 0:
+              raise SystemExit(f"no synchronized full-depth book was observed: {summary}")
+          book_replay = summary.get("book_replay", {})
+          if not book_replay.get("replay_matches_recorded_valid_markers", False) or book_replay.get("marker_mismatches"):
+              raise SystemExit(f"book replay does not match recorded valid markers: {book_replay}")
+          print(json.dumps(summary, indent=2, sort_keys=True))
+          PY
+      # Raw exchange frames must never be uploaded as artifacts from this public repository.
+      # The job validates the capture in-place; only a reviewed, non-raw summary may be
+      # preserved through a separate owner-approved private evidence workflow.
