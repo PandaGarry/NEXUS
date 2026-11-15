@@ -131,6 +131,46 @@ class BookSynchronizerTests(unittest.TestCase):
         self.assertFalse(outcome.request_snapshot)
         self.assertFalse(sync.valid)
 
+    def test_delta_requires_both_side_arrays(self):
+        for missing_side in ("b", "a"):
+            with self.subTest(missing_side=missing_side):
+                sync = BookSynchronizer("BTCUSDT")
+                malformed = delta(10, 100)
+                del malformed["data"][missing_side]
+                outcome = sync.on_delta(malformed)
+                self.assertEqual(outcome.state, "INVALID")
+                self.assertFalse(sync.valid)
+                self.assertEqual(sync.buffered_count, 0)
+
+    def test_delta_missing_side_after_live_invalidates_book(self):
+        sync = BookSynchronizer("BTCUSDT")
+        sync.on_delta(delta(10, 100))
+        self.assertEqual(sync.on_snapshot(snapshot()).state, "LIVE_VALID")
+        malformed = delta(11, 101)
+        del malformed["data"]["a"]
+        outcome = sync.on_delta(malformed)
+        self.assertEqual(outcome.state, "INVALID")
+        self.assertFalse(sync.valid)
+
+    def test_u_one_empty_rest_snapshot_is_no_book_not_live_valid(self):
+        sync = BookSynchronizer("BTCUSDT")
+        sync.on_delta(delta(1, 200))
+        outcome = sync.on_snapshot({"u": 1, "seq": 200, "b": [], "a": []})
+        self.assertEqual(outcome.state, "NO_BOOK")
+        self.assertFalse(sync.valid)
+        self.assertTrue(sync.no_book)
+        self.assertEqual(sync.last_invalidation_reason, "u=1_empty_snapshot_no_book")
+
+    def test_bridge_failure_immediately_requests_fresh_snapshot(self):
+        sync = BookSynchronizer("BTCUSDT")
+        sync.on_delta(delta(10, 100))
+        # The snapshot bridge sees an update-id discontinuity in the buffer.
+        sync.on_delta(delta(12, 102))
+        outcome = sync.on_snapshot(snapshot())
+        self.assertEqual(outcome.state, "SYNCING")
+        self.assertTrue(outcome.request_snapshot)
+        self.assertEqual(sync.buffered_count, 1)
+
 
 if __name__ == "__main__":
     unittest.main()
