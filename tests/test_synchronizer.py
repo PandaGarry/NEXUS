@@ -195,6 +195,16 @@ class BookSynchronizerTests(unittest.TestCase):
         self.assertFalse(sync.valid)
         self.assertIn("conflicting duplicate update id", outcome.reason)
 
+    def test_unexpected_orderbook_topic_invalidates_live_book(self):
+        sync = BookSynchronizer("BTCUSDT")
+        sync.on_delta(delta(10, 100))
+        self.assertEqual(sync.on_snapshot(snapshot()).state, "LIVE_VALID")
+        wrong_topic = delta(11, 101)
+        wrong_topic["topic"] = "orderbook.full.ETHUSDT"
+        outcome = sync.on_delta(wrong_topic)
+        self.assertEqual(outcome.state, "INVALID")
+        self.assertFalse(sync.valid)
+
 
 if __name__ == "__main__":
     unittest.main()
