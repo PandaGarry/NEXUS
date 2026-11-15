@@ -83,6 +83,20 @@ class OrderBookTests(unittest.TestCase):
         fresh = {"u": 11, "seq": 101, "b": [["100", "8"], ["99", "3"]], "a": [["101", "4"]]}
         self.assertEqual(book.fingerprint_view(), OrderBook.from_snapshot(fresh).fingerprint_view())
 
+    def test_identical_buffer_duplicate_is_ignored(self):
+        repeated = delta(10, 100)
+        book, consumed = bridge_snapshot(self.snapshot, [repeated, repeated])
+        self.assertTrue(book.valid)
+        self.assertEqual(consumed, 1)
+
+    def test_conflicting_buffer_duplicate_requires_resync(self):
+        buffered = [
+            delta(10, 100),
+            delta(10, 100, [["100", "9"]]),
+        ]
+        with self.assertRaisesRegex(ResyncRequired, "conflicting duplicate"):
+            bridge_snapshot(self.snapshot, buffered)
+
 
 if __name__ == "__main__":
     unittest.main()
