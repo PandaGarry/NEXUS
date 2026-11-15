@@ -85,6 +85,67 @@ class LiveIntegrationTests(unittest.TestCase):
             self.assertEqual(replay["marker_mismatches"], [])
             self.assertFalse(replay["final_books"]["1:BTCUSDT"]["valid"])
 
+    def test_malformed_json_frame_is_journaled_and_forces_invalidation(self):
+        ws = FakeWebSocket(["not-json"])
+        client_module = types.ModuleType("websockets.asyncio.client")
+        client_module.connect = lambda *args, **kwargs: ws
+        asyncio_module = types.ModuleType("websockets.asyncio")
+        asyncio_module.__path__ = []
+        websockets_module = types.ModuleType("websockets")
+        websockets_module.__path__ = []
+        fake_modules = {
+            "websockets": websockets_module,
+            "websockets.asyncio": asyncio_module,
+            "websockets.asyncio.client": client_module,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            journal_path = Path(tmp) / "malformed.jsonl"
+            with patch.dict(sys.modules, fake_modules):
+                asyncio.run(record_public(symbol="BTCUSDT", output=journal_path, duration_seconds=0.001))
+            records = [json.loads(line) for line in journal_path.read_text().splitlines()]
+            states = [
+                json.loads(record["raw_frame"])
+                for record in records
+                if record.get("record_type") == "derived_book_state"
+            ]
+            self.assertTrue(any(
+                state.get("reason") == "malformed_ws_frame" and state.get("state") == "INVALID"
+                for state in states
+            ))
+
+    def test_wrong_orderbook_symbol_is_not_silently_ignored(self):
+        wrong = json.dumps({
+            "topic": "orderbook.full.ETHUSDT",
+            "type": "delta",
+            "data": {"s": "ETHUSDT", "u": 10, "seq": 100, "b": [], "a": []},
+        })
+        ws = FakeWebSocket([wrong])
+        client_module = types.ModuleType("websockets.asyncio.client")
+        client_module.connect = lambda *args, **kwargs: ws
+        asyncio_module = types.ModuleType("websockets.asyncio")
+        asyncio_module.__path__ = []
+        websockets_module = types.ModuleType("websockets")
+        websockets_module.__path__ = []
+        fake_modules = {
+            "websockets": websockets_module,
+            "websockets.asyncio": asyncio_module,
+            "websockets.asyncio.client": client_module,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            journal_path = Path(tmp) / "wrong-topic.jsonl"
+            with patch.dict(sys.modules, fake_modules):
+                asyncio.run(record_public(symbol="BTCUSDT", output=journal_path, duration_seconds=0.001))
+            records = [json.loads(line) for line in journal_path.read_text().splitlines()]
+            states = [
+                json.loads(record["raw_frame"])
+                for record in records
+                if record.get("record_type") == "derived_book_state"
+            ]
+            self.assertTrue(any(
+                state.get("reason") == "unexpected_topic" and state.get("state") == "INVALID"
+                for state in states
+            ))
+
 
 if __name__ == "__main__":
     unittest.main()
