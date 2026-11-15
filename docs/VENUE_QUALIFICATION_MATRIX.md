@@ -50,6 +50,7 @@
 
 Official sources:
 - Full-depth WS and synchronization: https://bybit-exchange.github.io/docs/v5/websocket/public/full-ob
+- V5 API changelog and 2026-11-12 Tokyo infrastructure migration notice: https://bybit-exchange.github.io/docs/changelog/v5
 - Full-depth REST snapshot: https://bybit-exchange.github.io/docs/v5/market/full-ob
 - Trade channel: https://bybit-exchange.github.io/docs/v5/websocket/public/trade
 - Historical BTCUSDT trade listing: https://public.bybit.com/trading/BTCUSDT/
@@ -122,6 +123,7 @@ Official sources:
 Official sources:
 - Historical data: https://www.okx.com/historical-data
 - V5 API/book sequence semantics: https://www.okx.com/docs-v5/en/
+- API changelog, port 8443 retirement and SBE demo-service notice: https://www.okx.com/docs-v5/log_en/
 - Checksum deprecation: https://www.okx.com/en-sg/help/okx-order-book-channels-checksum-field-deprecation
 - API Agreement: https://www.okx.com/help/okx-api-agreement
 - Historical-data terms: https://www.okx.com/help/historicaldata-terms-and-conditions
