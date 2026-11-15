@@ -60,7 +60,9 @@ class Delta:
             return value
 
         def side_levels(name: str) -> tuple[tuple[str, str], ...]:
-            raw_levels = data.get(name, [])
+            if name not in data:
+                raise ValueError(f"delta is missing required {name} side")
+            raw_levels = data[name]
             if not isinstance(raw_levels, list):
                 raise ValueError(f"delta {name} must be an array")
             parsed: list[tuple[str, str]] = []
@@ -93,11 +95,18 @@ class OrderBook:
 
     @classmethod
     def from_snapshot(cls, snapshot: dict[str, Any]) -> "OrderBook":
+        if not isinstance(snapshot, dict):
+            raise ValueError("snapshot must be an object")
+        for side in ("b", "a"):
+            if side not in snapshot:
+                raise ValueError(f"snapshot is missing required {side} side")
+            if not isinstance(snapshot[side], list):
+                raise ValueError(f"snapshot {side} side must be an array")
         return cls(
             update_id=int(snapshot["u"]),
             cross_seq=int(snapshot["seq"]),
-            bids=_levels(snapshot.get("b", [])),
-            asks=_levels(snapshot.get("a", [])),
+            bids=_levels(snapshot["b"]),
+            asks=_levels(snapshot["a"]),
         )
 
     def apply(self, delta: Delta) -> None:
