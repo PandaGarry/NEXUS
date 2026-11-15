@@ -53,6 +53,8 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 - [x] Re-opened and independently classified the original 10-minute artifact on 2026-11-15: 8,149 trade-topic, 2,998 orderbook-topic, 29 pong replies and 1 subscription acknowledgement; all 11,177 records reconcile and all raw SHA-256 checks passed.
 - [ ] Preserve a user-controlled private copy of the artifact before its 2026-11-28 expiry; the inspection copy in the current working session is not a durable user-controlled archive.
 - [x] Reconcile exactly 11,177 journal records with mutually exclusive categories: 8,149 `publicTrade`, 2,998 `orderbook.full`, 29 pong replies (`op=ping`, `ret_msg=pong`), 1 subscription acknowledgement, 0 malformed/non-JSON and 0 other. Categories sum exactly to 11,177.
+- [x] Independent offline audit of artifact #10: ZIP SHA-256 matches GitHub artifact digest; all 11,177 per-frame raw SHA-256 values verify. All 2,998 orderbook deltas have `u` values 1440743–1443740 with no gaps, strictly increasing `seq` (846263141163–846270590664), no repeated/conflicting `u`, no missing/non-array `b/a`, and no numeric duplicate prices within either side. One connection generation; no REST snapshot or initial book state, therefore this is stream-segment integrity only, not M2/live-book acceptance.
+- [ ] Independent Arena reproduces the artifact audit and checks additional invariants/mutations without publishing raw frames.
 - [ ] Keep the original artifact private until Bybit data terms and redistribution rights have been reviewed. Do not commit raw exchange data to the public repository by default.
 - [ ] Add synthetic/minimal protocol fixtures to the repository only where licensing and terms permit; fixtures must be clearly labelled synthetic if synthetic.
 - [ ] Record the Actions runner region as an environment fact only. Do not use hosted-runner wall/monotonic timing as a production latency benchmark.
@@ -85,6 +87,7 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 - [ ] On `u=1`, invalidate immediately and restart the documented snapshot synchronization procedure.
 - [ ] On disconnect, reconnect, connection-generation change, malformed JSON/event, wrong symbol/topic, invalid decimal, crossed/locked book or buffer overflow, mark the book invalid.
 - [ ] A reconnect must never inherit a `LIVE_VALID` book from the previous connection.
+- [ ] Verify reconnect backoff across repeated short-lived successful socket opens followed by immediate disconnects/invalid frames. Backoff must not reset merely because the handshake succeeded; bound attempts per time window and test jitter/cap behavior to avoid venue connection storms.
 - [ ] No strategy or analytics consumer may read a book while invalid or synchronizing.
 - [ ] If snapshot acquisition repeatedly fails or cannot catch up, remain unavailable; never fall back to a stale book.
 
