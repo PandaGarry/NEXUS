@@ -50,7 +50,14 @@ class Delta:
     @property
     def digest(self) -> str:
         canonical = json.dumps(
-            self.raw, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+            {
+                "raw": self.raw,
+                "u": self.update_id,
+                "seq": self.cross_seq,
+                "b": self.bids,
+                "a": self.asks,
+            },
+            sort_keys=True, separators=(",", ":"), ensure_ascii=False
         ).encode("utf-8")
         return hashlib.sha256(canonical).hexdigest()
 
@@ -192,6 +199,10 @@ def bridge_snapshot(snapshot: dict[str, Any], buffered: list[Delta]) -> tuple[Or
             previous = filtered[-1]
             if delta.update_id <= previous.update_id:
                 if delta.update_id == previous.update_id:
+                    if delta.digest != previous.digest:
+                        raise ResyncRequired(
+                            f"conflicting duplicate update id {delta.update_id} in buffer"
+                        )
                     continue
                 continue
             if delta.update_id != previous.update_id + 1:
