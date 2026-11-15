@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -68,6 +69,60 @@ class ReplayTests(unittest.TestCase):
             path.write_text(json.dumps(row) + "\n")
             with self.assertRaises(JournalIntegrityError):
                 list(iter_verified_frames(path))
+
+    def test_replay_detects_tampered_delta_by_live_fingerprint(self):
+        from nexus_bybit_recorder.synchronizer import BookSynchronizer
+
+        first = {
+            "topic": "orderbook.full.BTCUSDT", "type": "delta",
+            "data": {"s": "BTCUSDT", "u": 10, "seq": 100, "b": [], "a": []},
+        }
+        second = {
+            "topic": "orderbook.full.BTCUSDT", "type": "delta",
+            "data": {"s": "BTCUSDT", "u": 11, "seq": 102, "b": [["100", "4"]], "a": []},
+        }
+        snapshot = {
+            "retCode": 0,
+            "result": {
+                "s": "BTCUSDT", "u": 10, "seq": 100,
+                "b": [["100", "2"]], "a": [["101", "3"]],
+            },
+        }
+        sync = BookSynchronizer("BTCUSDT")
+        sync.on_delta(first)
+        sync.on_delta(second)
+        sync.on_snapshot(snapshot["result"])
+        fingerprint = hashlib.sha256(
+            json.dumps(sync.book.fingerprint_view(), separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+        marker = {
+            "symbol": "BTCUSDT", "state": "LIVE_VALID", "valid": True,
+            "no_book": False, "update_id": 11, "cross_seq": 102,
+            "fingerprint_sha256": fingerprint,
+        }
+
+        def build(path, quantity):
+            changed = json.loads(json.dumps(second))
+            changed["data"]["b"][0][1] = quantity
+            with RawFrameJournal(path) as journal:
+                journal.append(json.dumps(first), 1, metadata={"expected_symbol": "BTCUSDT"})
+                journal.append(json.dumps(second), 1, metadata={"expected_symbol": "BTCUSDT"})
+                journal.append(
+                    json.dumps(snapshot), 1, record_type="raw_rest_snapshot",
+                    metadata={"request_url": "https://api.bybit.com/v5/market/full_orderbook", "http_status": 200, "expected_symbol": "BTCUSDT"},
+                )
+                journal.append(json.dumps(marker), 1, record_type="derived_book_state")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            good_path = Path(tmp) / "good.jsonl"
+            bad_path = Path(tmp) / "tampered.jsonl"
+            build(good_path, "4")
+            build(bad_path, "5")
+            good = replay_book(good_path)
+            bad = replay_book(bad_path)
+            self.assertTrue(good["replay_matches_recorded_valid_markers"])
+            self.assertFalse(bad["replay_matches_recorded_valid_markers"])
+            self.assertTrue(any("fingerprint mismatch" in item for item in bad["marker_mismatches"]))
 
 
 if __name__ == "__main__":
