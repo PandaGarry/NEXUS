@@ -72,7 +72,7 @@ def summarize(path: str | Path) -> dict:
             continue
         try:
             payload = json.loads(record["raw_frame"])
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, ValueError):
             non_json_frames += 1
             continue
         if not isinstance(payload, dict):
@@ -134,7 +134,7 @@ def replay_book(path: str | Path) -> dict:
             expected_symbol = metadata.get("expected_symbol")
             try:
                 payload = json.loads(raw)
-            except json.JSONDecodeError:
+            except (json.JSONDecodeError, ValueError):
                 if isinstance(expected_symbol, str):
                     get_sync(generation, expected_symbol).invalidate("malformed_ws_frame")
                 else:
@@ -203,7 +203,7 @@ def replay_book(path: str | Path) -> dict:
         elif record_type == "derived_book_state":
             try:
                 marker = json.loads(raw)
-            except json.JSONDecodeError:
+            except (json.JSONDecodeError, ValueError):
                 marker_mismatches.append(f"line {index}: malformed derived state marker")
                 continue
             if not isinstance(marker, dict):
