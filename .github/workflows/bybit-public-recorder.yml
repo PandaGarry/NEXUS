@@ -10,6 +10,8 @@ on:
       - "src/nexus_bybit_recorder/**"
       - "tests/**"
       - "pyproject.toml"
+      - "experiments/bybit-public-recorder/M2-ACCEPTANCE.md"
+      - "experiments/bybit-public-recorder/MILESTONES.md"
       - ".github/workflows/bybit-public-recorder.yml"
   push:
     branches: ["prototype/bybit-public-data-recorder-python-v0"]
