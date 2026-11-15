@@ -116,10 +116,38 @@ async def record_public(
                         except (json.JSONDecodeError, TypeError):
                             payload = None
 
-                        if isinstance(payload, dict) and payload.get("topic") == f"orderbook.full.{normalized_symbol}":
+                        # An unparseable frame or non-object JSON may conceal a lost
+                        # order-book update. Do not leave a previously valid book
+                        # readable while continuing on an uncertain stream.
+                        if payload is None or not isinstance(payload, dict):
+                            synchronizer.invalidate("malformed_ws_frame")
+                            _journal_book_state(
+                                journal, generation, "INVALID",
+                                reason="malformed_ws_frame", sync=synchronizer,
+                            )
+                            break
+
+                        topic = payload.get("topic")
+                        is_orderbook_frame = (
+                            isinstance(topic, str) and topic.startswith("orderbook.full.")
+                        ) or (
+                            payload.get("type") == "delta"
+                            and isinstance(payload.get("data"), dict)
+                            and ("u" in payload["data"] or "seq" in payload["data"])
+                        )
+                        if is_orderbook_frame:
                             outcome = synchronizer.on_delta(payload)
                             if outcome.reason:
                                 LOG.warning("book state generation=%d state=%s reason=%s", generation, outcome.state, outcome.reason)
+                            if outcome.state == "INVALID":
+                                _journal_book_state(
+                                    journal, generation, "INVALID",
+                                    reason=outcome.reason, sync=synchronizer,
+                                )
+                                # A wrong symbol/topic or malformed delta cannot
+                                # be repaired by a REST snapshot on this stream.
+                                # End the generation and reconnect fail-closed.
+                                break
                             if outcome.request_snapshot:
                                 force_refresh = bool(outcome.reason) and any(
                                     marker in outcome.reason for marker in (
