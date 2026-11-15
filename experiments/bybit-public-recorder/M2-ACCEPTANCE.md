@@ -10,11 +10,12 @@ This checklist is a release gate, not a claim that M2 is implemented. Every chec
 ## Terms and data-use gate (must pass before further live captures or raw-data publication)
 
 - [ ] Review the current [Bybit API Terms & Conditions](https://www.bybit.com/en/help-center/article/API-Terms?category=ae1012f19fad1c184e) (support page last updated 2026-10-20) and the linked [API agreement PDF](https://www.bybit.com/common-static/compliance/legal/BYBIT/df1923006718fbba8ba70d7d762b9866.pdf).
-- [ ] Obtain a clear interpretation of Section 2.3 (API-key identity verification) for unauthenticated public market-data endpoints; technical no-key reachability is not a legal determination.
+- [ ] By **2026-11-18**, send Bybit a written clarification request covering Section 2.3 applicability to unauthenticated public market-data endpoints, personal internal development/research capture, local retention, derived data, and any non-commercial internal use. Save the support ticket/reference and exact text of the request in the private project evidence log; do not include credentials or raw market data.
+- [ ] By **2026-11-24**, record Bybit's written response or explicitly record that no response was received. If unanswered or ambiguous, keep the live-capture gate `BLOCKED`; do not infer permission from endpoint reachability or silence. This external decision must not block synthetic fixtures, offline replay, parser work or documentation.
 - [ ] Keep all public-feed checks strictly as development/conformance tests. Section 6.6 prohibits using the API or Service Data to monitor availability/performance/functionality for benchmarking purposes; do not publish uptime or latency benchmarks from these runs.
 - [ ] Do not repackage/resell API or Service Data (Section 6.7) or commercially exploit the APIs (Section 6.9). Any future commercial/public NEXUS use requires separate review/permission.
 - [ ] Keep raw exchange frames private; do not commit or redistribute them until retention, derived-data and redistribution rights are explicitly reviewed.
-- [ ] Automated live smoke is gated by repository variable `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true`; leave it unset until this gate is documented as approved.
+- [ ] Automated live smoke is gated by repository variable `NEXUS_BYBIT_PUBLIC_DATA_TERMS_APPROVED=true`; leave it unset until the owner records the terms decision and confirms that the exact intended activity is permitted. A missed 2026-11-24 response deadline does not auto-approve data use.
 
 
 ## Implementation progress (2026-11-15)
@@ -107,8 +108,12 @@ Official source: [Bybit full-depth orderbook synchronization procedure](https://
 
 - [ ] Independent reviewer verifies the implementation line-by-line against the official procedure above, including `u` continuity, non-consecutive `seq`, reset handling, stale-event discard and exact bridge pair. Record reviewer, commit and findings.
 - [ ] Add/confirm protocol-derived fixtures that explicitly demonstrate non-consecutive increasing `seq` is accepted, `u` gap is rejected, same `seq` with different `u` causes snapshot retry, and a `seq` decrease is discarded.
-- [ ] On a real permitted session, perform a fresh REST snapshot comparison using a second buffered WS window: buffer deltas, fetch and journal the exact REST response, locate the matching `seq/u` watermark, reconstruct the local book at that exact watermark, and compare top-N bid/ask price-size levels. Do not compare snapshots taken at different watermarks as if they were simultaneous.
-- [ ] Record the compared watermark, top-N depth, exact decimal comparison method, missing/extra levels and any differences. Explain expected race/window effects; unexplained mismatch fails acceptance and forces investigation/resync.
+- [ ] On a real permitted session, run an independent REST-vs-WS reconciliation while the WS stream is already being journaled continuously. Record the REST request-start and response-receive wall/monotonic times, snapshot `seq/u`, and the current local-book `seq/u` at both times.
+- [ ] Because the REST snapshot may be ahead of the local book when its response arrives, do **not** compare it immediately with the older local state. Continue buffering WS deltas, validate continuity, and advance/replay the local state through the delta whose `seq` and `u` exactly match the REST snapshot watermark. `seq` is monotonic but not consecutive; `u` is consecutive within a generation.
+- [ ] At the exact REST watermark, compare the independently reconstructed local book with the REST snapshot over the top-N levels available in both. Use exact Decimal price/quantity comparisons; no arbitrary percentage tolerance. Record missing/extra levels, ordering, crossed/locked state and exact differences.
+- [ ] Then apply all deltas after the REST watermark to both the snapshot-seeded book and the independently reconstructed book in original receive order. Compare their fingerprints at a later common watermark. This explicitly accounts for market changes during the REST request/response window.
+- [ ] If the matching `seq/u` event is absent, continuity breaks, the buffer overflows, or the two reconstructions disagree, classify the check as INCONCLUSIVE/FAILED, invalidate and resynchronize; never explain unexplained differences away as timing noise.
+- [ ] Report the full delta window (count and first/last `seq/u`), both comparison watermarks, top-N depth, exact decimal method and all differences. Do not compare states at different watermarks as if simultaneous.
 - [ ] Preserve the raw evidence privately if terms permit, otherwise preserve a legally permitted redacted/synthetic reproduction and a reproducible report. Do not publish raw frames without rights review.
 
 ## Official protocol references checked 2026-11-15
