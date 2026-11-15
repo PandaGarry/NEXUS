@@ -12,7 +12,7 @@ A status is valid only for the exact commit, test, artifact or dated source link
 | Workstream | Status | Current truth / evidence |
 |---|---|---|
 | Main branch protection | BLOCKED | Last repository audit (2026-11-15) found `main` unprotected and no repository rulesets. A docs-link workflow is proposed in #20; configure PR-only main, block force-push/deletion and require available checks after workflow integration. GitHub settings still need owner-side verification |
-| Documentation CI | TESTED | [Run 43680133444](https://github.com/PandaGarry/NEXUS/actions/runs/43680133444) passed the relative-link check after repairing three broken cross-PR links. Workflow remains in PR #20 and is not yet a required main-branch check |
+| Documentation CI | TESTED | Latest relative-link validation [run 43680185586](https://github.com/PandaGarry/NEXUS/actions/runs/43680185586) passed after replacing broken cross-PR relative references with explicit source-branch URLs. Workflow remains in PR #20 and is not yet a required main-branch check |
 | Public project landing page | IN_PROGRESS | PR [#20](https://github.com/PandaGarry/NEXUS/pull/20) contains the review hub and README replacement; not merged |
 | Bybit public recorder | IN_PROGRESS | PR [#19](https://github.com/PandaGarry/NEXUS/pull/19), Python research prototype only; no private API, credentials or orders |
 | Recorder unit/integration tests | TESTED | Latest branch-head [CI 43680127082](https://github.com/PandaGarry/NEXUS/actions/runs/43680127082) passed all 41 tests on Python 3.11/3.12/3.13, including live `seq`-regression invalidation, malformed-root rejection and snapshot watermark edge cases. Live smoke was skipped under the terms gate; mocked integration is not exchange-live proof |
