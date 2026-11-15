@@ -1,4 +1,6 @@
 import unittest
+from unittest.mock import patch
+from nexus_bybit_recorder.book import ResyncRequired
 from nexus_bybit_recorder.synchronizer import BookSynchronizer
 
 
@@ -142,15 +144,17 @@ class BookSynchronizerTests(unittest.TestCase):
                 self.assertFalse(sync.valid)
                 self.assertEqual(sync.buffered_count, 0)
 
-    def test_delta_missing_side_after_live_invalidates_book(self):
-        sync = BookSynchronizer("BTCUSDT")
-        sync.on_delta(delta(10, 100))
-        self.assertEqual(sync.on_snapshot(snapshot()).state, "LIVE_VALID")
-        malformed = delta(11, 101)
-        del malformed["data"]["a"]
-        outcome = sync.on_delta(malformed)
-        self.assertEqual(outcome.state, "INVALID")
-        self.assertFalse(sync.valid)
+    def test_each_missing_side_after_live_invalidates_book(self):
+        for missing_side in ("b", "a"):
+            with self.subTest(missing_side=missing_side):
+                sync = BookSynchronizer("BTCUSDT")
+                sync.on_delta(delta(10, 100))
+                self.assertEqual(sync.on_snapshot(snapshot()).state, "LIVE_VALID")
+                malformed = delta(11, 101)
+                del malformed["data"][missing_side]
+                outcome = sync.on_delta(malformed)
+                self.assertEqual(outcome.state, "INVALID")
+                self.assertFalse(sync.valid)
 
     def test_u_one_empty_rest_snapshot_is_no_book_not_live_valid(self):
         sync = BookSynchronizer("BTCUSDT")
@@ -161,15 +165,18 @@ class BookSynchronizerTests(unittest.TestCase):
         self.assertTrue(sync.no_book)
         self.assertEqual(sync.last_invalidation_reason, "u=1_empty_snapshot_no_book")
 
-    def test_bridge_failure_immediately_requests_fresh_snapshot(self):
+    def test_bridge_resync_failure_immediately_requests_fresh_snapshot(self):
         sync = BookSynchronizer("BTCUSDT")
         sync.on_delta(delta(10, 100))
-        # The snapshot bridge sees an update-id discontinuity in the buffer.
-        sync.on_delta(delta(12, 102))
-        outcome = sync.on_snapshot(snapshot())
+        with patch(
+            "nexus_bybit_recorder.synchronizer.bridge_snapshot",
+            side_effect=ResyncRequired("synthetic bridge discontinuity"),
+        ):
+            outcome = sync.on_snapshot(snapshot())
         self.assertEqual(outcome.state, "SYNCING")
         self.assertTrue(outcome.request_snapshot)
         self.assertEqual(sync.buffered_count, 1)
+        self.assertEqual(sync._buffer[0].update_id, 10)
 
     def test_identical_duplicate_update_id_is_ignored(self):
         sync = BookSynchronizer("BTCUSDT")
