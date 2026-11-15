@@ -158,8 +158,10 @@ def bridge_snapshot(snapshot: dict[str, Any], buffered: list[Delta]) -> tuple[Or
         raise SnapshotNotCaughtUp("no buffered deltas")
     # Bybit instructs clients to discard packets whose cross-sequence decreases.
     filtered: list[Delta] = []
+    seq_regressions: list[Delta] = []
     for delta in buffered:
         if filtered and delta.cross_seq < filtered[-1].cross_seq:
+            seq_regressions.append(delta)
             continue
         if filtered:
             previous = filtered[-1]
@@ -174,6 +176,10 @@ def bridge_snapshot(snapshot: dict[str, Any], buffered: list[Delta]) -> tuple[Or
         raise SnapshotNotCaughtUp("buffer contains no usable deltas")
 
     snap_seq, snap_u = int(snapshot["seq"]), int(snapshot["u"])
+    # A decreasing-seq event newer than the snapshot's update ID cannot be
+    # silently dropped: the snapshot does not prove that its state is included.
+    if any(delta.update_id > snap_u for delta in seq_regressions):
+        raise ResyncRequired("post-snapshot buffered delta has decreasing cross sequence")
     if snap_seq < filtered[0].cross_seq:
         raise SnapshotNotCaughtUp("snapshot predates first buffered delta")
 
@@ -192,5 +198,7 @@ def bridge_snapshot(snapshot: dict[str, Any], buffered: list[Delta]) -> tuple[Or
 
     book = OrderBook.from_snapshot(snapshot)
     for delta in filtered[match_index + 1 :]:
+        if delta.cross_seq == snap_seq and delta.update_id != snap_u:
+            raise SnapshotNotCaughtUp("same snapshot seq but a different update id after the match")
         book.apply(delta)
     return book, match_index + 1
