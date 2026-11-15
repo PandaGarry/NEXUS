@@ -103,6 +103,16 @@ class BookSynchronizerTests(unittest.TestCase):
         self.assertFalse(sync.valid)
         self.assertEqual(sync.buffered_count, 1)
 
+
+    def test_extreme_decimal_exponents_invalidate_without_raising(self):
+        for price in ("1e1000000", "1e-1000000"):
+            with self.subTest(price=price):
+                sync = BookSynchronizer("BTCUSDT")
+                outcome = sync.on_delta(delta(10, 100, [[price, "1"]]))
+                self.assertEqual(outcome.state, "INVALID")
+                self.assertFalse(sync.valid)
+                self.assertEqual(sync.buffered_count, 0)
+
     def test_malformed_level_shape_invalidates_without_raising(self):
         sync = BookSynchronizer("BTCUSDT")
         outcome = sync.on_delta(delta(10, 100, [["100"]]))
