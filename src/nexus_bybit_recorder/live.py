@@ -370,7 +370,12 @@ async def record_public(
                     )
             if deadline is not None and time.monotonic() >= deadline:
                 break
-            await asyncio.sleep(_reconnect_sleep_seconds(backoff, random.random()))
+            reconnect_delay = _reconnect_sleep_seconds(backoff, random.random())
+            if deadline is not None:
+                remaining = max(0.0, deadline - time.monotonic())
+                reconnect_delay = min(reconnect_delay, remaining)
+            if reconnect_delay > 0:
+                await asyncio.sleep(reconnect_delay)
             backoff = min(backoff * 2, MAX_RECONNECT_BACKOFF_SECONDS)
 
 
