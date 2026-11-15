@@ -19,6 +19,21 @@ class OrderBookTests(unittest.TestCase):
         self.assertEqual(book.bids["100"], "7")
         self.assertNotIn("101", book.asks)
 
+
+    def test_same_snapshot_seq_with_later_u_after_match_requires_new_snapshot(self):
+        buffered = [delta(10, 100), delta(11, 100, [["100", "8"]])]
+        with self.assertRaises(SnapshotNotCaughtUp):
+            bridge_snapshot(self.snapshot, buffered)
+
+    def test_post_snapshot_sequence_regression_forces_resync(self):
+        buffered = [
+            delta(10, 100),
+            delta(11, 102, [["100", "8"]]),
+            delta(12, 101, [["99", "9"]]),
+        ]
+        with self.assertRaises(ResyncRequired):
+            bridge_snapshot(self.snapshot, buffered)
+
     def test_snapshot_behind_buffer_requires_new_snapshot(self):
         with self.assertRaises(SnapshotNotCaughtUp):
             bridge_snapshot(self.snapshot, [delta(11, 101)])
