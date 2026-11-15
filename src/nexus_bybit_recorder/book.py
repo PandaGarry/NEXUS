@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
 from typing import Any, Iterable
@@ -44,6 +46,13 @@ class Delta:
     bids: tuple[tuple[str, str], ...]
     asks: tuple[tuple[str, str], ...]
     raw: dict[str, Any] = field(compare=False, repr=False)
+
+    @property
+    def digest(self) -> str:
+        canonical = json.dumps(
+            self.raw, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        ).encode("utf-8")
+        return hashlib.sha256(canonical).hexdigest()
 
     @classmethod
     def from_message(cls, message: dict[str, Any]) -> "Delta":
@@ -92,6 +101,7 @@ class OrderBook:
     bids: dict[str, str]
     asks: dict[str, str]
     valid: bool = True
+    last_delta_digest: str | None = None
 
     @classmethod
     def from_snapshot(cls, snapshot: dict[str, Any]) -> "OrderBook":
@@ -118,7 +128,12 @@ class OrderBook:
         if delta.update_id < self.update_id:
             return
         if delta.update_id == self.update_id:
-            return
+            if self.last_delta_digest is None or delta.digest == self.last_delta_digest:
+                return
+            self.invalidate()
+            raise ResyncRequired(
+                f"conflicting duplicate update id {delta.update_id}"
+            )
         if delta.update_id != self.update_id + 1:
             self.invalidate()
             raise ResyncRequired(
@@ -133,6 +148,7 @@ class OrderBook:
         self._apply_side(self.asks, delta.asks)
         self.update_id = delta.update_id
         self.cross_seq = delta.cross_seq
+        self.last_delta_digest = delta.digest
         if self.bids and self.asks:
             if max(Decimal(p) for p in self.bids) >= min(Decimal(p) for p in self.asks):
                 self.invalidate()
@@ -206,6 +222,10 @@ def bridge_snapshot(snapshot: dict[str, Any], buffered: list[Delta]) -> tuple[Or
         raise SnapshotNotCaughtUp("snapshot bridge point not present in buffer")
 
     book = OrderBook.from_snapshot(snapshot)
+    # The exact bridge delta is already represented by the REST snapshot.
+    # Remember its canonical payload so a conflicting replay of the same u
+    # cannot be silently accepted after the transition to LIVE_VALID.
+    book.last_delta_digest = filtered[match_index].digest
     for delta in filtered[match_index + 1 :]:
         if delta.cross_seq == snap_seq and delta.update_id != snap_u:
             raise SnapshotNotCaughtUp("same snapshot seq but a different update id after the match")
