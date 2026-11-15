@@ -25,8 +25,14 @@ def _validated_level(price: str, quantity: str) -> tuple[Decimal, Decimal]:
     return p, q
 
 
+def _price_key(price: str) -> str:
+    value, _ = _validated_level(price, "0")
+    return format(value.normalize(), "f")
+
+
 def _levels(raw: Iterable[Iterable[str]]) -> dict[str, str]:
     result: dict[str, str] = {}
+    seen_prices: set[str] = set()
     for row in raw:
         if not isinstance(row, (list, tuple)) or len(row) != 2:
             raise ValueError("order-book level must contain price and quantity")
@@ -34,8 +40,12 @@ def _levels(raw: Iterable[Iterable[str]]) -> dict[str, str]:
             raise ValueError("order-book price and quantity must be strings")
         price, quantity = row
         _, q = _validated_level(price, quantity)
+        key = _price_key(price)
+        if key in seen_prices:
+            raise ValueError(f"duplicate numeric price level: {key}")
+        seen_prices.add(key)
         if q != 0:
-            result[price] = quantity
+            result[key] = quantity
     return result
 
 
@@ -82,6 +92,7 @@ class Delta:
             if not isinstance(raw_levels, list):
                 raise ValueError(f"delta {name} must be an array")
             parsed: list[tuple[str, str]] = []
+            seen_prices: set[str] = set()
             for row in raw_levels:
                 if not isinstance(row, (list, tuple)) or len(row) != 2:
                     raise ValueError("order-book level must contain price and quantity")
@@ -89,7 +100,11 @@ class Delta:
                 if not isinstance(price, str) or not isinstance(quantity, str):
                     raise ValueError("order-book price and quantity must be strings")
                 _validated_level(price, quantity)
-                parsed.append((price, quantity))
+                key = _price_key(price)
+                if key in seen_prices:
+                    raise ValueError(f"duplicate numeric price level in delta: {key}")
+                seen_prices.add(key)
+                parsed.append((key, quantity))
             return tuple(parsed)
 
         return cls(
@@ -165,10 +180,11 @@ class OrderBook:
     def _apply_side(side: dict[str, str], changes: Iterable[tuple[str, str]]) -> None:
         for price, quantity in changes:
             _, q = _validated_level(price, quantity)
+            key = _price_key(price)
             if q == 0:
-                side.pop(price, None)
+                side.pop(key, None)
             else:
-                side[price] = quantity
+                side[key] = quantity
 
     def invalidate(self) -> None:
         self.valid = False
