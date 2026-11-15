@@ -6,6 +6,8 @@ from nexus_bybit_recorder.live import (
     _SNAPSHOT_FETCH_SLOT,
     _backoff_after_connection,
     _fetch_snapshot_singleflight,
+    _reconnect_sleep_seconds,
+    ReconnectRateLimiter,
     public_linear_url,
     subscription,
 )
@@ -20,6 +22,30 @@ class LiveConfigTests(unittest.TestCase):
     def test_stable_connection_resets_backoff(self):
         self.assertEqual(_backoff_after_connection(8.0, 30.0), 1.0)
         self.assertEqual(_backoff_after_connection(30.0, 120.0), 1.0)
+
+
+    def test_reconnect_rate_limiter_bounds_attempts_in_rolling_window(self):
+        limiter = ReconnectRateLimiter(max_attempts=3, window_seconds=10.0)
+        limiter.record(now=0.0)
+        limiter.record(now=1.0)
+        limiter.record(now=2.0)
+        self.assertEqual(limiter.delay(now=5.0), 5.0)
+        self.assertEqual(limiter.delay(now=9.999), 0.0009999999999994458)
+        self.assertEqual(limiter.delay(now=10.0), 0.0)
+
+    def test_reconnect_rate_limiter_rejects_invalid_configuration(self):
+        with self.assertRaises(ValueError):
+            ReconnectRateLimiter(max_attempts=0)
+        with self.assertRaises(ValueError):
+            ReconnectRateLimiter(window_seconds=0)
+
+    def test_reconnect_backoff_caps_base_and_bounds_jitter(self):
+        self.assertEqual(_reconnect_sleep_seconds(1.0, 0.0), 1.0)
+        self.assertEqual(_reconnect_sleep_seconds(1.0, 1.0), 1.25)
+        self.assertEqual(_reconnect_sleep_seconds(100.0, 0.0), 30.0)
+        self.assertEqual(_reconnect_sleep_seconds(100.0, 1.0), 30.25)
+        self.assertEqual(_reconnect_sleep_seconds(4.0, 2.0), 4.25)
+        self.assertEqual(_reconnect_sleep_seconds(4.0, -1.0), 4.0)
 
     def test_endpoints(self):
         self.assertEqual(public_linear_url(), "wss://stream.bybit.com/v5/public/linear")
