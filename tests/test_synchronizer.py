@@ -171,6 +171,30 @@ class BookSynchronizerTests(unittest.TestCase):
         self.assertTrue(outcome.request_snapshot)
         self.assertEqual(sync.buffered_count, 1)
 
+    def test_identical_duplicate_update_id_is_ignored(self):
+        sync = BookSynchronizer("BTCUSDT")
+        first = delta(10, 100)
+        sync.on_delta(first)
+        self.assertEqual(sync.on_snapshot(snapshot()).state, "LIVE_VALID")
+        update = delta(11, 101, [["100", "7"]])
+        self.assertEqual(sync.on_delta(update).state, "LIVE_VALID")
+        duplicate = delta(11, 101, [["100", "7"]])
+        outcome = sync.on_delta(duplicate)
+        self.assertEqual(outcome.state, "LIVE_VALID")
+        self.assertTrue(sync.valid)
+        self.assertEqual(sync.book.bids["100"], "7")
+
+    def test_conflicting_duplicate_update_id_invalidates_live_book(self):
+        sync = BookSynchronizer("BTCUSDT")
+        sync.on_delta(delta(10, 100))
+        self.assertEqual(sync.on_snapshot(snapshot()).state, "LIVE_VALID")
+        self.assertEqual(sync.on_delta(delta(11, 101, [["100", "7"]])).state, "LIVE_VALID")
+        outcome = sync.on_delta(delta(11, 101, [["100", "8"]]))
+        self.assertEqual(outcome.state, "SYNCING")
+        self.assertTrue(outcome.request_snapshot)
+        self.assertFalse(sync.valid)
+        self.assertIn("conflicting duplicate update id", outcome.reason)
+
 
 if __name__ == "__main__":
     unittest.main()
