@@ -1,6 +1,6 @@
 # NEXUS — venue qualification matrix
 
-**Last reviewed:** 2026-11-15 (provider and venue re-check)  
+**Last reviewed:** 2026-11-16 (provider and venue re-check)  
 **Purpose:** compare candidate venues without making any venue the architectural center or assuming user eligibility.  
 **Status convention:** YES / NO / UNKNOWN. Every non-UNKNOWN claim is scoped to an exact API/product and backed by a dated source. A documented public feed does not prove account eligibility or production readiness.
 
@@ -38,6 +38,8 @@
 | Live public smoke evidence in NEXUS | YES — 10-minute raw capture/replay | NO | NO | NO | NO |
 
 ### Bybit V5 linear evidence
+
+- **Execution/reconciliation compatibility notice (checked 2026-11-16):** Bybit's official API Announcements channel states that, from 2026-12-03, `GET /v5/order/history` and `GET /v5/spread/order/history` will no longer return `Cancelled`, `Rejected` or `Deactivated` orders by default when `orderStatus` is omitted. Pass `orderStatus` explicitly when reconciling these terminal states; Bybit says they remain queryable only within the most recent 24 hours. The public channel rendering does not expose the announcement's exact publication date. This does not affect the public recorder/M2, but a future private Bybit adapter must include explicit-status recovery and a contract fixture before implementation. Sources: [official Bybit API Announcements](https://t.me/s/bybit_api_announcements) and [Get Order History](https://bybit-exchange.github.io/docs/v5/order/order-list).
 
 - Full-depth WS topic `orderbook.full.{symbol}` is explicitly delta-only; no initial snapshot is sent. A REST full-depth snapshot must be obtained and aligned with buffered deltas.
 - Bybit's official V5 changelog notes that its trading and matching engine migrated to AWS Tokyo (`apne1-az4`) on 2026-11-12. The latest English V5 changelog entries through 2026-11-09 concern Spot margin/strategy/account endpoints, not the BTCUSDT linear full-depth book/trade contract; no schema change to the current recorder channels was identified. This is an infrastructure observation, not a latency or venue-selection conclusion.
