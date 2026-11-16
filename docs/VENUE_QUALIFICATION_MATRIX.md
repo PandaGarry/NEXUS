@@ -9,7 +9,7 @@
 | Candidate | Why it is in the research universe | Current role | Selection status |
 |---|---|---|---|
 | Bybit | Concrete V5 full-depth public stream and linear derivatives market; first live raw capture succeeded | Reference adapter experiment #1; M2 is the active implementation priority | Not selected for trading |
-| Kraken Spot WebSocket v2 | Spot L2 stream sends a WS snapshot and updates with CRC32 checksum; materially contrasts with Bybit and Bitstamp models | Protocol/terms research candidate | Not selected for trading |
+| Kraken Spot WS v2 + Unified WS (Derivatives) | Spot L2 snapshot+CRC32; new Unified WS supports Spot/Derivatives, derivatives private streams and order entry; legacy Derivatives WS v1 deprecated for 2027-03-01 | Protocol/terms research candidate; execution/recovery semantics remain unqualified | Not selected for trading |
 | Bitstamp | Public REST order book, WS v2 feeds, documented derivatives API examples for BTC/USD-PERP; commercial data-license route published | Protocol, market availability and data-rights qualification candidate | Not selected for trading |
 | Coinbase Advanced Trade | Distinct API/product family and useful comparator; do not conflate with Coinbase Exchange API | Alternative technical adapter candidate | Not selected |
 | OKX | Tick-level trades + historical high-resolution L2 since 2023-03; snapshot + seqId/prevSeqId live book model | Leading HYP-001 historical-L2 research candidate; no recorder until Bybit M2 | Not selected; terms restrictive |
@@ -84,6 +84,16 @@ Official sources:
 - API terms / prior permission for certain commercial public-data uses: https://docs-legacy.kraken.com/api/docs/guides/global-intro/
 - Global Terms: https://www.kraken.com/legal/global-terms
 
+### Kraken Derivatives Unified WebSocket and execution notes (release notes 2026-11-12)
+
+- Kraken deprecated the legacy Derivatives WebSocket v1 endpoint `wss://futures.kraken.com/ws/v1`; existing integrations continue until **2027-03-01**. New derivatives integrations should use the Unified WebSocket, which carries Spot and Derivatives on one connection; set `asset_class=derivatives` on each derivatives subscription/order message.
+- The Unified WebSocket supports `add_order`, `amend_order`, `cancel_order`, `cancel_all` and `cancel_after`. It authenticates with a token from `GetWebSocketsToken` requested using a Kraken Spot API key, rather than a Derivatives API key. Kraken's Rust SDK release note says it covers derivatives market data, private executions/positions/margin/balances, order entry, token refresh, reconnects and order-book checksums. These are official capability statements, not NEXUS runtime verification.
+- **Kill-switch implication:** the 2026-11-12 release notes say `POST /cancelallorders` now reports a `CANCEL` event in `orderEvents` for each trigger order cancelled, while `status` can remain `noOrdersToCancel` when only trigger orders were cancelled. A future adapter must inspect per-order events and reconcile; it must not treat `status` alone as proof that nothing was cancelled.
+- Kraken also states that Spot transfers through `POST /transfer` require the withdrawal permission, while `POST /withdrawal` and `GET /transfers` are deprecated for removal on 2026-11-30. Funds transfer is outside NEXUS scope: retain the no-withdrawal key policy and do not grant withdrawal permission for market data or trading.
+- This changes future Kraken adapter qualification only. It does not affect the Bybit public recorder/M2, and it does not establish account/jurisdiction eligibility, idempotency, snapshot consistency or full reconciliation semantics.
+
+Official source: https://docs.kraken.com/exchange/changelog (12 November 2026 release notes); Unified WS reference: https://docs.kraken.com/exchange/api-reference/unified-ws/ticker.
+
 ### Bitstamp API v2 / WebSocket v2 evidence (checked 2026-11-15)
 
 - The official API reference documents REST order book `GET /api/v2/order_book/{market_symbol}/`, with `group=0/1/2` options (ungrouped price levels, grouped-by-price default, or order IDs not grouped at price). It also links the official WebSocket API v2 guide. The official WS page is currently not machine-readable in this review; exact channel payload, timestamp fields, sequence/event identifiers, snapshot semantics and reconnect guarantees therefore remain UNKNOWN until manually verified against the published protocol specification.
@@ -118,7 +128,7 @@ Official sources:
 - Standard `books` sends a 400-level initial full snapshot and incremental updates every 100 ms. `books-l2-tbt` (400 levels / 10 ms) and `books50-l2-tbt` (50 levels / 10 ms) are restricted to VIP4+ fee tiers; do not assume access to these higher-frequency channels.
 - Current continuity contract is `prevSeqId` + `seqId`: snapshot has `prevSeqId=-1`; normal incremental `prevSeqId` matches the previous `seqId`; maintenance may reset `seqId` lower than `prevSeqId`, after which normal sequencing resumes.
 - JSON order-book checksum was deprecated in production on 2026-06-23; checksum fields remain but are always zero. Do not use checksum as integrity evidence.
-- OKX retired WebSocket port 8443 for public internet connections on 2026-10-31; Colo connections on port 8443 are scheduled to stop on 2026-11-16. Use the default TLS port 443.
+- OKX's public-internet WebSocket port 8443 retirement date was 2026-10-31; the announced Colo retirement date is 2026-11-16 (today). Use the default TLS port 443. OKX states connections on 8443 fail after the applicable date; NEXUS has not run a connectivity test against either port.
 - On 2026-11-13 OKX launched SBE order-entry and private order/fill services in demo; production is expected in early December. JSON APIs remain unaffected. SBE order entry currently supports CASH/CROSS modes; private `orders`/`fills` channels do not send an initial snapshot, and `fills` requires VIP4+. These are future adapter qualification details, not a current NEXUS integration decision.
 - Historical-data terms allow personal use including development of one's own trading strategy, but prohibit redistribution and disclaim completeness/accuracy. The API Agreement limits Market Data to personal, non-commercial use and prohibits redistribution, competing data/analytics products and commercialized AI model training without written consent. No raw OKX data may be published or committed to NEXUS.
 
@@ -170,7 +180,7 @@ The following remain UNKNOWN until exact jurisdiction, account type, product fam
 | Dated futures / expiry semantics | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Historical trade archive coverage / start date | YES — public BTCUSDT daily CSV listing begins 2020-03-25; current freshness/completeness unverified | UNKNOWN | YES — Spot Time & Sales from each pair's first trade through 2026-09-30 | YES — tick-level trades from 2021-09 | YES — daily/monthly Spot/Futures trade archives; coverage varies by symbol |
 | Historical L2 archive coverage | UNKNOWN | UNKNOWN | UNKNOWN — no L2 shown in Time & Sales archive | YES — high-resolution L2 from 2023-03 | NO per-level L2 evidence; percentage-band `bookDepth` only |
-| Private order/fill/account streams | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
+| Private order/fill/account streams | UNKNOWN | UNKNOWN | PARTIAL — Kraken's 2026-11-12 release notes say Unified WS supports derivatives private streams and order entry; exact event/snapshot/recovery semantics remain unqualified | UNKNOWN | UNKNOWN |
 | REST reconciliation for unknown order outcome | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Client order ID constraints / idempotency semantics | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
 | Timeout / duplicate-submit behavior | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN |
