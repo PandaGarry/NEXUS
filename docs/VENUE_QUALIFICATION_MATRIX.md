@@ -1,6 +1,6 @@
 # NEXUS — venue qualification matrix
 
-**Last reviewed:** 2026-11-16 (provider and venue re-check)  
+**Last reviewed:** 2026-11-17 (Kraken Spot amend semantics re-check)  
 **Purpose:** compare candidate venues without making any venue the architectural center or assuming user eligibility.  
 **Status convention:** YES / NO / UNKNOWN. Every non-UNKNOWN claim is scoped to an exact API/product and backed by a dated source. A documented public feed does not prove account eligibility or production readiness.
 
