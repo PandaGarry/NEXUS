@@ -1,0 +1,51 @@
+name: Documentation validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - docs/nexus-public-review-hub-v1
+
+permissions:
+  contents: read
+
+jobs:
+  markdown-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate relative Markdown links
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          from urllib.parse import unquote, urlparse
+
+          failures = []
+          for document in Path(".").rglob("*.md"):
+              if any(part in {".git", ".venv", "node_modules"} for part in document.parts):
+                  continue
+              source = re.sub(r"```[\s\S]*?```", "", document.read_text(encoding="utf-8"))
+              for match in re.finditer(r"(?<!!)\[[^\]]+\]\(([^)]+)\)", source):
+                  raw = match.group(1).strip()
+                  if raw.startswith("<") and ">" in raw:
+                      target = raw[1:raw.index(">")]
+                  else:
+                      target = raw.split()[0] if raw else ""
+                  if not target or target.startswith("#") or target.startswith("//"):
+                      continue
+                  if urlparse(target).scheme:
+                      continue
+                  target = unquote(target.split("#", 1)[0].split("?", 1)[0])
+                  if not target:
+                      continue
+                  resolved = (document.parent / target).resolve()
+                  if not resolved.exists():
+                      failures.append(f"{document}: {target}")
+
+          if failures:
+              print("Broken relative Markdown links:")
+              print("\n".join(failures))
+              raise SystemExit(1)
+          print("All relative Markdown links resolve.")
+          PY
