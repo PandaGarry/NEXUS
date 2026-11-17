@@ -95,6 +95,15 @@ Official sources:
 - Kraken Amend Order: https://docs.kraken.com/api-reference/trading/amend-order
 - NautilusTrader integration regression/fix: https://github.com/nautechsystems/nautilus_trader/commit/17b97189bccbeb8c9da57bcfdec888ea46b70361
 
+### Kraken operational recovery signal (official status page, 2026-11-17)
+
+- Kraken's official status page recorded scheduled WebSocket/FIX maintenance on 2026-11-17 from 09:30 UTC, marked completed at 13:55 UTC. The notice explicitly warned that a WebSocket connection may remain open while no data is delivered, or sequence numbers may restart without a new snapshot; clients were instructed to disconnect, reconnect and resubscribe.
+- The same status history recorded Spot API maintenance at 08:01 UTC, with temporary cancel-only then post-only market modes; normal order submission/matching was restored at 08:13 UTC. The Derivatives platform maintenance at 08:00 UTC was completed at 08:19 UTC, but the planned maker-protection release was aborted and did not take effect.
+- **NEXUS implication:** transport-connected is not feed-fresh. A future Kraken adapter needs an application-level silence/freshness watchdog, sequence-reset detection, fail-closed book invalidation and explicit resubscription/snapshot/checksum recovery. Venue post-only/cancel-only states must be represented separately from generic API connectivity and must constrain allowed order types.
+- Affects NX-ADR-004 and NX-ADR-002 / future Kraken adapter qualification only. This is an official operational notice, not a NEXUS connection test or evidence of a current NEXUS incident.
+
+Official source: https://status.kraken.com/ (2026-11-17 incident history).
+
 ### Kraken Derivatives Unified WebSocket and execution notes (release notes 2026-11-12)
 
 - Kraken deprecated the legacy Derivatives WebSocket v1 endpoint `wss://futures.kraken.com/ws/v1`; existing integrations continue until **2027-03-01**. New derivatives integrations should use the Unified WebSocket, which carries Spot and Derivatives on one connection; set `asset_class=derivatives` on each derivatives subscription/order message.
