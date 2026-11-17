@@ -9,7 +9,7 @@
 | Candidate | Why it is in the research universe | Current role | Selection status |
 |---|---|---|---|
 | Bybit | Concrete V5 full-depth public stream and linear derivatives market; first live raw capture succeeded | Reference adapter experiment #1; M2 is the active implementation priority | Not selected for trading |
-| Kraken Spot WS v2 + Unified WS (Derivatives) | Spot L2 snapshot+CRC32; new Unified WS supports Spot/Derivatives, derivatives private streams and order entry; legacy Derivatives WS v1 deprecated for 2027-03-01 | Protocol/terms research candidate; execution/recovery semantics remain unqualified | Not selected for trading |
+| Kraken Spot WS v2 + Unified WS (Derivatives) | Spot L2 snapshot+CRC32; new Unified WS supports Spot/Derivatives, derivatives private streams and order entry; legacy Derivatives WS v1 deprecated for 2027-03-01 | Protocol/terms research candidate; specific amend/cancel behaviors are documented, but broader execution/recovery semantics remain unqualified | Not selected for trading |
 | Bitstamp | Public REST order book, WS v2 feeds, documented derivatives API examples for BTC/USD-PERP; commercial data-license route published | Protocol, market availability and data-rights qualification candidate | Not selected for trading |
 | Coinbase Advanced Trade | Distinct API/product family and useful comparator; do not conflate with Coinbase Exchange API | Alternative technical adapter candidate | Not selected |
 | OKX | Tick-level trades + historical high-resolution L2 since 2023-03; snapshot + seqId/prevSeqId live book model | Leading HYP-001 historical-L2 research candidate; no recorder until Bybit M2 | Not selected; terms restrictive |
@@ -83,6 +83,17 @@ Official sources:
 - Historical Spot Time & Sales archive: https://support.kraken.com/in/articles/360047543791-downloadable-historical-market-data-time-and-sales-
 - API terms / prior permission for certain commercial public-data uses: https://docs-legacy.kraken.com/api/docs/guides/global-intro/
 - Global Terms: https://www.kraken.com/legal/global-terms
+
+### Kraken Spot REST amend semantics (checked 2026-11-17)
+
+- The official `POST /0/private/AmendOrder` endpoint accepts either `txid` or `cl_ord_id` (at least one). A successful response returns a unique `result.amend_id`; it does **not** return a replacement venue order ID. Kraken states that the original venue/client order identifiers remain unchanged and queue priority is maintained where possible. The amend ID identifies the amend operation, not the order.
+- NautilusTrader commit [`17b9718`](https://github.com/nautechsystems/nautilus_trader/commit/17b97189bccbeb8c9da57bcfdec888ea46b70361) (2026-11-17) fixed a client-side false failure: an amend submitted by client order ID alone could succeed at Kraken, but the adapter raised `MissingOrderId` because the response did not echo a venue order ID. The fix preserves a supplied venue ID or returns `None` when only the client ID was supplied.
+- **NEXUS implication:** a future Kraken adapter must retain its internal/client order identity and any known venue order ID, treat `amend_id` as an amend acknowledgement rather than an order ID, and not classify a successful response as failure merely because no venue order ID is echoed. If the request outcome is ambiguous, use the client ID plus private events/order queries for reconciliation. Exact amend retry/idempotency, amend-ID retention and full recovery semantics remain UNKNOWN.
+- Affects NX-ADR-002 / future Kraken adapter qualification only. This is source/documentation evidence, not NEXUS implementation or exchange-runtime verification.
+
+Official sources:
+- Kraken Amend Order: https://docs.kraken.com/api-reference/trading/amend-order
+- NautilusTrader integration regression/fix: https://github.com/nautechsystems/nautilus_trader/commit/17b97189bccbeb8c9da57bcfdec888ea46b70361
 
 ### Kraken Derivatives Unified WebSocket and execution notes (release notes 2026-11-12)
 
