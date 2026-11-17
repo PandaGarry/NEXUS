@@ -18,6 +18,7 @@
 - Enforce hard limits independently of strategy/AI: max order size, position/notional, daily loss, order rate, instrument allowlist and stale-data cutoff. Missing/invalid risk state blocks risk-increasing orders.
 - Provide exchange-side and application-side kill switches; test process death, network partition, duplicate command, uncertain outcome and leaked-key response.
 - Reconcile orders, fills, positions and balances before resuming after restart or uncertainty.
+- Before private API credentials are introduced, make authentication failures secret-safe: parser/library diagnostics, `Display`/`Debug`, nested error sources and logs must never echo PEM/key/token bytes. Add negative tests for malformed PEM/JWT inputs across REST and WebSocket authentication paths.
 - Keep auditable logs without exposing secrets; encrypt backups and test restore.
 
 ## Level 3 — triggered by public/commercial/multi-user operation
